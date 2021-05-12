@@ -732,7 +732,7 @@ if (isInputRange!Range)
 }
 
 // Used to check format strings are compatible with argument types
-package(ripstd) static const checkFormatException(alias fmt, Args...) =
+package(ripstd) enum checkFormatException(alias fmt, Args...) =
 {
     import ripstd.conv : text;
 
@@ -743,7 +743,7 @@ package(ripstd) static const checkFormatException(alias fmt, Args...) =
         enforceFmt(n == Args.length, text("Orphan format arguments: args[", n, "..", Args.length, "]"));
     }
     catch (Exception e)
-        return e;
+        return e.msg;
     return null;
 }();
 
@@ -1367,7 +1367,7 @@ if (isSomeString!(typeof(fmt)))
     alias e = checkFormatException!(fmt, Args);
     alias Char = Unqual!(ElementEncodingType!(typeof(fmt)));
 
-    static assert(!e, e.msg);
+    static assert(!e, e);
     auto w = appender!(immutable(Char)[]);
 
     // no need to traverse the string twice during compile time
