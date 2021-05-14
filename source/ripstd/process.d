@@ -1880,6 +1880,7 @@ version (Windows)
 @system unittest
 {
     auto fn = uniqueTempPath();
+    scope(exit) if (exists(fn)) remove(fn);
     ripstd.file.write(fn, "AAAAAAAAAA");
 
     auto f = File(fn, "a");
@@ -1894,11 +1895,12 @@ version (Windows)
 // with indicating a workDir.
 version (Posix) @system unittest
 {
-    import ripstd.file : mkdir, write, setAttributes;
+    import ripstd.file : mkdir, write, setAttributes, rmdirRecurse;
     import ripstd.conv : octal;
 
     auto dir = uniqueTempPath();
     mkdir(dir);
+    scope(exit) rmdirRecurse(dir);
     write(dir ~ "/program", "#!/bin/sh\necho Hello");
     setAttributes(dir ~ "/program", octal!700);
 
@@ -3383,11 +3385,12 @@ private auto executeImpl(alias pipeFunc, Cmd, ExtraPipeFuncArgs...)(
     // Temporarily disable output to stderr so as to not spam the build log.
     import ripstd.stdio : stderr;
     import ripstd.typecons : Tuple;
-    import ripstd.file : readText;
+    import ripstd.file : readText, exists, remove;
     import ripstd.traits : ReturnType;
 
     ReturnType!executeShell r;
     auto tmpname = uniqueTempPath;
+    scope(exit) if (exists(tmpname)) remove(tmpname);
     auto t = stderr;
     // Open a new scope to minimize code ran with stderr redirected.
     {
