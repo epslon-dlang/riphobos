@@ -2747,7 +2747,7 @@ else version (Posix)
     See_Also:
         $(LREF asAbsolutePath) which does not allocate
 */
-string absolutePath(string path, lazy string base = getcwd())
+string absolutePath(return scope string path, lazy string base = getcwd())
     @safe pure
 {
     import ripstd.array : array;
