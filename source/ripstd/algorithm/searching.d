@@ -1611,7 +1611,8 @@ if (isInputRange!InputRange &&
             {
                 if (!__ctfe && canSearchInCodeUnits!char(needle))
                 {
-                    static R trustedMemchr(ref R haystack, ref E needle) @trusted nothrow pure
+                    static inout(R) trustedMemchr(ref return scope inout(R) haystack,
+                                                  ref const scope E needle) @trusted nothrow pure
                     {
                         import core.stdc.string : memchr;
                         auto ptr = memchr(haystack.ptr, needle, haystack.length);
