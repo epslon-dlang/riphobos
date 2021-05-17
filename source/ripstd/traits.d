@@ -6378,7 +6378,7 @@ template isNumeric(T)
         alias val this;
     }
 
-    static assert(!isIntegral!S);
+    static assert(!isNumeric!S);
 }
 
 @safe unittest
