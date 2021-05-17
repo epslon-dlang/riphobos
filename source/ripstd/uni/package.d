@@ -5923,7 +5923,7 @@ pure:
         return _idx == size_t.max;
     }
 
-    @property DecompressedIntervals save() { return this; }
+    @property DecompressedIntervals save() return scope { return this; }
 }
 
 @safe pure nothrow @nogc unittest
@@ -8564,7 +8564,7 @@ enum {
     In cases where the string in question is already normalized,
     it is returned unmodified and no memory allocation happens.
 +/
-inout(C)[] normalize(NormalizationForm norm=NFC, C)(inout(C)[] input)
+inout(C)[] normalize(NormalizationForm norm=NFC, C)(return scope inout(C)[] input)
 {
     import ripstd.algorithm.mutation : SwapStrategy;
     import ripstd.algorithm.sorting : sort;
@@ -8751,7 +8751,7 @@ private size_t recompose(size_t start, dchar[] input, ubyte[] ccc) pure nothrow 
 // returns tuple of 2 indexes that delimit:
 // normalized text, piece that needs normalization and
 // the rest of input starting with stable code point
-private auto splitNormalized(NormalizationForm norm, C)(const(C)[] input)
+private auto splitNormalized(NormalizationForm norm, C)(scope const(C)[] input)
 {
     import ripstd.typecons : tuple;
     ubyte lastCC = 0;
