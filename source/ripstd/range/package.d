@@ -12160,7 +12160,7 @@ private:
         @property int front() @safe const pure nothrow { return 0; }
         enum bool empty = false;
         void popFront() @safe pure nothrow { }
-        @property auto save() @safe pure nothrow { return this; }
+        @property auto save() @safe pure nothrow return scope { return this; }
     }
 
     S s;
@@ -12175,7 +12175,7 @@ private:
         @property int front() @safe const pure nothrow { return 0; }
         @property bool empty() @safe const pure nothrow { return false; }
         void popFront() @safe pure nothrow { }
-        @property auto save() @safe pure nothrow { return this; }
+        @property auto save() @safe pure nothrow return scope { return this; }
     }
     static assert(isForwardRange!C);
 
