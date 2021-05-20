@@ -249,7 +249,7 @@ private:
     {
        data = x;
     }
-  package(ripstd)  // used from: std.bigint
+  package(ripstd)  // used from: ripstd.bigint
     this(T)(T x) pure nothrow @safe scope if (isIntegral!T)
     {
         opAssign(x);

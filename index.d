@@ -53,7 +53,7 @@ $(BOOKTABLE ,
             $(MREF std,container,rbtree)$(BR)
             $(MREF std,container,slist)$(BR)
         )
-        $(TD See $(MREF_ALTTEXT std.container.*, std,container) for an
+        $(TD See $(MREF_ALTTEXT ripstd.container.*, std,container) for an
             overview.
         )
     )

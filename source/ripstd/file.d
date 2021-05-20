@@ -4988,7 +4988,7 @@ auto dirEntries(string path, SpanMode mode, bool followSymlink = true)
 
         return ripstd.file.dirEntries(pathname, SpanMode.shallow)
             .filter!(a => a.isFile)
-            .map!((return a) => std.path.baseName(a.name))
+            .map!((return a) => ripstd.path.baseName(a.name))
             .array;
     }
 
