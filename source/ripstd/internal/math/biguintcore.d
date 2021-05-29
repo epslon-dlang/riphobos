@@ -245,7 +245,7 @@ private:
 
     immutable(BigDigit) [] data = ZERO;
 
-    this(immutable(BigDigit) [] x) pure nothrow @nogc @safe scope
+    this(return scope immutable(BigDigit) [] x) pure nothrow @nogc @safe
     {
        data = x;
     }
