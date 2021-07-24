@@ -6703,7 +6703,7 @@ string[string] abbrev(string[] values) @safe pure
  */
 
 size_t column(Range)(Range str, in size_t tabsize = 8)
-if ((isInputRange!Range && isSomeChar!(Unqual!(ElementEncodingType!Range)) ||
+if ((isInputRange!Range && isSomeChar!(ElementEncodingType!Range) ||
     isNarrowString!Range) &&
     !isConvertibleToString!Range)
 {
