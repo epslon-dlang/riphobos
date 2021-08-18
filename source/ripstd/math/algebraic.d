@@ -130,33 +130,11 @@ real fabs(real x) @safe pure nothrow @nogc { return core.math.fabs(x); }
 
 ///ditto
 pragma(inline, true)
-double fabs(double d) @trusted pure nothrow @nogc
-{
-    // because CTFE builtins are hardcoded in the compiler
-    if(__ctfe)
-    {
-        static import std.math.algebraic;
-        return std.math.algebraic.fabs(d);
-    }
-
-    ulong tmp = *cast(ulong*)&d & 0x7FFF_FFFF_FFFF_FFFF;
-    return *cast(double*)&tmp;
-}
+double fabs(double x) @safe pure nothrow @nogc { return core.math.fabs(x); }
 
 ///ditto
 pragma(inline, true)
-float fabs(float f) @trusted pure nothrow @nogc
-{
-    // because CTFE builtins are hardcoded in the compiler
-    if(__ctfe)
-    {
-        static import std.math.algebraic;
-        return std.math.algebraic.fabs(f);
-    }
-
-    uint tmp = *cast(uint*)&f & 0x7FFF_FFFF;
-    return *cast(float*)&tmp;
-}
+float fabs(float x) @safe pure nothrow @nogc { return core.math.fabs(x); }
 
 ///
 @safe unittest
