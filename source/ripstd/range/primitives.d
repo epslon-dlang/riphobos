@@ -118,7 +118,7 @@ Authors: $(HTTP erdani.com, Andrei Alexandrescu), David Simcha, and
 */
 module ripstd.range.primitives;
 
-import std.traits;
+import ripstd.traits;
 
 /**
 Returns `true` if `R` is an input range. An input range must
@@ -230,7 +230,7 @@ enum bool isInputRange(R) =
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     static struct R
     {
@@ -438,7 +438,7 @@ void put(R, E)(ref R r, E e)
  */
 @safe pure unittest
 {
-    import std.traits : isSomeChar;
+    import ripstd.traits : isSomeChar;
 
     static struct A
     {
@@ -537,14 +537,14 @@ if (isSomeChar!E)
     //Encode a wide char into a narrower string
     else static if (wsCond || csCond)
     {
-        import std.utf : encode;
+        import ripstd.utf : encode;
         /+static+/ Select!(wsCond, wchar[2], char[4]) buf; //static prevents purity.
         doPut(r, buf[0 .. encode(buf, e)]);
     }
     //Slowly encode a wide char into a series of narrower chars
     else static if (wcCond || ccCond)
     {
-        import std.encoding : encode;
+        import ripstd.encoding : encode;
         alias C = Select!(wcCond, wchar, char);
         encode!(C, R)(e, r);
     }
@@ -724,9 +724,9 @@ pure @safe unittest
 
 @system unittest
 {
-    import std.conv : to;
-    import std.meta : AliasSeq;
-    import std.typecons : tuple;
+    import ripstd.conv : to;
+    import ripstd.meta : AliasSeq;
+    import ripstd.typecons : tuple;
 
     static struct PutC(C)
     {
@@ -814,7 +814,7 @@ pure @safe unittest
 // https://issues.dlang.org/show_bug.cgi?id=10571
 @safe unittest
 {
-    import std.format.write : formattedWrite;
+    import ripstd.format.write : formattedWrite;
     string buf;
     formattedWrite((scope const(char)[] s) { buf ~= s; }, "%s", "hello");
     assert(buf == "hello");
@@ -822,8 +822,8 @@ pure @safe unittest
 
 @safe unittest
 {
-    import std.format.write : formattedWrite;
-    import std.meta : AliasSeq;
+    import ripstd.format.write : formattedWrite;
+    import ripstd.meta : AliasSeq;
     struct PutC(C)
     {
         void put(C){}
@@ -885,7 +885,7 @@ are:
 2: if `E` is a non $(empty) `InputRange`, then placing `e` is
 guaranteed to not overflow the range.
  +/
-package(std) enum bool isNativeOutputRange(R, E) =
+package(ripstd) enum bool isNativeOutputRange(R, E) =
     is(typeof(doPut(lvalueOf!R, lvalueOf!E)));
 
 @safe unittest
@@ -926,8 +926,8 @@ enum bool isOutputRange(R, E) =
 
 @safe unittest
 {
-    import std.array;
-    import std.stdio : writeln;
+    import ripstd.array;
+    import ripstd.stdio : writeln;
 
     auto app = appender!string();
     string s;
@@ -1104,7 +1104,7 @@ enum bool isRandomAccessRange(R) =
 ///
 @safe unittest
 {
-    import std.traits : isAggregateType, isAutodecodableString;
+    import ripstd.traits : isAggregateType, isAutodecodableString;
 
     alias R = int[];
 
@@ -1242,8 +1242,8 @@ enum bool hasMobileElements(R) =
 ///
 @safe unittest
 {
-    import std.algorithm.iteration : map;
-    import std.range : iota, repeat;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.range : iota, repeat;
 
     static struct HasPostblit
     {
@@ -1281,7 +1281,7 @@ template ElementType(R)
 ///
 @safe unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
 
     // Standard arrays: returns the type of the elements of the array
     static assert(is(ElementType!(int[]) == int));
@@ -1369,7 +1369,7 @@ template ElementEncodingType(R)
 ///
 @safe unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
     // internally the range stores the encoded type
     static assert(is(ElementEncodingType!(char[])  == char));
 
@@ -1431,7 +1431,7 @@ static if (isRandomAccessRange!R) swap(r[0], r.front);
  */
 template hasSwappableElements(R)
 {
-    import std.algorithm.mutation : swap;
+    import ripstd.algorithm.mutation : swap;
     enum bool hasSwappableElements = isInputRange!R
         && is(typeof((ref R r) => swap(r.front, r.front)))
         && (!isBidirectionalRange!R
@@ -1519,7 +1519,7 @@ if (1);
 ///
 @safe unittest
 {
-    import std.range : iota, chain;
+    import ripstd.range : iota, chain;
 
     static assert( hasLvalueElements!(int[]));
     static assert( hasLvalueElements!(const(int)[]));
@@ -1640,7 +1640,7 @@ template isInfinite(R)
 ///
 @safe unittest
 {
-    import std.range : Repeat;
+    import ripstd.range : Repeat;
     static assert(!isInfinite!(int[]));
     static assert( isInfinite!(Repeat!(int)));
 }
@@ -1690,7 +1690,7 @@ enum bool hasSlicing(R) = isForwardRange!R
 ///
 @safe unittest
 {
-    import std.range : takeExactly;
+    import ripstd.range : takeExactly;
     static assert( hasSlicing!(int[]));
     static assert( hasSlicing!(const(int)[]));
     static assert(!hasSlicing!(const int[]));
@@ -1762,7 +1762,7 @@ if (isInputRange!Range && !isInfinite!Range)
         size_t result;
         static if (autodecodeStrings && isNarrowString!Range)
         {
-            import std.utf : codeUnitLimit;
+            import ripstd.utf : codeUnitLimit;
             result = range.length;
             foreach (const i, const c; range)
             {
@@ -1792,7 +1792,7 @@ if (isInputRange!Range)
         size_t result;
         static if (autodecodeStrings && isNarrowString!Range)
         {
-            import std.utf : codeUnitLimit;
+            import ripstd.utf : codeUnitLimit;
             result = upTo > range.length ? range.length : upTo;
             foreach (const i, const c; range[0 .. result])
             {
@@ -1813,7 +1813,7 @@ if (isInputRange!Range)
 ///
 @safe unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
 
     assert(10.iota.walkLength == 10);
     // iota has a length function, and therefore the
@@ -1824,8 +1824,8 @@ if (isInputRange!Range)
 
 @safe unittest
 {
-    import std.algorithm.iteration : filter;
-    import std.range : recurrence, take;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.range : recurrence, take;
 
     //hasLength Range
     int[] a = [ 1, 2, 3 ];
@@ -1949,8 +1949,8 @@ if (isBidirectionalRange!Range)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
     auto LL = iota(1L, 7L);
     auto r = popFrontN(LL, 2);
     assert(equal(LL, [3L, 4L, 5L, 6L]));
@@ -1970,8 +1970,8 @@ if (isBidirectionalRange!Range)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
     auto LL = iota(1L, 7L);
     auto r = popBackN(LL, 2);
     assert(equal(LL, [1L, 2L, 3L, 4L]));
@@ -2032,8 +2032,8 @@ if (isBidirectionalRange!Range)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : filterBidirectional;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : filterBidirectional;
 
     auto a = [1, 2, 3];
     a.popFrontExactly(1);
@@ -2071,7 +2071,7 @@ ElementType!R moveFront(R)(R r)
     }
     else static if (is(typeof(&(r.front())) == ElementType!R*))
     {
-        import std.algorithm.mutation : move;
+        import ripstd.algorithm.mutation : move;
         return move(r.front);
     }
     else
@@ -2129,7 +2129,7 @@ ElementType!R moveBack(R)(R r)
     }
     else static if (is(typeof(&(r.back())) == ElementType!R*))
     {
-        import std.algorithm.mutation : move;
+        import ripstd.algorithm.mutation : move;
         return move(r.back);
     }
     else
@@ -2175,7 +2175,7 @@ ElementType!R moveAt(R)(R r, size_t i)
     }
     else static if (is(typeof(&r[i]) == ElementType!R*))
     {
-        import std.algorithm.mutation : move;
+        import ripstd.algorithm.mutation : move;
         return move(r[i]);
     }
     else
@@ -2197,7 +2197,7 @@ ElementType!R moveAt(R)(R r, size_t i)
 
 @safe unittest
 {
-    import std.internal.test.dummyrange;
+    import ripstd.internal.test.dummyrange;
 
     foreach (DummyType; AllDummyRanges)
     {
@@ -2295,7 +2295,7 @@ if (!isAutodecodableString!(T[]) && !is(T[] == void[]))
 void popFront(C)(scope ref inout(C)[] str) @trusted pure nothrow
 if (isAutodecodableString!(C[]))
 {
-    import std.algorithm.comparison : min;
+    import ripstd.algorithm.comparison : min;
 
     assert(str.length, "Attempting to popFront() past the end of an array of " ~ C.stringof);
 
@@ -2323,7 +2323,7 @@ if (isAutodecodableString!(C[]))
 
 @safe pure unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {{
@@ -2410,14 +2410,14 @@ if (!isAutodecodableString!(T[]) && !is(T[] == void[]))
 void popBack(T)(scope ref inout(T)[] a) @safe pure
 if (isAutodecodableString!(T[]))
 {
-    import std.utf : strideBack;
+    import ripstd.utf : strideBack;
     assert(a.length, "Attempting to popBack() past the front of an array of " ~ T.stringof);
     a = a[0 .. $ - strideBack(a, $)];
 }
 
 @safe pure unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {{
@@ -2498,7 +2498,7 @@ if (!isAutodecodableString!(T[]) && !is(T[] == void[]))
 @property dchar front(T)(scope const(T)[] a) @safe pure
 if (isAutodecodableString!(T[]))
 {
-    import std.utf : decode;
+    import ripstd.utf : decode;
     assert(a.length, "Attempting to fetch the front of an empty array of " ~ T.stringof);
     size_t i = 0;
     return decode(a, i);
@@ -2542,7 +2542,7 @@ if (!isAutodecodableString!(T[]) && !is(T[] == void[]))
 @property dchar back(T)(scope const(T)[] a) @safe pure
 if (isAutodecodableString!(T[]))
 {
-    import std.utf : decode, strideBack;
+    import ripstd.utf : decode, strideBack;
     assert(a.length, "Attempting to fetch the back of an empty array of " ~ T.stringof);
     size_t i = a.length - strideBack(a, a.length);
     return decode(a, i);
@@ -2551,7 +2551,7 @@ if (isAutodecodableString!(T[]))
 /*
 Implements `length` for a range by forwarding it to `member`.
 */
-package(std) mixin template ImplementLength(alias member)
+package(ripstd) mixin template ImplementLength(alias member)
 {
     static if (hasLength!(typeof(member)))
     {

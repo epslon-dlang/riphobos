@@ -25,14 +25,14 @@
 
 module ripstd.bigint;
 
-import std.conv : ConvException;
+import ripstd.conv : ConvException;
 
-import std.format.spec : FormatSpec;
-import std.format : FormatException;
-import std.internal.math.biguintcore;
-import std.internal.math.biguintnoasm : BigDigit;
-import std.range.primitives;
-import std.traits;
+import ripstd.format.spec : FormatSpec;
+import ripstd.format : FormatException;
+import ripstd.internal.math.biguintcore;
+import ripstd.internal.math.biguintnoasm : BigDigit;
+import ripstd.range.primitives;
+import ripstd.traits;
 
 /** A struct representing an arbitrary precision integer.
  *
@@ -69,11 +69,11 @@ public:
         !isInfinite!Range &&
         !isNarrowString!Range)
     {
-        import std.algorithm.iteration : filterBidirectional;
-        import std.algorithm.searching : startsWith;
-        import std.conv : ConvException;
-        import std.exception : enforce;
-        import std.utf : byChar;
+        import ripstd.algorithm.iteration : filterBidirectional;
+        import ripstd.algorithm.searching : startsWith;
+        import ripstd.conv : ConvException;
+        import ripstd.exception : enforce;
+        import ripstd.utf : byChar;
 
         enforce!ConvException(!s.empty, "Can't initialize BigInt with an empty range");
 
@@ -121,15 +121,15 @@ public:
     this(Range)(Range s) pure
     if (isNarrowString!Range)
     {
-        import std.utf : byCodeUnit;
+        import ripstd.utf : byCodeUnit;
         this(s.byCodeUnit);
     }
 
     @safe unittest
     {
-        // system because of the dummy ranges eventually call std.array!string
-        import std.exception : assertThrown;
-        import std.internal.test.dummyrange;
+        // system because of the dummy ranges eventually call ripstd.array!string
+        import ripstd.exception : assertThrown;
+        import ripstd.internal.test.dummyrange;
 
         auto r1 = new ReferenceBidirectionalRange!dchar("101");
         auto big1 = BigInt(r1);
@@ -737,7 +737,7 @@ public:
 
     @safe unittest
     {
-        import std.math.operations : nextDown, nextUp;
+        import ripstd.math.operations : nextDown, nextUp;
 
         const x = BigInt("0x1abc_de80_0000_0000_0000_0000_0000_0000");
         BigInt x1 = x + 1;
@@ -816,8 +816,8 @@ public:
             }
         }
 
-        import std.conv : ConvOverflowException;
-        import std.string : format;
+        import ripstd.conv : ConvOverflowException;
+        import ripstd.string : format;
         throw new ConvOverflowException(
             "BigInt(%s) cannot be represented as a %s"
             .format(this.toDecimalString, T.stringof));
@@ -826,8 +826,8 @@ public:
     ///
     @safe unittest
     {
-        import std.conv : to, ConvOverflowException;
-        import std.exception : assertThrown;
+        import ripstd.conv : to, ConvOverflowException;
+        import ripstd.exception : assertThrown;
 
         assert(BigInt("0").to!int == 0);
 
@@ -839,8 +839,8 @@ public:
 
     @safe unittest
     {
-        import std.conv : to, ConvOverflowException;
-        import std.exception : assertThrown;
+        import ripstd.conv : to, ConvOverflowException;
+        import ripstd.exception : assertThrown;
 
         assert(BigInt("-1").to!byte == -1);
         assert(BigInt("-128").to!byte == -128);
@@ -1079,8 +1079,8 @@ public:
     int opCmp(T)(const T y) nothrow @nogc @safe const if (isFloatingPoint!T)
     {
         import core.bitop : bsr;
-        import std.math.operations : cmp;
-        import std.math.traits : isFinite;
+        import ripstd.math.operations : cmp;
+        import ripstd.math.traits : isFinite;
 
         const asFloat = toFloat!(T, "truncate");
         if (asFloat != y)
@@ -1265,7 +1265,7 @@ public:
     /// ditto
     void toString(Writer)(scope ref Writer sink, scope const ref FormatSpec!char f) const
     {
-        import std.range.primitives : put;
+        import ripstd.range.primitives : put;
         const spec = f.spec;
         immutable hex = (spec == 'x' || spec == 'X');
         if (!(spec == 's' || spec == 'd' || spec =='o' || hex))
@@ -1337,7 +1337,7 @@ public:
      */
     @safe unittest
     {
-        import std.format : format;
+        import ripstd.format : format;
 
         auto x = BigInt("1_000_000");
         x *= 12345;
@@ -1370,8 +1370,8 @@ public:
     // the function failed to instantiate.
     @system unittest
     {
-        import std.format.spec : FormatSpec;
-        import std.array : appender;
+        import ripstd.format.spec : FormatSpec;
+        import ripstd.array : appender;
         BigInt num = 503;
         auto dst = appender!string();
         num.toString(str => dst.put(str), null);
@@ -1542,7 +1542,7 @@ Returns:
 */
 string toHex(const(BigInt) x) @safe
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto outbuff = appender!string();
     x.toString(outbuff, "%X");
     return outbuff[];
@@ -1574,7 +1574,7 @@ if (isIntegral!T)
 {
     static if (isSigned!T)
     {
-        import std.conv : unsigned;
+        import ripstd.conv : unsigned;
         /* This returns the correct result even when x = T.min
          * on two's complement machines because unsigned(T.min) = |T.min|
          * even though -T.min = T.min.
@@ -1749,8 +1749,8 @@ unittest
 
 @safe unittest
 {
-    import std.array;
-    import std.format.write : formattedWrite;
+    import ripstd.array;
+    import ripstd.format.write : formattedWrite;
 
     immutable string[][] table = [
     /*  fmt,        +10     -10 */
@@ -1800,8 +1800,8 @@ unittest
 
 @safe unittest
 {
-    import std.array;
-    import std.format.write : formattedWrite;
+    import ripstd.array;
+    import ripstd.format.write : formattedWrite;
 
     immutable string[][] table = [
     /*  fmt,        +10     -10 */
@@ -1851,8 +1851,8 @@ unittest
 
 @safe unittest
 {
-    import std.array;
-    import std.format.write : formattedWrite;
+    import ripstd.array;
+    import ripstd.format.write : formattedWrite;
 
     immutable string[][] table = [
     /*  fmt,        +10     -10 */
@@ -1903,8 +1903,8 @@ unittest
 // https://issues.dlang.org/show_bug.cgi?id=6448
 @safe unittest
 {
-    import std.array;
-    import std.format.write : formattedWrite;
+    import ripstd.array;
+    import ripstd.format.write : formattedWrite;
 
     auto w1 = appender!string();
     auto w2 = appender!string();
@@ -1929,7 +1929,7 @@ unittest
 
 @safe unittest
 {
-    import std.math.algebraic : abs;
+    import ripstd.math.algebraic : abs;
     auto r = abs(BigInt(-1000)); // https://issues.dlang.org/show_bug.cgi?id=6486
     assert(r == 1000);
 
@@ -1992,8 +1992,8 @@ unittest
     foo(cbi);
     foo(ibi);
 
-    import std.conv : to;
-    import std.meta : AliasSeq;
+    import ripstd.conv : to;
+    import ripstd.meta : AliasSeq;
 
     static foreach (T1; AliasSeq!(BigInt, const(BigInt), immutable(BigInt)))
     {
@@ -2052,8 +2052,8 @@ unittest
 // https://issues.dlang.org/show_bug.cgi?id=11600
 @safe unittest
 {
-    import std.conv;
-    import std.exception : assertThrown;
+    import ripstd.conv;
+    import ripstd.exception : assertThrown;
 
     // Original bug report
     assertThrown!ConvException(to!BigInt("avadakedavra"));
@@ -2079,7 +2079,7 @@ unittest
     BigInt x2 = "123456789123456789";
     BigInt x3 = "123456789123456789123456789";
 
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(byte, ubyte, short, ushort, int, uint, long, ulong))
     {
         assert((x1 * T.max) / T.max == x1);
@@ -2108,7 +2108,7 @@ unittest
 @safe unittest
 {
     BigInt x = 1;
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (Int; AliasSeq!(byte, ubyte, short, ushort, int))
     {
         assert(is(typeof(x % Int(1)) == int));
@@ -2183,7 +2183,7 @@ unittest
 // https://issues.dlang.org/show_bug.cgi?id=15678
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!ConvException(BigInt(""));
     assertThrown!ConvException(BigInt("0x1234BARF"));
     assertThrown!ConvException(BigInt("1234PUKE"));
@@ -2192,8 +2192,8 @@ unittest
 // https://issues.dlang.org/show_bug.cgi?id=6447
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
 
     auto s = BigInt(1_000_000_000_000);
     auto e = BigInt(1_000_000_000_003);

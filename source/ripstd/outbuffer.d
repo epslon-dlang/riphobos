@@ -249,9 +249,9 @@ class OutBuffer
     {
         import core.stdc.stdio : vsnprintf;
         import core.stdc.stdlib : alloca;
-        import std.string : toStringz;
+        import ripstd.string : toStringz;
 
-        version (StdUnittest)
+        version (RIPStdUnittest)
             char[3] buffer = void;      // trigger reallocation
         else
             char[128] buffer = void;
@@ -311,7 +311,7 @@ class OutBuffer
      */
     void writef(Char, A...)(scope const(Char)[] fmt, A args)
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         formattedWrite(this, fmt, args);
     }
 
@@ -337,7 +337,7 @@ class OutBuffer
      */
     void writefln(Char, A...)(scope const(Char)[] fmt, A args)
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         formattedWrite(this, fmt, args);
         put('\n');
     }
@@ -377,7 +377,7 @@ class OutBuffer
 ///
 @safe unittest
 {
-    import std.string : cmp;
+    import ripstd.string : cmp;
 
     OutBuffer buf = new OutBuffer();
 
@@ -396,10 +396,10 @@ class OutBuffer
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     static assert(isOutputRange!(OutBuffer, char));
 
-    import std.algorithm;
+    import ripstd.algorithm;
   {
     OutBuffer buf = new OutBuffer();
     "hello".copy(buf);

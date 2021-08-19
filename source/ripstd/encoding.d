@@ -108,9 +108,9 @@ Distributed under the Boost Software License, Version 1.0.
 */
 module ripstd.encoding;
 
-import std.range.primitives;
-import std.traits;
-import std.typecons;
+import ripstd.range.primitives;
+import ripstd.traits;
+import ripstd.typecons;
 
 @system unittest
 {
@@ -1014,7 +1014,7 @@ alias Latin2String = immutable(Latin2Char)[];
 
 private template EncoderInstance(CharType : Latin2Char)
 {
-    import std.typecons : Tuple, tuple;
+    import ripstd.typecons : Tuple, tuple;
 
     alias E = Latin2Char;
     alias EString = Latin2String;
@@ -1094,7 +1094,7 @@ alias Windows1250String = immutable(Windows1250Char)[];
 
 private template EncoderInstance(CharType : Windows1250Char)
 {
-    import std.typecons : Tuple, tuple;
+    import ripstd.typecons : Tuple, tuple;
 
     alias E = Windows1250Char;
     alias EString = Windows1250String;
@@ -1187,7 +1187,7 @@ alias Windows1251String = immutable(Windows1251Char)[];
 
 private template EncoderInstance(CharType : Windows1251Char)
 {
-    import std.typecons : Tuple, tuple;
+    import ripstd.typecons : Tuple, tuple;
 
     alias E = Windows1251Char;
     alias EString = Windows1251String;
@@ -1282,7 +1282,7 @@ alias Windows1252String = immutable(Windows1252Char)[];
 
 template EncoderInstance(CharType : Windows1252Char)
 {
-    import std.typecons : Tuple, tuple;
+    import ripstd.typecons : Tuple, tuple;
 
     alias E = Windows1252Char;
     alias EString = Windows1252String;
@@ -1737,8 +1737,8 @@ bool canEncode(E)(dchar c)
 /// How to check an entire string
 @safe pure unittest
 {
-    import std.algorithm.searching : find;
-    import std.utf : byDchar;
+    import ripstd.algorithm.searching : find;
+    import ripstd.utf : byDchar;
 
     assert("The quick brown fox"
         .byDchar
@@ -1782,7 +1782,7 @@ bool isValidCodeUnit(E)(E c)
  Returns true if the string is encoded correctly
 
  Supersedes:
- This function supersedes std.utf.validate(), however note that this
+ This function supersedes ripstd.utf.validate(), however note that this
  function returns a bool indicating whether the input was valid or not,
  whereas the older function would throw an exception.
 
@@ -1960,7 +1960,7 @@ do
  This is enforced by the function's in-contract.
 
  Supersedes:
- This function supersedes std.utf.toUTFindex().
+ This function supersedes ripstd.utf.toUTFindex().
 
  Standards: Unicode 5.0, ASCII, ISO-8859-1, ISO-8859-2, WINDOWS-1250,
  WINDOWS-1251, WINDOWS-1252
@@ -1999,7 +1999,7 @@ do
  This is enforced by the function's in-contract.
 
  Supersedes:
- This function supersedes std.utf.decode(), however, note that the
+ This function supersedes ripstd.utf.decode(), however, note that the
  function codePoints() supersedes it more conveniently.
 
  Standards: Unicode 5.0, ASCII, ISO-8859-1, ISO-8859-2, WINDOWS-1250,
@@ -2110,7 +2110,7 @@ do
  explicitly specify the encoding as a template parameter.
 
  Supersedes:
- This function supersedes std.utf.encode(), however, note that the
+ This function supersedes ripstd.utf.encode(), however, note that the
  function codeUnits() supersedes it more conveniently.
 
  Standards: Unicode 5.0, ASCII, ISO-8859-1, ISO-8859-2, WINDOWS-1250,
@@ -2143,7 +2143,7 @@ do
  explicitly specify the encoding as a template parameter.
 
  Supersedes:
- This function supersedes std.utf.encode(), however, note that the
+ This function supersedes ripstd.utf.encode(), however, note that the
  function codeUnits() supersedes it more conveniently.
 
  Standards: Unicode 5.0, ASCII, ISO-8859-1, ISO-8859-2, WINDOWS-1250,
@@ -2232,7 +2232,7 @@ if (isNativeOutputRange!(R, E))
 
 @safe pure unittest
 {
-    import std.array;
+    import ripstd.array;
     Appender!(char[]) r;
     assert(encode!(char)('T', r) == 1);
     assert(encode!(wchar)('T', r) == 1);
@@ -2252,7 +2252,7 @@ if (isNativeOutputRange!(R, E))
  explicitly specify the encoding as a template parameter.
 
  Supersedes:
- This function supersedes std.utf.encode(), however, note that the
+ This function supersedes ripstd.utf.encode(), however, note that the
  function codeUnits() supersedes it more conveniently.
 
  Standards: Unicode 5.0, ASCII, ISO-8859-1, ISO-8859-2, WINDOWS-1250,
@@ -2305,7 +2305,7 @@ size_t encode(Tgt, Src, R)(in Src[] s, R range)
  begins.
 
  Supersedes:
- This function supersedes std.utf.decode().
+ This function supersedes ripstd.utf.decode().
 
  Standards: Unicode 5.0, ASCII, ISO-8859-1, ISO-8859-2, WINDOWS-1250,
  WINDOWS-1251, WINDOWS-1252
@@ -2358,7 +2358,7 @@ do
  explicitly specify the encoding type in the template parameter.
 
  Supersedes:
- This function supersedes std.utf.encode().
+ This function supersedes ripstd.utf.encode().
 
  Standards: Unicode 5.0, ASCII, ISO-8859-1, ISO-8859-2, WINDOWS-1250,
  WINDOWS-1251, WINDOWS-1252
@@ -2394,8 +2394,8 @@ do
  Convert a string from one encoding to another.
 
  Supersedes:
- This function supersedes std.utf.toUTF8(), std.utf.toUTF16() and
- std.utf.toUTF32()
+ This function supersedes ripstd.utf.toUTF8(), ripstd.utf.toUTF16() and
+ ripstd.utf.toUTF32()
  (but note that to!() supersedes it more conveniently).
 
  Standards: Unicode 5.0, ASCII, ISO-8859-1, ISO-8859-2, WINDOWS-1250,
@@ -2473,10 +2473,10 @@ do
 
 @system pure unittest
 {
-    import std.meta;
-    import std.range;
+    import ripstd.meta;
+    import ripstd.range;
     {
-        import std.conv : to;
+        import ripstd.conv : to;
 
         string asciiCharString = to!string(iota(0, 128, 1));
 
@@ -2513,7 +2513,7 @@ do
 
 @system unittest // mutable/const input/output
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static foreach (O; AliasSeq!(Latin1Char, const Latin1Char, immutable Latin1Char))
     {{
@@ -2562,7 +2562,7 @@ class UnrecognizedEncodingException : EncodingException
 /** Abstract base class of all encoding schemes */
 abstract class EncodingScheme
 {
-    import std.uni : toLower;
+    import ripstd.uni : toLower;
 
     /**
      * Registers a subclass of EncodingScheme.
@@ -2634,7 +2634,7 @@ abstract class EncodingScheme
         }
 
         static shared bool initialized;
-        import std.concurrency : initOnce;
+        import ripstd.concurrency : initOnce;
         initOnce!initialized(registerDefaultEncodings());
         encodingName = toLower(encodingName);
 
@@ -2917,10 +2917,10 @@ abstract class EncodingScheme
  */
 class EncodingSchemeASCII : EncodingScheme
 {
-    /* // moved to std.internal.phobosinit
+    /* // moved to ripstd.internal.phobosinit
     shared static this()
     {
-        EncodingScheme.register("std.encoding.EncodingSchemeASCII");
+        EncodingScheme.register("ripstd.encoding.EncodingSchemeASCII");
     }*/
 
     const
@@ -2950,24 +2950,24 @@ class EncodingSchemeASCII : EncodingScheme
 
         override bool canEncode(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.canEncode!(AsciiChar)(c);
+            return ripstd.encoding.canEncode!(AsciiChar)(c);
         }
 
         override size_t encodedLength(dchar c)  @safe pure nothrow @nogc
         {
-            return std.encoding.encodedLength!(AsciiChar)(c);
+            return ripstd.encoding.encodedLength!(AsciiChar)(c);
         }
 
         override size_t encode(dchar c, ubyte[] buffer) @safe pure nothrow @nogc
         {
             auto r = cast(AsciiChar[]) buffer;
-            return std.encoding.encode(c,r);
+            return ripstd.encoding.encode(c,r);
         }
 
         override dchar decode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(AsciiChar)[]) s;
-            dchar c = std.encoding.decode(t);
+            dchar c = ripstd.encoding.decode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -2975,7 +2975,7 @@ class EncodingSchemeASCII : EncodingScheme
         override dchar safeDecode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(AsciiChar)[]) s;
-            dchar c = std.encoding.safeDecode(t);
+            dchar c = ripstd.encoding.safeDecode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3003,10 +3003,10 @@ class EncodingSchemeASCII : EncodingScheme
  */
 class EncodingSchemeLatin1 : EncodingScheme
 {
-    /* // moved to std.internal.phobosinit
+    /* // moved to ripstd.internal.phobosinit
     shared static this()
     {
-        EncodingScheme.register("std.encoding.EncodingSchemeLatin1");
+        EncodingScheme.register("ripstd.encoding.EncodingSchemeLatin1");
     }*/
 
     const
@@ -3034,24 +3034,24 @@ class EncodingSchemeLatin1 : EncodingScheme
 
         override bool canEncode(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.canEncode!(Latin1Char)(c);
+            return ripstd.encoding.canEncode!(Latin1Char)(c);
         }
 
         override size_t encodedLength(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.encodedLength!(Latin1Char)(c);
+            return ripstd.encoding.encodedLength!(Latin1Char)(c);
         }
 
         override size_t encode(dchar c, ubyte[] buffer) @safe pure nothrow @nogc
         {
             auto r = cast(Latin1Char[]) buffer;
-            return std.encoding.encode(c,r);
+            return ripstd.encoding.encode(c,r);
         }
 
         override dchar decode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(Latin1Char)[]) s;
-            dchar c = std.encoding.decode(t);
+            dchar c = ripstd.encoding.decode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3059,7 +3059,7 @@ class EncodingSchemeLatin1 : EncodingScheme
         override dchar safeDecode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(Latin1Char)[]) s;
-            dchar c = std.encoding.safeDecode(t);
+            dchar c = ripstd.encoding.safeDecode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3083,10 +3083,10 @@ class EncodingSchemeLatin1 : EncodingScheme
  */
 class EncodingSchemeLatin2 : EncodingScheme
 {
-    /* // moved to std.internal.phobosinit
+    /* // moved to ripstd.internal.phobosinit
     shared static this()
     {
-        EncodingScheme.register("std.encoding.EncodingSchemeLatin2");
+        EncodingScheme.register("ripstd.encoding.EncodingSchemeLatin2");
     }*/
 
     const
@@ -3110,24 +3110,24 @@ class EncodingSchemeLatin2 : EncodingScheme
 
         override bool canEncode(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.canEncode!(Latin2Char)(c);
+            return ripstd.encoding.canEncode!(Latin2Char)(c);
         }
 
         override size_t encodedLength(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.encodedLength!(Latin2Char)(c);
+            return ripstd.encoding.encodedLength!(Latin2Char)(c);
         }
 
         override size_t encode(dchar c, ubyte[] buffer) @safe pure nothrow @nogc
         {
             auto r = cast(Latin2Char[]) buffer;
-            return std.encoding.encode(c,r);
+            return ripstd.encoding.encode(c,r);
         }
 
         override dchar decode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(Latin2Char)[]) s;
-            dchar c = std.encoding.decode(t);
+            dchar c = ripstd.encoding.decode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3135,7 +3135,7 @@ class EncodingSchemeLatin2 : EncodingScheme
         override dchar safeDecode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(Latin2Char)[]) s;
-            dchar c = std.encoding.safeDecode(t);
+            dchar c = ripstd.encoding.safeDecode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3155,10 +3155,10 @@ class EncodingSchemeLatin2 : EncodingScheme
  */
 class EncodingSchemeWindows1250 : EncodingScheme
 {
-    /* // moved to std.internal.phobosinit
+    /* // moved to ripstd.internal.phobosinit
     shared static this()
     {
-        EncodingScheme.register("std.encoding.EncodingSchemeWindows1250");
+        EncodingScheme.register("ripstd.encoding.EncodingSchemeWindows1250");
     }*/
 
     const
@@ -3178,24 +3178,24 @@ class EncodingSchemeWindows1250 : EncodingScheme
 
         override bool canEncode(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.canEncode!(Windows1250Char)(c);
+            return ripstd.encoding.canEncode!(Windows1250Char)(c);
         }
 
         override size_t encodedLength(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.encodedLength!(Windows1250Char)(c);
+            return ripstd.encoding.encodedLength!(Windows1250Char)(c);
         }
 
         override size_t encode(dchar c, ubyte[] buffer) @safe pure nothrow @nogc
         {
             auto r = cast(Windows1250Char[]) buffer;
-            return std.encoding.encode(c,r);
+            return ripstd.encoding.encode(c,r);
         }
 
         override dchar decode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(Windows1250Char)[]) s;
-            dchar c = std.encoding.decode(t);
+            dchar c = ripstd.encoding.decode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3203,7 +3203,7 @@ class EncodingSchemeWindows1250 : EncodingScheme
         override dchar safeDecode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(Windows1250Char)[]) s;
-            dchar c = std.encoding.safeDecode(t);
+            dchar c = ripstd.encoding.safeDecode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3223,10 +3223,10 @@ class EncodingSchemeWindows1250 : EncodingScheme
  */
 class EncodingSchemeWindows1251 : EncodingScheme
 {
-    /* // moved to std.internal.phobosinit
+    /* // moved to ripstd.internal.phobosinit
     shared static this()
     {
-        EncodingScheme.register("std.encoding.EncodingSchemeWindows1251");
+        EncodingScheme.register("ripstd.encoding.EncodingSchemeWindows1251");
     }*/
 
     const
@@ -3246,24 +3246,24 @@ class EncodingSchemeWindows1251 : EncodingScheme
 
         override bool canEncode(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.canEncode!(Windows1251Char)(c);
+            return ripstd.encoding.canEncode!(Windows1251Char)(c);
         }
 
         override size_t encodedLength(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.encodedLength!(Windows1251Char)(c);
+            return ripstd.encoding.encodedLength!(Windows1251Char)(c);
         }
 
         override size_t encode(dchar c, ubyte[] buffer) @safe pure nothrow @nogc
         {
             auto r = cast(Windows1251Char[]) buffer;
-            return std.encoding.encode(c,r);
+            return ripstd.encoding.encode(c,r);
         }
 
         override dchar decode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(Windows1251Char)[]) s;
-            dchar c = std.encoding.decode(t);
+            dchar c = ripstd.encoding.decode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3271,7 +3271,7 @@ class EncodingSchemeWindows1251 : EncodingScheme
         override dchar safeDecode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(Windows1251Char)[]) s;
-            dchar c = std.encoding.safeDecode(t);
+            dchar c = ripstd.encoding.safeDecode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3291,10 +3291,10 @@ class EncodingSchemeWindows1251 : EncodingScheme
  */
 class EncodingSchemeWindows1252 : EncodingScheme
 {
-    /* // moved to std.internal.phobosinit
+    /* // moved to ripstd.internal.phobosinit
     shared static this()
     {
-        EncodingScheme.register("std.encoding.EncodingSchemeWindows1252");
+        EncodingScheme.register("ripstd.encoding.EncodingSchemeWindows1252");
     }*/
 
     const
@@ -3314,24 +3314,24 @@ class EncodingSchemeWindows1252 : EncodingScheme
 
         override bool canEncode(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.canEncode!(Windows1252Char)(c);
+            return ripstd.encoding.canEncode!(Windows1252Char)(c);
         }
 
         override size_t encodedLength(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.encodedLength!(Windows1252Char)(c);
+            return ripstd.encoding.encodedLength!(Windows1252Char)(c);
         }
 
         override size_t encode(dchar c, ubyte[] buffer) @safe pure nothrow @nogc
         {
             auto r = cast(Windows1252Char[]) buffer;
-            return std.encoding.encode(c,r);
+            return ripstd.encoding.encode(c,r);
         }
 
         override dchar decode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(Windows1252Char)[]) s;
-            dchar c = std.encoding.decode(t);
+            dchar c = ripstd.encoding.decode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3339,7 +3339,7 @@ class EncodingSchemeWindows1252 : EncodingScheme
         override dchar safeDecode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(Windows1252Char)[]) s;
-            dchar c = std.encoding.safeDecode(t);
+            dchar c = ripstd.encoding.safeDecode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3428,10 +3428,10 @@ class EncodingSchemeWindows1252 : EncodingScheme
  */
 class EncodingSchemeUtf8 : EncodingScheme
 {
-    /* // moved to std.internal.phobosinit
+    /* // moved to ripstd.internal.phobosinit
     shared static this()
     {
-        EncodingScheme.register("std.encoding.EncodingSchemeUtf8");
+        EncodingScheme.register("ripstd.encoding.EncodingSchemeUtf8");
     }*/
 
     const
@@ -3451,24 +3451,24 @@ class EncodingSchemeUtf8 : EncodingScheme
 
         override bool canEncode(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.canEncode!(char)(c);
+            return ripstd.encoding.canEncode!(char)(c);
         }
 
         override size_t encodedLength(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.encodedLength!(char)(c);
+            return ripstd.encoding.encodedLength!(char)(c);
         }
 
         override size_t encode(dchar c, ubyte[] buffer) @safe pure nothrow @nogc
         {
             auto r = cast(char[]) buffer;
-            return std.encoding.encode(c,r);
+            return ripstd.encoding.encode(c,r);
         }
 
         override dchar decode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(char)[]) s;
-            dchar c = std.encoding.decode(t);
+            dchar c = ripstd.encoding.decode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3476,7 +3476,7 @@ class EncodingSchemeUtf8 : EncodingScheme
         override dchar safeDecode(ref const(ubyte)[] s) @safe pure nothrow @nogc
         {
             auto t = cast(const(char)[]) s;
-            dchar c = std.encoding.safeDecode(t);
+            dchar c = ripstd.encoding.safeDecode(t);
             s = s[$-t.length..$];
             return c;
         }
@@ -3497,10 +3497,10 @@ class EncodingSchemeUtf8 : EncodingScheme
  */
 class EncodingSchemeUtf16Native : EncodingScheme
 {
-    /* // moved to std.internal.phobosinit
+    /* // moved to ripstd.internal.phobosinit
     shared static this()
     {
-        EncodingScheme.register("std.encoding.EncodingSchemeUtf16Native");
+        EncodingScheme.register("ripstd.encoding.EncodingSchemeUtf16Native");
     }*/
 
     const
@@ -3520,18 +3520,18 @@ class EncodingSchemeUtf16Native : EncodingScheme
 
         override bool canEncode(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.canEncode!(wchar)(c);
+            return ripstd.encoding.canEncode!(wchar)(c);
         }
 
         override size_t encodedLength(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.encodedLength!(wchar)(c);
+            return ripstd.encoding.encodedLength!(wchar)(c);
         }
 
         override size_t encode(dchar c, ubyte[] buffer) @safe pure nothrow @nogc
         {
             auto r = cast(wchar[]) buffer;
-            return wchar.sizeof * std.encoding.encode(c,r);
+            return wchar.sizeof * ripstd.encoding.encode(c,r);
         }
 
         override dchar decode(ref const(ubyte)[] s) @safe pure nothrow @nogc
@@ -3542,7 +3542,7 @@ class EncodingSchemeUtf16Native : EncodingScheme
         do
         {
             auto t = cast(const(wchar)[]) s;
-            dchar c = std.encoding.decode(t);
+            dchar c = ripstd.encoding.decode(t);
             s = s[$-t.length * wchar.sizeof..$];
             return c;
         }
@@ -3555,7 +3555,7 @@ class EncodingSchemeUtf16Native : EncodingScheme
         do
         {
             auto t = cast(const(wchar)[]) s;
-            dchar c = std.encoding.safeDecode(t);
+            dchar c = ripstd.encoding.safeDecode(t);
             s = s[$-t.length * wchar.sizeof..$];
             return c;
         }
@@ -3593,10 +3593,10 @@ class EncodingSchemeUtf16Native : EncodingScheme
  */
 class EncodingSchemeUtf32Native : EncodingScheme
 {
-    /* // moved to std.internal.phobosinit
+    /* // moved to ripstd.internal.phobosinit
     shared static this()
     {
-        EncodingScheme.register("std.encoding.EncodingSchemeUtf32Native");
+        EncodingScheme.register("ripstd.encoding.EncodingSchemeUtf32Native");
     }*/
 
     const
@@ -3616,18 +3616,18 @@ class EncodingSchemeUtf32Native : EncodingScheme
 
         override bool canEncode(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.canEncode!(dchar)(c);
+            return ripstd.encoding.canEncode!(dchar)(c);
         }
 
         override size_t encodedLength(dchar c) @safe pure nothrow @nogc
         {
-            return std.encoding.encodedLength!(dchar)(c);
+            return ripstd.encoding.encodedLength!(dchar)(c);
         }
 
         override size_t encode(dchar c, ubyte[] buffer) @safe pure nothrow @nogc
         {
             auto r = cast(dchar[]) buffer;
-            return dchar.sizeof * std.encoding.encode(c,r);
+            return dchar.sizeof * ripstd.encoding.encode(c,r);
         }
 
         override dchar decode(ref const(ubyte)[] s) @safe pure nothrow @nogc
@@ -3638,7 +3638,7 @@ class EncodingSchemeUtf32Native : EncodingScheme
         do
         {
             auto t = cast(const(dchar)[]) s;
-            dchar c = std.encoding.decode(t);
+            dchar c = ripstd.encoding.decode(t);
             s = s[$-t.length * dchar.sizeof..$];
             return c;
         }
@@ -3651,7 +3651,7 @@ class EncodingSchemeUtf32Native : EncodingScheme
         do
         {
             auto t = cast(const(dchar)[]) s;
-            dchar c = std.encoding.safeDecode(t);
+            dchar c = ripstd.encoding.safeDecode(t);
             s = s[$-t.length * dchar.sizeof..$];
             return c;
         }
@@ -3747,7 +3747,7 @@ Returns:
 immutable(BOMSeq) getBOM(Range)(Range input)
 if (isForwardRange!Range && is(immutable ElementType!Range == immutable ubyte))
 {
-    import std.algorithm.searching : startsWith;
+    import ripstd.algorithm.searching : startsWith;
     foreach (it; bomTable[1 .. $])
     {
         if (startsWith(input.save, it.sequence))
@@ -3762,7 +3762,7 @@ if (isForwardRange!Range && is(immutable ElementType!Range == immutable ubyte))
 ///
 @system unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
 
     auto ts = dchar(0x0000FEFF) ~ "Hello World"d;
 
@@ -3779,7 +3779,7 @@ if (isForwardRange!Range && is(immutable ElementType!Range == immutable ubyte))
 
 @system unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
 
     foreach (idx, it; bomTable)
     {

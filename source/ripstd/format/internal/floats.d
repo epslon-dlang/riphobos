@@ -14,9 +14,9 @@
 
 module ripstd.format.internal.floats;
 
-import std.format.spec : FormatSpec;
+import ripstd.format.spec : FormatSpec;
 
-package(std.format) enum RoundingMode { up, down, toZero, toNearestTiesToEven, toNearestTiesAwayFromZero }
+package(ripstd.format) enum RoundingMode { up, down, toZero, toNearestTiesToEven, toNearestTiesAwayFromZero }
 
 // wrapper for unittests
 private auto printFloat(T, Char)(T val, FormatSpec!Char f,
@@ -24,19 +24,19 @@ private auto printFloat(T, Char)(T val, FormatSpec!Char f,
 if (is(T == float) || is(T == double)
     || (is(T == real) && (T.mant_dig == double.mant_dig || T.mant_dig == 64)))
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto w = appender!string();
 
     printFloat(w, val, f, rm);
     return w.data;
 }
 
-package(std.format) void printFloat(Writer, T, Char)(auto ref Writer w, T val,
+package(ripstd.format) void printFloat(Writer, T, Char)(auto ref Writer w, T val,
     FormatSpec!Char f, RoundingMode rm = RoundingMode.toNearestTiesToEven)
 if (is(T == float) || is(T == double)
     || (is(T == real) && (T.mant_dig == double.mant_dig || T.mant_dig == 64)))
 {
-    import std.math.operations : extractBitpattern, FloatingPointBitpattern;
+    import ripstd.math.operations : extractBitpattern, FloatingPointBitpattern;
 
     auto bp = extractBitpattern(val);
 
@@ -56,7 +56,7 @@ if (is(T == float) || is(T == double)
     // special treatment for nan and inf
     if (exp == T.max_exp)
     {
-        import std.format.internal.write : writeAligned;
+        import ripstd.format.internal.write : writeAligned;
 
         f.flZero = false;
         writeAligned(w, sgn, "", (mnt == 0) ? ( is_upper ? "INF" : "inf" ) : ( is_upper ? "NAN" : "nan" ), f);
@@ -85,8 +85,8 @@ private void printFloatA(Writer, T, Char)(auto ref Writer w, T val,
 if (is(T == float) || is(T == double)
     || (is(T == real) && (T.mant_dig == double.mant_dig || T.mant_dig == 64)))
 {
-    import std.algorithm.comparison : max;
-    import std.format.internal.write : writeAligned, PrecisionType;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.format.internal.write : writeAligned, PrecisionType;
 
     char[3] prefix;
     if (sgn != "") prefix[0] = sgn[0];
@@ -275,7 +275,7 @@ if (is(T == float) || is(T == double)
         assert(printFloat(-0.0L, f) == "-0x0p+0");
     }
 
-    import std.math.operations : nextUp;
+    import ripstd.math.operations : nextUp;
 
     assert(printFloat(nextUp(0.0f), f) == "0x0.000002p-126");
     assert(printFloat(float.epsilon, f) == "0x1p-23");
@@ -295,7 +295,7 @@ if (is(T == float) || is(T == double)
         assert(printFloat(real.max, f) == "0x1.fffffffffffffffep+16383");
     }
 
-    import std.math.constants : E, PI, PI_2, PI_4, M_1_PI, M_2_PI, M_2_SQRTPI,
+    import ripstd.math.constants : E, PI, PI_2, PI_4, M_1_PI, M_2_PI, M_2_SQRTPI,
                                 LN10, LN2, LOG2, LOG2E, LOG2T, LOG10E, SQRT2, SQRT1_2;
 
     assert(printFloat(cast(float) E, f) == "0x1.5bf0a8p+1");
@@ -625,7 +625,7 @@ private void printFloatE(bool g, Writer, T, Char)(auto ref Writer w, T val,
 if (is(T == float) || is(T == double)
     || (is(T == real) && (T.mant_dig == double.mant_dig || T.mant_dig == 64)))
 {
-    import std.format.internal.write : writeAligned, PrecisionType;
+    import ripstd.format.internal.write : writeAligned, PrecisionType;
 
     static if (!g)
     {
@@ -1178,7 +1178,7 @@ printFloat_done:
     assert(printFloat(1e30f, f) == "1.000000e+30");
     assert(printFloat(-1e30f, f) == "-1.000000e+30");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "1.401298e-45");
     assert(printFloat(nextDown(-0.0f), f) == "-1.401298e-45");
 }
@@ -1210,7 +1210,7 @@ printFloat_done:
     assert(printFloat(1e30f, f) == "    1.0000000150e+30");
     assert(printFloat(-1e30f, f) == "   -1.0000000150e+30");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "    1.4012984643e-45");
     assert(printFloat(nextDown(-0.0f), f) == "   -1.4012984643e-45");
 }
@@ -1243,7 +1243,7 @@ printFloat_done:
     assert(printFloat(1e30f, f) == "1.0000000150e+30    ");
     assert(printFloat(-1e30f, f) == "-1.0000000150e+30   ");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "1.4012984643e-45    ");
     assert(printFloat(nextDown(-0.0f), f) == "-1.4012984643e-45   ");
 }
@@ -1276,7 +1276,7 @@ printFloat_done:
     assert(printFloat(1e30f, f) == "00001.0000000150e+30");
     assert(printFloat(-1e30f, f) == "-0001.0000000150e+30");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "00001.4012984643e-45");
     assert(printFloat(nextDown(-0.0f), f) == "-0001.4012984643e-45");
 }
@@ -1367,7 +1367,7 @@ printFloat_done:
     assert(printFloat(1e300, f) == "1.000000e+300");
     assert(printFloat(-1e300, f) == "-1.000000e+300");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0), f) == "4.940656e-324");
     assert(printFloat(nextDown(-0.0), f) == "-4.940656e-324");
 }
@@ -1394,7 +1394,7 @@ printFloat_done:
     auto f = FormatSpec!dchar("");
     f.spec = 'e';
 
-    import std.math.operations : nextUp;
+    import ripstd.math.operations : nextUp;
 
     double eps = nextUp(0.0);
     f.precision = 1000;
@@ -1429,7 +1429,7 @@ printFloat_done:
     f.spec = 'e';
     f.precision = 15;
 
-    import std.math.constants : E, PI, PI_2, PI_4, M_1_PI, M_2_PI, M_2_SQRTPI,
+    import ripstd.math.constants : E, PI, PI_2, PI_4, M_1_PI, M_2_PI, M_2_SQRTPI,
                                 LN10, LN2, LOG2, LOG2E, LOG2T, LOG10E, SQRT2, SQRT1_2;
 
     assert(printFloat(cast(double) E, f) == "2.718281828459045e+00");
@@ -1510,7 +1510,7 @@ printFloat_done:
             assert(printFloat(-1e4000L, f) == "-1.000000e+4000");
         }
 
-        import std.math.operations : nextUp, nextDown;
+        import ripstd.math.operations : nextUp, nextDown;
         assert(printFloat(nextUp(0.0L), f) == "3.645200e-4951");
         assert(printFloat(nextDown(-0.0L), f) == "-3.645200e-4951");
     }
@@ -1518,9 +1518,9 @@ printFloat_done:
 
 @safe unittest
 {
-    import std.exception : assertCTFEable;
-    import std.math.exponential : log2;
-    import std.math.operations : nextDown;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.math.exponential : log2;
+    import ripstd.math.operations : nextDown;
 
     assertCTFEable!(
     {
@@ -1564,7 +1564,7 @@ private void printFloatF(bool g, Writer, T, Char)(auto ref Writer w, T val,
 if (is(T == float) || is(T == double)
     || (is(T == real) && (T.mant_dig == double.mant_dig || T.mant_dig == 64)))
 {
-    import std.format.internal.write : writeAligned, PrecisionType;
+    import ripstd.format.internal.write : writeAligned, PrecisionType;
 
     static if (!g)
     {
@@ -1984,7 +1984,7 @@ printFloat_done:
     assert(printFloat(1e30f, f) == "1000000015047466219876688855040.000000");
     assert(printFloat(-1e30f, f) == "-1000000015047466219876688855040.000000");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "0.000000");
     assert(printFloat(nextDown(-0.0f), f) == "-0.000000");
 }
@@ -2016,7 +2016,7 @@ printFloat_done:
     assert(printFloat(1e30f, f) == "1000000015047466219876688855040.0000000000");
     assert(printFloat(-1e30f, f) == "-1000000015047466219876688855040.0000000000");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "        0.0000000000");
     assert(printFloat(nextDown(-0.0f), f) == "       -0.0000000000");
 }
@@ -2049,7 +2049,7 @@ printFloat_done:
     assert(printFloat(1e30f, f) == "1000000015047466219876688855040.0000000000");
     assert(printFloat(-1e30f, f) == "-1000000015047466219876688855040.0000000000");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "0.0000000000        ");
     assert(printFloat(nextDown(-0.0f), f) == "-0.0000000000       ");
 }
@@ -2082,7 +2082,7 @@ printFloat_done:
     assert(printFloat(1e30f, f) == "1000000015047466219876688855040.0000000000");
     assert(printFloat(-1e30f, f) == "-1000000015047466219876688855040.0000000000");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "000000000.0000000000");
     assert(printFloat(nextDown(-0.0f), f) == "-00000000.0000000000");
 }
@@ -2183,7 +2183,7 @@ printFloat_done:
           ~"895323497079994508111903896764088007465274278014249457925878882005684283811566947219638686545940054"
           ~"0160.000000");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0), f) == "0.000000");
     assert(printFloat(nextDown(-0.0), f) == "-0.000000");
 }
@@ -2227,7 +2227,7 @@ printFloat_done:
             assert(result2.length == 4008 && result2[0 .. 40] == "-999999999999999999996546387309962378493");
         }
 
-        import std.math.operations : nextUp, nextDown;
+        import ripstd.math.operations : nextUp, nextDown;
         assert(printFloat(nextUp(0.0L), f) == "0.000000");
         assert(printFloat(nextDown(-0.0L), f) == "-0.000000");
     }
@@ -2235,9 +2235,9 @@ printFloat_done:
 
 @safe unittest
 {
-    import std.exception : assertCTFEable;
-    import std.math.exponential : log2;
-    import std.math.operations : nextDown;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.math.exponential : log2;
+    import ripstd.math.operations : nextDown;
 
     assertCTFEable!(
     {
@@ -2283,7 +2283,7 @@ printFloat_done:
     auto f = FormatSpec!dchar("");
     f.spec = 'f';
 
-    import std.math.operations : nextUp;
+    import ripstd.math.operations : nextUp;
 
     double eps = nextUp(0.0);
     f.precision = 1000;
@@ -2323,7 +2323,7 @@ printFloat_done:
     f.spec = 'f';
     f.precision = 15;
 
-    import std.math.constants : E, PI, PI_2, PI_4, M_1_PI, M_2_PI, M_2_SQRTPI,
+    import ripstd.math.constants : E, PI, PI_2, PI_4, M_1_PI, M_2_PI, M_2_SQRTPI,
                                 LN10, LN2, LOG2, LOG2E, LOG2T, LOG10E, SQRT2, SQRT1_2;
 
     assert(printFloat(cast(double) E, f) == "2.718281828459045");
@@ -2351,7 +2351,7 @@ printFloat_done:
     f.precision = 1;
     assert(printFloat(9.99, f) == "10.0");
 
-    import std.math.operations : nextUp;
+    import ripstd.math.operations : nextUp;
 
     float eps = nextUp(0.0f);
 
@@ -2416,7 +2416,7 @@ if (is(T == float) || is(T == double)
     // to the way, D handles floating point numbers. On different
     // computers with different reals the results may vary in this gap.
 
-    import std.math.operations : nextDown, nextUp;
+    import ripstd.math.operations : nextDown, nextUp;
 
     auto f = FormatSpec!dchar("");
     f.spec = 'g';
@@ -2489,7 +2489,7 @@ if (is(T == float) || is(T == double)
     assert(printFloat(1e30f, f) == "1e+30");
     assert(printFloat(-1e30f, f) == "-1e+30");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "1.4013e-45");
     assert(printFloat(nextDown(-0.0f), f) == "-1.4013e-45");
 }
@@ -2521,7 +2521,7 @@ if (is(T == float) || is(T == double)
     assert(printFloat(1e30f, f) == "     1.000000015e+30");
     assert(printFloat(-1e30f, f) == "    -1.000000015e+30");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "     1.401298464e-45");
     assert(printFloat(nextDown(-0.0f), f) == "    -1.401298464e-45");
 }
@@ -2555,7 +2555,7 @@ if (is(T == float) || is(T == double)
     assert(printFloat(1e30f, f) == "1.000000015e+30     ");
     assert(printFloat(-1e30f, f) == "-1.000000015e+30    ");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "1.401298464e-45     ");
     assert(printFloat(nextDown(-0.0f), f) == "-1.401298464e-45    ");
 }
@@ -2589,7 +2589,7 @@ if (is(T == float) || is(T == double)
     assert(printFloat(1e30f, f) == "000001.000000015e+30");
     assert(printFloat(-1e30f, f) == "-00001.000000015e+30");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "000001.401298464e-45");
     assert(printFloat(nextDown(-0.0f), f) == "-00001.401298464e-45");
 }
@@ -2622,7 +2622,7 @@ if (is(T == float) || is(T == double)
     assert(printFloat(1e30f, f) == "1.000000015e+30");
     assert(printFloat(-1e30f, f) == "-1.000000015e+30");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0f), f) == "1.401298464e-45");
     assert(printFloat(nextDown(-0.0f), f) == "-1.401298464e-45");
 }
@@ -2717,7 +2717,7 @@ if (is(T == float) || is(T == double)
     assert(printFloat(1e300, f) == "1e+300");
     assert(printFloat(-1e300, f) == "-1e+300");
 
-    import std.math.operations : nextUp, nextDown;
+    import ripstd.math.operations : nextUp, nextDown;
     assert(printFloat(nextUp(0.0), f) == "4.94066e-324");
     assert(printFloat(nextDown(-0.0), f) == "-4.94066e-324");
 }
@@ -2746,7 +2746,7 @@ if (is(T == float) || is(T == double)
     auto f = FormatSpec!dchar("");
     f.spec = 'g';
 
-    import std.math.operations : nextUp;
+    import ripstd.math.operations : nextUp;
 
     double eps = nextUp(0.0);
     f.precision = 1000;
@@ -2782,7 +2782,7 @@ if (is(T == float) || is(T == double)
     f.spec = 'g';
     f.precision = 15;
 
-    import std.math.constants : E, PI, PI_2, PI_4, M_1_PI, M_2_PI, M_2_SQRTPI,
+    import ripstd.math.constants : E, PI, PI_2, PI_4, M_1_PI, M_2_PI, M_2_SQRTPI,
                                 LN10, LN2, LOG2, LOG2E, LOG2T, LOG10E, SQRT2, SQRT1_2;
 
     assert(printFloat(cast(double) E, f) == "2.71828182845905");
@@ -2849,7 +2849,7 @@ if (is(T == float) || is(T == double)
             assert(printFloat(-1e4000L, f) == "-1e+4000");
         }
 
-        import std.math.operations : nextUp, nextDown;
+        import ripstd.math.operations : nextUp, nextDown;
         assert(printFloat(nextUp(0.0L), f) == "3.6452e-4951");
         assert(printFloat(nextDown(-0.0L), f) == "-3.6452e-4951");
     }
@@ -2857,9 +2857,9 @@ if (is(T == float) || is(T == double)
 
 @safe unittest
 {
-    import std.exception : assertCTFEable;
-    import std.math.exponential : log2;
-    import std.math.operations : nextDown;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.math.exponential : log2;
+    import ripstd.math.operations : nextDown;
 
     assertCTFEable!(
     {
@@ -2901,7 +2901,7 @@ if (is(T == float) || is(T == double)
 // check no allocations
 @safe unittest
 {
-    import std.format : NoOpSink;
+    import ripstd.format : NoOpSink;
     auto w = NoOpSink();
 
     import core.memory;
@@ -2917,8 +2917,8 @@ if (is(T == float) || is(T == double)
     printFloat(w, double.infinity, f);
     printFloat(w, -0.0, f);
 
-    import std.math.operations : nextUp;
-    import std.math.constants : E;
+    import ripstd.math.operations : nextUp;
+    import ripstd.math.constants : E;
 
     printFloat(w, nextUp(0.0f), f);
     printFloat(w, cast(float) E, f);

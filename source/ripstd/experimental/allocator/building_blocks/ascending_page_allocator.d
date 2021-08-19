@@ -6,7 +6,7 @@ module ripstd.experimental.allocator.building_blocks.ascending_page_allocator;
 
 import core.memory : pageSize;
 
-import std.experimental.allocator.common;
+import ripstd.experimental.allocator.common;
 
 // Common implementations for shared and thread local AscendingPageAllocator
 private mixin template AscendingPageAllocatorImpl(bool isShared)
@@ -185,7 +185,7 @@ $(HTTPS microsoft.com/en-us/research/wp-content/uploads/2017/03/kedia2017mem.pdf
 */
 struct AscendingPageAllocator
 {
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
 
     // Docs for mixin functions
     version (StdDdoc)
@@ -269,7 +269,7 @@ public:
     */
     void[] allocate(size_t n) nothrow @nogc
     {
-        import std.algorithm.comparison : min;
+        import ripstd.algorithm.comparison : min;
 
         immutable pagedBytes = numPages * pageSize;
         size_t goodSize = goodAllocSize(n);
@@ -342,7 +342,7 @@ public:
     */
     bool expand(ref void[] b, size_t delta) nothrow @nogc
     {
-        import std.algorithm.comparison : min;
+        import ripstd.algorithm.comparison : min;
 
         if (!delta) return true;
         if (b is null) return false;
@@ -441,7 +441,7 @@ public:
 */
 shared struct SharedAscendingPageAllocator
 {
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
     import core.internal.spinlock : SpinLock;
 
     // Docs for mixin functions
@@ -549,7 +549,7 @@ public:
 
     private void[] allocateImpl(size_t n, uint a) nothrow @nogc
     {
-        import std.algorithm.comparison : min;
+        import ripstd.algorithm.comparison : min;
 
         size_t localExtraAlloc;
         void* localOffset;
@@ -592,7 +592,7 @@ public:
     */
     bool expand(ref void[] b, size_t delta) nothrow @nogc
     {
-        import std.algorithm.comparison : min;
+        import ripstd.algorithm.comparison : min;
 
         if (!delta) return true;
         if (b is null) return false;
@@ -663,7 +663,7 @@ public:
     tg.joinAll();
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     private static void testrw(void[] b) @nogc nothrow
     {
@@ -749,7 +749,7 @@ version (StdUnittest)
 {
     static void testAlloc(Allocator)(ref Allocator a) @nogc nothrow
     {
-        import std.traits : hasMember;
+        import ripstd.traits : hasMember;
 
         size_t numPages = 5;
         uint alignment = cast(uint) pageSize;
@@ -925,7 +925,7 @@ version (StdUnittest)
 @system unittest
 {
     import core.thread : ThreadGroup;
-    import std.algorithm.sorting : sort;
+    import ripstd.algorithm.sorting : sort;
     import core.internal.spinlock : SpinLock;
 
     enum numThreads = 100;
@@ -965,7 +965,7 @@ version (StdUnittest)
 @system unittest
 {
     import core.thread : ThreadGroup;
-    import std.algorithm.sorting : sort;
+    import ripstd.algorithm.sorting : sort;
     import core.internal.spinlock : SpinLock;
 
     SpinLock lock = SpinLock(SpinLock.Contention.brief);

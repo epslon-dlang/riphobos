@@ -1,27 +1,27 @@
 // Written in the D programming language.
 
-/// Helper functions for std.algorithm package.
+/// Helper functions for ripstd.algorithm package.
 module ripstd.algorithm.internal;
 
 
-// Same as std.string.format, but "self-importing".
+// Same as ripstd.string.format, but "self-importing".
 // Helps reduce code and imports, particularly in static asserts.
 // Also helps with missing imports errors.
 package template algoFormat()
 {
-    import std.format : format;
+    import ripstd.format : format;
     alias algoFormat = format;
 }
 
 // Internal random array generators
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     package enum size_t maxArraySize = 50;
     package enum size_t minArraySize = maxArraySize - 1;
 
     package string[] rndstuff(T : string)()
     {
-        import std.random : Xorshift, uniform;
+        import ripstd.random : Xorshift, uniform;
 
         static rnd = Xorshift(234_567_891);
         string[] result =
@@ -40,7 +40,7 @@ version (StdUnittest)
 
     package int[] rndstuff(T : int)()
     {
-        import std.random : Xorshift, uniform;
+        import ripstd.random : Xorshift, uniform;
 
         static rnd = Xorshift(345_678_912);
         int[] result = new int[uniform(minArraySize, maxArraySize, rnd)];
@@ -62,4 +62,4 @@ version (StdUnittest)
     }
 }
 
-package(std) T* addressOf(T)(ref T val) { return &val; }
+package(ripstd) T* addressOf(T)(ref T val) { return &val; }

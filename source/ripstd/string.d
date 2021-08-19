@@ -80,14 +80,14 @@ The following functions are publicly imported:
 $(BOOKTABLE ,
 $(TR $(TH Module) $(TH Functions) )
 $(LEADINGROW Publicly imported functions)
-    $(TR $(TD std.algorithm)
+    $(TR $(TD ripstd.algorithm)
         $(TD
          $(REF_SHORT cmp, std,algorithm,comparison)
          $(REF_SHORT count, std,algorithm,searching)
          $(REF_SHORT endsWith, std,algorithm,searching)
          $(REF_SHORT startsWith, std,algorithm,searching)
     ))
-    $(TR $(TD std.array)
+    $(TR $(TD ripstd.array)
         $(TD
          $(REF_SHORT join, std,array)
          $(REF_SHORT replace, std,array)
@@ -95,12 +95,12 @@ $(LEADINGROW Publicly imported functions)
          $(REF_SHORT split, std,array)
          $(REF_SHORT empty, std,array)
     ))
-    $(TR $(TD std.format)
+    $(TR $(TD ripstd.format)
         $(TD
          $(REF_SHORT format, std,format)
          $(REF_SHORT sformat, std,format)
     ))
-    $(TR $(TD std.uni)
+    $(TR $(TD ripstd.uni)
         $(TD
          $(REF_SHORT icmp, std,uni)
          $(REF_SHORT toLower, std,uni)
@@ -143,7 +143,7 @@ Source:    $(PHOBOSSRC std/string.d)
 */
 module ripstd.string;
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
 private:
     struct TestAliasedString
@@ -156,7 +156,7 @@ private:
 
     bool testAliasedString(alias func, Args...)(string s, Args args)
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         auto a = func(TestAliasedString(s), args);
         auto b = func(s, args);
         static if (is(typeof(equal(a, b))))
@@ -171,31 +171,31 @@ private:
     }
 }
 
-public import std.format : format, sformat;
-import std.typecons : Flag, Yes, No;
-public import std.uni : icmp, toLower, toLowerInPlace, toUpper, toUpperInPlace;
+public import ripstd.format : format, sformat;
+import ripstd.typecons : Flag, Yes, No;
+public import ripstd.uni : icmp, toLower, toLowerInPlace, toUpper, toUpperInPlace;
 
-import std.meta : AliasSeq, staticIndexOf;
-import std.range.primitives : back, ElementEncodingType, ElementType, front,
+import ripstd.meta : AliasSeq, staticIndexOf;
+import ripstd.range.primitives : back, ElementEncodingType, ElementType, front,
     hasLength, hasSlicing, isBidirectionalRange, isForwardRange, isInfinite,
     isInputRange, isOutputRange, isRandomAccessRange, popBack, popFront, put,
     save;
-import std.traits : isConvertibleToString, isNarrowString, isSomeChar,
+import ripstd.traits : isConvertibleToString, isNarrowString, isSomeChar,
     isSomeString, StringTypeOf, Unqual;
 
 //public imports for backward compatibility
-public import std.algorithm.comparison : cmp;
-public import std.algorithm.searching : startsWith, endsWith, count;
-public import std.array : join, replace, replaceInPlace, split, empty;
+public import ripstd.algorithm.comparison : cmp;
+public import ripstd.algorithm.searching : startsWith, endsWith, count;
+public import ripstd.array : join, replace, replaceInPlace, split, empty;
 
 /* ************* Exceptions *************** */
 
 /++
-    Exception thrown on errors in std.string functions.
+    Exception thrown on errors in ripstd.string functions.
   +/
 class StringException : Exception
 {
-    import std.exception : basicExceptionCtors;
+    import ripstd.exception : basicExceptionCtors;
 
     ///
     mixin basicExceptionCtors;
@@ -204,7 +204,7 @@ class StringException : Exception
 ///
 @safe pure unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     auto bad = "      a\n\tb\n   c";
     assertThrown!StringException(bad.outdent);
 }
@@ -324,7 +324,7 @@ out (result)
 }
 do
 {
-    import std.exception : assumeUnique;
+    import ripstd.exception : assumeUnique;
 
     if (s.empty) return "".ptr;
 
@@ -355,7 +355,7 @@ do
 pure nothrow @system unittest
 {
     import core.stdc.string : strlen;
-    import std.conv : to;
+    import ripstd.conv : to;
 
     auto p = toStringz("foo");
     assert(strlen(p) == 3);
@@ -461,7 +461,7 @@ if (isSomeChar!C)
 ///
 @safe pure unittest
 {
-    import std.typecons : No;
+    import ripstd.typecons : No;
 
     string s = "Hello World";
     assert(indexOf(s, 'W') == 6);
@@ -472,7 +472,7 @@ if (isSomeChar!C)
 ///
 @safe pure unittest
 {
-    import std.typecons : No;
+    import ripstd.typecons : No;
 
     string s = "Hello World";
     assert(indexOf(s, 'W', 4) == 6);
@@ -493,10 +493,10 @@ if (isSomeChar!C)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
-    import std.traits : EnumMembers;
-    import std.utf : byChar, byWchar, byDchar;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.traits : EnumMembers;
+    import ripstd.utf : byChar, byWchar, byDchar;
 
     assertCTFEable!(
     {
@@ -561,9 +561,9 @@ if (isSomeChar!C)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.traits : EnumMembers;
-    import std.utf : byCodeUnit, byChar, byWchar;
+    import ripstd.conv : to;
+    import ripstd.traits : EnumMembers;
+    import ripstd.utf : byCodeUnit, byChar, byWchar;
 
     assert("hello".byCodeUnit.indexOf(cast(dchar)'l', 1) == 2);
     assert("hello".byWchar.indexOf(cast(dchar)'l', 1) == 2);
@@ -608,16 +608,16 @@ if (isSomeChar!C)
 private ptrdiff_t _indexOf(Range)(Range s, dchar c, CaseSensitive cs = Yes.caseSensitive)
 if (isInputRange!Range && isSomeChar!(ElementType!Range))
 {
-    static import std.ascii;
-    static import std.uni;
-    import std.utf : byDchar, byCodeUnit, UTFException, codeLength;
+    static import ripstd.ascii;
+    static import ripstd.uni;
+    import ripstd.utf : byDchar, byCodeUnit, UTFException, codeLength;
     alias Char = Unqual!(ElementEncodingType!Range);
 
     if (cs == Yes.caseSensitive)
     {
         static if (Char.sizeof == 1 && isSomeString!Range)
         {
-            if (std.ascii.isASCII(c) && !__ctfe)
+            if (ripstd.ascii.isASCII(c) && !__ctfe)
             {                                               // Plain old ASCII
                 static ptrdiff_t trustedmemchr(Range s, char c) @trusted
                 {
@@ -702,26 +702,26 @@ if (isInputRange!Range && isSomeChar!(ElementType!Range))
     }
     else
     {
-        if (std.ascii.isASCII(c))
+        if (ripstd.ascii.isASCII(c))
         {                                                   // Plain old ASCII
-            immutable c1 = cast(char) std.ascii.toLower(c);
+            immutable c1 = cast(char) ripstd.ascii.toLower(c);
 
             ptrdiff_t i;
             foreach (const c2; s.byCodeUnit())
             {
-                if (c1 == std.ascii.toLower(c2))
+                if (c1 == ripstd.ascii.toLower(c2))
                     return i;
                 ++i;
             }
         }
         else
         {                                                   // c is a universal character
-            immutable c1 = std.uni.toLower(c);
+            immutable c1 = ripstd.uni.toLower(c);
 
             ptrdiff_t i;
             foreach (const c2; s.byDchar())
             {
-                if (c1 == std.uni.toLower(c2))
+                if (c1 == ripstd.uni.toLower(c2))
                     return i;
                 i += codeLength!Char(c2);
             }
@@ -774,12 +774,12 @@ private template _indexOfStr(CaseSensitive cs)
         {
             static if (is(Char1 == Char) && cs == Yes.caseSensitive)
             {
-                import std.algorithm.searching : countUntil;
+                import ripstd.algorithm.searching : countUntil;
                 return s.representation.countUntil(sub.representation);
             }
             else
             {
-                import std.algorithm.searching : find;
+                import ripstd.algorithm.searching : find;
 
                 const(Char1)[] balance;
                 static if (cs == Yes.caseSensitive)
@@ -802,7 +802,7 @@ private template _indexOfStr(CaseSensitive cs)
             if (sub.empty)
                 return 0;                   // degenerate case
 
-            import std.utf : byDchar, codeLength;
+            import ripstd.utf : byDchar, codeLength;
             auto subr = sub.byDchar;        // decode sub[] by dchar's
             dchar sub0 = subr.front;        // cache first character of sub[]
             subr.popFront();
@@ -926,7 +926,7 @@ if (isSomeChar!Char1 && isSomeChar!Char2)
 ///
 @safe pure unittest
 {
-    import std.typecons : No;
+    import ripstd.typecons : No;
 
     string s = "Hello World";
     assert(indexOf(s, "Wo", 4) == 6);
@@ -937,7 +937,7 @@ if (isSomeChar!Char1 && isSomeChar!Char2)
 ///
 @safe pure unittest
 {
-    import std.typecons : No;
+    import ripstd.typecons : No;
 
     string s = "Hello World";
     assert(indexOf(s, "Wo") == 6);
@@ -978,9 +978,9 @@ if (!(isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
-    import std.traits : EnumMembers;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.traits : EnumMembers;
 
     assertCTFEable!(
     {
@@ -1032,8 +1032,8 @@ if (!(isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 @safe pure @nogc nothrow
 unittest
 {
-    import std.traits : EnumMembers;
-    import std.utf : byWchar;
+    import ripstd.traits : EnumMembers;
+    import ripstd.utf : byWchar;
 
     foreach (cs; EnumMembers!CaseSensitive)
     {
@@ -1049,8 +1049,8 @@ unittest
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.traits : EnumMembers;
+    import ripstd.conv : to;
+    import ripstd.traits : EnumMembers;
 
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {
@@ -1129,8 +1129,8 @@ ptrdiff_t lastIndexOf(Char)(const(Char)[] s, in dchar c,
         in CaseSensitive cs = Yes.caseSensitive) @safe pure
 if (isSomeChar!Char)
 {
-    static import std.ascii, std.uni;
-    import std.utf : canSearchInCodeUnits;
+    static import ripstd.ascii, ripstd.uni;
+    import ripstd.utf : canSearchInCodeUnits;
     if (cs == Yes.caseSensitive)
     {
         if (canSearchInCodeUnits!Char(c))
@@ -1156,13 +1156,13 @@ if (isSomeChar!Char)
     }
     else
     {
-        if (std.ascii.isASCII(c))
+        if (ripstd.ascii.isASCII(c))
         {
-            immutable c1 = std.ascii.toLower(c);
+            immutable c1 = ripstd.ascii.toLower(c);
 
             foreach_reverse (i, it; s)
             {
-                immutable c2 = std.ascii.toLower(it);
+                immutable c2 = ripstd.ascii.toLower(it);
                 if (c1 == c2)
                 {
                     return i;
@@ -1171,11 +1171,11 @@ if (isSomeChar!Char)
         }
         else
         {
-            immutable c1 = std.uni.toLower(c);
+            immutable c1 = ripstd.uni.toLower(c);
 
             foreach_reverse (i, dchar it; s)
             {
-                immutable c2 = std.uni.toLower(it);
+                immutable c2 = ripstd.uni.toLower(it);
                 if (c1 == c2)
                 {
                     return i;
@@ -1203,7 +1203,7 @@ if (isSomeChar!Char)
 ///
 @safe pure unittest
 {
-    import std.typecons : No;
+    import ripstd.typecons : No;
 
     string s = "Hello World";
     assert(lastIndexOf(s, 'l') == 9);
@@ -1214,7 +1214,7 @@ if (isSomeChar!Char)
 ///
 @safe pure unittest
 {
-    import std.typecons : No;
+    import ripstd.typecons : No;
 
     string s = "Hello World";
     assert(lastIndexOf(s, 'l', 4) == 3);
@@ -1224,9 +1224,9 @@ if (isSomeChar!Char)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
-    import std.traits : EnumMembers;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.traits : EnumMembers;
 
     assertCTFEable!(
     {
@@ -1264,8 +1264,8 @@ if (isSomeChar!Char)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.traits : EnumMembers;
+    import ripstd.conv : to;
+    import ripstd.traits : EnumMembers;
 
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {{
@@ -1318,11 +1318,11 @@ ptrdiff_t lastIndexOf(Char1, Char2)(const(Char1)[] s, const(Char2)[] sub,
         in CaseSensitive cs = Yes.caseSensitive) @safe pure
 if (isSomeChar!Char1 && isSomeChar!Char2)
 {
-    import std.algorithm.searching : endsWith;
-    import std.conv : to;
-    import std.range.primitives : walkLength;
-    static import std.uni;
-    import std.utf : strideBack;
+    import ripstd.algorithm.searching : endsWith;
+    import ripstd.conv : to;
+    import ripstd.range.primitives : walkLength;
+    static import ripstd.uni;
+    import ripstd.utf : strideBack;
     if (sub.empty)
         return -1;
 
@@ -1375,7 +1375,7 @@ if (isSomeChar!Char1 && isSomeChar!Char2)
     {
         for (size_t i = s.length; !s.empty;)
         {
-            if (endsWith!((a, b) => std.uni.toLower(a) == std.uni.toLower(b))
+            if (endsWith!((a, b) => ripstd.uni.toLower(a) == ripstd.uni.toLower(b))
                          (s, sub))
             {
                 return cast(ptrdiff_t) i - to!(const(Char1)[])(sub).length;
@@ -1405,7 +1405,7 @@ if (isSomeChar!Char1 && isSomeChar!Char2)
 ///
 @safe pure unittest
 {
-    import std.typecons : No;
+    import ripstd.typecons : No;
 
     string s = "Hello World";
     assert(lastIndexOf(s, "ll") == 2);
@@ -1416,7 +1416,7 @@ if (isSomeChar!Char1 && isSomeChar!Char2)
 ///
 @safe pure unittest
 {
-    import std.typecons : No;
+    import ripstd.typecons : No;
 
     string s = "Hello World";
     assert(lastIndexOf(s, "ll", 4) == 2);
@@ -1426,7 +1426,7 @@ if (isSomeChar!Char1 && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {{
@@ -1443,9 +1443,9 @@ if (isSomeChar!Char1 && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
-    import std.traits : EnumMembers;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.traits : EnumMembers;
 
     assertCTFEable!(
     {
@@ -1504,7 +1504,7 @@ if (isSomeChar!Char1 && isSomeChar!Char2)
 // https://issues.dlang.org/show_bug.cgi?id=13529
 @safe pure unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {
         static foreach (T; AliasSeq!(string, wstring, dstring))
@@ -1521,8 +1521,8 @@ if (isSomeChar!Char1 && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.traits : EnumMembers;
+    import ripstd.conv : to;
+    import ripstd.traits : EnumMembers;
 
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {
@@ -1586,7 +1586,7 @@ private ptrdiff_t indexOfAnyNeitherImpl(bool forward, bool any, Char, Char2)(
         in CaseSensitive cs = Yes.caseSensitive) @safe pure
 if (isSomeChar!Char && isSomeChar!Char2)
 {
-    import std.algorithm.searching : canFind, findAmong;
+    import ripstd.algorithm.searching : canFind, findAmong;
     if (cs == Yes.caseSensitive)
     {
         static if (forward)
@@ -1611,8 +1611,8 @@ if (isSomeChar!Char && isSomeChar!Char2)
         {
             static if (any)
             {
-                import std.range : retro;
-                import std.utf : strideBack;
+                import ripstd.range : retro;
+                import ripstd.utf : strideBack;
                 size_t n = haystack.retro.findAmong(needles).source.length;
                 if (n)
                 {
@@ -1633,7 +1633,7 @@ if (isSomeChar!Char && isSomeChar!Char2)
     }
     else
     {
-        import std.range.primitives : walkLength;
+        import ripstd.range.primitives : walkLength;
         if (needles.length <= 16 && needles.walkLength(17))
         {
             size_t si = 0;
@@ -1741,7 +1741,7 @@ if (isSomeChar!Char && isSomeChar!Char2)
 ///
 @safe pure unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     ptrdiff_t i = "helloWorld".indexOfAny("Wr");
     assert(i == 5);
@@ -1752,7 +1752,7 @@ if (isSomeChar!Char && isSomeChar!Char2)
 ///
 @safe pure unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     ptrdiff_t i = "helloWorld".indexOfAny("Wr", 4);
     assert(i == 5);
@@ -1763,7 +1763,7 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {{
@@ -1780,8 +1780,8 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -1819,8 +1819,8 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.traits : EnumMembers;
+    import ripstd.conv : to;
+    import ripstd.traits : EnumMembers;
 
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {
@@ -1916,7 +1916,7 @@ if (isSomeChar!Char && isSomeChar!Char2)
 ///
 @safe pure unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     ptrdiff_t i = "helloWorld".lastIndexOfAny("Wlo", 4);
     assert(i == 3);
@@ -1927,7 +1927,7 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {{
@@ -1944,8 +1944,8 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -1997,8 +1997,8 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -2105,7 +2105,7 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {{
@@ -2122,8 +2122,8 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -2166,8 +2166,8 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -2259,7 +2259,7 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {{
@@ -2276,8 +2276,8 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -2321,8 +2321,8 @@ if (isSomeChar!Char && isSomeChar!Char2)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -2377,7 +2377,7 @@ if (isSomeChar!Char && isSomeChar!Char2)
 auto representation(Char)(Char[] s) @safe pure nothrow @nogc
 if (isSomeChar!Char)
 {
-    import std.traits : ModifyTypePreservingTQ;
+    import ripstd.traits : ModifyTypePreservingTQ;
     alias ToRepType(T) = AliasSeq!(ubyte, ushort, uint)[T.sizeof / 2];
     return cast(ModifyTypePreservingTQ!(ToRepType, Char)[])s;
 }
@@ -2393,9 +2393,9 @@ if (isSomeChar!Char)
 
 @system pure unittest
 {
-    import std.exception : assertCTFEable;
-    import std.traits : Fields;
-    import std.typecons : Tuple;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.traits : Fields;
+    import ripstd.typecons : Tuple;
 
     assertCTFEable!(
     {
@@ -2439,9 +2439,9 @@ if (isSomeChar!Char)
 S capitalize(S)(S input) @trusted pure
 if (isSomeString!S)
 {
-    import std.array : array;
-    import std.uni : asCapitalized;
-    import std.utf : byUTF;
+    import ripstd.array : array;
+    import ripstd.uni : asCapitalized;
+    import ripstd.utf : byUTF;
 
     return input.asCapitalized.byUTF!(ElementEncodingType!(S)).array;
 }
@@ -2466,9 +2466,9 @@ if (!isSomeString!S && is(StringTypeOf!S))
 
 @safe pure unittest
 {
-    import std.algorithm.comparison : cmp;
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.algorithm.comparison : cmp;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -2533,8 +2533,8 @@ alias KeepTerminator = Flag!"keepTerminator";
 C[][] splitLines(C)(C[] s, KeepTerminator keepTerm = No.keepTerminator) @safe pure
 if (isSomeChar!C)
 {
-    import std.array : appender;
-    import std.uni : lineSep, paraSep;
+    import ripstd.array : appender;
+    import ripstd.uni : lineSep, paraSep;
 
     size_t iStart = 0;
     auto retval = appender!(C[][])();
@@ -2639,8 +2639,8 @@ if (isSomeChar!C)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -2703,8 +2703,8 @@ if (isSomeChar!C)
 
 private struct LineSplitter(KeepTerminator keepTerm = No.keepTerminator, Range)
 {
-    import std.conv : unsigned;
-    import std.uni : lineSep, paraSep;
+    import ripstd.conv : unsigned;
+    import ripstd.uni : lineSep, paraSep;
 private:
     Range _input;
 
@@ -2874,7 +2874,7 @@ if (isSomeChar!C)
 ///
 @safe pure unittest
 {
-    import std.array : array;
+    import ripstd.array : array;
 
     string s = "Hello\nmy\rname\nis";
 
@@ -2886,9 +2886,9 @@ if (isSomeChar!C)
 
 @safe pure unittest
 {
-    import std.array : array;
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.array : array;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -2966,8 +2966,8 @@ if (isSomeChar!C)
 
 @nogc @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : only;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : only;
 
     auto s = "std/string.d";
     auto as = TestAliasedString(s);
@@ -3013,9 +3013,9 @@ auto stripLeft(Range)(Range input)
 if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
     !isInfinite!Range && !isConvertibleToString!Range)
 {
-    import std.traits : isDynamicArray;
-    static import std.ascii;
-    static import std.uni;
+    import ripstd.traits : isDynamicArray;
+    static import ripstd.ascii;
+    static import ripstd.uni;
 
     static if (is(immutable ElementEncodingType!Range == immutable dchar)
         || is(immutable ElementEncodingType!Range == immutable wchar))
@@ -3029,7 +3029,7 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
         {
             foreach (i; 0 .. input.length)
             {
-                if (!std.uni.isWhite(input[i]))
+                if (!ripstd.uni.isWhite(input[i]))
                     return input[i .. $];
             }
             return input[$ .. $];
@@ -3038,7 +3038,7 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
         {
             while (!input.empty)
             {
-                if (!std.uni.isWhite(input.front))
+                if (!ripstd.uni.isWhite(input.front))
                     break;
                 input.popFront();
             }
@@ -3055,7 +3055,7 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
             {
                 auto c = input[i];
                 if (c >= 0x80) goto NonAsciiPath;
-                if (!std.ascii.isWhite(c)) break;
+                if (!ripstd.ascii.isWhite(c)) break;
             }
             input = input[i .. $];
             return input;
@@ -3065,14 +3065,14 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
             // Fall through to standard case.
         }
 
-        import std.utf : decode, decodeFront, UseReplacementDchar;
+        import ripstd.utf : decode, decodeFront, UseReplacementDchar;
 
         static if (isNarrowString!Range)
         {
             for (size_t index = 0; index < input.length;)
             {
                 const saveIndex = index;
-                if (!std.uni.isWhite(decode!(UseReplacementDchar.yes)(input, index)))
+                if (!ripstd.uni.isWhite(decode!(UseReplacementDchar.yes)(input, index)))
                     return input[saveIndex .. $];
             }
             return input[$ .. $];
@@ -3082,9 +3082,9 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
             while (!input.empty)
             {
                 auto c = input.front;
-                if (std.ascii.isASCII(c))
+                if (ripstd.ascii.isASCII(c))
                 {
-                    if (!std.ascii.isWhite(c))
+                    if (!ripstd.ascii.isWhite(c))
                         break;
                     input.popFront();
                 }
@@ -3092,7 +3092,7 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
                 {
                     auto save = input.save;
                     auto dc = decodeFront!(UseReplacementDchar.yes)(input);
-                    if (!std.uni.isWhite(dc))
+                    if (!ripstd.uni.isWhite(dc))
                         return save;
                 }
             }
@@ -3104,7 +3104,7 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 ///
 nothrow @safe pure unittest
 {
-    import std.uni : lineSep, paraSep;
+    import ripstd.uni : lineSep, paraSep;
     assert(stripLeft("     hello world     ") ==
            "hello world     ");
     assert(stripLeft("\n\t\v\rhello world\n\t\v\r") ==
@@ -3118,8 +3118,8 @@ nothrow @safe pure unittest
     assert(stripLeft([paraSep] ~ "hello world" ~ paraSep) ==
            "hello world" ~ [paraSep]);
 
-    import std.array : array;
-    import std.utf : byChar;
+    import ripstd.array : array;
+    import ripstd.utf : byChar;
     assert(stripLeft("     hello world     "w.byChar).array ==
            "hello world     ");
     assert(stripLeft("     \u2022hello world     ".byChar).array ==
@@ -3169,8 +3169,8 @@ if (((isForwardRange!Range && isSomeChar!(ElementEncodingType!Range)) ||
 ///
 @safe pure unittest
 {
-    import std.array : array;
-    import std.utf : byChar, byWchar, byDchar;
+    import ripstd.array : array;
+    import ripstd.utf : byChar, byWchar, byDchar;
 
     assert(stripLeft("  xxxyy hello world     "w.byChar, "xy ").array ==
            "hello world     ");
@@ -3213,8 +3213,8 @@ if (isSomeString!Range ||
     !isConvertibleToString!Range &&
     isSomeChar!(ElementEncodingType!Range))
 {
-    import std.traits : isDynamicArray;
-    import std.uni : isWhite;
+    import ripstd.traits : isDynamicArray;
+    import ripstd.uni : isWhite;
     alias C = Unqual!(ElementEncodingType!(typeof(str)));
 
     static if (isSomeString!(typeof(str)) && C.sizeof >= 2)
@@ -3234,7 +3234,7 @@ if (isSomeString!Range ||
         // ASCII optimization for dynamic arrays.
         static if (isDynamicArray!(typeof(str)))
         {
-            static import std.ascii;
+            static import ripstd.ascii;
             foreach_reverse (i, C c; str)
             {
                 if (c >= 0x80)
@@ -3242,7 +3242,7 @@ if (isSomeString!Range ||
                     str = str[0 .. i + 1];
                     goto NonAsciiPath;
                 }
-                if (!std.ascii.isWhite(c))
+                if (!ripstd.ascii.isWhite(c))
                 {
                     return str[0 .. i + 1];
                 }
@@ -3313,7 +3313,7 @@ if (isSomeString!Range ||
 nothrow @safe pure
 unittest
 {
-    import std.uni : lineSep, paraSep;
+    import ripstd.uni : lineSep, paraSep;
     assert(stripRight("     hello world     ") ==
            "     hello world");
     assert(stripRight("\n\t\v\rhello world\n\t\v\r") ==
@@ -3339,9 +3339,9 @@ if (isConvertibleToString!Range)
 
 @safe pure unittest
 {
-    import std.array : array;
-    import std.uni : lineSep, paraSep;
-    import std.utf : byChar, byDchar, byUTF, byWchar, invalidUTFstrings;
+    import ripstd.array : array;
+    import ripstd.uni : lineSep, paraSep;
+    import ripstd.utf : byChar, byDchar, byUTF, byWchar, invalidUTFstrings;
     assert(stripRight("     hello world     ".byChar).array == "     hello world");
     assert(stripRight("\n\t\v\rhello world\n\t\v\r"w.byWchar).array == "\n\t\v\rhello world"w);
     assert(stripRight("hello world"d.byDchar).array == "hello world"d);
@@ -3398,8 +3398,8 @@ unittest
 
 @safe pure unittest
 {
-    import std.array : array;
-    import std.utf : byChar, byDchar, byUTF, byWchar;
+    import ripstd.array : array;
+    import ripstd.utf : byChar, byDchar, byUTF, byWchar;
 
     assert(stripRight("     hello world  xyz   ".byChar,
                       "xyz ").array == "     hello world");
@@ -3444,7 +3444,7 @@ if (isSomeString!Range ||
 ///
 @safe pure unittest
 {
-    import std.uni : lineSep, paraSep;
+    import ripstd.uni : lineSep, paraSep;
     assert(strip("     hello world     ") ==
            "hello world");
     assert(strip("\n\t\v\rhello world\n\t\v\r") ==
@@ -3470,9 +3470,9 @@ if (isConvertibleToString!Range)
 
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -3505,8 +3505,8 @@ if (isConvertibleToString!Range)
 
 @safe pure unittest
 {
-    import std.array : sameHead, sameTail;
-    import std.exception : assertCTFEable;
+    import ripstd.array : sameHead, sameTail;
+    import ripstd.exception : assertCTFEable;
     assertCTFEable!(
     {
     wstring s = " ";
@@ -3575,9 +3575,9 @@ if (((isBidirectionalRange!Range && isSomeChar!(ElementEncodingType!Range)) ||
 
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -3624,8 +3624,8 @@ if (((isBidirectionalRange!Range && isSomeChar!(ElementEncodingType!Range)) ||
 
 @safe pure unittest
 {
-    import std.array : sameHead, sameTail;
-    import std.exception : assertCTFEable;
+    import ripstd.array : sameHead, sameTail;
+    import ripstd.exception : assertCTFEable;
     assertCTFEable!(
     {
     wstring s = " xyz ";
@@ -3657,7 +3657,7 @@ if ((isRandomAccessRange!Range && isSomeChar!(ElementEncodingType!Range) ||
     isNarrowString!Range) &&
     !isConvertibleToString!Range)
 {
-    import std.uni : lineSep, paraSep, nelSep;
+    import ripstd.uni : lineSep, paraSep, nelSep;
     if (str.empty)
         return str;
 
@@ -3721,7 +3721,7 @@ if ((isBidirectionalRange!Range && isSomeChar!(ElementEncodingType!Range) ||
 
     static if (is(immutable C1 == immutable C2) && (isSomeString!Range || (hasSlicing!Range && C2.sizeof == 4)))
     {
-        import std.algorithm.searching : endsWith;
+        import ripstd.algorithm.searching : endsWith;
         if (str.endsWith(delimiter))
             return str[0 .. $ - delimiter.length];
         return str;
@@ -3751,8 +3751,8 @@ if ((isBidirectionalRange!Range && isSomeChar!(ElementEncodingType!Range) ||
 @safe pure
 unittest
 {
-    import std.uni : lineSep, paraSep, nelSep;
-    import std.utf : decode;
+    import ripstd.uni : lineSep, paraSep, nelSep;
+    import ripstd.utf : decode;
     assert(chomp(" hello world  \n\r") == " hello world  \n");
     assert(chomp(" hello world  \r\n") == " hello world  ");
     assert(chomp(" hello world  \f") == " hello world  ");
@@ -3793,8 +3793,8 @@ if (isConvertibleToString!Range)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -3835,8 +3835,8 @@ if (isConvertibleToString!Range)
     });
 
     // Ranges
-    import std.array : array;
-    import std.utf : byChar, byWchar, byDchar;
+    import ripstd.array : array;
+    import ripstd.utf : byChar, byWchar, byDchar;
     assert(chomp("hello world\r\n" .byChar ).array == "hello world");
     assert(chomp("hello world\r\n"w.byWchar).array == "hello world"w);
     assert(chomp("hello world\r\n"d.byDchar).array == "hello world"d);
@@ -3872,7 +3872,7 @@ if ((isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) ||
 
     static if (is(immutable C1 == immutable C2) && (isSomeString!Range || (hasSlicing!Range && C2.sizeof == 4)))
     {
-        import std.algorithm.searching : startsWith;
+        import ripstd.algorithm.searching : startsWith;
         if (str.startsWith(delimiter))
             return str[delimiter.length .. $];
         return str;
@@ -3916,9 +3916,9 @@ if (isConvertibleToString!Range)
 @safe pure
 unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
     assertCTFEable!(
     {
     static foreach (S; AliasSeq!(char[], wchar[], dchar[], string, wstring, dstring))
@@ -3935,8 +3935,8 @@ unittest
     });
 
     // Ranges
-    import std.array : array;
-    import std.utf : byChar, byWchar, byDchar;
+    import ripstd.array : array;
+    import ripstd.utf : byChar, byWchar, byDchar;
     assert(chompPrefix("hello world" .byChar , "hello"d).array == " world");
     assert(chompPrefix("hello world"w.byWchar, "hello" ).array == " world"w);
     assert(chompPrefix("hello world"d.byDchar, "hello"w).array == " world"d);
@@ -4047,8 +4047,8 @@ if (isConvertibleToString!Range)
 
 @safe pure unittest
 {
-    import std.array : array;
-    import std.utf : byChar, byWchar, byDchar, byCodeUnit, invalidUTFstrings;
+    import ripstd.array : array;
+    import ripstd.utf : byChar, byWchar, byDchar, byCodeUnit, invalidUTFstrings;
 
     assert(chop("hello world".byChar).array == "hello worl");
     assert(chop("hello world\n"w.byWchar).array == "hello world"w);
@@ -4081,9 +4081,9 @@ if (isConvertibleToString!Range)
 
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -4120,7 +4120,7 @@ if (isConvertibleToString!Range)
 S leftJustify(S)(S s, size_t width, dchar fillChar = ' ')
 if (isSomeString!S)
 {
-    import std.array : array;
+    import ripstd.array : array;
     return leftJustifier(s, width, fillChar).array;
 }
 
@@ -4157,12 +4157,12 @@ if (isInputRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 
     static if (C.sizeof == 1)
     {
-        import std.utf : byDchar, byChar;
+        import ripstd.utf : byDchar, byChar;
         return leftJustifier(r.byDchar, width, fillChar).byChar;
     }
     else static if (C.sizeof == 2)
     {
-        import std.utf : byDchar, byWchar;
+        import ripstd.utf : byDchar, byWchar;
         return leftJustifier(r.byDchar, width, fillChar).byWchar;
     }
     else static if (C.sizeof == 4)
@@ -4215,8 +4215,8 @@ if (isInputRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 @safe pure @nogc nothrow
 unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.utf : byChar;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.utf : byChar;
     assert(leftJustifier("hello", 2).equal("hello".byChar));
     assert(leftJustifier("hello", 7).equal("hello  ".byChar));
     assert(leftJustifier("hello", 7, 'x').equal("helloxx".byChar));
@@ -4262,7 +4262,7 @@ if (isConvertibleToString!Range)
 S rightJustify(S)(S s, size_t width, dchar fillChar = ' ')
 if (isSomeString!S)
 {
-    import std.array : array;
+    import ripstd.array : array;
     return rightJustifier(s, width, fillChar).array;
 }
 
@@ -4300,12 +4300,12 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 
     static if (C.sizeof == 1)
     {
-        import std.utf : byDchar, byChar;
+        import ripstd.utf : byDchar, byChar;
         return rightJustifier(r.byDchar, width, fillChar).byChar;
     }
     else static if (C.sizeof == 2)
     {
-        import std.utf : byDchar, byWchar;
+        import ripstd.utf : byDchar, byWchar;
         return rightJustifier(r.byDchar, width, fillChar).byWchar;
     }
     else static if (C.sizeof == 4)
@@ -4333,8 +4333,8 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
                 else
                 {
                     // Lookahead to see now many fill characters are needed
-                    import std.range : take;
-                    import std.range.primitives : walkLength;
+                    import ripstd.range : take;
+                    import ripstd.range.primitives : walkLength;
                     nfill = _width - walkLength(_input.save.take(_width), _width);
                 }
                 inited = true;
@@ -4395,8 +4395,8 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 @safe pure @nogc nothrow
 unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.utf : byChar;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.utf : byChar;
     assert(rightJustifier("hello", 2).equal("hello".byChar));
     assert(rightJustifier("hello", 7).equal("  hello".byChar));
     assert(rightJustifier("hello", 7, 'x').equal("xxhello".byChar));
@@ -4452,7 +4452,7 @@ if (isConvertibleToString!Range)
 S center(S)(S s, size_t width, dchar fillChar = ' ')
 if (isSomeString!S)
 {
-    import std.array : array;
+    import ripstd.array : array;
     return centerJustifier(s, width, fillChar).array;
 }
 
@@ -4467,8 +4467,8 @@ if (isSomeString!S)
 @safe pure
 unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -4526,18 +4526,18 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 
     static if (C.sizeof == 1)
     {
-        import std.utf : byDchar, byChar;
+        import ripstd.utf : byDchar, byChar;
         return centerJustifier(r.byDchar, width, fillChar).byChar;
     }
     else static if (C.sizeof == 2)
     {
-        import std.utf : byDchar, byWchar;
+        import ripstd.utf : byDchar, byWchar;
         return centerJustifier(r.byDchar, width, fillChar).byWchar;
     }
     else static if (C.sizeof == 4)
     {
-        import std.range : chain, repeat;
-        import std.range.primitives : walkLength;
+        import ripstd.range : chain, repeat;
+        import ripstd.range.primitives : walkLength;
 
         auto len = walkLength(r.save, width);
         if (len > width)
@@ -4554,8 +4554,8 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 @safe pure @nogc nothrow
 unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.utf : byChar;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.utf : byChar;
     assert(centerJustifier("hello", 2).equal("hello".byChar));
     assert(centerJustifier("hello", 8).equal(" hello  ".byChar));
     assert(centerJustifier("hello", 7, 'x').equal("xhellox".byChar));
@@ -4627,7 +4627,7 @@ auto detab(Range)(auto ref Range s, size_t tabSize = 8) pure
 if ((isForwardRange!Range && isSomeChar!(ElementEncodingType!Range))
     || __traits(compiles, StringTypeOf!Range))
 {
-    import std.array : array;
+    import ripstd.array : array;
     return detabber(s, tabSize).array;
 }
 
@@ -4677,8 +4677,8 @@ auto detabber(Range)(Range r, size_t tabSize = 8)
 if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
     !isConvertibleToString!Range)
 {
-    import std.uni : lineSep, paraSep, nelSep;
-    import std.utf : codeUnitLimit, decodeFront;
+    import ripstd.uni : lineSep, paraSep, nelSep;
+    import ripstd.utf : codeUnitLimit, decodeFront;
 
     assert(tabSize > 0);
 
@@ -4787,7 +4787,7 @@ if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 ///
 @safe pure unittest
 {
-    import std.array : array;
+    import ripstd.array : array;
 
     assert(detabber(" \n\tx", 9).array == " \n         x");
 }
@@ -4805,9 +4805,9 @@ if (isConvertibleToString!Range)
 
 @safe pure unittest
 {
-    import std.algorithm.comparison : cmp;
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.algorithm.comparison : cmp;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -4836,8 +4836,8 @@ if (isConvertibleToString!Range)
 ///
 @safe pure unittest
 {
-    import std.array : array;
-    import std.utf : byChar, byWchar;
+    import ripstd.array : array;
+    import ripstd.utf : byChar, byWchar;
 
     assert(detabber(" \u2029\t".byChar, 9).array == " \u2029         ");
     auto r = "hel\tx".byWchar.detabber();
@@ -4867,7 +4867,7 @@ if (isConvertibleToString!Range)
 auto entab(Range)(Range s, size_t tabSize = 8)
 if (isForwardRange!Range && isSomeChar!(ElementEncodingType!Range))
 {
-    import std.array : array;
+    import ripstd.array : array;
     return entabber(s, tabSize).array;
 }
 
@@ -4906,8 +4906,8 @@ if (!(isForwardRange!Range && isSomeChar!(ElementEncodingType!Range)) &&
 auto entabber(Range)(Range r, size_t tabSize = 8)
 if (isForwardRange!Range && !isConvertibleToString!Range)
 {
-    import std.uni : lineSep, paraSep, nelSep;
-    import std.utf : codeUnitLimit, decodeFront;
+    import ripstd.uni : lineSep, paraSep, nelSep;
+    import ripstd.utf : codeUnitLimit, decodeFront;
 
     assert(tabSize > 0, "tabSize must be greater than 0");
     alias C = Unqual!(ElementEncodingType!Range);
@@ -5127,7 +5127,7 @@ if (isForwardRange!Range && !isConvertibleToString!Range)
 ///
 @safe pure unittest
 {
-    import std.array : array;
+    import ripstd.array : array;
     assert(entabber("        x \n").array == "\tx\n");
 }
 
@@ -5145,8 +5145,8 @@ if (isConvertibleToString!Range)
 @safe pure
 unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -5192,8 +5192,8 @@ unittest
 @safe pure
 unittest
 {
-    import std.array : array;
-    import std.utf : byChar;
+    import ripstd.array : array;
+    import ripstd.utf : byChar;
     assert(entabber(" \u0085 aa".byChar).array == "\u0085 aa");
     assert(entabber(" \u2028\t aa \t".byChar).array == "\u2028\t aa");
 
@@ -5230,7 +5230,7 @@ C1[] translate(C1, C2 = immutable char)(C1[] str,
                                         const(C2)[] toRemove = null) @safe pure
 if (isSomeChar!C1 && isSomeChar!C2)
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto buffer = appender!(C1[])();
     translateImpl(str, transTable, toRemove, buffer);
     return buffer.data;
@@ -5262,8 +5262,8 @@ if (isSomeChar!C1 && isSomeChar!C2)
 
 @system pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -5314,7 +5314,7 @@ C1[] translate(C1, S, C2 = immutable char)(C1[] str,
                                            const(C2)[] toRemove = null) @safe pure
 if (isSomeChar!C1 && isSomeString!S && isSomeChar!C2)
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto buffer = appender!(C1[])();
     translateImpl(str, transTable, toRemove, buffer);
     return buffer.data;
@@ -5322,8 +5322,8 @@ if (isSomeChar!C1 && isSomeString!S && isSomeChar!C2)
 
 @system pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -5398,7 +5398,7 @@ if (isSomeChar!C1 && isSomeChar!C2 && isOutputRange!(Buffer, C1))
 ///
 @safe pure unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     dchar[dchar] transTable1 = ['e' : '5', 'o' : '7', '5': 'q'];
     auto buffer = appender!(dchar[])();
     translate("hello world", transTable1, null, buffer);
@@ -5417,7 +5417,7 @@ if (isSomeChar!C1 && isSomeChar!C2 && isOutputRange!(Buffer, C1))
 // https://issues.dlang.org/show_bug.cgi?id=13018
 @safe pure unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     immutable dchar[dchar] transTable1 = ['e' : '5', 'o' : '7', '5': 'q'];
     auto buffer = appender!(dchar[])();
     translate("hello world", transTable1, null, buffer);
@@ -5506,7 +5506,7 @@ C[] translate(C = immutable char)(scope const(char)[] str, scope const(char)[] t
 if (is(immutable C == immutable char))
 in
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     assert(transTable.length == 256, "transTable had invalid length of " ~
             to!string(transTable.length));
 }
@@ -5578,7 +5578,7 @@ string makeTrans(scope const(char)[] from, scope const(char)[] to) @trusted pure
 char[256] makeTransTable(scope const(char)[] from, scope const(char)[] to) @safe pure nothrow @nogc
 in
 {
-    import std.ascii : isASCII;
+    import ripstd.ascii : isASCII;
     assert(from.length == to.length, "from.length must match to.length");
     assert(from.length <= 256, "from.length must be <= 256");
     foreach (char c; from)
@@ -5608,8 +5608,8 @@ do
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -5684,7 +5684,7 @@ do
 ///
 @safe pure unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto buffer = appender!(char[])();
     auto transTable1 = makeTransTable("eo5", "57q");
     translate("hello world", transTable1, null, buffer);
@@ -5705,7 +5705,7 @@ do
 S succ(S)(S s) @safe pure
 if (isSomeString!S)
 {
-    import std.ascii : isAlphaNum;
+    import ripstd.ascii : isAlphaNum;
 
     if (s.length && isAlphaNum(s[$ - 1]))
     {
@@ -5760,8 +5760,8 @@ if (isSomeString!S)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -5822,9 +5822,9 @@ if (isSomeString!S)
 C1[] tr(C1, C2, C3, C4 = immutable char)
        (C1[] str, const(C2)[] from, const(C3)[] to, const(C4)[] modifiers = null)
 {
-    import std.array : appender;
-    import std.conv : conv_to = to;
-    import std.utf : decode;
+    import ripstd.array : appender;
+    import ripstd.conv : conv_to = to;
+    import ripstd.utf : decode;
 
     bool mod_c;
     bool mod_d;
@@ -5946,9 +5946,9 @@ C1[] tr(C1, C2, C3, C4 = immutable char)
 
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     // Complete list of test types; too slow to test'em all
     // alias TestTypes = AliasSeq!(
@@ -5991,7 +5991,7 @@ C1[] tr(C1, C2, C3, C4 = immutable char)
 @system pure unittest
 {
     import core.exception : AssertError;
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!AssertError(tr("abcdef", "cd", "CD", "X"));
 }
 
@@ -6022,16 +6022,16 @@ if (isSomeString!S ||
     isSomeChar!(ElementType!S) &&
     !isInfinite!S))
 {
-    import std.algorithm.comparison : among;
-    import std.ascii : isASCII;
+    import ripstd.algorithm.comparison : among;
+    import ripstd.ascii : isASCII;
 
     // ASCII only case insensitive comparison with two ranges
     static bool asciiCmp(S1)(S1 a, string b)
     {
-        import std.algorithm.comparison : equal;
-        import std.algorithm.iteration : map;
-        import std.ascii : toLower;
-        import std.utf : byChar;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.algorithm.iteration : map;
+        import ripstd.ascii : toLower;
+        import ripstd.utf : byChar;
         return a.map!toLower.equal(b.byChar.map!toLower);
     }
 
@@ -6039,7 +6039,7 @@ if (isSomeString!S ||
     // in the ASCII range so there's no reason to decode
     static if (isSomeString!S)
     {
-        import std.utf : byCodeUnit;
+        import ripstd.utf : byCodeUnit;
         auto codeUnits = s.byCodeUnit;
     }
     else
@@ -6227,7 +6227,7 @@ if (isSomeString!S ||
 // Test string types
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     static foreach (T; AliasSeq!(string, char[], wstring, wchar[], dstring, dchar[]))
     {
@@ -6242,8 +6242,8 @@ if (isSomeString!S ||
 // test ranges
 @system pure unittest
 {
-    import std.range : refRange;
-    import std.utf : byCodeUnit;
+    import ripstd.range : refRange;
+    import ripstd.utf : byCodeUnit;
 
     assert("123".byCodeUnit.isNumeric());
     assert("123UL".byCodeUnit.isNumeric());
@@ -6270,8 +6270,8 @@ if (isSomeString!S ||
 
 @system unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -6475,7 +6475,7 @@ do
 
 @safe pure nothrow unittest
 {
-    import std.exception : assertCTFEable;
+    import ripstd.exception : assertCTFEable;
     assertCTFEable!(
     {
     char[4] buffer;
@@ -6519,7 +6519,7 @@ do
     assert(soundex("Hardin") == "H635");
     assert(soundex("Martinez") == "M635");
 
-    import std.utf : byChar, byDchar, byWchar;
+    import ripstd.utf : byChar, byDchar, byWchar;
     assert(soundexer("Martinez".byChar ) == "M635");
     assert(soundexer("Martinez".byWchar) == "M635");
     assert(soundexer("Martinez".byDchar) == "M635");
@@ -6543,7 +6543,7 @@ do
  */
 string[string] abbrev(string[] values) @safe pure
 {
-    import std.algorithm.sorting : sort;
+    import ripstd.algorithm.sorting : sort;
 
     string[string] result;
 
@@ -6570,7 +6570,7 @@ string[string] abbrev(string[] values) @safe pure
                 break;
         }
 
-        import std.utf : stride;
+        import ripstd.utf : stride;
 
         for (size_t j = 0; j < value.length; j += stride(value, j))
         {
@@ -6593,7 +6593,7 @@ string[string] abbrev(string[] values) @safe pure
 ///
 @safe unittest
 {
-    import std.string;
+    import ripstd.string;
 
     static string[] list = [ "food", "foxy" ];
     auto abbrevs = abbrev(list);
@@ -6604,9 +6604,9 @@ string[string] abbrev(string[] values) @safe pure
 
 @system pure unittest
 {
-    import std.algorithm.sorting : sort;
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -6661,14 +6661,14 @@ if ((isInputRange!Range && isSomeChar!(Unqual!(ElementEncodingType!Range)) ||
     static if (is(immutable ElementEncodingType!Range == immutable char))
     {
         // decoding needed for chars
-        import std.utf : byDchar;
+        import ripstd.utf : byDchar;
 
         return str.byDchar.column(tabsize);
     }
     else
     {
         // decoding not needed for wchars and dchars
-        import std.uni : lineSep, paraSep, nelSep;
+        import ripstd.uni : lineSep, paraSep, nelSep;
 
         size_t column;
 
@@ -6700,7 +6700,7 @@ if ((isInputRange!Range && isSomeChar!(Unqual!(ElementEncodingType!Range)) ||
 ///
 @safe pure unittest
 {
-    import std.utf : byChar, byWchar, byDchar;
+    import ripstd.utf : byChar, byWchar, byDchar;
 
     assert(column("1234 ") == 5);
     assert(column("1234 "w) == 5);
@@ -6746,8 +6746,8 @@ if (isConvertibleToString!Range)
 
 @safe @nogc unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -6781,7 +6781,7 @@ S wrap(S)(S s, in size_t columns = 80, S firstindent = null,
 S indent = null, in size_t tabsize = 8)
 if (isSomeString!S)
 {
-    import std.uni : isWhite;
+    import ripstd.uni : isWhite;
     typeof(s.dup) result;
     bool inword;
     bool first = true;
@@ -6859,8 +6859,8 @@ if (isSomeString!S)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -6904,14 +6904,14 @@ if (isSomeString!S)
 @safe pure unittest
 {
     enum pretty = q{
-       import std.stdio;
+       import ripstd.stdio;
        void main() {
            writeln("Hello");
        }
     }.outdent();
 
     enum ugly = q{
-import std.stdio;
+import ripstd.stdio;
 void main() {
     writeln("Hello");
 }
@@ -6940,7 +6940,7 @@ void main() {
 S[] outdent(S)(S[] lines) @safe pure
 if (isSomeString!S)
 {
-    import std.algorithm.searching : startsWith;
+    import ripstd.algorithm.searching : startsWith;
 
     if (lines.empty)
     {
@@ -7025,8 +7025,8 @@ if (isSomeString!S)
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
 
     template outdent_testStr(S)
     {
@@ -7118,7 +7118,7 @@ if (isSomeString!S)
 
 @safe pure unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     auto bad = "      a\n\tb\n   c";
     assertThrown!StringException(bad.outdent);
 }
@@ -7146,9 +7146,9 @@ See_Also: $(LREF representation)
 auto assumeUTF(T)(T[] arr)
 if (staticIndexOf!(immutable T, immutable ubyte, immutable ushort, immutable uint) != -1)
 {
-    import std.traits : ModifyTypePreservingTQ;
-    import std.exception : collectException;
-    import std.utf : validate;
+    import ripstd.traits : ModifyTypePreservingTQ;
+    import ripstd.exception : collectException;
+    import ripstd.utf : validate;
 
     alias ToUTFType(U) = AliasSeq!(char, wchar, dchar)[U.sizeof / 2];
     auto asUTF = cast(ModifyTypePreservingTQ!(ToUTFType, T)[]) arr;
@@ -7174,7 +7174,7 @@ if (staticIndexOf!(immutable T, immutable ubyte, immutable ushort, immutable uin
 
 pure @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     static foreach (T; AliasSeq!(char[], wchar[], dchar[]))
     {{
         immutable T jti = "Hello World";
@@ -7211,7 +7211,7 @@ pure @system unittest
 pure @system unittest
 {
     import core.exception : AssertError;
-    import std.exception : assertThrown, assertNotThrown;
+    import ripstd.exception : assertThrown, assertNotThrown;
 
     immutable(ubyte)[] a = [ 0xC0 ];
 

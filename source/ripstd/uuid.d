@@ -100,7 +100,7 @@ module ripstd.uuid;
 ///
 @safe unittest
 {
-    import std.uuid;
+    import ripstd.uuid;
 
     UUID[] ids;
     ids ~= randomUUID();
@@ -119,15 +119,15 @@ module ripstd.uuid;
     assert(id.empty);
 }
 
-import std.range.primitives;
-import std.traits;
+import ripstd.range.primitives;
+import ripstd.traits;
 
 /**
  *
  */
 public struct UUID
 {
-    import std.meta : AliasSeq, allSatisfy;
+    import ripstd.meta : AliasSeq, allSatisfy;
 
     private:
         alias skipSeq = AliasSeq!(8, 13, 18, 23);
@@ -277,7 +277,7 @@ public struct UUID
         @safe pure this(T...)(T uuidData)
             if (uuidData.length == 16 && allSatisfy!(isIntegral, T))
         {
-            import std.conv : to;
+            import ripstd.conv : to;
 
             foreach (idx, it; uuidData)
             {
@@ -333,7 +333,7 @@ public struct UUID
          */
         this(T)(in T[] uuid) if (isSomeChar!(Unqual!T))
         {
-            import std.conv : to, parse;
+            import ripstd.conv : to, parse;
             if (uuid.length < 36)
             {
                 throw new UUIDParsingException(to!string(uuid), 0,
@@ -402,9 +402,9 @@ public struct UUID
 
         @safe pure unittest
         {
-            import std.conv : to;
-            import std.exception;
-            import std.meta : AliasSeq;
+            import ripstd.conv : to;
+            import ripstd.exception;
+            import ripstd.meta : AliasSeq;
 
             static foreach (S; AliasSeq!(char[], const(char)[], immutable(char)[],
                                   wchar[], const(wchar)[], immutable(wchar)[],
@@ -519,7 +519,7 @@ public struct UUID
          * Returns the format used by this UUID.
          *
          * Note: Do not confuse this with $(REF _Variant, std,_variant).
-         * The type of this property is $(MYREF3 std.uuid.UUID.Variant, _Variant).
+         * The type of this property is $(MYREF3 ripstd.uuid.UUID.Variant, _Variant).
          *
          * See_Also:
          * $(MYREF3 UUID.Variant, Variant)
@@ -683,7 +683,7 @@ public struct UUID
             assert(test[UUID("9ac0a4e5-10ee-493a-86fc-d29eeb82ecc1")] == 3);
 
             //UUIDS can be sorted:
-            import std.algorithm;
+            import ripstd.algorithm;
             UUID[] ids = [UUID("8a94f585-d180-44f7-8929-6fca0189c7d0"),
                           UUID("7c351fd4-b860-4ee3-bbdc-7f79f3dfb00a"),
                           UUID("9ac0a4e5-10ee-493a-86fc-d29eeb82ecc1")];
@@ -703,7 +703,7 @@ public struct UUID
          */
         @safe pure nothrow @nogc int opCmp(const UUID s) const
         {
-            import std.algorithm.comparison : cmp;
+            import ripstd.algorithm.comparison : cmp;
             return cmp(this.data[], s.data[]);
         }
 
@@ -712,7 +712,7 @@ public struct UUID
          */
         @safe pure nothrow @nogc int opCmp(ref const scope UUID s) const
         {
-            import std.algorithm.comparison : cmp;
+            import ripstd.algorithm.comparison : cmp;
             return cmp(this.data[], s.data[]);
         }
 
@@ -817,7 +817,7 @@ public struct UUID
 
             assert(test[UUID("9ac0a4e5-10ee-493a-86fc-d29eeb82ecc1")] == 3);
 
-            import std.algorithm;
+            import ripstd.algorithm;
             UUID[] ids = [UUID("8a94f585-d180-44f7-8929-6fca0189c7d0"),
                           UUID("7c351fd4-b860-4ee3-bbdc-7f79f3dfb00a"),
                           UUID("9ac0a4e5-10ee-493a-86fc-d29eeb82ecc1")];
@@ -896,7 +896,7 @@ public struct UUID
          */
         @trusted pure nothrow string toString() const
         {
-            import std.exception : assumeUnique;
+            import ripstd.exception : assumeUnique;
             auto result = new char[36];
             toString(result);
             return result.assumeUnique;
@@ -912,7 +912,7 @@ public struct UUID
 
         @safe pure nothrow @nogc unittest
         {
-            import std.meta : AliasSeq;
+            import ripstd.meta : AliasSeq;
             static foreach (Char; AliasSeq!(char, wchar, dchar))
             {{
                 alias String = immutable(Char)[];
@@ -934,7 +934,7 @@ public struct UUID
         @system pure nothrow @nogc unittest
         {
             // @system due to cast
-            import std.encoding : Char = AsciiChar;
+            import ripstd.encoding : Char = AsciiChar;
             enum  utfstr = "8ab3060e-2cba-4f23-b74c-b52db3bdfb46";
             alias String = immutable(Char)[];
             enum String s = cast(String) utfstr;
@@ -1016,7 +1016,7 @@ public struct UUID
 /// ditto
 @safe pure nothrow @nogc UUID md5UUID(const(ubyte[]) data, const UUID namespace = UUID.init)
 {
-    import std.digest.md : MD5;
+    import ripstd.digest.md : MD5;
 
     MD5 hash;
     hash.start();
@@ -1127,7 +1127,7 @@ public struct UUID
 /// ditto
 @safe pure nothrow @nogc UUID sha1UUID(scope const(ubyte)[] data, scope const UUID namespace = UUID.init)
 {
-    import std.digest.sha : SHA1;
+    import ripstd.digest.sha : SHA1;
 
     SHA1 sha;
     sha.start();
@@ -1209,7 +1209,7 @@ public struct UUID
  */
 @safe UUID randomUUID()
 {
-    import std.random : rndGen;
+    import ripstd.random : rndGen;
     // A PRNG with fewer than `n` bytes of state cannot produce
     // every distinct `n` byte sequence.
     static if (typeof(rndGen).sizeof >= UUID.sizeof)
@@ -1218,7 +1218,7 @@ public struct UUID
     }
     else
     {
-        import std.random : unpredictableSeed, Xorshift192;
+        import ripstd.random : unpredictableSeed, Xorshift192;
         static assert(Xorshift192.sizeof >= UUID.sizeof);
         static Xorshift192 rng;
         static bool initialized;
@@ -1235,7 +1235,7 @@ public struct UUID
 UUID randomUUID(RNG)(ref RNG randomGen)
 if (isInputRange!RNG && isIntegral!(ElementType!RNG))
 {
-    import std.random : isUniformRNG;
+    import ripstd.random : isUniformRNG;
     static assert(isUniformRNG!RNG, "randomGen must be a uniform RNG");
 
     alias E = ElementEncodingType!RNG;
@@ -1266,7 +1266,7 @@ if (isInputRange!RNG && isIntegral!(ElementType!RNG))
 ///
 @safe unittest
 {
-    import std.random : Xorshift192, unpredictableSeed;
+    import ripstd.random : Xorshift192, unpredictableSeed;
 
     //simple call
     auto uuid = randomUUID();
@@ -1280,7 +1280,7 @@ if (isInputRange!RNG && isIntegral!(ElementType!RNG))
 
 @safe unittest
 {
-    import std.random : Xorshift192, unpredictableSeed;
+    import ripstd.random : Xorshift192, unpredictableSeed;
     //simple call
     auto uuid = randomUUID();
 
@@ -1334,8 +1334,8 @@ if (isSomeString!T)
 UUID parseUUID(Range)(ref Range uuidRange)
 if (isInputRange!Range && isSomeChar!(ElementType!Range))
 {
-    import std.ascii : isHexDigit;
-    import std.conv : ConvException, parse;
+    import ripstd.ascii : isHexDigit;
+    import ripstd.conv : ConvException, parse;
 
     static if (isForwardRange!Range)
         auto errorCopy = uuidRange.save;
@@ -1345,7 +1345,7 @@ if (isInputRange!Range && isSomeChar!(ElementType!Range))
     {
         static if (isForwardRange!Range)
         {
-            import std.conv : to;
+            import ripstd.conv : to;
             static if (isInfinite!Range)
             {
                 throw new UUIDParsingException(to!string(take(errorCopy, pos)), pos, reason, message,
@@ -1365,7 +1365,7 @@ if (isInputRange!Range && isSomeChar!(ElementType!Range))
 
     static if (hasLength!Range)
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         if (uuidRange.length < 32)
         {
             throw new UUIDParsingException(to!string(uuidRange), 0, UUIDParsingException.Reason.tooLittle,
@@ -1495,9 +1495,9 @@ if (isInputRange!Range && isSomeChar!(ElementType!Range))
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.exception;
-    import std.meta;
+    import ripstd.conv : to;
+    import ripstd.exception;
+    import ripstd.meta;
 
     struct TestRange(bool forward)
     {
@@ -1632,7 +1632,7 @@ if (isInputRange!Range && isSomeChar!(ElementType!Range))
 
     // Test input range with non-dchar element type.
     {
-        import std.utf : byCodeUnit;
+        import ripstd.utf : byCodeUnit;
         auto range = "8AB3060E-2CBA-4F23-b74c-B52Db3BDFB46".byCodeUnit;
         assert(parseUUID(range).data == [138, 179, 6, 14, 44, 186, 79, 35, 183, 76, 181, 45, 179, 189, 251, 70]);
     }
@@ -1675,8 +1675,8 @@ enum uuidRegex = "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}"~
 ///
 @safe unittest
 {
-    import std.algorithm;
-    import std.regex;
+    import ripstd.algorithm;
+    import ripstd.regex;
 
     string test = "Lorem ipsum dolor sit amet, consetetur "~
     "6ba7b814-9dad-11d1-80b4-00c04fd430c8 sadipscing \n"~
@@ -1724,8 +1724,8 @@ public class UUIDParsingException : Exception
     private this(string input, size_t pos, Reason why = Reason.unknown, string msg = "",
         Throwable next = null, string file = __FILE__, size_t line = __LINE__) pure @trusted
     {
-        import std.array : replace;
-        import std.format : format;
+        import ripstd.array : replace;
+        import ripstd.format : format;
         this.input = input;
         this.position = pos;
         this.reason = why;
@@ -1739,7 +1739,7 @@ public class UUIDParsingException : Exception
 ///
 @safe unittest
 {
-    import std.exception : collectException;
+    import ripstd.exception : collectException;
 
     const inputUUID = "this-is-an-invalid-uuid";
     auto ex = collectException!UUIDParsingException(UUID(inputUUID));

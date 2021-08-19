@@ -76,15 +76,15 @@
  */
 module ripstd.concurrency;
 
-public import std.variant;
+public import ripstd.variant;
 
 import core.atomic;
 import core.sync.condition;
 import core.sync.mutex;
 import core.thread;
-import std.range.primitives;
-import std.range.interfaces : InputRange;
-import std.traits;
+import ripstd.range.primitives;
+import ripstd.range.interfaces : InputRange;
+import ripstd.traits;
 
 ///
 @system unittest
@@ -92,7 +92,7 @@ import std.traits;
     __gshared string received;
     static void spawnedFunc(Tid ownerTid)
     {
-        import std.conv : text;
+        import ripstd.conv : text;
         // Receive a message from the owner thread.
         receive((int i){
             received = text("Received the number ", i);
@@ -119,7 +119,7 @@ private
 {
     bool hasLocalAliasing(Types...)()
     {
-        import std.typecons : Rebindable;
+        import ripstd.typecons : Rebindable;
 
         // Works around "statement is not reachable"
         bool doesIt = false;
@@ -132,7 +132,7 @@ private
             else static if (is(T == struct))
                 doesIt |= hasLocalAliasing!(typeof(T.tupleof));
             else
-                doesIt |= std.traits.hasUnsharedAliasing!(T);
+                doesIt |= ripstd.traits.hasUnsharedAliasing!(T);
         }
         return doesIt;
     }
@@ -146,7 +146,7 @@ private
     // https://issues.dlang.org/show_bug.cgi?id=20097
     @safe unittest
     {
-        import std.datetime.systime : SysTime;
+        import ripstd.datetime.systime : SysTime;
         static struct Container { SysTime time; }
         static assert(!hasLocalAliasing!(SysTime, Container));
     }
@@ -172,7 +172,7 @@ private
             }
             else
             {
-                import std.typecons : Tuple;
+                import ripstd.typecons : Tuple;
 
                 type = t;
                 data = Tuple!(T)(vals);
@@ -187,7 +187,7 @@ private
             }
             else
             {
-                import std.typecons : Tuple;
+                import ripstd.typecons : Tuple;
                 return data.convertsTo!(Tuple!(T));
             }
         }
@@ -203,7 +203,7 @@ private
             }
             else
             {
-                import std.typecons : Tuple;
+                import ripstd.typecons : Tuple;
                 return data.get!(Tuple!(T));
             }
         }
@@ -221,7 +221,7 @@ private
             }
             else
             {
-                import std.typecons : Tuple;
+                import ripstd.typecons : Tuple;
                 return op(data.get!(Tuple!(Args)).expand);
             }
         }
@@ -229,7 +229,7 @@ private
 
     void checkops(T...)(T ops)
     {
-        import std.format : format;
+        import ripstd.format : format;
 
         foreach (i, t1; T)
         {
@@ -356,7 +356,7 @@ class MailboxFull : Exception
  */
 class TidMissingException : Exception
 {
-    import std.exception : basicExceptionCtors;
+    import ripstd.exception : basicExceptionCtors;
     ///
     mixin basicExceptionCtors;
 }
@@ -389,7 +389,7 @@ public:
      */
     void toString(scope void delegate(const(char)[]) sink) const
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         formattedWrite(sink, "Tid(%x)", cast(void*) mbox);
     }
 
@@ -398,7 +398,7 @@ public:
 @system unittest
 {
     // text!Tid is @system
-    import std.conv : text;
+    import ripstd.conv : text;
     Tid tid;
     assert(text(tid) == "Tid(0)");
     auto tid2 = thisTid;
@@ -410,7 +410,7 @@ public:
 // https://issues.dlang.org/show_bug.cgi?id=21512
 @system unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
 
     const(Tid) b = spawn(() {});
     assert(format!"%s"(b)[0 .. 4] == "Tid(");
@@ -441,7 +441,7 @@ public:
  */
 @property Tid ownerTid()
 {
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
 
     enforce!TidMissingException(thisInfo.owner.mbox !is null, "Error: Thread has no owner thread.");
     return thisInfo.owner;
@@ -449,7 +449,7 @@ public:
 
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     static void fun()
     {
@@ -751,7 +751,7 @@ do
 ///
 @system unittest
 {
-    import std.variant : Variant;
+    import ripstd.variant : Variant;
 
     auto process = ()
     {
@@ -801,7 +801,7 @@ do
 }
 
 // Make sure receive() works with free functions as well.
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     private void receiveFunction(int x) {}
 }
@@ -823,7 +823,7 @@ private template receiveOnlyRet(T...)
     }
     else
     {
-        import std.typecons : Tuple;
+        import ripstd.typecons : Tuple;
         alias receiveOnlyRet = Tuple!(T);
     }
 }
@@ -849,9 +849,9 @@ in
 }
 do
 {
-    import std.format : format;
-    import std.meta : allSatisfy;
-    import std.typecons : Tuple;
+    import ripstd.format : format;
+    import ripstd.meta : allSatisfy;
+    import ripstd.typecons : Tuple;
 
     Tuple!(T) ret;
 
@@ -1155,8 +1155,8 @@ in (tid.mbox !is null)
  */
 bool unregister(string name)
 {
-    import std.algorithm.mutation : remove, SwapStrategy;
-    import std.algorithm.searching : countUntil;
+    import ripstd.algorithm.mutation : remove, SwapStrategy;
+    import ripstd.algorithm.searching : countUntil;
 
     synchronized (registryLock)
     {
@@ -1256,13 +1256,13 @@ struct ThreadInfo
  * and terminates when finished.  But it is possible to create Schedulers that
  * reuse threads, that multiplex Fibers (coroutines) across a single thread,
  * or any number of other approaches.  By making the choice of Scheduler a
- * user-level option, std.concurrency may be used for far more types of
+ * user-level option, ripstd.concurrency may be used for far more types of
  * application than if this behavior were predefined.
  *
  * Example:
  * ---
- * import std.concurrency;
- * import std.stdio;
+ * import ripstd.concurrency;
+ * import ripstd.stdio;
  *
  * void main()
  * {
@@ -1577,7 +1577,7 @@ private:
 private:
     void dispatch()
     {
-        import std.algorithm.mutation : remove;
+        import ripstd.algorithm.mutation : remove;
 
         while (m_fibers.length > 0)
         {
@@ -1915,7 +1915,7 @@ void yield(T)(T value)
 @system unittest
 {
     import core.exception;
-    import std.exception;
+    import ripstd.exception;
 
     static void testScheduler(Scheduler s)
     {
@@ -1963,7 +1963,7 @@ void yield(T)(T value)
 ///
 @system unittest
 {
-    import std.range;
+    import ripstd.range;
 
     InputRange!int myIota = iota(10).inputRangeObject;
 
@@ -1974,7 +1974,7 @@ void yield(T)(T value)
     myIota.popFront();
     assert(myIota.front == 3);
 
-    //can be assigned to std.range.interfaces.InputRange directly
+    //can be assigned to ripstd.range.interfaces.InputRange directly
     myIota = new Generator!int(
     {
         foreach (i; 0 .. 10) yield(i);
@@ -2117,7 +2117,7 @@ private
          */
         bool get(T...)(scope T vals)
         {
-            import std.meta : AliasSeq;
+            import ripstd.meta : AliasSeq;
 
             static assert(T.length, "T must not be empty");
 
@@ -2421,7 +2421,7 @@ private
     {
         struct Range
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
 
             @property bool empty() const
             {
@@ -2482,7 +2482,7 @@ private
 
         void removeAt(Range r)
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
 
             assert(m_count, "Can not remove from empty Range");
             Node* n = r.m_prev;
@@ -2595,7 +2595,7 @@ private
 
 @system unittest
 {
-    import std.typecons : tuple, Tuple;
+    import ripstd.typecons : tuple, Tuple;
 
     static void testfn(Tid tid)
     {

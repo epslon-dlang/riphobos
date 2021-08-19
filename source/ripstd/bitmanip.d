@@ -53,9 +53,9 @@ Distributed under the Boost Software License, Version 1.0.
 */
 module ripstd.bitmanip;
 
-import std.range.primitives;
-public import std.system : Endian;
-import std.traits;
+import ripstd.range.primitives;
+public import ripstd.system : Endian;
+import ripstd.traits;
 
 private string myToString(ulong n) pure @safe
 {
@@ -169,7 +169,7 @@ private template createStorageAndFields(Ts...)
         alias StoreType = ulong;
     else
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         static assert(false, "Field widths must sum to 8, 16, 32, or 64, not " ~ to!string(Size));
         alias StoreType = ulong; // just to avoid another error msg
     }
@@ -284,7 +284,7 @@ See_Also: $(REF BitFlags, std,typecons)
 */
 string bitfields(T...)()
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     static assert(T.length % 3 == 0,
                   "Wrong number of arguments (" ~ to!string(T.length) ~ "): Must be a multiple of 3");
@@ -591,7 +591,7 @@ unittest
 @system unittest
 {
     import core.exception : AssertError;
-    import std.algorithm.searching : canFind;
+    import ripstd.algorithm.searching : canFind;
 
     static struct S
     {
@@ -980,7 +980,7 @@ struct BitArray
 private:
 
     import core.bitop : btc, bts, btr, bsf, bt;
-    import std.format.spec : FormatSpec;
+    import ripstd.format.spec : FormatSpec;
 
     size_t _len;
     size_t* _ptr;
@@ -1024,7 +1024,7 @@ public:
     ///
     @system unittest
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         bool[] input = [true, false, false, true, true];
         auto a = BitArray(input);
@@ -1040,9 +1040,9 @@ public:
     ///
     @system unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.array : array;
-        import std.range : iota, repeat;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.array : array;
+        import ripstd.range : iota, repeat;
 
         BitArray a = true.repeat(70).array;
         assert(a.length == 70);
@@ -1097,7 +1097,7 @@ public:
     ///
     @system unittest
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         auto a = BitArray([1, 0, 0, 1, 1]);
 
@@ -1117,7 +1117,7 @@ public:
     ///
     @system unittest
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         size_t[] source = [0b1100, 0b0011];
         enum sbits = size_t.sizeof * 8;
@@ -1141,7 +1141,7 @@ public:
         }
 
         // Example of mapping only part of the array.
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         auto bc = BitArray(source, sbits + 1);
         assert(bc.bitsSet.equal([0, sbits]));
@@ -1292,7 +1292,7 @@ public:
     ///
     @system pure nothrow unittest
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         auto b = BitArray([1, 0, 1, 0, 1, 1]);
 
@@ -1358,9 +1358,9 @@ public:
     ///
     @system pure nothrow unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.range : iota;
-        import std.stdio;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.range : iota;
+        import ripstd.stdio;
 
         auto b = BitArray([1, 0, 0, 0, 1, 1, 0]);
         b[1 .. 3] = true;
@@ -1400,8 +1400,8 @@ public:
     ///
     @system pure nothrow unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.range : iota;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.range : iota;
 
         // positions 0, 2, 4 are set
         auto b = BitArray([1, 0, 1, 0, 1, 0]);
@@ -1883,8 +1883,8 @@ public:
     ///
     @system unittest
     {
-        import std.array : array;
-        import std.range : repeat, take;
+        import ripstd.array : array;
+        import ripstd.range : repeat, take;
 
         // bit array with 300 elements
         auto a = BitArray(true.repeat.take(300).array);
@@ -1896,7 +1896,7 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=20606
     @system unittest
     {
-        import std.meta : AliasSeq;
+        import ripstd.meta : AliasSeq;
 
         static foreach (alias T; AliasSeq!(void, size_t))
         {{
@@ -2413,7 +2413,7 @@ public:
             _ptr[wordsToShift] = rollLeft(_ptr[0], 0, bitsToShift);
         }
 
-        import std.algorithm.comparison : min;
+        import ripstd.algorithm.comparison : min;
         foreach (i; 0 .. min(wordsToShift, dim))
         {
             _ptr[i] = 0;
@@ -2460,7 +2460,7 @@ public:
             }
         }
 
-        import std.algorithm.comparison : min;
+        import ripstd.algorithm.comparison : min;
         foreach (i; 0 .. min(wordsToShift, dim))
         {
             _ptr[dim - i - 1] = 0;
@@ -2470,8 +2470,8 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=17467
     @system unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.range : iota;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.range : iota;
 
         bool[] buf = new bool[64*3];
         buf[0 .. 64] = true;
@@ -2492,9 +2492,9 @@ public:
     // shifting right when length is a multiple of 8 * size_t.sizeof.
     @system unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.array : array;
-        import std.range : repeat, iota;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.array : array;
+        import ripstd.range : repeat, iota;
 
         immutable r = size_t.sizeof * 8;
 
@@ -2520,7 +2520,7 @@ public:
     ///
     @system unittest
     {
-        import std.format : format;
+        import ripstd.format : format;
 
         auto b = BitArray([1, 1, 0, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1]);
 
@@ -2548,7 +2548,7 @@ public:
     // Test multi-word case
     @system unittest
     {
-        import std.format : format;
+        import ripstd.format : format;
 
         // This has to be long enough to occupy more than one size_t. On 64-bit
         // machines, this would be at least 64 bits.
@@ -2633,7 +2633,7 @@ public:
     ///
     @system pure unittest
     {
-        import std.format : format;
+        import ripstd.format : format;
 
         auto b = BitArray([0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1]);
 
@@ -2649,8 +2649,8 @@ public:
      */
     @property auto bitsSet() const nothrow
     {
-        import std.algorithm.iteration : filter, map, joiner;
-        import std.range : iota, chain;
+        import ripstd.algorithm.iteration : filter, map, joiner;
+        import ripstd.range : iota, chain;
 
         return chain(
             iota(fullWords)
@@ -2665,7 +2665,7 @@ public:
     ///
     @system unittest
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         auto b1 = BitArray([0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1]);
         assert(b1.bitsSet.equal([4, 5, 6, 7, 12, 13, 14, 15]));
@@ -2680,8 +2680,8 @@ public:
 
     @system unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.range : iota;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.range : iota;
 
         BitArray b;
         enum wordBits = size_t.sizeof * 8;
@@ -2766,8 +2766,8 @@ public:
 /// Slicing & bitsSet
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
 
     bool[] buf = new bool[64 * 3];
     buf[0 .. 64] = true;
@@ -2780,7 +2780,7 @@ public:
 /// Concatenation and appending
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto b = BitArray([1, 0]);
     b ~= true;
@@ -2794,7 +2794,7 @@ public:
 /// Bit flipping
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto b = BitArray([1, 1, 0, 1]);
     b &= BitArray([0, 1, 1, 0]);
@@ -2806,7 +2806,7 @@ public:
 /// String format of bitarrays
 @system unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
     auto b = BitArray([1, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1]);
     assert(format("%b", b) == "1_00001111_00001111");
 }
@@ -2814,7 +2814,7 @@ public:
 ///
 @system unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
 
     BitArray b;
 
@@ -2881,8 +2881,8 @@ if (isIntegral!T || isSomeChar!T || isBoolean!T)
 
 @safe unittest
 {
-    import std.meta;
-    import std.stdio;
+    import ripstd.meta;
+    import ripstd.stdio;
     static foreach (T; AliasSeq!(bool, byte, ubyte, short, ushort, int, uint, long, ulong, char, wchar, dchar))
     {{
         scope(failure) writeln("Failed type: ", T.stringof);
@@ -3052,8 +3052,8 @@ if (__traits(isIntegral, T))
 
 @safe unittest
 {
-    import std.meta;
-    import std.stdio;
+    import ripstd.meta;
+    import ripstd.stdio;
     static foreach (T; AliasSeq!(bool, byte, ubyte, short, ushort, int, uint, long, ulong,
                          char, wchar, dchar
         /* The trouble here is with floats and doubles being compared against nan
@@ -3189,8 +3189,8 @@ if (canSwapEndianness!T)
 
 @safe unittest
 {
-    import std.meta;
-    import std.stdio;
+    import ripstd.meta;
+    import ripstd.stdio;
     static foreach (T; AliasSeq!(bool, byte, ubyte, short, ushort, int, uint, long, ulong,
                          char, wchar, dchar/*,
                          float, double*/))
@@ -3339,7 +3339,7 @@ private template isFloatOrDouble(T)
 
 @safe unittest
 {
-    import std.meta;
+    import ripstd.meta;
     static foreach (T; AliasSeq!(float, double))
     {
         static assert(isFloatOrDouble!(T));
@@ -3368,7 +3368,7 @@ private template canSwapEndianness(T)
 
 @safe unittest
 {
-    import std.meta;
+    import ripstd.meta;
     static foreach (T; AliasSeq!(bool, ubyte, byte, ushort, short, uint, int, ulong,
                          long, char, wchar, dchar, float, double))
     {
@@ -3489,7 +3489,7 @@ if (canSwapEndianness!T &&
 ///
 @safe unittest
 {
-    import std.algorithm.iteration : filter;
+    import ripstd.algorithm.iteration : filter;
     ubyte[] buffer = [1, 5, 22, 9, 44, 255, 7];
     auto range = filter!"true"(buffer);
     assert(range.peek!uint() == 17110537);
@@ -3737,7 +3737,7 @@ if (canSwapEndianness!T && isInputRange!R && is(ElementType!R : const ubyte))
 ///
 @safe unittest
 {
-    import std.range.primitives : empty;
+    import ripstd.range.primitives : empty;
     ubyte[] buffer = [1, 5, 22, 9, 44, 255, 8];
     assert(buffer.length == 7);
 
@@ -4331,7 +4331,7 @@ if (canSwapEndianness!T && isOutputRange!(R, ubyte))
 ///
 @safe unittest
 {
-    import std.array;
+    import ripstd.array;
     auto buffer = appender!(const ubyte[])();
     buffer.append!ushort(261);
     assert(buffer.data == [1, 5]);
@@ -4346,7 +4346,7 @@ if (canSwapEndianness!T && isOutputRange!(R, ubyte))
 /// bool
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto buffer = appender!(const ubyte[])();
 
     buffer.append!bool(true);
@@ -4359,7 +4359,7 @@ if (canSwapEndianness!T && isOutputRange!(R, ubyte))
 /// char wchar dchar
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto buffer = appender!(const ubyte[])();
 
     buffer.append!char('a');
@@ -4378,7 +4378,7 @@ if (canSwapEndianness!T && isOutputRange!(R, ubyte))
 /// float double
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto buffer = appender!(const ubyte[])();
 
     buffer.append!float(32.0f);
@@ -4391,7 +4391,7 @@ if (canSwapEndianness!T && isOutputRange!(R, ubyte))
 /// enum
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto buffer = appender!(const ubyte[])();
 
     enum Foo
@@ -4414,7 +4414,7 @@ if (canSwapEndianness!T && isOutputRange!(R, ubyte))
 /// enum - bool
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto buffer = appender!(const ubyte[])();
 
     enum Bool: bool
@@ -4436,7 +4436,7 @@ if (canSwapEndianness!T && isOutputRange!(R, ubyte))
 /// enum - float
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto buffer = appender!(const ubyte[])();
 
     enum Float: float
@@ -4455,7 +4455,7 @@ if (canSwapEndianness!T && isOutputRange!(R, ubyte))
 /// enum - double
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto buffer = appender!(const ubyte[])();
 
     enum Double: double
@@ -4474,7 +4474,7 @@ if (canSwapEndianness!T && isOutputRange!(R, ubyte))
 /// enum - real
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto buffer = appender!(const ubyte[])();
 
     enum Real: real
@@ -4488,9 +4488,9 @@ if (canSwapEndianness!T && isOutputRange!(R, ubyte))
 
 @system unittest
 {
-    import std.array;
-    import std.format : format;
-    import std.meta : AliasSeq;
+    import ripstd.array;
+    import ripstd.format : format;
+    import ripstd.meta : AliasSeq;
     static foreach (endianness; [Endian.bigEndian, Endian.littleEndian])
     {{
         auto toWrite = appender!(ubyte[])();
@@ -4574,7 +4574,7 @@ if (isIntegral!T)
 
 @safe unittest
 {
-    import std.meta;
+    import ripstd.meta;
     static foreach (T; AliasSeq!(byte, ubyte, short, ushort, int, uint, long, ulong))
     {
         assert(countBitsSet(cast(T) 0) == 0);
@@ -4673,8 +4673,8 @@ if (isIntegral!T)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
 
     assert(bitsSet(1).equal([0]));
     assert(bitsSet(5).equal([0, 2]));
@@ -4684,10 +4684,10 @@ if (isIntegral!T)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
 
-    import std.meta;
+    import ripstd.meta;
     static foreach (T; AliasSeq!(byte, ubyte, short, ushort, int, uint, long, ulong))
     {
         assert(bitsSet(cast(T) 0).empty);

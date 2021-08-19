@@ -1,7 +1,7 @@
 module ripstd.internal.unicode_decomp;
-import std.internal.unicode_tables;
+import ripstd.internal.unicode_tables;
 
-@safe pure nothrow @nogc package(std):
+@safe pure nothrow @nogc package(ripstd):
 
 static if (size_t.sizeof == 8)
 {

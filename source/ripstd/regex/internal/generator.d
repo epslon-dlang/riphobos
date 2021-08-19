@@ -12,11 +12,11 @@ module ripstd.regex.internal.generator;
 */
 @trusted private struct SampleGenerator(Char)
 {
-    import std.array : appender, Appender;
-    import std.format.write : formattedWrite;
-    import std.random : Xorshift;
-    import std.regex.internal.ir : Regex, IR, IRL;
-    import std.utf : isValidDchar, byChar;
+    import ripstd.array : appender, Appender;
+    import ripstd.format.write : formattedWrite;
+    import ripstd.random : Xorshift;
+    import ripstd.regex.internal.ir : Regex, IR, IRL;
+    import ripstd.utf : isValidDchar, byChar;
     Regex!Char re;
     Appender!(char[]) app;
     uint limit, seed;
@@ -177,7 +177,7 @@ module ripstd.regex.internal.generator;
 
 @system unittest
 {
-    import std.range, std.regex;
+    import ripstd.range, ripstd.regex;
     auto re = regex(`P[a-z]{3,}q`);
     auto gen = SampleGenerator!char(re, 20, 3141592);
     static assert(isInputRange!(typeof(gen)));

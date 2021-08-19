@@ -29,7 +29,7 @@ Returns:
 string demangle(string name) @safe pure nothrow
 {
     import core.demangle : demangle;
-    import std.exception : assumeUnique;
+    import ripstd.exception : assumeUnique;
     auto ret = demangle(name);
     return () @trusted { return ret.assumeUnique; } ();
 }
@@ -49,13 +49,13 @@ pretty-printing any found D mangled names.
  */
 @system unittest
 {
-    import std.ascii : isAlphaNum;
-    import std.algorithm.iteration : chunkBy, joiner, map;
-    import std.algorithm.mutation : copy;
-    import std.conv : to;
-    import std.demangle : demangle;
-    import std.functional : pipe;
-    import std.stdio : stdin, stdout;
+    import ripstd.ascii : isAlphaNum;
+    import ripstd.algorithm.iteration : chunkBy, joiner, map;
+    import ripstd.algorithm.mutation : copy;
+    import ripstd.conv : to;
+    import ripstd.demangle : demangle;
+    import ripstd.functional : pipe;
+    import ripstd.stdio : stdin, stdout;
 
     void main()
     {

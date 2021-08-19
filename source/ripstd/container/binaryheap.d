@@ -16,16 +16,16 @@ Authors: $(HTTP erdani.com, Andrei Alexandrescu)
 */
 module ripstd.container.binaryheap;
 
-import std.range.primitives;
-import std.traits;
+import ripstd.range.primitives;
+import ripstd.traits;
 
-public import std.container.util;
+public import ripstd.container.util;
 
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : take;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : take;
     auto maxHeap = heapify([4, 7, 3, 1, 5]);
     assert(maxHeap.take(3).equal([7, 5, 4]));
 
@@ -65,12 +65,12 @@ container.
 struct BinaryHeap(Store, alias less = "a < b")
 if (isRandomAccessRange!(Store) || isRandomAccessRange!(typeof(Store.init[])))
 {
-    import std.algorithm.comparison : min;
-    import std.algorithm.mutation : move, swapAt;
-    import std.algorithm.sorting : HeapOps;
-    import std.exception : enforce;
-    import std.functional : binaryFun;
-    import std.typecons : RefCounted, RefCountedAutoInitialize;
+    import ripstd.algorithm.comparison : min;
+    import ripstd.algorithm.mutation : move, swapAt;
+    import ripstd.algorithm.sorting : HeapOps;
+    import ripstd.exception : enforce;
+    import ripstd.functional : binaryFun;
+    import ripstd.typecons : RefCounted, RefCountedAutoInitialize;
 
     static if (isRandomAccessRange!Store)
         alias Range = Store;
@@ -80,7 +80,7 @@ if (isRandomAccessRange!(Store) || isRandomAccessRange!(typeof(Store.init[])))
     alias buildHeap = HeapOps!(less, Range).buildHeap;
 
 // Really weird @@BUG@@: if you comment out the "private:" label below,
-// std.algorithm can't unittest anymore
+// ripstd.algorithm can't unittest anymore
 //private:
 
     // The payload includes the support store and the effective length
@@ -111,7 +111,7 @@ if (isRandomAccessRange!(Store) || isRandomAccessRange!(typeof(Store.init[])))
     {
         debug
         {
-            import std.conv : to;
+            import ripstd.conv : to;
             if (!_payload.refCountedStore.isInitialized) return;
             if (_length < 2) return;
             for (size_t n = _length - 1; n >= 1; --n)
@@ -122,7 +122,7 @@ if (isRandomAccessRange!(Store) || isRandomAccessRange!(typeof(Store.init[])))
         }
     }
 
-    // @@@BUG@@@: add private here, std.algorithm doesn't unittest anymore
+    // @@@BUG@@@: add private here, ripstd.algorithm doesn't unittest anymore
     /*private*/ void pop(Store store)
     {
         assert(!store.empty, "Cannot pop an empty store.");
@@ -281,7 +281,7 @@ and $(D length == capacity), throws an exception.
         }
         else
         {
-            import std.traits : isDynamicArray;
+            import ripstd.traits : isDynamicArray;
             static if (isDynamicArray!Store)
             {
                 if (length == _store.length)
@@ -394,7 +394,7 @@ leaves the heap unaffected and returns `false`.
 
         if (!comp(value, _store.front)) return false; // value >= largest
 
-        import std.algorithm.mutation : swap;
+        import ripstd.algorithm.mutation : swap;
         swap(_store.front, value);
 
         percolate(_store[], 0, _length);
@@ -407,7 +407,7 @@ leaves the heap unaffected and returns `false`.
 /// Example from "Introduction to Algorithms" Cormen et al, p 146
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     int[] a = [ 4, 1, 3, 2, 16, 9, 10, 14, 8, 7 ];
     auto h = heapify(a);
     // largest element
@@ -420,8 +420,8 @@ leaves the heap unaffected and returns `false`.
 /// lazy iteration of the underlying range in descending order.
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : take;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : take;
     int[] a = [4, 1, 3, 2, 16, 9, 10, 14, 8, 7];
     auto top5 = heapify(a).take(5);
     assert(top5.equal([16, 14, 10, 9, 8]));
@@ -441,8 +441,8 @@ BinaryHeap!(Store, less) heapify(alias less = "a < b", Store)(Store s,
 ///
 @system unittest
 {
-    import std.conv : to;
-    import std.range.primitives;
+    import ripstd.conv : to;
+    import ripstd.range.primitives;
     {
         // example from "Introduction to Algorithms" Cormen et al., p 146
         int[] a = [ 4, 1, 3, 2, 16, 9, 10, 14, 8, 7 ];
@@ -473,7 +473,7 @@ BinaryHeap!(Store, less) heapify(alias less = "a < b", Store)(Store s,
 @system unittest
 {
     // Test range interface.
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     int[] a = [4, 1, 3, 2, 16, 9, 10, 14, 8, 7];
     auto h = heapify(a);
     static assert(isInputRange!(typeof(h)));
@@ -483,7 +483,7 @@ BinaryHeap!(Store, less) heapify(alias less = "a < b", Store)(Store s,
 // https://issues.dlang.org/show_bug.cgi?id=15675
 @system unittest
 {
-    import std.container.array : Array;
+    import ripstd.container.array : Array;
 
     Array!int elements = [1, 2, 10, 12];
     auto heap = heapify(elements);
@@ -509,7 +509,7 @@ BinaryHeap!(Store, less) heapify(alias less = "a < b", Store)(Store s,
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     int[] a = [4, 1, 3, 2, 16, 9, 10, 14, 8, 7];
     auto heap = heapify(a);
     auto dup = heap.dup();
@@ -566,8 +566,8 @@ BinaryHeap!(Store, less) heapify(alias less = "a < b", Store)(Store s,
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange;
 
     alias RefRange = DummyRange!(ReturnBy.Reference, Length.Yes, RangeType.Random);
 
@@ -589,7 +589,7 @@ BinaryHeap!(Store, less) heapify(alias less = "a < b", Store)(Store s,
 // https://issues.dlang.org/show_bug.cgi?id=17314
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     int[] a = [5];
     auto heap = heapify(a);
     heap.insert(6);

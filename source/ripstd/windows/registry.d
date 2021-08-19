@@ -39,16 +39,16 @@ module ripstd.windows.registry;
 version (Windows):
 
 import core.sys.windows.winbase, core.sys.windows.windef, core.sys.windows.winreg;
-import std.array;
-import std.conv;
-import std.exception;
-import std.internal.cstring;
-import std.internal.windows.advapi32;
-import std.system : Endian, endian;
-import std.windows.syserror;
+import ripstd.array;
+import ripstd.conv;
+import ripstd.exception;
+import ripstd.internal.cstring;
+import ripstd.internal.windows.advapi32;
+import ripstd.system : Endian, endian;
+import ripstd.windows.syserror;
 
 //debug = winreg;
-debug(winreg) import std.stdio;
+debug(winreg) import ripstd.stdio;
 
 private
 {
@@ -81,7 +81,7 @@ class Win32Exception : WindowsException
     @property int error() { return super.code; }
 }
 
-version (StdUnittest) import std.string : startsWith, endsWith;
+version (RIPStdUnittest) import ripstd.string : startsWith, endsWith;
 
 @safe unittest
 {
@@ -106,7 +106,7 @@ version (StdUnittest) import std.string : startsWith, endsWith;
 }
 
 /**
-    Exception class thrown by the std.windows.registry classes.
+    Exception class thrown by the ripstd.windows.registry classes.
  */
 class RegistryException
     : Win32Exception
@@ -618,7 +618,7 @@ do
     if (data.length > 0 && data[$-1] == '\0')
         data.length = data.length - 1;
 
-    auto list = std.array.split(data[], "\0");
+    auto list = ripstd.array.split(data[], "\0");
     value.length = list.length;
     foreach (i, ref v; value)
     {
@@ -1102,7 +1102,7 @@ public:
             s = value[i].to!wstring;
         }
         data[$-1] = "\0";
-        auto ws = std.array.join(data, "\0"w);
+        auto ws = ripstd.array.join(data, "\0"w);
 
         regSetValue(m_hkey, name, REG_VALUE_TYPE.REG_MULTI_SZ, ws.ptr, to!uint(ws.length * wchar.sizeof));
     }
@@ -1742,7 +1742,7 @@ private:
 @system unittest
 {
     debug(winreg) scope(success) writeln("unittest @", __FILE__, ":", __LINE__, " succeeded.");
-    debug(winreg) writefln("std.windows.registry.unittest read");
+    debug(winreg) writefln("ripstd.windows.registry.unittest read");
 
 /+
     // Mask for test speed up
@@ -1775,7 +1775,7 @@ private:
 @system unittest
 {
     debug(winreg) scope(success) writeln("unittest @", __FILE__, ":", __LINE__, " succeeded.");
-    debug(winreg) writefln("std.windows.registry.unittest write");
+    debug(winreg) writefln("ripstd.windows.registry.unittest write");
 
     // Warning: This unit test writes to the registry.
     // The test can fail if you don't have sufficient rights

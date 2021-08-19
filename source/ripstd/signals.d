@@ -64,7 +64,7 @@ module ripstd.signals;
 
 import core.exception : onOutOfMemoryError;
 import core.stdc.stdlib : calloc, realloc, free;
-import std.stdio;
+import ripstd.stdio;
 
 // Special function for internal use only.
 // Use of this is where the slot had better be a delegate
@@ -289,7 +289,7 @@ mixin template Signal(T1...)
 ///
 @system unittest
 {
-    import std.signals;
+    import ripstd.signals;
 
     int observedMessageCounter = 0;
 
@@ -720,7 +720,7 @@ version (none) // Disabled because of https://issues.dlang.org/show_bug.cgi?id=5
 
 @system unittest
 {
-    import std.signals;
+    import ripstd.signals;
 
     class Observer
     {   // our slot

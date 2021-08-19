@@ -11,8 +11,8 @@ module ripstd.internal.scopebuffer;
 //debug=ScopeBuffer;
 
 import core.stdc.stdlib : realloc;
-import std.traits;
-import std.internal.attributes : betterC;
+import ripstd.traits;
+import ripstd.internal.attributes : betterC;
 
 /**************************************
  * ScopeBuffer encapsulates using a local array as a temporary buffer.
@@ -32,7 +32,7 @@ import std.internal.attributes : betterC;
  * Example:
 ---
 import core.stdc.stdio;
-import std.internal.scopebuffer;
+import ripstd.internal.scopebuffer;
 void main()
 {
     char[2] buf = void;
@@ -63,7 +63,7 @@ void main()
  * It is invalid to access ScopeBuffer's contents when ScopeBuffer goes out of scope.
  * Hence, copying the contents are necessary to keep them around:
 ---
-import std.internal.scopebuffer;
+import ripstd.internal.scopebuffer;
 string cat(string s1, string s2)
 {
     char[10] tmpbuf = void;
@@ -293,7 +293,7 @@ if (isAssignable!T &&
 @system @betterC unittest
 {
     import core.stdc.stdio;
-    import std.range;
+    import ripstd.range;
 
     char[2] tmpbuf = void;
     {

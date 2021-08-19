@@ -1,6 +1,6 @@
 //Written in the D programming language
 /*
-    Implementation of Thompson NFA std.regex engine.
+    Implementation of Thompson NFA ripstd.regex engine.
     Key point is evaluation of all possible threads (state) at each step
     in a breadth-first manner, thereby geting some nice properties:
         - looking at each character only once
@@ -8,10 +8,10 @@
 */
 module ripstd.regex.internal.thompson;
 
-package(std.regex):
+package(ripstd.regex):
 
-import std.range.primitives;
-import std.regex.internal.ir;
+import ripstd.range.primitives;
+import ripstd.regex.internal.ir;
 
 //State of VM thread
 struct Thread(DataIndex)
@@ -487,7 +487,7 @@ template ThompsonOps(E, S, bool withInput:true)
                 size_t end = source[n].end;
                 if (s[idx .. end].front == front)
                 {
-                    import std.utf : stride;
+                    import ripstd.utf : stride;
 
                     t.uopCounter += stride(s[idx .. end], 0);
                     if (t.uopCounter + source[n].begin == source[n].end)

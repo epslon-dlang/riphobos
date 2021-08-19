@@ -47,14 +47,14 @@ T2=$(TR $(TDNW $(LREF $1)) $(TD $+))
  */
 module ripstd.algorithm.setops;
 
-import std.range.primitives;
+import ripstd.range.primitives;
 
-import std.functional : unaryFun, binaryFun;
-import std.traits;
-import std.meta : AliasSeq, staticMap, allSatisfy, anySatisfy;
+import ripstd.functional : unaryFun, binaryFun;
+import ripstd.traits;
+import ripstd.meta : AliasSeq, staticMap, allSatisfy, anySatisfy;
 
-import std.algorithm.sorting : Merge;
-import std.typecons : No;
+import ripstd.algorithm.sorting : Merge;
+import ripstd.typecons : No;
 
 // cartesianProduct
 /**
@@ -89,13 +89,13 @@ auto cartesianProduct(R1, R2)(R1 range1, R2 range2)
 if (!allSatisfy!(isForwardRange, R1, R2) ||
     anySatisfy!(isInfinite, R1, R2))
 {
-    import std.algorithm.iteration : map, joiner;
+    import ripstd.algorithm.iteration : map, joiner;
 
     static if (isInfinite!R1 && isInfinite!R2)
     {
         static if (isForwardRange!R1 && isForwardRange!R2)
         {
-            import std.range : zip, repeat, take, chain, sequence;
+            import ripstd.range : zip, repeat, take, chain, sequence;
 
             // This algorithm traverses the cartesian product by alternately
             // covering the right and bottom edges of an increasing square area
@@ -114,13 +114,13 @@ if (!allSatisfy!(isForwardRange, R1, R2) ||
     }
     else static if (isInputRange!R1 && isForwardRange!R2 && !isInfinite!R2)
     {
-        import std.range : zip, repeat;
+        import ripstd.range : zip, repeat;
         return joiner(map!((ElementType!R1 a) => zip(repeat(a), range2.save))
                           (range1));
     }
     else static if (isInputRange!R2 && isForwardRange!R1 && !isInfinite!R1)
     {
-        import std.range : zip, repeat;
+        import ripstd.range : zip, repeat;
         return joiner(map!((ElementType!R2 a) => zip(range1.save, repeat(a)))
                           (range2));
     }
@@ -131,9 +131,9 @@ if (!allSatisfy!(isForwardRange, R1, R2) ||
 ///
 @safe unittest
 {
-    import std.algorithm.searching : canFind;
-    import std.range;
-    import std.typecons : tuple;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.range;
+    import ripstd.typecons : tuple;
 
     auto N = sequence!"n"(0);         // the range of natural numbers
     auto N2 = cartesianProduct(N, N); // the range of all pairs of natural numbers
@@ -148,8 +148,8 @@ if (!allSatisfy!(isForwardRange, R1, R2) ||
 ///
 @safe unittest
 {
-    import std.algorithm.searching : canFind;
-    import std.typecons : tuple;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.typecons : tuple;
 
     auto B = [ 1, 2, 3 ];
     auto C = [ 4, 5, 6 ];
@@ -165,9 +165,9 @@ if (!allSatisfy!(isForwardRange, R1, R2) ||
 @safe unittest
 {
     // Test cartesian product of two infinite ranges
-    import std.algorithm.searching : canFind;
-    import std.range;
-    import std.typecons : tuple;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.range;
+    import ripstd.typecons : tuple;
 
     auto Even = sequence!"2*n"(0);
     auto Odd = sequence!"2*n+1"(0);
@@ -189,9 +189,9 @@ if (!allSatisfy!(isForwardRange, R1, R2) ||
 {
     // Test cartesian product of an infinite input range and a finite forward
     // range.
-    import std.algorithm.searching : canFind;
-    import std.range;
-    import std.typecons : tuple;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.range;
+    import ripstd.typecons : tuple;
 
     auto N = sequence!"n"(0);
     auto M = [100, 200, 300];
@@ -227,8 +227,8 @@ if (!allSatisfy!(isForwardRange, R1, R2) ||
 
 @safe unittest
 {
-    import std.algorithm.searching : canFind;
-    import std.typecons : tuple;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.typecons : tuple;
 
     // Test cartesian product of two finite ranges.
     auto X = [1, 2, 3];
@@ -254,12 +254,12 @@ if (!allSatisfy!(isForwardRange, R1, R2) ||
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
-    import std.algorithm.searching : canFind;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.typecons : tuple;
 
-    import std.range;
+    import ripstd.range;
     auto N = sequence!"n"(0);
 
     // To force the template to fall to the second case, we wrap N in a struct
@@ -365,7 +365,7 @@ if (ranges.length >= 2 &&
     //
     // For infinite ranges or non-forward ranges, we fall back to the old
     // implementation which expands an exponential number of templates.
-    import std.typecons : tuple;
+    import ripstd.typecons : tuple;
 
     static struct Result
     {
@@ -386,8 +386,8 @@ if (ranges.length >= 2 &&
         }
         @property auto front()
         {
-            import std.algorithm.internal : algoFormat;
-            import std.range : iota;
+            import ripstd.algorithm.internal : algoFormat;
+            import ripstd.range : iota;
             return mixin(algoFormat("tuple(%(current[%d].front%|,%))",
                                     iota(0, current.length)));
         }
@@ -462,9 +462,9 @@ if (!allSatisfy!(isForwardRange, R1, R2, RR) ||
      * one level of tuples so that a ternary cartesian product, for example,
      * returns 3-element tuples instead of nested 2-element tuples.
      */
-    import std.algorithm.internal : algoFormat;
-    import std.algorithm.iteration : map;
-    import std.range : iota;
+    import ripstd.algorithm.internal : algoFormat;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.range : iota;
 
     enum string denest = algoFormat("tuple(a[0], %(a[1][%d]%|,%))",
                                 iota(0, otherRanges.length+1));
@@ -475,9 +475,9 @@ if (!allSatisfy!(isForwardRange, R1, R2, RR) ||
 
 @safe unittest
 {
-    import std.algorithm.searching : canFind;
-    import std.range;
-    import std.typecons : tuple, Tuple;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.range;
+    import ripstd.typecons : tuple, Tuple;
 
     auto N = sequence!"n"(0);
     auto N3 = cartesianProduct(N, N, N);
@@ -492,9 +492,9 @@ if (!allSatisfy!(isForwardRange, R1, R2, RR) ||
 
 @safe unittest
 {
-    import std.algorithm.searching : canFind;
-    import std.range;
-    import std.typecons : tuple, Tuple;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.range;
+    import ripstd.typecons : tuple, Tuple;
 
     auto N = sequence!"n"(0);
     auto N4 = cartesianProduct(N, N, N, N);
@@ -511,8 +511,8 @@ if (!allSatisfy!(isForwardRange, R1, R2, RR) ||
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : tuple;
 
     auto A = [ 1, 2, 3 ];
     auto B = [ 'a', 'b', 'c' ];
@@ -534,7 +534,7 @@ if (!allSatisfy!(isForwardRange, R1, R2, RR) ||
 
 pure @safe nothrow @nogc unittest
 {
-    import std.range.primitives : isForwardRange;
+    import ripstd.range.primitives : isForwardRange;
     int[2] A = [1,2];
     auto C = cartesianProduct(A[], A[], A[]);
     assert(isForwardRange!(typeof(C)));
@@ -549,15 +549,15 @@ pure @safe nothrow @nogc unittest
 // https://issues.dlang.org/show_bug.cgi?id=13935
 @safe unittest
 {
-    import std.algorithm.iteration : map;
+    import ripstd.algorithm.iteration : map;
     auto seq = [1, 2].map!(x => x);
     foreach (pair; cartesianProduct(seq, seq)) {}
 }
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : tuple;
 
     static struct SystemRange
     {
@@ -639,7 +639,7 @@ void largestPartialIntersection
 ///
 @system unittest
 {
-    import std.typecons : tuple, Tuple;
+    import ripstd.typecons : tuple, Tuple;
 
     // Figure which number can be found in most arrays of the set of
     // arrays below.
@@ -682,7 +682,7 @@ void largestPartialIntersection
     assert(y[1] == tuple(1.0, 6u));
 }
 
-import std.algorithm.sorting : SortOutput; // FIXME
+import ripstd.algorithm.sorting : SortOutput; // FIXME
 
 // largestPartialIntersectionWeighted
 /**
@@ -707,8 +707,8 @@ void largestPartialIntersectionWeighted
 (alias less = "a < b", RangeOfRanges, Range, WeightsAA)
 (RangeOfRanges ror, Range tgt, WeightsAA weights, SortOutput sorted = No.sortOutput)
 {
-    import std.algorithm.iteration : group;
-    import std.algorithm.sorting : topNCopy;
+    import ripstd.algorithm.iteration : group;
+    import ripstd.algorithm.sorting : topNCopy;
 
     if (tgt.empty) return;
     alias InfoType = ElementType!Range;
@@ -722,7 +722,7 @@ void largestPartialIntersectionWeighted
 ///
 @system unittest
 {
-    import std.typecons : tuple, Tuple;
+    import ripstd.typecons : tuple, Tuple;
 
     // Figure which number can be found in most arrays of the set of
     // arrays below, with specific per-element weights
@@ -759,8 +759,8 @@ void largestPartialIntersectionWeighted
 
 @system unittest
 {
-    import std.conv : text;
-    import std.typecons : tuple, Tuple, Yes;
+    import ripstd.conv : text;
+    import ripstd.typecons : tuple, Tuple, Yes;
 
     double[][] a =
         [
@@ -778,8 +778,8 @@ void largestPartialIntersectionWeighted
 
 @system unittest
 {
-    import std.conv : text;
-    import std.typecons : tuple, Tuple, Yes;
+    import ripstd.conv : text;
+    import ripstd.typecons : tuple, Tuple, Yes;
 
     string[][] a =
         [
@@ -796,7 +796,7 @@ void largestPartialIntersectionWeighted
 
 @system unittest
 {
-    import std.typecons : tuple, Tuple;
+    import ripstd.typecons : tuple, Tuple;
 
     // Figure which number can be found in most arrays of the set of
     // arrays below, with specific per-element weights
@@ -817,8 +817,8 @@ void largestPartialIntersectionWeighted
 
 @system unittest
 {
-    import std.container : Array;
-    import std.typecons : Tuple;
+    import ripstd.container : Array;
+    import ripstd.typecons : Tuple;
 
     alias T = Tuple!(uint, uint);
     const Array!T arrayOne = Array!T( [ T(1,2), T(3,4) ] );
@@ -870,7 +870,7 @@ See_Also: $(REF merge, std,algorithm,sorting) for an analogous function that
  */
 struct MultiwayMerge(alias less, RangeOfRanges)
 {
-    import std.container : BinaryHeap;
+    import ripstd.container : BinaryHeap;
 
     private alias ElementType = .ElementType!(.ElementType!RangeOfRanges);
     private alias comp = binaryFun!less;
@@ -888,7 +888,7 @@ struct MultiwayMerge(alias less, RangeOfRanges)
     ///
     this(RangeOfRanges ror)
     {
-        import std.algorithm.mutation : remove, SwapStrategy;
+        import ripstd.algorithm.mutation : remove, SwapStrategy;
 
         // Preemptively get rid of all empty ranges in the input
         // No need for stability either
@@ -936,7 +936,7 @@ MultiwayMerge!(less, RangeOfRanges) multiwayMerge
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     double[][] a =
     [
@@ -987,15 +987,15 @@ See also: $(LREF multiwayMerge)
  */
 auto multiwayUnion(alias less = "a < b", RangeOfRanges)(RangeOfRanges ror)
 {
-    import std.algorithm.iteration : uniq;
-    import std.functional : not;
+    import ripstd.algorithm.iteration : uniq;
+    import ripstd.functional : not;
     return ror.multiwayMerge!(less).uniq!(not!less);
 }
 
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // sets
     double[][] a =
@@ -1127,8 +1127,8 @@ SetDifference!(less, R1, R2) setDifference(alias less = "a < b", R1, R2)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range.primitives : isForwardRange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range.primitives : isForwardRange;
 
     //sets
     int[] a = [ 1, 2, 4, 5, 7, 9 ];
@@ -1147,7 +1147,7 @@ SetDifference!(less, R1, R2) setDifference(alias less = "a < b", R1, R2)
 // https://issues.dlang.org/show_bug.cgi?id=10460
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     int[] a = [1, 2, 3, 4, 5];
     int[] b = [2, 4];
@@ -1278,7 +1278,7 @@ if (Rs.length >= 2 && allSatisfy!(isInputRange, Rs) &&
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // sets
     int[] a = [ 1, 2, 4, 5, 7, 9 ];
@@ -1297,8 +1297,8 @@ if (Rs.length >= 2 && allSatisfy!(isInputRange, Rs) &&
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : filter;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : filter;
 
     int[] a = [ 1, 2, 4, 5, 7, 9 ];
     int[] b = [ 0, 1, 2, 4, 7, 8 ];
@@ -1449,8 +1449,8 @@ setSymmetricDifference(alias less = "a < b", R1, R2)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range.primitives : isForwardRange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range.primitives : isForwardRange;
 
     // sets
     int[] a = [ 1, 2, 4, 5, 7, 9 ];
@@ -1468,7 +1468,7 @@ setSymmetricDifference(alias less = "a < b", R1, R2)
 // https://issues.dlang.org/show_bug.cgi?id=10460
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     int[] a = [1, 2];
     double[] b = [2.0, 3.0];
@@ -1508,8 +1508,8 @@ See_Also:
 auto setUnion(alias less = "a < b", Rs...)
 (Rs rs)
 {
-    import std.algorithm.iteration : uniq;
-    import std.algorithm.sorting : merge;
+    import ripstd.algorithm.iteration : uniq;
+    import ripstd.algorithm.sorting : merge;
     return merge!(less, Rs)(rs).uniq;
 }
 
@@ -1517,7 +1517,7 @@ auto setUnion(alias less = "a < b", Rs...)
 @safe pure nothrow unittest
     ///
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     int[] a = [1, 3, 5];
     int[] b = [2, 3, 4];
@@ -1526,7 +1526,7 @@ auto setUnion(alias less = "a < b", Rs...)
 
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     int[] a = [ 1, 2, 4, 5, 7, 9 ];
     int[] b = [ 0, 1, 2, 4, 7, 8 ];
@@ -1540,7 +1540,7 @@ auto setUnion(alias less = "a < b", Rs...)
 @safe unittest
 {
     // save
-    import std.range : dropOne;
+    import ripstd.range : dropOne;
     int[] a = [0, 1, 2];
     int[] b = [0, 3];
     auto arr = a.setUnion(b);
@@ -1551,7 +1551,7 @@ auto setUnion(alias less = "a < b", Rs...)
 
 @nogc @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     static immutable a = [1, 3, 5];
     static immutable b = [2, 4];
@@ -1561,9 +1561,9 @@ auto setUnion(alias less = "a < b", Rs...)
 
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange;
+    import ripstd.range : iota;
 
     auto dummyResult1 = [1, 1.5, 2, 3, 4, 5, 5.5, 6, 7, 8, 9, 10];
     auto dummyResult2 = iota(1, 11);

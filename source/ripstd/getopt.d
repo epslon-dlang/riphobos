@@ -28,8 +28,8 @@ Distributed under the Boost Software License, Version 1.0.
 */
 module ripstd.getopt;
 
-import std.exception : basicExceptionCtors;
-import std.traits;
+import ripstd.exception : basicExceptionCtors;
+import ripstd.traits;
 
 /**
 Thrown on one of the following conditions:
@@ -55,7 +55,7 @@ static assert(is(typeof(new GetOptException("message", Exception.init))));
    Synopsis:
 
 ---------
-import std.getopt;
+import ripstd.getopt;
 
 string data = "file.dat";
 int length = 24;
@@ -316,7 +316,7 @@ by passing `getopt` the `caseSensitive` directive like this:
 ---------
 bool foo, bar;
 getopt(args,
-    std.getopt.config.caseSensitive,
+    ripstd.getopt.config.caseSensitive,
     "foo", &foo,
     "bar", &bar);
 ---------
@@ -329,9 +329,9 @@ converse directive `caseInsensitive` is encountered:
 ---------
 bool foo, bar;
 getopt(args,
-    std.getopt.config.caseSensitive,
+    ripstd.getopt.config.caseSensitive,
     "foo", &foo,
-    std.getopt.config.caseInsensitive,
+    ripstd.getopt.config.caseInsensitive,
     "bar", &bar);
 ---------
 
@@ -362,7 +362,7 @@ with the `std.getopt.config.bundling` directive:
 ---------
 bool foo, bar;
 getopt(args,
-    std.getopt.config.bundling,
+    ripstd.getopt.config.bundling,
     "foo|f", &foo,
     "bar|b", &bar);
 ---------
@@ -377,7 +377,7 @@ arguments an exception will be thrown.
 ---------
 bool foo, bar;
 getopt(args,
-    std.getopt.config.required,
+    ripstd.getopt.config.required,
     "foo|f", &foo,
     "bar|b", &bar);
 ---------
@@ -393,7 +393,7 @@ If an application needs to do its own processing of whichever arguments
 ---------
 bool foo, bar;
 getopt(args,
-    std.getopt.config.passThrough,
+    ripstd.getopt.config.passThrough,
     "foo", &foo,
     "bar", &bar);
 ---------
@@ -419,7 +419,7 @@ directive is given.
 */
 GetoptResult getopt(T...)(ref string[] args, T opts)
 {
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
     enforce(args.length,
             "Invalid arguments string passed: program name missing");
     configuration cfg;
@@ -501,7 +501,7 @@ struct Option {
 
 private pure Option splitAndGet(string opt) @trusted nothrow
 {
-    import std.array : split;
+    import ripstd.array : split;
     auto sp = split(opt, "|");
     Option ret;
     if (sp.length > 1)
@@ -555,7 +555,7 @@ follow this pattern:
 */
 private template optionValidator(A...)
 {
-    import std.format : format;
+    import ripstd.format : format;
 
     enum fmt = "getopt validator: %s (at position %d)";
     enum isReceiver(T) = isPointer!T || (is(T == function)) || (is(T == delegate));
@@ -655,7 +655,7 @@ private template optionValidator(A...)
 // https://issues.dlang.org/show_bug.cgi?id=15914
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     bool opt;
     string[] args = ["program", "-a"];
     getopt(args, config.passThrough, 'a', &opt);
@@ -683,8 +683,8 @@ private void getoptImpl(T...)(ref string[] args, ref configuration cfg,
     enum validationMessage = optionValidator!T;
     static assert(validationMessage == "", validationMessage);
 
-    import std.algorithm.mutation : remove;
-    import std.conv : to;
+    import ripstd.algorithm.mutation : remove;
+    import ripstd.conv : to;
     static if (opts.length)
     {
         static if (is(typeof(opts[0]) : config))
@@ -802,9 +802,9 @@ private void getoptImpl(T...)(ref string[] args, ref configuration cfg,
 private bool handleOption(R)(string option, R receiver, ref string[] args,
     ref configuration cfg, bool incremental)
 {
-    import std.algorithm.iteration : map, splitter;
-    import std.ascii : isAlpha;
-    import std.conv : text, to;
+    import ripstd.algorithm.iteration : map, splitter;
+    import ripstd.ascii : isAlpha;
+    import ripstd.conv : text, to;
     // Scan arguments looking for a match for this option
     bool ret = false;
     for (size_t i = 1; i < args.length; )
@@ -867,7 +867,7 @@ private bool handleOption(R)(string option, R receiver, ref string[] args,
         }
         else
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
             // non-boolean option, which might include an argument
             enum isCallbackWithLessThanTwoParameters =
                 (is(typeof(receiver) == delegate) || is(typeof(*receiver) == function)) &&
@@ -924,7 +924,7 @@ private bool handleOption(R)(string option, R receiver, ref string[] args,
             else static if (isArray!(typeof(*receiver)))
             {
                 // array receiver
-                import std.range : ElementEncodingType;
+                import ripstd.range : ElementEncodingType;
                 alias E = ElementEncodingType!(typeof(*receiver));
 
                 if (arraySep == "")
@@ -943,9 +943,9 @@ private bool handleOption(R)(string option, R receiver, ref string[] args,
                 alias K = typeof(receiver.keys[0]);
                 alias V = typeof(receiver.values[0]);
 
-                import std.range : only;
-                import std.string : indexOf;
-                import std.typecons : Tuple, tuple;
+                import ripstd.range : only;
+                import ripstd.string : indexOf;
+                import ripstd.typecons : Tuple, tuple;
 
                 static Tuple!(K, V) getter(string input)
                 {
@@ -979,7 +979,7 @@ private bool handleOption(R)(string option, R receiver, ref string[] args,
 // https://issues.dlang.org/show_bug.cgi?id=17574
 @safe unittest
 {
-    import std.algorithm.searching : startsWith;
+    import ripstd.algorithm.searching : startsWith;
 
     try
     {
@@ -999,7 +999,7 @@ private bool handleOption(R)(string option, R receiver, ref string[] args,
 // https://issues.dlang.org/show_bug.cgi?id=5316 - arrays with arraySep
 @safe unittest
 {
-    import std.conv;
+    import ripstd.conv;
 
     arraySep = ",";
     scope (exit) arraySep = "";
@@ -1028,7 +1028,7 @@ private bool handleOption(R)(string option, R receiver, ref string[] args,
 // https://issues.dlang.org/show_bug.cgi?id=5316 - associative arrays with arraySep
 @safe unittest
 {
-    import std.conv;
+    import ripstd.conv;
 
     arraySep = ",";
     scope (exit) arraySep = "";
@@ -1092,7 +1092,7 @@ private enum autoIncrementChar = '+';
 
 private struct configuration
 {
-    import std.bitmanip : bitfields;
+    import ripstd.bitmanip : bitfields;
     mixin(bitfields!(
                 bool, "caseSensitive",  1,
                 bool, "bundling", 1,
@@ -1106,9 +1106,9 @@ private struct configuration
 private bool optMatch(string arg, scope string optPattern, ref string value,
     configuration cfg) @safe
 {
-    import std.array : split;
-    import std.string : indexOf;
-    import std.uni : toUpper;
+    import ripstd.array : split;
+    import ripstd.string : indexOf;
+    import ripstd.uni : toUpper;
     //writeln("optMatch:\n  ", arg, "\n  ", optPattern, "\n  ", value);
     //scope(success) writeln("optMatch result: ", value);
     if (arg.length < 2 || arg[0] != optionChar) return false;
@@ -1184,8 +1184,8 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
 
 @safe unittest
 {
-    import std.conv;
-    import std.math.operations : isClose;
+    import ripstd.conv;
+    import ripstd.math.operations : isClose;
 
     uint paranoid = 2;
     string[] args = ["program.name", "--paranoid", "--paranoid", "--paranoid"];
@@ -1289,8 +1289,8 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
     bool foo, bar;
     args = ["program.name", "--foo", "--bAr"];
     getopt(args,
-        std.getopt.config.caseSensitive,
-        std.getopt.config.passThrough,
+        ripstd.getopt.config.caseSensitive,
+        ripstd.getopt.config.passThrough,
         "foo", &foo,
         "bar", &bar);
     assert(args[1] == "--bAr");
@@ -1300,7 +1300,7 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
     args = ["program.name", "--foo", "nonoption", "--bar"];
     foo = bar = false;
     getopt(args,
-        std.getopt.config.stopOnFirstNonOption,
+        ripstd.getopt.config.stopOnFirstNonOption,
         "foo", &foo,
         "bar", &bar);
     assert(foo && !bar && args[1] == "nonoption" && args[2] == "--bar");
@@ -1308,7 +1308,7 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
     args = ["program.name", "--foo", "nonoption", "--zab"];
     foo = bar = false;
     getopt(args,
-        std.getopt.config.stopOnFirstNonOption,
+        ripstd.getopt.config.stopOnFirstNonOption,
         "foo", &foo,
         "bar", &bar);
     assert(foo && !bar && args[1] == "nonoption" && args[2] == "--zab");
@@ -1323,7 +1323,7 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
 
     args = ["program.name", "--foo", "nonoption", "--bar", "--", "--baz"];
     getopt(args,
-        std.getopt.config.keepEndOfOptions,
+        ripstd.getopt.config.keepEndOfOptions,
         "foo", &foo,
         "bar", &bar);
     assert(args == ["program.name", "nonoption", "--", "--baz"]);
@@ -1370,12 +1370,12 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
     catch (Exception e) { assert(0); }
 }
 
-@safe unittest // @safe std.getopt.config option use
+@safe unittest // @safe ripstd.getopt.config option use
 {
     long x = 0;
     string[] args = ["program", "--inc-x", "--inc-x"];
     getopt(args,
-           std.getopt.config.caseSensitive,
+           ripstd.getopt.config.caseSensitive,
            "inc-x", "Add one to x", delegate void() { x++; });
     assert(x == 2);
 }
@@ -1388,7 +1388,7 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
     getopt
         (
             args,
-            std.getopt.config.bundling,
+            ripstd.getopt.config.bundling,
             //std.getopt.config.caseSensitive,
             "linenum|l", &f_linenum,
             "filename|n", &f_filename
@@ -1463,8 +1463,8 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
 // https://issues.dlang.org/show_bug.cgi?id=5228
 @safe unittest
 {
-    import std.conv;
-    import std.exception;
+    import ripstd.conv;
+    import ripstd.exception;
 
     auto args = ["prog", "--foo=bar"];
     int abc;
@@ -1477,7 +1477,7 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
 // https://issues.dlang.org/show_bug.cgi?id=7693
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     enum Foo {
         bar,
@@ -1498,7 +1498,7 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
 // Same as https://issues.dlang.org/show_bug.cgi?id=7693 only for `bool`
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     auto args = ["prog", "--foo=truefoobar"];
     bool foo;
@@ -1541,7 +1541,7 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     bool foo;
     bool bar;
@@ -1553,7 +1553,7 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     bool foo;
     bool bar;
@@ -1581,7 +1581,7 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
     assert(r.helpWanted);
 }
 
-// std.getopt: implicit help option breaks the next argument
+// ripstd.getopt: implicit help option breaks the next argument
 // https://issues.dlang.org/show_bug.cgi?id=13316
 @safe unittest
 {
@@ -1599,7 +1599,7 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
     assert(args == ["program", "nonoption", "--option"]);
 }
 
-// std.getopt: endOfOptions broken when it doesn't look like an option
+// ripstd.getopt: endOfOptions broken when it doesn't look like an option
 // https://issues.dlang.org/show_bug.cgi?id=13317
 @safe unittest
 {
@@ -1613,7 +1613,7 @@ private void setConfig(ref configuration cfg, config option) @safe pure nothrow 
     assert(args == ["program", "--option"]);
 }
 
-// make std.getopt ready for DIP 1000
+// make ripstd.getopt ready for DIP 1000
 // https://issues.dlang.org/show_bug.cgi?id=20480
 @safe unittest
 {
@@ -1649,7 +1649,7 @@ Params:
 */
 void defaultGetoptPrinter(string text, Option[] opt)
 {
-    import std.stdio : stdout;
+    import ripstd.stdio : stdout;
 
     defaultGetoptFormatter(stdout.lockingTextWriter(), text, opt);
 }
@@ -1666,8 +1666,8 @@ Params:
 */
 void defaultGetoptFormatter(Output)(Output output, string text, Option[] opt, string style = "%*s %*s%*s%s\n")
 {
-    import std.algorithm.comparison : min, max;
-    import std.format.write : formattedWrite;
+    import ripstd.algorithm.comparison : min, max;
+    import ripstd.format.write : formattedWrite;
 
     output.formattedWrite("%s\n", text);
 
@@ -1692,10 +1692,10 @@ void defaultGetoptFormatter(Output)(Output output, string text, Option[] opt, st
 
 @safe unittest
 {
-    import std.conv;
+    import ripstd.conv;
 
-    import std.array;
-    import std.string;
+    import ripstd.array;
+    import ripstd.string;
     bool a;
     auto args = ["prog", "--foo"];
     auto t = getopt(args, "foo|f", "Help", &a);
@@ -1721,9 +1721,9 @@ void defaultGetoptFormatter(Output)(Output output, string text, Option[] opt, st
 
 @safe unittest
 {
-    import std.array ;
-    import std.conv;
-    import std.string;
+    import ripstd.array ;
+    import ripstd.conv;
+    import ripstd.string;
     bool a;
     auto args = ["prog", "--foo"];
     auto t = getopt(args, config.required, "foo|f", "Help", &a);
@@ -1772,7 +1772,7 @@ void defaultGetoptFormatter(Output)(Output output, string text, Option[] opt, st
 @system unittest
 {
     import core.exception : AssertError;
-    import std.exception : assertNotThrown, assertThrown;
+    import ripstd.exception : assertNotThrown, assertThrown;
     auto args = ["prog", "--abc", "1"];
     int abc, def;
     assertThrown!AssertError(getopt(args, "abc", &abc, "abc", &abc));
@@ -1801,7 +1801,7 @@ void defaultGetoptFormatter(Output)(Output output, string text, Option[] opt, st
     void add2(string option) { num += 2; }
     void addN(string option, string value)
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         num += value.to!long;
     }
 
@@ -1842,7 +1842,7 @@ void defaultGetoptFormatter(Output)(Output output, string text, Option[] opt, st
     {
         void addN(ref long dest, string n)
         {
-            import std.conv : to;
+            import ripstd.conv : to;
             dest += n.to!long;
         }
 
@@ -1893,10 +1893,10 @@ void defaultGetoptFormatter(Output)(Output output, string text, Option[] opt, st
 
 @safe unittest
 {
-    import std.conv;
+    import ripstd.conv;
 
-    import std.array;
-    import std.string;
+    import ripstd.array;
+    import ripstd.string;
     bool a;
     auto args = ["prog", "--foo"];
     auto t = getopt(args, "foo|f", "Help", &a);

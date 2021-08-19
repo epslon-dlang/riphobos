@@ -20,12 +20,12 @@ module ripstd.mmfile;
 import core.stdc.errno;
 import core.stdc.stdio;
 import core.stdc.stdlib;
-import std.conv, std.exception, std.stdio;
-import std.file;
-import std.path;
-import std.string;
+import ripstd.conv, ripstd.exception, ripstd.stdio;
+import ripstd.file;
+import ripstd.path;
+import ripstd.string;
 
-import std.internal.cstring;
+import ripstd.internal.cstring;
 
 //debug = MMFILE;
 
@@ -33,8 +33,8 @@ version (Windows)
 {
     import core.sys.windows.winbase;
     import core.sys.windows.winnt;
-    import std.utf;
-    import std.windows.syserror;
+    import ripstd.utf;
+    import ripstd.windows.syserror;
 }
 else version (Posix)
 {
@@ -634,7 +634,7 @@ private:
 @system unittest
 {
     import core.memory : GC;
-    import std.file : deleteme;
+    import ripstd.file : deleteme;
 
     const size_t K = 1024;
     size_t win = 64*K; // assume the page size is 64K
@@ -651,7 +651,7 @@ private:
         import core.sys.posix.unistd;
         win = cast(size_t) sysconf(_SC_PAGESIZE);
     }
-    string test_file = std.file.deleteme ~ "-testing.txt";
+    string test_file = ripstd.file.deleteme ~ "-testing.txt";
     MmFile mf = new MmFile(test_file,MmFile.Mode.readWriteNew,
             100*K,null,win);
     ubyte[] str = cast(ubyte[])"1234567890";
@@ -671,7 +671,7 @@ private:
 
     destroy(mf);
 
-    std.file.remove(test_file);
+    ripstd.file.remove(test_file);
     // Create anonymous mapping
     auto test = new MmFile(null, MmFile.Mode.readWriteNew, 1024*1024, null);
 }
@@ -679,13 +679,13 @@ private:
 version (linux)
 @system unittest // https://issues.dlang.org/show_bug.cgi?id=14868
 {
-    import std.file : deleteme;
-    import std.typecons : scoped;
+    import ripstd.file : deleteme;
+    import ripstd.typecons : scoped;
 
     // Test retaining ownership of File/fd
 
-    auto fn = std.file.deleteme ~ "-testing.txt";
-    scope(exit) std.file.remove(fn);
+    auto fn = ripstd.file.deleteme ~ "-testing.txt";
+    scope(exit) ripstd.file.remove(fn);
     File(fn, "wb").writeln("Testing!");
     scoped!MmFile(File(fn));
 
@@ -704,19 +704,19 @@ version (linux)
 // https://issues.dlang.org/show_bug.cgi?id=14995
 @system unittest
 {
-    import std.file : deleteme;
-    import std.typecons : scoped;
+    import ripstd.file : deleteme;
+    import ripstd.typecons : scoped;
 
     // Zero-length map may or may not be valid on OSX and NetBSD
     version (OSX)
-        import std.exception : verifyThrown = collectException;
+        import ripstd.exception : verifyThrown = collectException;
     version (NetBSD)
-        import std.exception : verifyThrown = collectException;
+        import ripstd.exception : verifyThrown = collectException;
     else
-        import std.exception : verifyThrown = assertThrown;
+        import ripstd.exception : verifyThrown = assertThrown;
 
-    auto fn = std.file.deleteme ~ "-testing.txt";
-    scope(exit) std.file.remove(fn);
+    auto fn = ripstd.file.deleteme ~ "-testing.txt";
+    scope(exit) ripstd.file.remove(fn);
     verifyThrown(scoped!MmFile(fn, MmFile.Mode.readWrite, 0, null));
 }
 

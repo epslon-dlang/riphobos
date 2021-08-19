@@ -16,8 +16,8 @@ Source: $(PHOBOSSRC std/digest/hmac.d)
 
 module ripstd.digest.hmac;
 
-import std.digest : isDigest, hasBlockSize, isDigestibleRange, DigestType;
-import std.meta : allSatisfy;
+import ripstd.digest : isDigest, hasBlockSize, isDigestibleRange, DigestType;
+import ripstd.meta : allSatisfy;
 
 @safe:
 
@@ -34,10 +34,10 @@ import std.meta : allSatisfy;
 /// Compute HMAC over an input string
 @safe unittest
 {
-    import std.ascii : LetterCase;
-    import std.digest : toHexString;
-    import std.digest.sha : SHA1;
-    import std.string : representation;
+    import ripstd.ascii : LetterCase;
+    import ripstd.digest : toHexString;
+    import ripstd.digest.sha : SHA1;
+    import ripstd.string : representation;
 
     auto secret = "secret".representation;
     assert("The quick brown fox jumps over the lazy dog"
@@ -85,7 +85,7 @@ if (hashBlockSize % 8 == 0)
 
         // if secret is too short, it will be padded with zeroes
         // (the key buffer is already zero-initialized)
-        import std.algorithm.mutation : copy;
+        import ripstd.algorithm.mutation : copy;
         secretBytes.copy(key[]);
 
         start();
@@ -94,8 +94,8 @@ if (hashBlockSize % 8 == 0)
     ///
     @safe pure nothrow @nogc unittest
     {
-        import std.digest.sha : SHA1;
-        import std.string : representation;
+        import ripstd.digest.sha : SHA1;
+        import ripstd.string : representation;
         auto hmac = HMAC!SHA1("My s3cR3T keY".representation);
         hmac.put("Hello, world".representation);
         static immutable expected = [
@@ -131,8 +131,8 @@ if (hashBlockSize % 8 == 0)
     ///
     @safe pure nothrow @nogc unittest
     {
-        import std.digest.sha : SHA1;
-        import std.string : representation;
+        import ripstd.digest.sha : SHA1;
+        import ripstd.string : representation;
         string data1 = "Hello, world", data2 = "Hola mundo";
         auto hmac = HMAC!SHA1("My s3cR3T keY".representation);
         hmac.put(data1.representation);
@@ -162,8 +162,8 @@ if (hashBlockSize % 8 == 0)
     ///
     @safe pure nothrow @nogc unittest
     {
-        import std.digest.hmac, std.digest.sha;
-        import std.string : representation;
+        import ripstd.digest.hmac, ripstd.digest.sha;
+        import ripstd.string : representation;
         string data1 = "Hello, world", data2 = "Hola mundo";
         auto hmac = HMAC!SHA1("My s3cR3T keY".representation);
         hmac.put(data1.representation)
@@ -198,8 +198,8 @@ if (hashBlockSize % 8 == 0)
     ///
     @safe pure nothrow @nogc unittest
     {
-        import std.digest.sha : SHA1;
-        import std.string : representation;
+        import ripstd.digest.sha : SHA1;
+        import ripstd.string : representation;
         string data1 = "Hello, world", data2 = "Hola mundo";
         auto hmac = HMAC!SHA1("My s3cR3T keY".representation);
         auto digest = hmac.put(data1.representation)
@@ -239,8 +239,8 @@ if (isDigest!H)
     ///
     @safe pure nothrow @nogc unittest
     {
-        import std.digest.sha : SHA1;
-        import std.string : representation;
+        import ripstd.digest.sha : SHA1;
+        import ripstd.string : representation;
         string data1 = "Hello, world", data2 = "Hola mundo";
         auto digest = hmac!SHA1("My s3cR3T keY".representation)
                           .put(data1.representation)
@@ -263,7 +263,7 @@ if (isDigest!H)
     DigestType!H hmac(T...)(scope T data, scope const(ubyte)[] secret)
     if (allSatisfy!(isDigestibleRange, typeof(data)))
     {
-        import std.range.primitives : put;
+        import ripstd.range.primitives : put;
         auto hash = HMAC!(H, blockSize)(secret);
         foreach (datum; data)
             put(hash, datum);
@@ -273,9 +273,9 @@ if (isDigest!H)
     ///
     @safe pure nothrow @nogc unittest
     {
-        import std.algorithm.iteration : map;
-        import std.digest.sha : SHA1;
-        import std.string : representation;
+        import ripstd.algorithm.iteration : map;
+        import ripstd.digest.sha : SHA1;
+        import ripstd.string : representation;
         string data = "Hello, world";
         auto digest = data.representation
                       .map!(a => cast(ubyte)(a+1))
@@ -292,8 +292,8 @@ if (isDigest!H)
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.digest.sha : SHA1;
-    import std.string : representation;
+    import ripstd.digest.sha : SHA1;
+    import ripstd.string : representation;
     string data1 = "Hello, world", data2 = "Hola mundo";
     auto hmac = HMAC!SHA1("My s3cR3T keY".representation);
     auto digest = hmac.put(data1.representation)
@@ -309,8 +309,8 @@ if (isDigest!H)
 @safe pure nothrow @nogc
 unittest
 {
-    import std.digest.md : MD5;
-    import std.range : isOutputRange;
+    import ripstd.digest.md : MD5;
+    import ripstd.range : isOutputRange;
     static assert(isOutputRange!(HMAC!MD5, ubyte));
     static assert(isDigest!(HMAC!MD5));
     static assert(hasBlockSize!(HMAC!MD5) && HMAC!MD5.blockSize == MD5.blockSize);
@@ -319,12 +319,12 @@ unittest
 @safe pure nothrow
 unittest
 {
-    import std.digest.md : MD5;
-    import std.digest.sha : SHA1, SHA256;
+    import ripstd.digest.md : MD5;
+    import ripstd.digest.sha : SHA1, SHA256;
 
     // Note, can't be UFCS because we don't want to import inside
-    // version (StdUnittest).
-    import std.digest : toHexString, LetterCase;
+    // version (RIPStdUnittest).
+    import ripstd.digest : toHexString, LetterCase;
     alias hex = toHexString!(LetterCase.lower);
 
     ubyte[] nada;
@@ -332,7 +332,7 @@ unittest
     assert(hex(hmac!SHA1  (nada, nada)) == "fbdb1d1b18aa6c08324b7d64b71fb76370690e1d");
     assert(hex(hmac!SHA256(nada, nada)) == "b613679a0814d9ec772f95d778c35fc5ff1697c493715653c6c712144292c5ad");
 
-    import std.string : representation;
+    import ripstd.string : representation;
     auto key      = "key".representation,
          long_key = ("012345678901234567890123456789012345678901"
             ~"234567890123456789012345678901234567890123456789").representation,

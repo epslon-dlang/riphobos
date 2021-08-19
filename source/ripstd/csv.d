@@ -24,11 +24,11 @@
  * Example:
  *
  * -------
- * import std.algorithm;
- * import std.array;
- * import std.csv;
- * import std.stdio;
- * import std.typecons;
+ * import ripstd.algorithm;
+ * import ripstd.array;
+ * import ripstd.csv;
+ * import ripstd.stdio;
+ * import ripstd.typecons;
  *
  * void main()
  * {
@@ -103,10 +103,10 @@
  */
 module ripstd.csv;
 
-import std.conv;
-import std.exception : basicExceptionCtors;
-import std.range.primitives;
-import std.traits;
+import ripstd.conv;
+import ripstd.exception : basicExceptionCtors;
+import ripstd.range.primitives;
+import ripstd.traits;
 
 /**
  * Exception containing the row and column for when an exception was thrown.
@@ -124,7 +124,7 @@ class CSVException : Exception
     ///
     size_t row, col;
 
-    // FIXME: Use std.exception.basicExceptionCtors here once
+    // FIXME: Use ripstd.exception.basicExceptionCtors here once
     // https://issues.dlang.org/show_bug.cgi?id=11500 is fixed
 
     this(string msg, string file = __FILE__, size_t line = __LINE__,
@@ -157,8 +157,8 @@ class CSVException : Exception
 ///
 @safe unittest
 {
-    import std.exception : collectException;
-    import std.algorithm.searching : count;
+    import ripstd.exception : collectException;
+    import ripstd.algorithm.searching : count;
     string text = "a,b,c\nHello,65";
     auto ex = collectException!CSVException(csvReader(text).count);
     assert(ex.toString == "(Row: 0, Col: 0) Row 2's length 2 does not match previous length of 3.");
@@ -167,9 +167,9 @@ class CSVException : Exception
 ///
 @safe unittest
 {
-    import std.exception : collectException;
-    import std.algorithm.searching : count;
-    import std.typecons : Tuple;
+    import ripstd.exception : collectException;
+    import ripstd.algorithm.searching : count;
+    import ripstd.typecons : Tuple;
     string text = "a,b\nHello,65";
     auto ex = collectException!CSVException(csvReader!(Tuple!(string,int))(text).count);
     assert(ex.toString == "(Row: 1, Col: 2) Unexpected 'b' when converting from type string to type int");
@@ -177,7 +177,7 @@ class CSVException : Exception
 
 @safe pure unittest
 {
-    import std.string;
+    import ripstd.string;
     auto e1 = new Exception("Foobar");
     auto e2 = new CSVException("args", e1);
     assert(e2.next is e1);
@@ -216,7 +216,7 @@ class IncompleteCellException : CSVException
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     string text = "a,\"b,c\nHello,65,2.5";
     assertThrown!IncompleteCellException(text.csvReader(["a","b","c"]));
 }
@@ -256,7 +256,7 @@ class HeaderMismatchException : CSVException
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     string text = "a,b,c\nHello,65,2.5";
     assertThrown!HeaderMismatchException(text.csvReader(["b","c","invalid"]));
 }
@@ -293,9 +293,9 @@ enum Malformed
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.searching : count;
-    import std.exception : assertThrown;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.searching : count;
+    import ripstd.exception : assertThrown;
 
     string text = "a,b,c\nHello,65,\"2.5";
     assertThrown!IncompleteCellException(text.csvReader.count);
@@ -386,7 +386,7 @@ same type such as all integer data:
 */
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     string text = "76,26,22";
     auto records = text.csvReader!int;
     assert(records.equal!equal([
@@ -399,7 +399,7 @@ Using a struct with modified delimiter:
 */
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     string text = "Hello;65;2.5\nWorld;123;7.5";
     struct Layout
     {
@@ -432,7 +432,7 @@ finding a quote in a field not quoted.
 /// Read only column "b"
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     string text = "a,b,c\nHello,65,63.63\nWorld,123,3673.562";
     auto records = text.csvReader!int(["b"]);
 
@@ -445,7 +445,7 @@ finding a quote in a field not quoted.
 /// Read while rearranging the columns by specifying a header with a different order"
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     string text = "a,b,c\nHello,65,2.5\nWorld,123,7.5";
     struct Layout
     {
@@ -533,7 +533,7 @@ The header from the input can always be accessed from the `header` field.
 // Test shorter row length exception
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     struct A
     {
@@ -556,7 +556,7 @@ The header from the input can always be accessed from the `header` field.
 // Test structure conversion interface with unicode.
 @safe pure unittest
 {
-    import std.math.algebraic : abs;
+    import ripstd.math.algebraic : abs;
 
     wstring str = "\U00010143Hello,65,63.63\nWorld,123,3673.562"w;
     struct Layout
@@ -590,7 +590,7 @@ The header from the input can always be accessed from the `header` field.
 // Test input conversion interface
 @safe pure unittest
 {
-    import std.algorithm;
+    import ripstd.algorithm;
     string str = `76,26,22`;
     int[] ans = [76,26,22];
     auto records = csvReader!int(str);
@@ -604,7 +604,7 @@ The header from the input can always be accessed from the `header` field.
 // Test struct & header interface and same unicode
 @safe unittest
 {
-    import std.math.algebraic : abs;
+    import ripstd.math.algebraic : abs;
 
     string str = "a,b,c\nHello,65,63.63\n➊➋➂❹,123,3673.562";
     struct Layout
@@ -639,7 +639,7 @@ The header from the input can always be accessed from the `header` field.
 // Test header interface
 @safe unittest
 {
-    import std.algorithm;
+    import ripstd.algorithm;
 
     string str = "a,b,c\nHello,65,63.63\nWorld,123,3673.562";
     auto records = csvReader!int(str, ["b"]);
@@ -767,7 +767,7 @@ The header from the input can always be accessed from the `header` field.
 // Test restricted range
 @safe unittest
 {
-    import std.typecons;
+    import ripstd.typecons;
     struct InputRange
     {
         dstring text;
@@ -805,8 +805,8 @@ The header from the input can always be accessed from the `header` field.
 
 @safe unittest // const/immutable dchars
 {
-    import std.algorithm.iteration : map;
-    import std.array : array;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.array : array;
     const(dchar)[] c = "foo,bar\n";
     assert(csvReader(c).map!array.array == [["foo", "bar"]]);
     immutable(dchar)[] i = "foo,bar\n";
@@ -969,18 +969,18 @@ public:
         {
             static if (is(Contents T : T[U], U : string))
             {
-                import std.algorithm.sorting : sort;
+                import ripstd.algorithm.sorting : sort;
                 sort(indices);
             }
             else static if (ErrorLevel == Malformed.ignore)
             {
-                import std.algorithm.sorting : sort;
+                import ripstd.algorithm.sorting : sort;
                 sort(indices);
             }
             else
             {
-                import std.algorithm.searching : findAdjacent;
-                import std.algorithm.sorting : isSorted;
+                import ripstd.algorithm.searching : findAdjacent;
+                import ripstd.algorithm.sorting : isSorted;
                 if (!isSorted(indices))
                 {
                     auto ex = new HeaderMismatchException
@@ -1163,7 +1163,7 @@ public:
 
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     string str = `76;^26^;22`;
     int[] ans = [76,26,22];
@@ -1180,7 +1180,7 @@ public:
 // @system due to the catch for Throwable
 @system pure unittest
 {
-    import std.exception : assertNotThrown;
+    import ripstd.exception : assertNotThrown;
     enum failData =
     "name, surname, age
     Joe, Joker, 99\r";
@@ -1195,7 +1195,7 @@ public:
 private struct CsvRecord(Contents, Malformed ErrorLevel, Range, Separator)
 if (!is(Contents == class) && !is(Contents == struct))
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 private:
     Input!(Range, ErrorLevel)* _input;
     Separator _separator;
@@ -1292,7 +1292,7 @@ public:
     void popFront()
     {
         static if (ErrorLevel == Malformed.throwException)
-            import std.format : format;
+            import ripstd.format : format;
         // Skip last of record when header is depleted.
         if (_popCount.ptr && _popCount.empty)
             while (!recordEnd())
@@ -1530,8 +1530,8 @@ if (isSomeChar!Separator && isInputRange!Range
 ///
 @safe unittest
 {
-    import std.array : appender;
-    import std.range.primitives : popFront;
+    import ripstd.array : appender;
+    import ripstd.range.primitives : popFront;
 
     string str = "65,63\n123,3673";
 
@@ -1557,7 +1557,7 @@ if (isSomeChar!Separator && isInputRange!Range
 // Test csvNextToken on simplest form and correct format.
 @safe pure unittest
 {
-    import std.array;
+    import ripstd.array;
 
     string str = "\U00010143Hello,65,63.63\nWorld,123,3673.562";
 
@@ -1600,7 +1600,7 @@ if (isSomeChar!Separator && isInputRange!Range
 // Test quoted tokens
 @safe pure unittest
 {
-    import std.array;
+    import ripstd.array;
 
     string str = `one,two,"three ""quoted""","",` ~ "\"five\nnew line\"\nsix";
 
@@ -1643,7 +1643,7 @@ if (isSomeChar!Separator && isInputRange!Range
 // Test empty data is pulled at end of record.
 @safe pure unittest
 {
-    import std.array;
+    import ripstd.array;
 
     string str = "one,";
     auto a = appender!(dchar[])();
@@ -1659,7 +1659,7 @@ if (isSomeChar!Separator && isInputRange!Range
 // Test exceptions
 @safe pure unittest
 {
-    import std.array;
+    import ripstd.array;
 
     string str = "\"one\nnew line";
 
@@ -1704,7 +1704,7 @@ if (isSomeChar!Separator && isInputRange!Range
 // Test modifying token delimiter
 @safe pure unittest
 {
-    import std.array;
+    import ripstd.array;
 
     string str = `one|two|/three "quoted"/|//`;
 
@@ -1767,7 +1767,7 @@ if (isSomeChar!Separator && isInputRange!Range
 // https://issues.dlang.org/show_bug.cgi?id=21629
 @safe pure unittest
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
     struct Reccord
     {
         string a;

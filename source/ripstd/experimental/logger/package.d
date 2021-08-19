@@ -14,7 +14,7 @@ program. Logging should be easy, but also flexible and powerful, therefore
 
 The easiest way to create a log message is to write:
 -------------
-import std.experimental.logger;
+import ripstd.experimental.logger;
 
 void main() {
     log("Hello World");
@@ -182,7 +182,7 @@ Source: $(PHOBOSSRC std/experimental/logger/package.d)
 */
 module ripstd.experimental.logger;
 
-public import std.experimental.logger.core;
-public import std.experimental.logger.filelogger;
-public import std.experimental.logger.multilogger;
-public import std.experimental.logger.nulllogger;
+public import ripstd.experimental.logger.core;
+public import ripstd.experimental.logger.filelogger;
+public import ripstd.experimental.logger.multilogger;
+public import ripstd.experimental.logger.nulllogger;

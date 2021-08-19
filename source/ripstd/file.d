@@ -85,13 +85,13 @@ module ripstd.file;
 import core.stdc.errno, core.stdc.stdlib, core.stdc.string;
 import core.time : abs, dur, hnsecs, seconds;
 
-import std.datetime.date : DateTime;
-import std.datetime.systime : Clock, SysTime, unixTimeToStdTime;
-import std.internal.cstring;
-import std.meta;
-import std.range.primitives;
-import std.traits;
-import std.typecons;
+import ripstd.datetime.date : DateTime;
+import ripstd.datetime.systime : Clock, SysTime, unixTimeToStdTime;
+import ripstd.internal.cstring;
+import ripstd.meta;
+import ripstd.range.primitives;
+import ripstd.traits;
+import ripstd.typecons;
 
 version (OSX)
     version = Darwin;
@@ -104,7 +104,7 @@ else version (WatchOS)
 
 version (Windows)
 {
-    import core.sys.windows.winbase, core.sys.windows.winnt, std.windows.syserror;
+    import core.sys.windows.winbase, core.sys.windows.winnt, ripstd.windows.syserror;
 }
 else version (Posix)
 {
@@ -129,9 +129,9 @@ else
 // Purposefully not documented. Use at your own risk
 @property string deleteme() @safe
 {
-    import std.conv : text;
-    import std.path : buildPath;
-    import std.process : thisProcessID;
+    import ripstd.conv : text;
+    import ripstd.path : buildPath;
+    import ripstd.process : thisProcessID;
 
     enum base = "deleteme.dmd.unittest.pid";
     static string fileName;
@@ -141,7 +141,7 @@ else
     return fileName;
 }
 
-version (StdUnittest) private struct TestAliasedString
+version (RIPStdUnittest) private struct TestAliasedString
 {
     string get() @safe @nogc pure nothrow { return _s; }
     alias get this;
@@ -166,7 +166,7 @@ else version (Posix)
  +/
 class FileException : Exception
 {
-    import std.conv : text, to;
+    import ripstd.conv : text, to;
 
     /++
         OS error code.
@@ -221,7 +221,7 @@ class FileException : Exception
                              string file = __FILE__,
                              size_t line = __LINE__) @trusted
     {
-        import std.exception : errnoString;
+        import ripstd.exception : errnoString;
         this(name, errnoString(errno), file, line, errno);
     }
 }
@@ -229,7 +229,7 @@ class FileException : Exception
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     assertThrown!FileException("non.existing.file.".readText);
 }
@@ -258,7 +258,7 @@ private T cenforce(T)(T condition, scope const(char)[] name, scope const(FSChar)
     if (!name)
     {
         import core.stdc.wchar_ : wcslen;
-        import std.conv : to;
+        import ripstd.conv : to;
 
         auto len = namez ? wcslen(namez) : 0;
         name = to!string(namez[0 .. len]);
@@ -325,14 +325,14 @@ if (isInputRange!R && isSomeChar!(ElementEncodingType!R) && !isInfinite!R &&
 ///
 @safe unittest
 {
-    import std.utf : byChar;
+    import ripstd.utf : byChar;
     scope(exit)
     {
         assert(exists(deleteme));
         remove(deleteme);
     }
 
-    std.file.write(deleteme, "1234"); // deleteme is the name of a temporary file
+    ripstd.file.write(deleteme, "1234"); // deleteme is the name of a temporary file
     assert(read(deleteme, 2) == "12");
     assert(read(deleteme.byChar) == "1234");
     assert((cast(const(ubyte)[])read(deleteme)).length == 4);
@@ -354,9 +354,9 @@ version (Posix) private void[] readImpl(scope const(char)[] name, scope const(FS
                                         size_t upTo = size_t.max) @trusted
 {
     import core.memory : GC;
-    import std.algorithm.comparison : min;
-    import std.conv : to;
-    import std.experimental.checkedint : checked;
+    import ripstd.algorithm.comparison : min;
+    import ripstd.conv : to;
+    import ripstd.experimental.checkedint : checked;
 
     // A few internal configuration parameters {
     enum size_t
@@ -405,7 +405,7 @@ version (Windows) private void[] readImpl(scope const(char)[] name, scope const(
                                           size_t upTo = size_t.max) @safe
 {
     import core.memory : GC;
-    import std.algorithm.comparison : min;
+    import ripstd.algorithm.comparison : min;
     static trustedCreateFileW(scope const(wchar)* namez, DWORD dwDesiredAccess, DWORD dwShareMode,
                               SECURITY_ATTRIBUTES *lpSecurityAttributes, DWORD dwCreationDisposition,
                               DWORD dwFlagsAndAttributes, HANDLE hTemplateFile) @trusted
@@ -471,7 +471,7 @@ version (Windows) private void[] readImpl(scope const(char)[] name, scope const(
 version (linux) @safe unittest
 {
     // A file with "zero" length that doesn't have 0 length at all
-    auto s = std.file.readText("/proc/cpuinfo");
+    auto s = ripstd.file.readText("/proc/cpuinfo");
     assert(s.length > 0);
     //writefln("'%s'", s);
 }
@@ -479,7 +479,7 @@ version (linux) @safe unittest
 @safe unittest
 {
     scope(exit) if (exists(deleteme)) remove(deleteme);
-    import std.stdio;
+    import ripstd.stdio;
     auto f = File(deleteme, "w");
     f.write("abcd"); f.flush();
     assert(read(deleteme) == "abcd");
@@ -504,11 +504,11 @@ version (linux) @safe unittest
 S readText(S = string, R)(auto ref R name)
 if (isSomeString!S && (isInputRange!R && !isInfinite!R && isSomeChar!(ElementType!R) || is(StringTypeOf!R)))
 {
-    import std.algorithm.searching : startsWith;
-    import std.encoding : getBOM, BOM;
-    import std.exception : enforce;
-    import std.format : format;
-    import std.utf : UTFException, validate;
+    import ripstd.algorithm.searching : startsWith;
+    import ripstd.encoding : getBOM, BOM;
+    import ripstd.exception : enforce;
+    import ripstd.format : format;
+    import ripstd.utf : UTFException, validate;
 
     static if (is(StringTypeOf!R))
         StringTypeOf!R filename = name;
@@ -601,8 +601,8 @@ if (isSomeString!S && (isInputRange!R && !isInfinite!R && isSomeChar!(ElementTyp
 // Read file with UTF-8 text but try to read it as UTF-16.
 @safe unittest
 {
-    import std.exception : assertThrown;
-    import std.utf : UTFException;
+    import ripstd.exception : assertThrown;
+    import ripstd.utf : UTFException;
 
     write(deleteme, "abc");
     scope(exit) remove(deleteme);
@@ -613,7 +613,7 @@ if (isSomeString!S && (isInputRange!R && !isInfinite!R && isSomeChar!(ElementTyp
 // Read file with UTF-16 text.
 @safe unittest
 {
-    import std.algorithm.searching : skipOver;
+    import ripstd.algorithm.searching : skipOver;
 
     write(deleteme, "\uFEFFabc"w); // With BOM
     scope(exit) remove(deleteme);
@@ -631,12 +631,12 @@ if (isSomeString!S && (isInputRange!R && !isInfinite!R && isSomeChar!(ElementTyp
 
 @safe unittest
 {
-    import std.array : appender;
-    import std.bitmanip : append, Endian;
-    import std.exception : assertThrown;
-    import std.path : buildPath;
-    import std.string : representation;
-    import std.utf : UTFException;
+    import ripstd.array : appender;
+    import ripstd.bitmanip : append, Endian;
+    import ripstd.exception : assertThrown;
+    import ripstd.path : buildPath;
+    import ripstd.string : representation;
+    import ripstd.utf : UTFException;
 
     mkdir(deleteme);
     scope(exit) rmdirRecurse(deleteme);
@@ -831,7 +831,7 @@ if (isConvertibleToString!R)
 version (Posix) private void writeImpl(scope const(char)[] name, scope const(FSChar)* namez,
         scope const(void)[] buffer, bool append) @trusted
 {
-    import std.conv : octal;
+    import ripstd.conv : octal;
 
     // append or write
     auto mode = append ? O_CREAT | O_WRONLY | O_APPEND
@@ -943,7 +943,7 @@ if ((isInputRange!RF && !isInfinite!RF && isSomeChar!(ElementEncodingType!RF) ||
 void rename(RF, RT)(auto ref RF from, auto ref RT to)
 if (isConvertibleToString!RF || isConvertibleToString!RT)
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
     alias Types = staticMap!(convertToString, RF, RT);
     rename!Types(from, to);
 }
@@ -953,7 +953,7 @@ if (isConvertibleToString!RF || isConvertibleToString!RT)
     static assert(__traits(compiles, rename(TestAliasedString(null), TestAliasedString(null))));
     static assert(__traits(compiles, rename("", TestAliasedString(null))));
     static assert(__traits(compiles, rename(TestAliasedString(null), "")));
-    import std.utf : byChar;
+    import ripstd.utf : byChar;
     static assert(__traits(compiles, rename(TestAliasedString(null), "".byChar)));
 }
 
@@ -977,13 +977,13 @@ private void renameImpl(scope const(char)[] f, scope const(char)[] t,
 {
     version (Windows)
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         const result = MoveFileExW(fromz, toz, MOVEFILE_REPLACE_EXISTING);
         if (!result)
         {
             import core.stdc.wchar_ : wcslen;
-            import std.conv : to, text;
+            import ripstd.conv : to, text;
 
             if (!f)
                 f = to!(typeof(f))(fromz[0 .. wcslen(fromz)]);
@@ -1006,7 +1006,7 @@ private void renameImpl(scope const(char)[] f, scope const(char)[] t,
 
 @safe unittest
 {
-    import std.utf : byWchar;
+    import ripstd.utf : byWchar;
 
     auto t1 = deleteme, t2 = deleteme~"2";
     scope(exit) foreach (t; [t1, t2]) if (t.exists) t.remove();
@@ -1048,7 +1048,7 @@ if (isConvertibleToString!R)
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     deleteme.write("Hello");
     assert(deleteme.readText == "Hello");
@@ -1095,7 +1095,7 @@ if (isInputRange!R && !isInfinite!R && isSomeChar!(ElementEncodingType!R))
         static void getFA(scope const(char)[] name, scope const(FSChar)* namez,
                           out WIN32_FILE_ATTRIBUTE_DATA fad) @trusted
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
             enforce(GetFileAttributesExW(namez, GET_FILEEX_INFO_LEVELS.GetFileExInfoStandard, &fad),
                 new FileException(name.idup));
         }
@@ -1106,8 +1106,8 @@ if (isInputRange!R && !isInfinite!R && isSomeChar!(ElementEncodingType!R))
         static void getFA(scope const(FSChar)* namez, out WIN32_FILE_ATTRIBUTE_DATA fad) @trusted
         {
             import core.stdc.wchar_ : wcslen;
-            import std.conv : to;
-            import std.exception : enforce;
+            import ripstd.conv : to;
+            import ripstd.exception : enforce;
 
             enforce(GetFileAttributesExW(namez, GET_FILEEX_INFO_LEVELS.GetFileExInfoStandard, &fad),
                 new FileException(namez[0 .. wcslen(namez)].to!string));
@@ -1196,7 +1196,7 @@ if (isConvertibleToString!R)
     assert(getSize(deleteme) == 1);
     // create a file of size 3
     write(deleteme, "abc");
-    import std.utf : byChar;
+    import ripstd.utf : byChar;
     assert(getSize(deleteme.byChar) == 3);
 }
 
@@ -1241,7 +1241,7 @@ if (isInputRange!R && !isInfinite!R && isSomeChar!(ElementEncodingType!R) &&
 {
     version (Windows)
     {
-        import std.datetime.systime : FILETIMEToSysTime;
+        import ripstd.datetime.systime : FILETIMEToSysTime;
 
         with (getFileAttributesWin(name))
         {
@@ -1282,7 +1282,7 @@ if (isConvertibleToString!R)
 ///
 @safe unittest
 {
-    import std.datetime : abs, SysTime;
+    import ripstd.datetime : abs, SysTime;
 
     scope(exit) deleteme.remove;
     write(deleteme, "a");
@@ -1291,7 +1291,7 @@ if (isConvertibleToString!R)
 
     getTimes(deleteme, accessTime, modificationTime);
 
-    import std.datetime : Clock, seconds;
+    import ripstd.datetime : Clock, seconds;
     auto currTime = Clock.currTime();
     enum leeway = 5.seconds;
 
@@ -1309,7 +1309,7 @@ if (isConvertibleToString!R)
 
 @safe unittest
 {
-    import std.stdio : writefln;
+    import ripstd.stdio : writefln;
 
     auto currTime = Clock.currTime();
 
@@ -1397,7 +1397,7 @@ else version (Windows)
     if (isInputRange!R && !isInfinite!R && isSomeChar!(ElementEncodingType!R) &&
         !isConvertibleToString!R)
     {
-        import std.datetime.systime : FILETIMEToSysTime;
+        import ripstd.datetime.systime : FILETIMEToSysTime;
 
         with (getFileAttributesWin(name))
         {
@@ -1419,7 +1419,7 @@ else version (Windows)
 
 version (Windows) @system unittest
 {
-    import std.stdio : writefln;
+    import ripstd.stdio : writefln;
     auto currTime = Clock.currTime();
 
     write(deleteme, "a");
@@ -1530,7 +1530,7 @@ if (isInputRange!R && !isInfinite!R && isSomeChar!(ElementEncodingType!R) &&
 ///
 @safe unittest
 {
-    import std.datetime : DateTime, hnsecs, SysTime;
+    import ripstd.datetime : DateTime, hnsecs, SysTime;
 
     scope(exit) deleteme.remove;
     write(deleteme, "a");
@@ -1560,7 +1560,7 @@ private void setTimesImpl(scope const(char)[] names, scope const(FSChar)* namez,
 {
     version (Windows)
     {
-        import std.datetime.systime : SysTimeToFILETIME;
+        import ripstd.datetime.systime : SysTimeToFILETIME;
         const ta = SysTimeToFILETIME(accessTime);
         const tm = SysTimeToFILETIME(modificationTime);
         alias defaults =
@@ -1622,7 +1622,7 @@ private void setTimesImpl(scope const(char)[] names, scope const(FSChar)* namez,
 
 @safe unittest
 {
-    import std.stdio : File;
+    import ripstd.stdio : File;
     string newdir = deleteme ~ r".dir";
     string dir = newdir ~ r"/a/b/c";
     string file = dir ~ "/file";
@@ -1705,10 +1705,10 @@ if (isConvertibleToString!R)
 ///
 @safe unittest
 {
-    import std.datetime : abs, DateTime, hnsecs, SysTime;
+    import ripstd.datetime : abs, DateTime, hnsecs, SysTime;
     scope(exit) deleteme.remove;
 
-    import std.datetime : Clock, seconds;
+    import ripstd.datetime : Clock, seconds;
     auto currTime = Clock.currTime();
     enum leeway = 5.seconds;
     deleteme.write("bb");
@@ -1785,7 +1785,7 @@ if (isInputRange!R && !isInfinite!R && isSomeChar!(ElementEncodingType!R))
 ///
 @safe unittest
 {
-    import std.datetime : SysTime;
+    import ripstd.datetime : SysTime;
 
     assert("file.does.not.exist".timeLastModified(SysTime.min) == SysTime.min);
 
@@ -2068,7 +2068,7 @@ if (isConvertibleToString!R)
 /// getAttributes with a file
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto f = deleteme ~ "file";
     scope(exit) f.remove;
@@ -2085,7 +2085,7 @@ if (isConvertibleToString!R)
 /// getAttributes with a directory
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto dir = deleteme ~ "dir";
     scope(exit) dir.rmdir;
@@ -2158,7 +2158,7 @@ if (isConvertibleToString!R)
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto source = deleteme ~ "source";
     auto target = deleteme ~ "target";
@@ -2182,7 +2182,7 @@ if (isConvertibleToString!R)
 /// if the file is no symlink, getLinkAttributes behaves like getAttributes
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto f = deleteme ~ "file";
     scope(exit) f.remove;
@@ -2199,7 +2199,7 @@ if (isConvertibleToString!R)
 /// if the file is no symlink, getLinkAttributes behaves like getAttributes
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto dir = deleteme ~ "dir";
     scope(exit) dir.rmdir;
@@ -2280,8 +2280,8 @@ if (isConvertibleToString!R)
 /// setAttributes with a file
 @safe unittest
 {
-    import std.exception : assertThrown;
-    import std.conv : octal;
+    import ripstd.exception : assertThrown;
+    import ripstd.conv : octal;
 
     auto f = deleteme ~ "file";
     version (Posix)
@@ -2306,8 +2306,8 @@ if (isConvertibleToString!R)
 /// setAttributes with a directory
 @safe unittest
 {
-    import std.exception : assertThrown;
-    import std.conv : octal;
+    import ripstd.exception : assertThrown;
+    import ripstd.conv : octal;
 
     auto dir = deleteme ~ "dir";
     version (Posix)
@@ -2366,7 +2366,7 @@ if (isConvertibleToString!R)
 
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto dir = deleteme ~ "dir";
     auto f = deleteme ~ "f";
@@ -2446,7 +2446,7 @@ bool attrIsDir(uint attributes) @safe pure nothrow @nogc
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto dir = deleteme ~ "dir";
     auto f = deleteme ~ "f";
@@ -2541,7 +2541,7 @@ if (isConvertibleToString!R)
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto dir = deleteme ~ "dir";
     auto f = deleteme ~ "f";
@@ -2631,7 +2631,7 @@ bool attrIsFile(uint attributes) @safe pure nothrow @nogc
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto dir = deleteme ~ "dir";
     auto f = deleteme ~ "f";
@@ -2722,7 +2722,7 @@ if (isConvertibleToString!R)
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto source = deleteme ~ "source";
     auto target = deleteme ~ "target";
@@ -2848,7 +2848,7 @@ bool attrIsSymlink(uint attributes) @safe pure nothrow @nogc
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto source = deleteme ~ "source";
     auto target = deleteme ~ "target";
@@ -2916,8 +2916,8 @@ if (isConvertibleToString!R)
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.path : buildPath;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.path : buildPath;
 
     auto cwd = getcwd;
     auto dir = deleteme ~ "dir";
@@ -2968,7 +2968,7 @@ if (isInputRange!R && !isInfinite!R && isSomeChar!(ElementEncodingType!R) &&
     }
     else version (Posix)
     {
-        import std.conv : octal;
+        import ripstd.conv : octal;
 
         static auto trustedMkdir(const(FSChar)* pathz, mode_t mode) @trusted
         {
@@ -2991,14 +2991,14 @@ if (isConvertibleToString!R)
 
 @safe unittest
 {
-    import std.file : mkdir;
+    import ripstd.file : mkdir;
     static assert(__traits(compiles, mkdir(TestAliasedString(null))));
 }
 
 ///
 @safe unittest
 {
-    import std.file : mkdir;
+    import ripstd.file : mkdir;
 
     auto dir = deleteme ~ "dir";
     scope(exit) dir.rmdir;
@@ -3010,7 +3010,7 @@ if (isConvertibleToString!R)
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown("a/b/c/d/e".mkdir);
 }
 
@@ -3019,7 +3019,7 @@ if (isConvertibleToString!R)
 //   "false" if it already existed.
 private bool ensureDirExists()(scope const(char)[] pathname)
 {
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
     const pathz = pathname.tempCString!FSChar();
 
     version (Windows)
@@ -3030,7 +3030,7 @@ private bool ensureDirExists()(scope const(char)[] pathname)
     }
     else version (Posix)
     {
-        import std.conv : octal;
+        import ripstd.conv : octal;
 
         if (() @trusted { return core.sys.posix.sys.stat.mkdir(pathz, octal!777); }() == 0)
             return true;
@@ -3053,7 +3053,7 @@ Throws: $(LREF FileException) on error.
  */
 void mkdirRecurse(scope const(char)[] pathname) @safe
 {
-    import std.path : dirName, baseName;
+    import ripstd.path : dirName, baseName;
 
     const left = dirName(pathname);
     if (left.length != pathname.length && !exists(left))
@@ -3069,7 +3069,7 @@ void mkdirRecurse(scope const(char)[] pathname) @safe
 ///
 @safe unittest
 {
-    import std.path : buildPath;
+    import ripstd.path : buildPath;
 
     auto dir = deleteme ~ "dir";
     scope(exit) dir.rmdirRecurse;
@@ -3087,7 +3087,7 @@ void mkdirRecurse(scope const(char)[] pathname) @safe
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     scope(exit) deleteme.remove;
     deleteme.write("a");
@@ -3098,9 +3098,9 @@ void mkdirRecurse(scope const(char)[] pathname) @safe
 
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     {
-        import std.path : buildPath, buildNormalizedPath;
+        import ripstd.path : buildPath, buildNormalizedPath;
 
         immutable basepath = deleteme ~ "_dir";
         scope(exit) () @trusted { rmdirRecurse(basepath); }();
@@ -3231,13 +3231,13 @@ if ((isInputRange!RO && !isInfinite!RO && isSomeChar!(ElementEncodingType!RO) ||
 {
     static if (isConvertibleToString!RO || isConvertibleToString!RL)
     {
-        import std.meta : staticMap;
+        import ripstd.meta : staticMap;
         alias Types = staticMap!(convertToString, RO, RL);
         symlink!Types(original, link);
     }
     else
     {
-        import std.conv : text;
+        import ripstd.conv : text;
         auto oz = original.tempCString();
         auto lz = link.tempCString();
         alias posixSymlink = core.sys.posix.unistd.symlink;
@@ -3320,8 +3320,8 @@ if (isInputRange!R && !isInfinite!R && isSomeChar!(ElementEncodingType!R) ||
     }
     else
     {
-        import std.conv : to;
-        import std.exception : assumeUnique;
+        import ripstd.conv : to;
+        import ripstd.exception : assumeUnique;
         alias posixReadlink = core.sys.posix.unistd.readlink;
         enum bufferLen = 2048;
         enum maxCodeUnits = 6;
@@ -3362,8 +3362,8 @@ if (isInputRange!R && !isInfinite!R && isSomeChar!(ElementEncodingType!R) ||
 
 version (Posix) @safe unittest
 {
-    import std.exception : assertThrown;
-    import std.string;
+    import ripstd.exception : assertThrown;
+    import ripstd.string;
 
     foreach (file; [system_directory, system_file])
     {
@@ -3390,8 +3390,8 @@ version (Posix) @system unittest // input range of dchars
     mkdirRecurse(deleteme);
     scope(exit) if (deleteme.exists) rmdirRecurse(deleteme);
     write(deleteme ~ "/f", "");
-    import std.range.interfaces : InputRange, inputRangeObject;
-    import std.utf : byChar;
+    import ripstd.range.interfaces : InputRange, inputRangeObject;
+    import ripstd.utf : byChar;
     immutable string link = deleteme ~ "/l";
     symlink("f", link);
     InputRange!(ElementType!string) linkr = inputRangeObject(link);
@@ -3408,8 +3408,8 @@ version (Posix) @system unittest // input range of dchars
  */
 version (Windows) string getcwd() @trusted
 {
-    import std.conv : to;
-    import std.experimental.checkedint : checked;
+    import ripstd.conv : to;
+    import ripstd.experimental.checkedint : checked;
     /* GetCurrentDirectory's return value:
         1. function succeeds: the number of characters that are written to
     the buffer, not including the terminating null character.
@@ -3417,7 +3417,7 @@ version (Windows) string getcwd() @trusted
         3. the buffer (lpBuffer) is not large enough: the required size of
     the buffer, in characters, including the null-terminating character.
     */
-    version (StdUnittest)
+    version (RIPStdUnittest)
         enum BUF_SIZE = 10;     // trigger reallocation code
     else
         enum BUF_SIZE = 4096;   // enough for most common case
@@ -3479,8 +3479,8 @@ else version (Posix) string getcwd() @trusted
     {
         import core.sys.darwin.mach.dyld : _NSGetExecutablePath;
         import core.sys.posix.stdlib : realpath;
-        import std.conv : to;
-        import std.exception : errnoEnforce;
+        import ripstd.conv : to;
+        import ripstd.exception : errnoEnforce;
 
         uint size;
 
@@ -3505,8 +3505,8 @@ else version (Posix) string getcwd() @trusted
     }
     else version (Windows)
     {
-        import std.conv : to;
-        import std.exception : enforce;
+        import ripstd.conv : to;
+        import ripstd.exception : enforce;
 
         wchar[MAX_PATH] buf;
         wchar[] buffer = buf[];
@@ -3523,7 +3523,7 @@ else version (Posix) string getcwd() @trusted
     else version (DragonFlyBSD)
     {
         import core.sys.dragonflybsd.sys.sysctl : sysctl, CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME;
-        import std.exception : errnoEnforce, assumeUnique;
+        import ripstd.exception : errnoEnforce, assumeUnique;
 
         int[4] mib = [CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1];
         size_t len;
@@ -3540,7 +3540,7 @@ else version (Posix) string getcwd() @trusted
     else version (FreeBSD)
     {
         import core.sys.freebsd.sys.sysctl : sysctl, CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME;
-        import std.exception : errnoEnforce, assumeUnique;
+        import ripstd.exception : errnoEnforce, assumeUnique;
 
         int[4] mib = [CTL_KERN, KERN_PROC, KERN_PROC_PATHNAME, -1];
         size_t len;
@@ -3557,7 +3557,7 @@ else version (Posix) string getcwd() @trusted
     else version (NetBSD)
     {
         import core.sys.netbsd.sys.sysctl : sysctl, CTL_KERN, KERN_PROC_ARGS, KERN_PROC_PATHNAME;
-        import std.exception : errnoEnforce, assumeUnique;
+        import ripstd.exception : errnoEnforce, assumeUnique;
 
         int[4] mib = [CTL_KERN, KERN_PROC_ARGS, -1, KERN_PROC_PATHNAME];
         size_t len;
@@ -3575,9 +3575,9 @@ else version (Posix) string getcwd() @trusted
     {
         import core.sys.openbsd.sys.sysctl : sysctl, CTL_KERN, KERN_PROC_ARGS, KERN_PROC_ARGV;
         import core.sys.posix.unistd : getpid;
-        import std.conv : to;
-        import std.exception : enforce, errnoEnforce;
-        import std.process : searchPathFor;
+        import ripstd.conv : to;
+        import ripstd.exception : enforce, errnoEnforce;
+        import ripstd.process : searchPathFor;
 
         int[4] mib = [CTL_KERN, KERN_PROC_ARGS, getpid(), KERN_PROC_ARGV];
         size_t len;
@@ -3612,7 +3612,7 @@ else version (Posix) string getcwd() @trusted
     else version (Solaris)
     {
         import core.sys.posix.unistd : getpid;
-        import std.string : format;
+        import ripstd.string : format;
 
         // Only Solaris 10 and later
         return readLink(format("/proc/%d/path/a.out", getpid()));
@@ -3624,7 +3624,7 @@ else version (Posix) string getcwd() @trusted
 ///
 @safe unittest
 {
-    import std.path : isAbsolute;
+    import ripstd.path : isAbsolute;
     auto path = thisExePath();
 
     assert(path.exists);
@@ -3813,7 +3813,7 @@ else version (Windows)
 
         this(string path)
         {
-            import std.datetime.systime : FILETIMEToSysTime;
+            import ripstd.datetime.systime : FILETIMEToSysTime;
 
             if (!path.exists())
                 throw new FileException(path, "File does not exist");
@@ -3833,9 +3833,9 @@ else version (Windows)
         private this(string path, WIN32_FIND_DATAW *fd) @trusted
         {
             import core.stdc.wchar_ : wcslen;
-            import std.conv : to;
-            import std.datetime.systime : FILETIMEToSysTime;
-            import std.path : buildPath;
+            import ripstd.conv : to;
+            import ripstd.datetime.systime : FILETIMEToSysTime;
+            import ripstd.path : buildPath;
 
             fd.cFileName[$ - 1] = 0;
 
@@ -3934,7 +3934,7 @@ else version (Posix)
 
         private this(string path, core.sys.posix.dirent.dirent* fd) @safe
         {
-            import std.path : buildPath;
+            import ripstd.path : buildPath;
 
             static if (is(typeof(fd.d_namlen)))
                 immutable len = fd.d_namlen;
@@ -4052,7 +4052,7 @@ else version (Posix)
          +/
         void _ensureStatDone() @trusted
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
 
             if (_didStat)
                 return;
@@ -4094,7 +4094,7 @@ else version (Posix)
          +/
         void _ensureLStatDone() @trusted
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
 
             if (_didLStat)
                 return;
@@ -4149,7 +4149,7 @@ else version (Posix)
     }
     else version (Posix)
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         if (system_directory.exists)
         {
@@ -4257,7 +4257,7 @@ if (isInputRange!RF && !isInfinite!RF && isSomeChar!(ElementEncodingType!RF) && 
 void copy(RF, RT)(auto ref RF from, auto ref RT to, PreserveAttributes preserve = preserveAttributesDefault)
 if (isConvertibleToString!RF || isConvertibleToString!RT)
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
     alias Types = staticMap!(convertToString, RF, RT);
     copy!Types(from, to, preserve);
 }
@@ -4300,8 +4300,8 @@ private void copyImpl(scope const(char)[] f, scope const(char)[] t,
         if (!result)
         {
             import core.stdc.wchar_ : wcslen;
-            import std.conv : to;
-            import std.format : format;
+            import ripstd.conv : to;
+            import ripstd.format : format;
 
             /++
             Reference resources: https://docs.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-copyfilew
@@ -4319,7 +4319,7 @@ private void copyImpl(scope const(char)[] f, scope const(char)[] t,
     else version (Posix)
     {
         static import core.stdc.stdio;
-        import std.conv : to, octal;
+        import ripstd.conv : to, octal;
 
         immutable fdr = core.sys.posix.fcntl.open(fromz, O_RDONLY);
         cenforce(fdr != -1, f, fromz);
@@ -4383,7 +4383,7 @@ private void copyImpl(scope const(char)[] f, scope const(char)[] t,
 // https://issues.dlang.org/show_bug.cgi?id=14817
 @safe unittest
 {
-    import std.algorithm, std.file;
+    import ripstd.algorithm, ripstd.file;
     auto t1 = deleteme, t2 = deleteme~"2";
     scope(exit) foreach (t; [t1, t2]) if (t.exists) t.remove();
     write(t1, "11");
@@ -4393,7 +4393,7 @@ private void copyImpl(scope const(char)[] f, scope const(char)[] t,
     copy(t1, t2);
     assert(readText(t2) == "2");
 
-    import std.utf : byChar;
+    import ripstd.utf : byChar;
     copy(t1.byChar, t2.byChar);
     assert(readText(t2.byChar) == "2");
 
@@ -4409,7 +4409,7 @@ private void copyImpl(scope const(char)[] f, scope const(char)[] t,
 // https://issues.dlang.org/show_bug.cgi?id=11434
 @safe version (Posix) @safe unittest
 {
-    import std.conv : octal;
+    import ripstd.conv : octal;
     auto t1 = deleteme, t2 = deleteme~"2";
     scope(exit) foreach (t; [t1, t2]) if (t.exists) t.remove();
     write(t1, "1");
@@ -4422,7 +4422,7 @@ private void copyImpl(scope const(char)[] f, scope const(char)[] t,
 // https://issues.dlang.org/show_bug.cgi?id=15865
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     auto t = deleteme;
     write(t, "a");
     scope(exit) t.remove();
@@ -4433,9 +4433,9 @@ private void copyImpl(scope const(char)[] f, scope const(char)[] t,
 // https://issues.dlang.org/show_bug.cgi?id=19834
 version (Windows) @safe unittest
 {
-    import std.exception : collectException;
-    import std.algorithm.searching : startsWith;
-    import std.format : format;
+    import ripstd.exception : collectException;
+    import ripstd.algorithm.searching : startsWith;
+    import ripstd.format : format;
 
     auto f = deleteme;
     auto t = f ~ "2";
@@ -4506,7 +4506,7 @@ void rmdirRecurse(DirEntry de) @safe
 ///
 @system unittest
 {
-    import std.path : buildPath;
+    import ripstd.path : buildPath;
 
     auto dir = deleteme.buildPath("a", "b", "c");
 
@@ -4520,7 +4520,7 @@ void rmdirRecurse(DirEntry de) @safe
 
 version (Windows) @system unittest
 {
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
     auto d = deleteme ~ r".dir\a\b\c\d\e\f\g";
     mkdirRecurse(d);
     rmdirRecurse(deleteme ~ ".dir");
@@ -4529,7 +4529,7 @@ version (Windows) @system unittest
 
 version (Posix) @system unittest
 {
-    import std.exception : enforce, collectException;
+    import ripstd.exception : enforce, collectException;
 
     collectException(rmdirRecurse(deleteme));
     auto d = deleteme~"/a/b/c/d/e/f/g";
@@ -4603,9 +4603,9 @@ enum SpanMode
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
-    import std.path : buildPath, relativePath;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.path : buildPath, relativePath;
 
     auto root = deleteme ~ "root";
     scope(exit) root.rmdirRecurse;
@@ -4673,7 +4673,7 @@ private struct DirIteratorImpl
 
         bool stepIn(string directory) @safe
         {
-            import std.path : chainPath;
+            import ripstd.path : chainPath;
             auto searchPattern = chainPath(directory, "*.*");
 
             static auto trustedFindFirstFileW(typeof(searchPattern) pattern, WIN32_FIND_DATAW* findinfo) @trusted
@@ -4805,7 +4805,7 @@ private struct DirIteratorImpl
             alias pathnameStr = pathname;
         else
         {
-            import std.array : array;
+            import ripstd.array : array;
             string pathnameStr = pathname.array;
         }
         if (stepIn(pathnameStr))
@@ -4949,12 +4949,12 @@ auto dFiles = dirEntries("", SpanMode.depth).filter!(f => f.name.endsWith(".d"))
 foreach (d; dFiles)
     writeln(d.name);
 
-// Hook it up with std.parallelism to compile them all in parallel:
+// Hook it up with ripstd.parallelism to compile them all in parallel:
 foreach (d; parallel(dFiles, 1)) //passes by 1 file to each thread
 {
     string cmd = "dmd -c "  ~ d.name;
     writeln(cmd);
-    std.process.executeShell(cmd);
+    ripstd.process.executeShell(cmd);
 }
 
 // Iterate over all D source files in current directory and all its
@@ -4974,20 +4974,20 @@ auto dirEntries(string path, SpanMode mode, bool followSymlink = true)
 {
     string[] listdir(string pathname)
     {
-        import std.algorithm;
-        import std.array;
-        import std.file;
-        import std.path;
+        import ripstd.algorithm;
+        import ripstd.array;
+        import ripstd.file;
+        import ripstd.path;
 
-        return std.file.dirEntries(pathname, SpanMode.shallow)
+        return ripstd.file.dirEntries(pathname, SpanMode.shallow)
             .filter!(a => a.isFile)
-            .map!(a => std.path.baseName(a.name))
+            .map!(a => ripstd.path.baseName(a.name))
             .array;
     }
 
     void main(string[] args)
     {
-        import std.stdio;
+        import ripstd.stdio;
 
         string[] files = listdir(args[1]);
         writefln("%s", files);
@@ -4996,15 +4996,15 @@ auto dirEntries(string path, SpanMode mode, bool followSymlink = true)
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
-    import std.algorithm.searching : startsWith;
-    import std.array : array;
-    import std.conv : to;
-    import std.path : buildPath, absolutePath;
-    import std.file : dirEntries;
-    import std.process : thisProcessID;
-    import std.range.primitives : walkLength;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.algorithm.searching : startsWith;
+    import ripstd.array : array;
+    import ripstd.conv : to;
+    import ripstd.path : buildPath, absolutePath;
+    import ripstd.file : dirEntries;
+    import ripstd.process : thisProcessID;
+    import ripstd.range.primitives : walkLength;
 
     version (Android)
         string testdir = deleteme; // This has to be an absolute path when
@@ -5020,7 +5020,7 @@ auto dirEntries(string path, SpanMode mode, bool followSymlink = true)
     // testing range interface
     size_t equalEntries(string relpath, SpanMode mode)
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         auto len = enforce(walkLength(dirEntries(absolutePath(relpath), mode)));
         assert(walkLength(dirEntries(relpath, mode)) == len);
         assert(equal(
@@ -5069,8 +5069,8 @@ auto dirEntries(string path, SpanMode mode, bool followSymlink = true)
 auto dirEntries(string path, string pattern, SpanMode mode,
     bool followSymlink = true)
 {
-    import std.algorithm.iteration : filter;
-    import std.path : globMatch, baseName;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.path : globMatch, baseName;
 
     bool f(DirEntry de) { return globMatch(baseName(de.name), pattern); }
     return filter!f(DirIterator(path, mode, followSymlink));
@@ -5078,7 +5078,7 @@ auto dirEntries(string path, string pattern, SpanMode mode,
 
 @system unittest
 {
-    import std.stdio : writefln;
+    import ripstd.stdio : writefln;
     immutable dpath = deleteme ~ "_dir";
     immutable fpath = deleteme ~ "_file";
     immutable sdpath = deleteme ~ "_sdir";
@@ -5156,12 +5156,12 @@ auto dirEntries(string path, string pattern, SpanMode mode,
 // https://issues.dlang.org/show_bug.cgi?id=17962
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
-    import std.algorithm.sorting : sort;
-    import std.array : array;
-    import std.path : buildPath;
-    import std.uni : normalize;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.array : array;
+    import ripstd.path : buildPath;
+    import ripstd.uni : normalize;
 
     // The Unicode normalization is required to make the tests pass on Mac OS X.
     auto dir = deleteme ~ normalize("𐐷");
@@ -5183,7 +5183,7 @@ auto dirEntries(string path, string pattern, SpanMode mode,
 // https://issues.dlang.org/show_bug.cgi?id=21250
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!Exception(dirEntries("237f5babd6de21f40915826699582e36", "*.bin", SpanMode.depth));
 }
 
@@ -5212,12 +5212,12 @@ auto dirEntries(string path, string pattern, SpanMode mode,
 Select!(Types.length == 1, Types[0][], Tuple!(Types)[])
 slurp(Types...)(string filename, scope const(char)[] format)
 {
-    import std.array : appender;
-    import std.conv : text;
-    import std.exception : enforce;
-    import std.format.read : formattedRead;
-    import std.stdio : File;
-    import std.string : stripRight;
+    import ripstd.array : appender;
+    import ripstd.conv : text;
+    import ripstd.exception : enforce;
+    import ripstd.format.read : formattedRead;
+    import ripstd.stdio : File;
+    import ripstd.string : stripRight;
 
     auto app = appender!(typeof(return))();
     ElementType!(typeof(return)) toAdd;
@@ -5237,7 +5237,7 @@ slurp(Types...)(string filename, scope const(char)[] format)
 ///
 @system unittest
 {
-    import std.typecons : tuple;
+    import ripstd.typecons : tuple;
 
     scope(exit)
     {
@@ -5257,7 +5257,7 @@ slurp(Types...)(string filename, scope const(char)[] format)
 
 @system unittest
 {
-    import std.typecons : tuple;
+    import ripstd.typecons : tuple;
 
     scope(exit)
     {
@@ -5306,7 +5306,7 @@ string tempDir() @trusted
     {
         version (Windows)
         {
-            import std.conv : to;
+            import ripstd.conv : to;
             // http://msdn.microsoft.com/en-us/library/windows/desktop/aa364992(v=vs.85).aspx
             wchar[MAX_PATH + 2] buf;
             DWORD len = GetTempPathW(buf.length, buf.ptr);
@@ -5314,7 +5314,7 @@ string tempDir() @trusted
         }
         else version (Posix)
         {
-            import std.process : environment;
+            import ripstd.process : environment;
             // This function looks through the list of alternative directories
             // and returns the first one which exists and is a directory.
             static string findExistingDir(T...)(lazy T alternatives)
@@ -5341,11 +5341,11 @@ string tempDir() @trusted
 ///
 @safe unittest
 {
-    import std.ascii : letters;
-    import std.conv : to;
-    import std.path : buildPath;
-    import std.random : randomSample;
-    import std.utf : byCodeUnit;
+    import ripstd.ascii : letters;
+    import ripstd.conv : to;
+    import ripstd.path : buildPath;
+    import ripstd.random : randomSample;
+    import ripstd.utf : byCodeUnit;
 
     // random id with 20 letters
     auto id = letters.byCodeUnit.randomSample(20).to!string;
@@ -5374,7 +5374,7 @@ ulong getAvailableDiskSpace(scope const(char)[] path) @safe
     {
         import core.sys.windows.winbase : GetDiskFreeSpaceExW;
         import core.sys.windows.winnt : ULARGE_INTEGER;
-        import std.internal.cstring : tempCStringW;
+        import ripstd.internal.cstring : tempCStringW;
 
         ULARGE_INTEGER freeBytesAvailable;
         auto err = () @trusted {
@@ -5386,7 +5386,7 @@ ulong getAvailableDiskSpace(scope const(char)[] path) @safe
     }
     else version (Posix)
     {
-        import std.internal.cstring : tempCString;
+        import ripstd.internal.cstring : tempCString;
 
         version (FreeBSD)
         {
@@ -5419,7 +5419,7 @@ ulong getAvailableDiskSpace(scope const(char)[] path) @safe
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto space = getAvailableDiskSpace(".");
     assert(space > 0);

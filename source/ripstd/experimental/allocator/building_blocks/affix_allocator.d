@@ -22,15 +22,15 @@ The following methods are defined if `Allocator` defines them, and forward to it
  */
 struct AffixAllocator(Allocator, Prefix, Suffix = void)
 {
-    import std.algorithm.comparison : min;
+    import ripstd.algorithm.comparison : min;
     import core.lifetime : emplace;
-    import std.experimental.allocator : RCIAllocator, theAllocator;
-    import std.experimental.allocator.common : stateSize, forwardToMember,
+    import ripstd.experimental.allocator : RCIAllocator, theAllocator;
+    import ripstd.experimental.allocator.common : stateSize, forwardToMember,
         roundUpToMultipleOf, alignedAt, alignDownTo, roundUpToMultipleOf,
         hasStaticallyKnownAlignment;
-    import std.math.traits : isPowerOf2;
-    import std.traits : hasMember;
-    import std.typecons : Ternary;
+    import ripstd.math.traits : isPowerOf2;
+    import ripstd.traits : hasMember;
+    import ripstd.typecons : Ternary;
 
     static if (hasStaticallyKnownAlignment!Allocator)
     {
@@ -77,8 +77,8 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
                 static @nogc nothrow
                 RCIAllocator wrapAllocatorObject()
                 {
-                    import std.experimental.allocator.gc_allocator : GCAllocator;
-                    import std.experimental.allocator : allocatorObject;
+                    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+                    import ripstd.experimental.allocator : allocatorObject;
 
                     return allocatorObject(GCAllocator.instance);
                 }
@@ -118,7 +118,7 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
 
         size_t goodAllocSize(size_t s)
         {
-            import std.experimental.allocator.common : goodAllocSize;
+            import ripstd.experimental.allocator.common : goodAllocSize;
             auto a = actualAllocationSize(s);
             return roundUpToMultipleOf(parent.goodAllocSize(a)
                     - stateSize!Prefix - stateSize!Suffix,
@@ -173,7 +173,7 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
         }
 
         static if (hasMember!(Allocator, "allocateZeroed"))
-        package(std) void[] allocateZeroed()(size_t bytes)
+        package(ripstd) void[] allocateZeroed()(size_t bytes)
         {
             if (!bytes) return null;
             auto result = parent.allocateZeroed(actualAllocationSize(bytes));
@@ -408,7 +408,7 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
 ///
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     // One word before and after each allocation.
     alias A = AffixAllocator!(Mallocator, size_t, size_t);
     auto b = A.instance.allocate(11);
@@ -420,8 +420,8 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
 
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.experimental.allocator : theAllocator, RCIAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator : theAllocator, RCIAllocator;
 
     // One word before and after each allocation.
     auto A = AffixAllocator!(RCIAllocator, size_t, size_t)(theAllocator);
@@ -440,12 +440,12 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
         && B.suffix(b) == 0xDEAD_BEEF);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.bitmapped_block
+    import ripstd.experimental.allocator.building_blocks.bitmapped_block
         : BitmappedBlock;
-    import std.experimental.allocator.common : testAllocator;
+    import ripstd.experimental.allocator.common : testAllocator;
     testAllocator!({
         auto a = AffixAllocator!(BitmappedBlock!128, ulong, ulong)
             (BitmappedBlock!128(new ubyte[128 * 4096]));
@@ -456,8 +456,8 @@ version (StdUnittest)
 // Test empty
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.typecons : Ternary;
 
     auto a = AffixAllocator!(BitmappedBlock!128, ulong, ulong)
                 (BitmappedBlock!128(new ubyte[128 * 4096]));
@@ -469,13 +469,13 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     alias A = AffixAllocator!(Mallocator, size_t);
     auto b = A.instance.allocate(10);
     A.instance.prefix(b) = 10;
     assert(A.instance.prefix(b) == 10);
 
-    import std.experimental.allocator.building_blocks.null_allocator
+    import ripstd.experimental.allocator.building_blocks.null_allocator
         : NullAllocator;
     alias B = AffixAllocator!(NullAllocator, size_t);
     b = B.instance.allocate(100);
@@ -484,9 +484,9 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator;
-    import std.experimental.allocator.gc_allocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator;
+    import ripstd.experimental.allocator.gc_allocator;
+    import ripstd.typecons : Ternary;
     alias MyAllocator = AffixAllocator!(GCAllocator, uint);
     auto a = MyAllocator.instance.makeArray!(shared int)(100);
     static assert(is(typeof(&MyAllocator.instance.prefix(a)) == shared(uint)*));
@@ -507,7 +507,7 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator;
+    import ripstd.experimental.allocator.gc_allocator;
     alias a = AffixAllocator!(GCAllocator, uint).instance;
 
     // Check that goodAllocSize inherits from parent, i.e. GCAllocator
@@ -521,7 +521,7 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
 
     auto a = AffixAllocator!(Region!(), uint)(Region!()(new ubyte[1024 * 64]));
     auto b = a.allocate(42);
@@ -536,7 +536,7 @@ version (StdUnittest)
 // Test that reallocate infers from parent
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     alias a = AffixAllocator!(Mallocator, uint).instance;
     auto b = a.allocate(42);
@@ -548,8 +548,8 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator : processAllocator, RCISharedAllocator;
-    import std.traits;
+    import ripstd.experimental.allocator : processAllocator, RCISharedAllocator;
+    import ripstd.traits;
 
     alias SharedAllocT = shared AffixAllocator!(RCISharedAllocator, int);
     static assert(is(RCISharedAllocator == shared));

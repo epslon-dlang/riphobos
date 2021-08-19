@@ -4,9 +4,9 @@ Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/region.d)
 */
 module ripstd.experimental.allocator.building_blocks.region;
 
-import std.experimental.allocator.building_blocks.null_allocator;
-import std.experimental.allocator.common;
-import std.typecons : Flag, Yes, No;
+import ripstd.experimental.allocator.building_blocks.null_allocator;
+import ripstd.experimental.allocator.common;
+import ripstd.typecons : Flag, Yes, No;
 
 version (OSX)
     version = Darwin;
@@ -45,8 +45,8 @@ struct Region(ParentAllocator = NullAllocator,
     static assert(minAlign.isGoodStaticAlignment);
     static assert(ParentAllocator.alignment >= minAlign);
 
-    import std.traits : hasMember;
-    import std.typecons : Ternary;
+    import ripstd.traits : hasMember;
+    import ripstd.typecons : Ternary;
 
     // state
     /**
@@ -188,7 +188,7 @@ struct Region(ParentAllocator = NullAllocator,
     */
     void[] alignedAllocate(size_t n, uint a) pure nothrow @trusted @nogc
     {
-        import std.math.traits : isPowerOf2;
+        import ripstd.math.traits : isPowerOf2;
         assert(a.isPowerOf2);
 
         const rounded = goodAllocSize(n);
@@ -364,11 +364,11 @@ struct Region(ParentAllocator = NullAllocator,
 ///
 @system nothrow unittest
 {
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.allocator_list
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.allocator_list
         : AllocatorList;
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.typecons : Ternary;
     // Create a scalable list of regions. Each gets at least 1MB at a time by
     // using malloc.
     auto batchAllocator = AllocatorList!(
@@ -386,8 +386,8 @@ struct Region(ParentAllocator = NullAllocator,
 
 @system nothrow @nogc unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.typecons : Ternary;
 
     static void testAlloc(Allocator)(ref Allocator a)
     {
@@ -416,8 +416,8 @@ struct Region(ParentAllocator = NullAllocator,
 
 @system nothrow @nogc unittest
 {
-    import std.experimental.allocator.mallocator : AlignedMallocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.mallocator : AlignedMallocator;
+    import ripstd.typecons : Ternary;
 
     ubyte[] buf = cast(ubyte[]) AlignedMallocator.instance.alignedAllocate(64, 64);
     auto reg = Region!(NullAllocator, 64, Yes.growDownwards)(buf);
@@ -429,7 +429,7 @@ struct Region(ParentAllocator = NullAllocator,
 {
     // test 'this(ubyte[] store)' constructed regions properly clean up
     // their inner storage after destruction
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     static shared struct LocalAllocator
     {
@@ -465,10 +465,10 @@ struct Region(ParentAllocator = NullAllocator,
     Mallocator.instance.deallocate(tmp);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     testAllocator!(() => Region!(Mallocator)(1024 * 64));
     testAllocator!(() => Region!(Mallocator, Mallocator.alignment, Yes.growDownwards)(1024 * 64));
@@ -479,7 +479,7 @@ version (StdUnittest)
 
 @system nothrow @nogc unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     auto reg = Region!(Mallocator)(1024 * 64);
     auto b = reg.allocate(101);
@@ -508,10 +508,10 @@ hot memory is used first.
 */
 struct InSituRegion(size_t size, size_t minAlign = platformAlignment)
 {
-    import std.algorithm.comparison : max;
-    import std.conv : to;
-    import std.traits : hasMember;
-    import std.typecons : Ternary;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.conv : to;
+    import ripstd.traits : hasMember;
+    import ripstd.typecons : Ternary;
 
     static assert(minAlign.isGoodStaticAlignment);
     static assert(size >= minAlign);
@@ -673,13 +673,13 @@ struct InSituRegion(size_t size, size_t minAlign = platformAlignment)
     assert(a1.length == 101);
 
     // 128KB region, with fallback to the garbage collector.
-    import std.experimental.allocator.building_blocks.fallback_allocator
+    import ripstd.experimental.allocator.building_blocks.fallback_allocator
         : FallbackAllocator;
-    import std.experimental.allocator.building_blocks.free_list
+    import ripstd.experimental.allocator.building_blocks.free_list
         : FreeList;
-    import std.experimental.allocator.building_blocks.bitmapped_block
+    import ripstd.experimental.allocator.building_blocks.bitmapped_block
         : BitmappedBlock;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     FallbackAllocator!(InSituRegion!(128 * 1024), GCAllocator) r2;
     const a2 = r2.allocate(102);
     assert(a2.length == 102);
@@ -701,12 +701,12 @@ struct InSituRegion(size_t size, size_t minAlign = platformAlignment)
 
 @system pure nothrow unittest
 {
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
 
     InSituRegion!(4096, 1) r1;
     auto a = r1.allocate(2001);
     assert(a.length == 2001);
-    import std.conv : text;
+    import ripstd.conv : text;
     assert(r1.available == 2095, text(r1.available));
     // Ensure deallocate inherits from parent
     assert((() nothrow @nogc => r1.deallocate(a))());
@@ -761,7 +761,7 @@ version (Posix) struct SbrkRegion(uint minAlign = platformAlignment)
 
     PTHREAD_MUTEX_INITIALIZER;
     private static shared pthread_mutex_t sbrkMutex = PTHREAD_MUTEX_INITIALIZER;
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
 
     static assert(minAlign.isGoodStaticAlignment);
     static assert(size_t.sizeof == (void*).sizeof);
@@ -953,8 +953,8 @@ version (CRuntime_Musl) {} else
 version (DragonFlyBSD) {} else
 version (Posix) @system nothrow @nogc unittest
 {
-    import std.typecons : Ternary;
-    import std.algorithm.comparison : min;
+    import ripstd.typecons : Ternary;
+    import ripstd.algorithm.comparison : min;
     alias alloc = SbrkRegion!(min(8, platformAlignment)).instance;
     assert((() nothrow @safe @nogc => alloc.empty)() == Ternary.yes);
     auto a = alloc.alignedAllocate(2001, 4096);
@@ -999,8 +999,8 @@ shared struct SharedRegion(ParentAllocator = NullAllocator,
     static assert(minAlign.isGoodStaticAlignment);
     static assert(ParentAllocator.alignment >= minAlign);
 
-    import std.traits : hasMember;
-    import std.typecons : Ternary;
+    import ripstd.traits : hasMember;
+    import ripstd.typecons : Ternary;
 
     // state
     /**
@@ -1184,7 +1184,7 @@ shared struct SharedRegion(ParentAllocator = NullAllocator,
     void[] alignedAllocate(size_t n, uint a) pure nothrow @trusted @nogc
     {
         import core.atomic : cas, atomicLoad;
-        import std.math.traits : isPowerOf2;
+        import ripstd.math.traits : isPowerOf2;
 
         assert(a.isPowerOf2);
         if (n == 0) return null;
@@ -1269,12 +1269,12 @@ shared struct SharedRegion(ParentAllocator = NullAllocator,
 
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     static void testAlloc(Allocator)(ref Allocator a, bool growDownwards)
     {
         import core.thread : ThreadGroup;
-        import std.algorithm.sorting : sort;
+        import ripstd.algorithm.sorting : sort;
         import core.internal.spinlock : SpinLock;
 
         SpinLock lock = SpinLock(SpinLock.Contention.brief);
@@ -1334,12 +1334,12 @@ shared struct SharedRegion(ParentAllocator = NullAllocator,
 
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     static void testAlloc(Allocator)(ref Allocator a, bool growDownwards)
     {
         import core.thread : ThreadGroup;
-        import std.algorithm.sorting : sort;
+        import ripstd.algorithm.sorting : sort;
         import core.internal.spinlock : SpinLock;
 
         SpinLock lock = SpinLock(SpinLock.Contention.brief);

@@ -9,7 +9,7 @@
 
 //dfmt off
 module ripstd.internal.unicode_tables;
-@safe pure nothrow @nogc package(std):
+@safe pure nothrow @nogc package(ripstd):
 
 
 struct SimpleCaseEntry

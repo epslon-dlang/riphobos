@@ -141,7 +141,7 @@ To install one in `main`, the application would use:
 ----
 void main()
 {
-    import std.experimental.allocator.building_blocks.free_list
+    import ripstd.experimental.allocator.building_blocks.free_list
         : FreeList;
     theAllocator = allocatorObject(FreeList!8());
     ...
@@ -223,16 +223,16 @@ Source: $(PHOBOSSRC std/experimental/allocator)
 
 module ripstd.experimental.allocator;
 
-public import std.experimental.allocator.common,
-    std.experimental.allocator.typed;
+public import ripstd.experimental.allocator.common,
+    ripstd.experimental.allocator.typed;
 
 // Fix https://issues.dlang.org/show_bug.cgi?id=17806
 // this should always be the first unittest in this module in order to ensure
 // that we use the `processAllocator` setter before the getter
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     auto newAlloc = sharedAllocatorObject(Mallocator.instance);
     processAllocator = newAlloc;
     assert(processAllocator is newAlloc);
@@ -242,15 +242,15 @@ public import std.experimental.allocator.common,
 // Example in the synopsis above
 @system unittest
 {
-    import std.algorithm.comparison : min, max;
-    import std.experimental.allocator.building_blocks.allocator_list
+    import ripstd.algorithm.comparison : min, max;
+    import ripstd.experimental.allocator.building_blocks.allocator_list
         : AllocatorList;
-    import std.experimental.allocator.building_blocks.bitmapped_block
+    import ripstd.experimental.allocator.building_blocks.bitmapped_block
         : BitmappedBlock;
-    import std.experimental.allocator.building_blocks.bucketizer : Bucketizer;
-    import std.experimental.allocator.building_blocks.free_list : FreeList;
-    import std.experimental.allocator.building_blocks.segregator : Segregator;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.building_blocks.bucketizer : Bucketizer;
+    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
+    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
 
     alias FList = FreeList!(GCAllocator, 0, unbounded);
     alias A = Segregator!(
@@ -277,9 +277,9 @@ public import std.experimental.allocator.common,
     tuMalloc.deallocate(c);
 }
 
-import std.range.primitives;
-import std.traits;
-import std.typecons;
+import ripstd.range.primitives;
+import ripstd.traits;
+import ripstd.typecons;
 
 /**
 Dynamic allocator interface. Code that defines allocators ultimately implements
@@ -547,8 +547,8 @@ nothrow:
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
-    import std.conv : emplace;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.conv : emplace;
 
     auto reg = Region!()(new ubyte[1024]);
     auto state = reg.allocate(stateSize!(CAllocatorImpl!(Region!(), Yes.indirect)));
@@ -569,9 +569,9 @@ nothrow:
 
 @system unittest
 {
-    import std.conv;
-    import std.experimental.allocator.mallocator;
-    import std.experimental.allocator.building_blocks.stats_collector;
+    import ripstd.conv;
+    import ripstd.experimental.allocator.mallocator;
+    import ripstd.experimental.allocator.building_blocks.stats_collector;
 
     alias SCAlloc = StatsCollector!(Mallocator, Options.bytesUsed);
     SCAlloc statsCollectorAlloc;
@@ -592,9 +592,9 @@ nothrow:
 
 @system unittest
 {
-    import std.conv;
-    import std.experimental.allocator.mallocator;
-    import std.experimental.allocator.building_blocks.stats_collector;
+    import ripstd.conv;
+    import ripstd.experimental.allocator.mallocator;
+    import ripstd.experimental.allocator.building_blocks.stats_collector;
 
     alias SCAlloc = StatsCollector!(Mallocator, Options.bytesUsed);
     SCAlloc statsCollectorAlloc;
@@ -1004,7 +1004,7 @@ private ref RCIAllocator setupThreadAllocator()
 // to the processAllocator that it's using
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     auto a = sharedAllocatorObject(Mallocator.instance);
     auto buf = theAllocator.allocate(42);
@@ -1038,8 +1038,8 @@ nothrow @system @nogc
 @system unittest
 {
     // Install a new allocator that is faster for 128-byte allocations.
-    import std.experimental.allocator.building_blocks.free_list : FreeList;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     auto oldAllocator = theAllocator;
     scope(exit) theAllocator = oldAllocator;
     theAllocator = allocatorObject(FreeList!(GCAllocator, 128)());
@@ -1057,8 +1057,8 @@ allocator can be cast to `shared`.
 @nogc nothrow @trusted
 @property ref RCISharedAllocator processAllocator()
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.concurrency : initOnce;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.concurrency : initOnce;
 
     static RCISharedAllocator* forceAttributes()
     {
@@ -1080,9 +1080,9 @@ allocator can be cast to `shared`.
 @system unittest
 {
     import core.exception : AssertError;
-    import std.exception : assertThrown;
-    import std.experimental.allocator.building_blocks.free_list : SharedFreeList;
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.exception : assertThrown;
+    import ripstd.experimental.allocator.building_blocks.free_list : SharedFreeList;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     assert(!processAllocator.isNull);
     assert(!theAllocator.isNull);
@@ -1154,7 +1154,7 @@ propagates the exception.
 */
 auto make(T, Allocator, A...)(auto ref Allocator alloc, auto ref A args)
 {
-    import std.algorithm.comparison : max;
+    import ripstd.algorithm.comparison : max;
     static if (!is(T == class) && !is(T == interface) && A.length == 0
         && __traits(compiles, {T t;}) && __traits(isZeroInit, T)
         && is(typeof(alloc.allocateZeroed(size_t.max))))
@@ -1276,7 +1276,7 @@ auto make(T, Allocator, A...)(auto ref Allocator alloc, auto ref A args)
         A* b = alloc.make!A(42);
         assert(b.x == 42);
         assert(b.y is null);
-        import std.math.traits : isNaN;
+        import ripstd.math.traits : isNaN;
         assert(b.z.isNaN);
 
         b = alloc.make!A(43, "44", 45);
@@ -1311,7 +1311,7 @@ auto make(T, Allocator, A...)(auto ref Allocator alloc, auto ref A args)
         assert((*parray).empty);
     }
 
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     test(GCAllocator.instance);
     test(theAllocator);
 }
@@ -1319,7 +1319,7 @@ auto make(T, Allocator, A...)(auto ref Allocator alloc, auto ref A args)
 // Attribute propagation
 nothrow @safe @nogc unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     alias alloc = Mallocator.instance;
 
     void test(T, Args...)(auto ref Args args)
@@ -1337,7 +1337,7 @@ nothrow @safe @nogc unittest
 // should be pure with the GCAllocator
 /*pure nothrow*/ @safe unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
 
     alias alloc = GCAllocator.instance;
 
@@ -1356,7 +1356,7 @@ nothrow @safe @nogc unittest
 // Verify that making an object by calling an impure constructor is not @safe
 nothrow @safe @nogc unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     static struct Pure { this(int) pure nothrow @nogc @safe {} }
 
     cast(void) Mallocator.instance.make!Pure(0);
@@ -1371,7 +1371,7 @@ nothrow @safe @nogc unittest
 // test failure with a pure, failing struct
 @safe unittest
 {
-    import std.exception : assertThrown, enforce;
+    import ripstd.exception : assertThrown, enforce;
 
     // this struct can't be initialized
     struct InvalidStruct
@@ -1381,14 +1381,14 @@ nothrow @safe @nogc unittest
             enforce(1 == 2);
         }
     }
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     assertThrown(make!InvalidStruct(Mallocator.instance, 42));
 }
 
 // test failure with an impure, failing struct
 @system unittest
 {
-    import std.exception : assertThrown, enforce;
+    import ripstd.exception : assertThrown, enforce;
     static int g;
     struct InvalidImpureStruct
     {
@@ -1398,7 +1398,7 @@ nothrow @safe @nogc unittest
             enforce(1 == 2);
         }
     }
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     assertThrown(make!InvalidImpureStruct(Mallocator.instance, 42));
 }
 
@@ -1410,7 +1410,7 @@ nothrow @safe @nogc unittest
         int i;
         @disable this();
     }
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     static assert(!__traits(compiles, make!NoDefaultCtor(Mallocator.instance)),
         "Don't allow zero-ctor-args `make` for structs with `@disable this();`");
 }
@@ -1436,7 +1436,7 @@ private void fillWithMemcpy(T)(scope void[] array, auto ref T filler) nothrow
 if (T.sizeof == 1)
 {
     import core.stdc.string : memset;
-    import std.traits : CopyConstness;
+    import ripstd.traits : CopyConstness;
     if (!array.length) return;
     memset(array.ptr, *cast(CopyConstness!(T*, ubyte*)) &filler, array.length);
 }
@@ -1445,7 +1445,7 @@ private void fillWithMemcpy(T)(scope void[] array, auto ref T filler) nothrow
 if (T.sizeof != 1)
 {
     import core.stdc.string : memcpy;
-    import std.algorithm.comparison : min;
+    import ripstd.algorithm.comparison : min;
     if (!array.length) return;
     memcpy(array.ptr, &filler, T.sizeof);
     // Fill the array from the initialized portion of itself exponentially.
@@ -1616,8 +1616,8 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length)
         assert(arrInt == res);
     }
 
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     (alloc) /*pure nothrow*/ @safe { test1(alloc); test2(alloc);} (GCAllocator.instance);
     (alloc) nothrow @safe @nogc { test1(alloc); test2(alloc);} (Mallocator.instance);
     test2(theAllocator);
@@ -1625,7 +1625,7 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length)
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = theAllocator.makeArray!(shared int)(5);
     static assert(is(typeof(a) == shared(int)[]));
     assert(a.length == 5);
@@ -1668,7 +1668,7 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length, T init)
     auto m = alloc.allocate(T.sizeof * length);
     if (!m.ptr) return null;
     auto result = () @trusted { return cast(T[]) m; } ();
-    import std.traits : hasElaborateCopyConstructor;
+    import ripstd.traits : hasElaborateCopyConstructor;
     static if (hasElaborateCopyConstructor!T)
     {
         scope(failure)
@@ -1707,14 +1707,14 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length, T init)
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     static void test(T)()
     {
         T[] a = theAllocator.makeArray!T(2);
         assert(a.equal([0, 0]));
         a = theAllocator.makeArray!T(3, 42);
         assert(a.equal([42, 42, 42]));
-        import std.range : only;
+        import ripstd.range : only;
         a = theAllocator.makeArray!T(only(42, 43, 44));
         assert(a.equal([42, 43, 44]));
     }
@@ -1746,7 +1746,7 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length, T init)
         assert(a.length == 5);
         assert(a == [ 42, 42, 42, 42, 42 ]);
     }
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     (alloc) /*pure nothrow*/ @safe { test(alloc); } (GCAllocator.instance);
     test(theAllocator);
 }
@@ -1754,7 +1754,7 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length, T init)
 // test failure with a pure, failing struct
 @safe unittest
 {
-    import std.exception : assertThrown, enforce;
+    import ripstd.exception : assertThrown, enforce;
 
     struct NoCopy
     {
@@ -1768,14 +1768,14 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length, T init)
             enforce(1 == 2);
         }
     }
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     assertThrown(makeArray!NoCopy(Mallocator.instance, 10, NoCopy(42)));
 }
 
 // test failure with an impure, failing struct
 @system unittest
 {
-    import std.exception : assertThrown, enforce;
+    import ripstd.exception : assertThrown, enforce;
 
     static int i = 0;
     struct Singleton
@@ -1795,7 +1795,7 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length, T init)
             i--;
         }
     }
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     assertThrown(makeArray!Singleton(Mallocator.instance, 10, Singleton(42)));
 }
 
@@ -1929,7 +1929,7 @@ if (isInputRange!R && !isInfinite!R)
         static assert(is(typeof(b) == double[]));
         assert(b == [4.0, 2.0]);
     }
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     (alloc) pure nothrow @safe { test(alloc); } (GCAllocator.instance);
     test(theAllocator);
 }
@@ -1952,17 +1952,17 @@ if (isInputRange!R && !isInfinite!R)
         assert(w == "fooπ😜");
     }
 
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     (alloc) pure nothrow @safe { test(alloc); } (GCAllocator.instance);
     test(theAllocator);
 }
 
 /*pure*/ nothrow @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.internal.test.dummyrange;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.internal.test.dummyrange;
+    import ripstd.range : iota;
     foreach (DummyType; AllDummyRanges)
     {
         (alloc) pure nothrow @safe
@@ -1978,7 +1978,7 @@ if (isInputRange!R && !isInfinite!R)
 // test failure with a pure, failing struct
 @safe unittest
 {
-    import std.exception : assertThrown, enforce;
+    import ripstd.exception : assertThrown, enforce;
 
     struct NoCopy
     {
@@ -1997,7 +1997,7 @@ if (isInputRange!R && !isInfinite!R)
             enforce(b < 3, "there can only be three elements");
         }
     }
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     auto arr = [NoCopy(1), NoCopy(2), NoCopy(3)];
     assertThrown(makeArray!NoCopy(Mallocator.instance, arr));
 
@@ -2025,7 +2025,7 @@ if (isInputRange!R && !isInfinite!R)
 // test failure with an impure, failing struct
 @system unittest
 {
-    import std.exception : assertThrown, enforce;
+    import ripstd.exception : assertThrown, enforce;
 
     static i = 0;
     static maxElements = 2;
@@ -2045,7 +2045,7 @@ if (isInputRange!R && !isInfinite!R)
         }
     }
 
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     auto arr = [NoCopy(1), NoCopy(2)];
     assertThrown(makeArray!NoCopy(Mallocator.instance, arr));
 
@@ -2075,7 +2075,7 @@ if (isInputRange!R && !isInfinite!R)
     assert(i == j && i == 101); // all 101 rvalue elements forwarded/moved
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     private struct ForcedInputRange(T)
     {
@@ -2089,8 +2089,8 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.array : array;
-    import std.range : iota;
+    import ripstd.array : array;
+    import ripstd.range : iota;
     int[] arr = iota(10).array;
 
     void test(A)(auto ref A alloc)
@@ -2104,7 +2104,7 @@ version (StdUnittest)
         assert(a.length == 10);
         assert(a == iota(10).array);
     }
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     (alloc) pure nothrow @safe { test(alloc); } (GCAllocator.instance);
     test(theAllocator);
 }
@@ -2154,7 +2154,7 @@ bool expandArray(T, Allocator)(auto ref Allocator alloc, ref T[] array,
         assert(alloc.expandArray(arr, 3));
         assert(arr == [1, 2, 3, 0, 0, 0]);
     }
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     test(GCAllocator.instance);
     test(theAllocator);
 }
@@ -2170,7 +2170,7 @@ bool expandArray(T, Allocator)(auto ref Allocator alloc, ref T[] array,
     immutable oldLength = array.length;
     array = cast(T[]) buf;
     scope(failure) array[oldLength .. $].uninitializedFillDefault;
-    import std.algorithm.mutation : uninitializedFill;
+    import ripstd.algorithm.mutation : uninitializedFill;
     array[oldLength .. $].uninitializedFill(init);
     return true;
 }
@@ -2183,7 +2183,7 @@ bool expandArray(T, Allocator)(auto ref Allocator alloc, ref T[] array,
         assert(alloc.expandArray(arr, 3, 1));
         assert(arr == [1, 2, 3, 1, 1, 1]);
     }
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     test(GCAllocator.instance);
     test(theAllocator);
 }
@@ -2254,7 +2254,7 @@ if (isInputRange!R)
     auto arr = theAllocator.makeArray!int([1, 2, 3]);
     assert(theAllocator.expandArray(arr, 2));
     assert(arr == [1, 2, 3, 0, 0]);
-    import std.range : only;
+    import ripstd.range : only;
     assert(theAllocator.expandArray(arr, only(4, 5)));
     assert(arr == [1, 2, 3, 0, 0, 4, 5]);
 }
@@ -2277,7 +2277,7 @@ if (isInputRange!R)
     {
         auto arr = alloc.makeArray!Char(1, Char('f'));
 
-        import std.utf : byUTF;
+        import ripstd.utf : byUTF;
         auto forwardRange = "oo".byUTF!Char();
         static assert(isForwardRange!(typeof(forwardRange)));
         // Test the forward-range code-path.
@@ -2293,7 +2293,7 @@ if (isInputRange!R)
         assert(arr == "foobar");
     }
 
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     test!char(GCAllocator.instance);
     test!wchar(GCAllocator.instance);
     test!char(theAllocator);
@@ -2383,7 +2383,7 @@ bool shrinkArray(T, Allocator)(auto ref Allocator alloc,
         assert(a.length == 2);
         assert(a == [ 42, 42]);
     }
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     test(GCAllocator.instance);
     test(theAllocator);
 }
@@ -2487,7 +2487,7 @@ void dispose(A, T)(auto ref A alloc, auto ref T[] array)
 // https://issues.dlang.org/show_bug.cgi?id=16512
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     int* i = Mallocator.instance.make!int(0);
     Mallocator.instance.dispose(i);
@@ -2509,7 +2509,7 @@ void dispose(A, T)(auto ref A alloc, auto ref T[] array)
 // https://issues.dlang.org/show_bug.cgi?id=15721
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     interface Foo {}
     class Bar: Foo {}
@@ -2552,7 +2552,7 @@ auto makeMultidimensionalArray(T, Allocator, size_t N)(auto ref Allocator alloc,
 ///
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     auto mArray = Mallocator.instance.makeMultidimensionalArray!int(2, 3, 6);
 
@@ -2598,8 +2598,8 @@ void disposeMultidimensionalArray(T, Allocator)(auto ref Allocator alloc, auto r
 {
     struct TestAllocator
     {
-        import std.experimental.allocator.common : platformAlignment;
-        import std.experimental.allocator.mallocator : Mallocator;
+        import ripstd.experimental.allocator.common : platformAlignment;
+        import ripstd.experimental.allocator.mallocator : Mallocator;
 
         alias allocator = Mallocator.instance;
 
@@ -2622,8 +2622,8 @@ void disposeMultidimensionalArray(T, Allocator)(auto ref Allocator alloc, auto r
 
         bool deallocate(void[] bytes)
         {
-            import std.algorithm.mutation : remove;
-            import std.algorithm.searching : canFind;
+            import ripstd.algorithm.mutation : remove;
+            import ripstd.algorithm.searching : canFind;
 
             bool pred(ByteRange other)
             { return other.ptr == bytes.ptr && other.length == bytes.length; }
@@ -2684,8 +2684,8 @@ if (!isPointer!A)
     else
     {
         auto state = a.allocate(stateSize!(CAllocatorImpl!A));
-        import std.algorithm.mutation : move;
-        import std.traits : hasMember;
+        import ripstd.algorithm.mutation : move;
+        import ripstd.traits : hasMember;
         static if (hasMember!(A, "deallocate"))
         {
             scope(failure) a.deallocate(state);
@@ -2702,7 +2702,7 @@ RCIAllocator allocatorObject(A)(A* pa)
     assert(pa);
     import core.lifetime : emplace;
     auto state = pa.allocate(stateSize!(CAllocatorImpl!(A, Yes.indirect)));
-    import std.traits : hasMember;
+    import ripstd.traits : hasMember;
     static if (hasMember!(A, "deallocate"))
     {
         scope(failure) pa.deallocate(state);
@@ -2714,7 +2714,7 @@ RCIAllocator allocatorObject(A)(A* pa)
 ///
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     RCIAllocator a = allocatorObject(Mallocator.instance);
     auto b = a.allocate(100);
@@ -2722,7 +2722,7 @@ RCIAllocator allocatorObject(A)(A* pa)
     assert(a.deallocate(b));
 
     // The in-situ region must be used by pointer
-    import std.experimental.allocator.building_blocks.region : InSituRegion;
+    import ripstd.experimental.allocator.building_blocks.region : InSituRegion;
     auto r = InSituRegion!1024();
     a = allocatorObject(&r);
     b = a.allocate(200);
@@ -2733,9 +2733,9 @@ RCIAllocator allocatorObject(A)(A* pa)
 
 @system unittest
 {
-    import std.conv;
-    import std.experimental.allocator.mallocator;
-    import std.experimental.allocator.building_blocks.stats_collector;
+    import ripstd.conv;
+    import ripstd.experimental.allocator.mallocator;
+    import ripstd.experimental.allocator.building_blocks.stats_collector;
 
     alias SCAlloc = StatsCollector!(Mallocator, Options.bytesUsed);
     SCAlloc statsCollectorAlloc;
@@ -2798,8 +2798,8 @@ if (!isPointer!A)
     else static if (is(typeof({ shared A b = a; shared A c = b; }))) // copyable
     {
         auto state = a.allocate(stateSize!(CSharedAllocatorImpl!A));
-        import std.algorithm.mutation : move;
-        import std.traits : hasMember;
+        import ripstd.algorithm.mutation : move;
+        import ripstd.traits : hasMember;
         static if (hasMember!(A, "deallocate"))
         {
             scope(failure) a.deallocate(state);
@@ -2820,7 +2820,7 @@ RCISharedAllocator sharedAllocatorObject(A)(A* pa)
     assert(pa);
     import core.lifetime : emplace;
     auto state = pa.allocate(stateSize!(CSharedAllocatorImpl!(A, Yes.indirect)));
-    import std.traits : hasMember;
+    import ripstd.traits : hasMember;
     static if (hasMember!(A, "deallocate"))
     {
         scope(failure) pa.deallocate(state);
@@ -2840,7 +2840,7 @@ Usually `CAllocatorImpl` is used indirectly by calling $(LREF theAllocator).
 class CAllocatorImpl(Allocator, Flag!"indirect" indirect = No.indirect)
     : IAllocator
 {
-    import std.traits : hasMember;
+    import ripstd.traits : hasMember;
 
     static if (stateSize!Allocator) private size_t rc = 1;
 
@@ -3069,7 +3069,7 @@ $(LREF processAllocator).
 class CSharedAllocatorImpl(Allocator, Flag!"indirect" indirect = No.indirect)
     : ISharedAllocator
 {
-    import std.traits : hasMember;
+    import ripstd.traits : hasMember;
     import core.atomic : atomicOp, atomicLoad;
 
     static if (stateSize!Allocator) shared size_t rc = 1;
@@ -3365,9 +3365,9 @@ struct ThreadLocal(A)
 @system
 unittest
 {
-    import std.experimental.allocator.building_blocks.free_list : FreeList;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     static assert(!is(ThreadLocal!Mallocator));
     static assert(!is(ThreadLocal!GCAllocator));
@@ -3529,16 +3529,16 @@ private struct EmbeddedTree(T, alias less)
 
     void dump()
     {
-        import std.stdio : writeln;
+        import ripstd.stdio : writeln;
         writeln(typeid(this), " @ ", cast(void*) &this);
         dump(root, 3);
     }
 
     void dump(Node* r, uint indent)
     {
-        import std.stdio : write, writeln;
-        import std.range : repeat;
-        import std.array : array;
+        import ripstd.stdio : write, writeln;
+        import ripstd.range : repeat;
+        import ripstd.array : array;
 
         write(repeat(' ', indent).array);
         if (!r)
@@ -3570,7 +3570,7 @@ private struct EmbeddedTree(T, alias less)
 @system
 unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
 
     alias a = GCAllocator.instance;
     alias Tree = EmbeddedTree!(int, (a, b) => a.payload < b.payload);
@@ -3607,7 +3607,7 @@ the block size and two for search management).
 */
 private struct InternalPointersTree(Allocator)
 {
-    import std.experimental.allocator.building_blocks.affix_allocator : AffixAllocator;
+    import ripstd.experimental.allocator.building_blocks.affix_allocator : AffixAllocator;
 
     alias Tree = EmbeddedTree!(size_t,
         (a, b) => cast(void*) a + a.payload < cast(void*) b);
@@ -3716,8 +3716,8 @@ private struct InternalPointersTree(Allocator)
 @system
 unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.random : randomCover;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.random : randomCover;
 
     InternalPointersTree!(Mallocator) a;
     int[] vals = [ 6, 3, 9, 1, 2, 8, 11 ];
@@ -3755,14 +3755,14 @@ unittest
 @system
 unittest
 {
-    import std.experimental.allocator.building_blocks.null_allocator : NullAllocator;
-    import std.experimental.allocator.building_blocks.allocator_list : AllocatorList;
-    import std.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
-    import std.experimental.allocator.building_blocks.segregator : Segregator;
-    import std.experimental.allocator.building_blocks.bucketizer : Bucketizer;
-    import std.experimental.allocator.building_blocks.free_list : FreeList;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.building_blocks.null_allocator : NullAllocator;
+    import ripstd.experimental.allocator.building_blocks.allocator_list : AllocatorList;
+    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
+    import ripstd.experimental.allocator.building_blocks.bucketizer : Bucketizer;
+    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     static void testSpeed(A)()
     {
@@ -3771,7 +3771,7 @@ unittest
 
         void[][128] bufs;
 
-        import std.random;
+        import ripstd.random;
         foreach (i; 0 .. 100_000)
         {
             auto j = uniform(0, bufs.length);
@@ -3791,7 +3791,7 @@ unittest
         }
     }
 
-    import std.algorithm.comparison : max;
+    import ripstd.algorithm.comparison : max;
 
     alias FList = FreeList!(GCAllocator, 0, unbounded);
     alias A = Segregator!(
@@ -3808,10 +3808,10 @@ unittest
         GCAllocator
     );
 
-    import std.stdio;
-    import std.conv : to;
-    import std.datetime.stopwatch;
-    import std.algorithm.iteration : map;
+    import ripstd.stdio;
+    import ripstd.conv : to;
+    import ripstd.datetime.stopwatch;
+    import ripstd.algorithm.iteration : map;
 
     if (false) writeln(benchmark!(
         testSpeed!NullAllocator,
@@ -3825,11 +3825,11 @@ unittest
 @system
 unittest
 {
-    import std.experimental.allocator.building_blocks.free_list : FreeList;
-    import std.experimental.allocator.building_blocks.region : InSituRegion;
-    import std.experimental.allocator.building_blocks.fallback_allocator : FallbackAllocator;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
+    import ripstd.experimental.allocator.building_blocks.region : InSituRegion;
+    import ripstd.experimental.allocator.building_blocks.fallback_allocator : FallbackAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     auto a = allocatorObject(Mallocator.instance);
     auto b = a.allocate(100);
@@ -3851,12 +3851,12 @@ unittest
 @system
 unittest
 {
-    import std.experimental.allocator.building_blocks.allocator_list : AllocatorList;
-    import std.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
-    import std.experimental.allocator.building_blocks.segregator : Segregator;
-    import std.experimental.allocator.building_blocks.bucketizer : Bucketizer;
-    import std.experimental.allocator.building_blocks.free_list : FreeList;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.building_blocks.allocator_list : AllocatorList;
+    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
+    import ripstd.experimental.allocator.building_blocks.bucketizer : Bucketizer;
+    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
 
     /// Define an allocator bound to the built-in GC.
     auto alloc = allocatorObject(GCAllocator.instance);
@@ -3864,7 +3864,7 @@ unittest
     assert(b.length == 42);
     assert(alloc.deallocate(b));
 
-    import std.algorithm.comparison : max;
+    import ripstd.algorithm.comparison : max;
     // Define an elaborate allocator and bind it to the class API.
     alias FList = FreeList!(GCAllocator, 0, unbounded);
     alias A = ThreadLocal!(

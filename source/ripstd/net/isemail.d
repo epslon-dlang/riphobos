@@ -25,9 +25,9 @@
  */
 module ripstd.net.isemail;
 
-import std.range.primitives : back, front, ElementType, popFront, popBack;
-import std.traits;
-import std.typecons : Flag, Yes, No;
+import ripstd.range.primitives : back, front, ElementType, popFront, popBack;
+import ripstd.traits;
+import ripstd.typecons : Flag, Yes, No;
 
 /**
  * Check that an email address conforms to RFCs 5321, 5322 and others.
@@ -61,13 +61,13 @@ EmailStatus isEmail(Char)(const(Char)[] email, CheckDns checkDNS = No.checkDns,
 EmailStatusCode errorLevel = EmailStatusCode.none)
 if (isSomeChar!(Char))
 {
-    import std.algorithm.iteration : uniq, filter, map;
-    import std.algorithm.searching : canFind, maxElement;
-    import std.array : array, split;
-    import std.conv : to;
-    import std.exception : enforce;
-    import std.string : indexOf, lastIndexOf;
-    import std.uni : isNumber;
+    import ripstd.algorithm.iteration : uniq, filter, map;
+    import ripstd.algorithm.searching : canFind, maxElement;
+    import ripstd.array : array, split;
+    import ripstd.conv : to;
+    import ripstd.exception : enforce;
+    import ripstd.string : indexOf, lastIndexOf;
+    import ripstd.uni : isNumber;
 
     alias tstring = const(Char)[];
     alias Token = TokenImpl!(Char);
@@ -1335,7 +1335,7 @@ struct EmailStatus
     /// Returns: A textual representation of the email status
     string toString() const @safe pure
     {
-        import std.format : format;
+        import ripstd.format : format;
         return format("EmailStatus\n{\n\tvalid: %s\n\tlocalPart: %s\n\tdomainPart: %s\n\tstatusCode: %s\n}", valid,
             localPart, domainPart, statusCode);
     }
@@ -1785,7 +1785,7 @@ enum AsciiToken
 int compareFirstN(alias pred = "a < b", S1, S2) (S1 s1, S2 s2, size_t length)
 if (is(immutable ElementType!(S1) == immutable dchar) && is(immutable ElementType!(S2) == immutable dchar))
 {
-    import std.uni : icmp;
+    import ripstd.uni : icmp;
     auto s1End = length <= s1.length ? length : s1.length;
     auto s2End = length <= s2.length ? length : s2.length;
 
@@ -1841,7 +1841,7 @@ if (isDynamicArray!(A) && !isNarrowString!(A) && isMutable!(A) && !is(A == void[
  */
 const(T)[] get (T) (const(T)[] str, size_t index, dchar c)
 {
-    import std.utf : codeLength;
+    import ripstd.utf : codeLength;
     return str[index .. index + codeLength!(T)(c)];
 }
 
@@ -1867,7 +1867,7 @@ a => a.matchFirst(fourChars).empty
 +/
 bool isUpToFourHexChars(Char)(scope const(Char)[] s)
 {
-    import std.ascii : isHexDigit;
+    import ripstd.ascii : isHexDigit;
     if (s.length > 4) return false;
     foreach (c; s)
         if (!isHexDigit(c)) return false;
@@ -1939,7 +1939,7 @@ const(Char)[] matchIPSuffix(Char)(return const(Char)[] s) @nogc nothrow pure @sa
     // (TO DETERMINE: is the definition of "word character" ASCII only?)
     if (start == 0) return s;
     const b = s[start - 1];
-    import std.ascii : isAlphaNum;
+    import ripstd.ascii : isAlphaNum;
     if (isAlphaNum(b) || b == '_') return null;
     return s[start .. $];
 }

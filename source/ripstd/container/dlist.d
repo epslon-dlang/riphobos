@@ -21,8 +21,8 @@ module ripstd.container.dlist;
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container : DList;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container : DList;
 
     auto s = DList!int(1, 2, 3);
     assert(equal(s[], [1, 2, 3]));
@@ -38,8 +38,8 @@ module ripstd.container.dlist;
     assert(equal(s[], [4, 5, 2, 6, 7]));
 
     // If you want to apply range operations, simply slice it.
-    import std.algorithm.searching : countUntil;
-    import std.range : popFrontN, popBackN, walkLength;
+    import ripstd.algorithm.searching : countUntil;
+    import ripstd.range : popFrontN, popBackN, walkLength;
 
     auto sl = DList!int([1, 2, 3, 4, 5]);
     assert(countUntil(sl[], 2) == 1);
@@ -64,10 +64,10 @@ module ripstd.container.dlist;
     assert(equal(nl[], [1]));
 }
 
-import std.range.primitives;
-import std.traits;
+import ripstd.range.primitives;
+import ripstd.traits;
 
-public import std.container.util;
+public import ripstd.container.util;
 
 /+
 A DList Node without payload. Used to handle the sentinel node (henceforth "sentinode").
@@ -184,7 +184,7 @@ Implements a doubly-linked list.
  */
 struct DList(T)
 {
-    import std.range : Take;
+    import ripstd.range : Take;
 
     /*
     A Node with a Payload. A PayNode.
@@ -523,7 +523,7 @@ Complexity: $(BIGOH 1).
      */
     T removeAny()
     {
-        import std.algorithm.mutation : move;
+        import ripstd.algorithm.mutation : move;
 
         assert(!empty, "DList.removeAny: List is empty");
         auto result = move(back);
@@ -802,7 +802,7 @@ private:
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto e = DList!int();
     auto b = e.linearRemoveElement(1);
@@ -834,7 +834,7 @@ private:
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     //Tests construction signatures
     alias IntList = DList!int;
@@ -853,7 +853,7 @@ private:
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     alias IntList = DList!int;
     IntList list = IntList([0,1,2,3]);
@@ -870,8 +870,8 @@ private:
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : take;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : take;
 
     alias IntList = DList!int;
     IntList list = IntList([0,1,2,3]);
@@ -929,7 +929,7 @@ private:
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto dl = DList!int([1, 2, 3, 4, 5]);
     auto r = dl[];
@@ -953,7 +953,7 @@ private:
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto dl = DList!string(["a", "b", "d"]);
     dl.insertAfter(dl[], "e"); // insert at the end
@@ -966,7 +966,7 @@ private:
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto dl = DList!string(["a", "b", "d"]);
     dl.insertBefore(dl[], "e"); // insert at the front
@@ -1020,7 +1020,7 @@ private:
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     //Verify all flavors of ~
     auto a = DList!int();
@@ -1056,7 +1056,7 @@ private:
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // https://issues.dlang.org/show_bug.cgi?id=8905
     auto a = DList!int([1, 2, 3, 4]);
@@ -1087,7 +1087,7 @@ private:
 // https://issues.dlang.org/show_bug.cgi?id=13425
 @safe unittest
 {
-    import std.range : drop, take;
+    import ripstd.range : drop, take;
     auto list = DList!int([1,2,3,4,5]);
     auto r = list[].drop(4); // r is a view of the last element of list
     assert(r.front == 5 && r.walkLength == 1);
@@ -1107,7 +1107,7 @@ private:
 // https://issues.dlang.org/show_bug.cgi?id=15263
 @safe unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
     auto a = DList!int();
     a.insertFront(iota(0, 5)); // can insert range with non-ref front
     assert(a.front == 0 && a.back == 4);

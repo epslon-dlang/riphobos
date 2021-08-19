@@ -184,7 +184,7 @@ $(TR $(TD Building blocks) $(TD
     )
     $(SECTION Synopsis)
     ---
-    import std.uni;
+    import ripstd.uni;
     void main()
     {
         // initialize code point sets using script/block or property name
@@ -704,15 +704,15 @@ CLUSTER = $(S_LINK Grapheme cluster, grapheme cluster)
 +/
 module ripstd.uni;
 
-import std.meta : AliasSeq;
-import std.range.primitives : back, ElementEncodingType, ElementType, empty,
+import ripstd.meta : AliasSeq;
+import ripstd.range.primitives : back, ElementEncodingType, ElementType, empty,
     front, hasLength, hasSlicing, isForwardRange, isInputRange,
     isRandomAccessRange, popFront, put, save;
-import std.traits : isConvertibleToString, isIntegral, isSomeChar,
+import ripstd.traits : isConvertibleToString, isIntegral, isSomeChar,
     isSomeString, Unqual, isDynamicArray;
 // debug = std_uni;
 
-debug(std_uni) import std.stdio; // writefln, writeln
+debug(std_uni) import ripstd.stdio; // writefln, writeln
 
 private:
 
@@ -748,7 +748,7 @@ public enum dchar nelSep  = '\u0085'; /// Constant $(CODEPOINT) (0x0085) - next 
 // test the intro example
 @safe unittest
 {
-    import std.algorithm.searching : find;
+    import ripstd.algorithm.searching : find;
     // initialize code point sets using script/block or property name
     // set contains code points from both scripts.
     auto set = unicode("Cyrillic") | unicode("Armenian");
@@ -846,8 +846,8 @@ size_t replicateBits(size_t times, size_t bits)(size_t val) @safe pure nothrow @
 
 @safe pure nothrow @nogc unittest // for replicate
 {
-    import std.algorithm.iteration : sum, map;
-    import std.range : iota;
+    import ripstd.algorithm.iteration : sum, map;
+    import ripstd.range : iota;
     size_t m = 0b111;
     size_t m2 = 0b01;
     static foreach (i; AliasSeq!(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
@@ -860,7 +860,7 @@ size_t replicateBits(size_t times, size_t bits)(size_t val) @safe pure nothrow @
 // multiple arrays squashed into one memory block
 struct MultiArray(Types...)
 {
-    import std.range.primitives : isOutputRange;
+    import ripstd.range.primitives : isOutputRange;
     this(size_t[] sizes...) @safe pure nothrow
     {
         assert(dim == sizes.length);
@@ -960,14 +960,14 @@ struct MultiArray(Types...)
     void store(OutRange)(scope OutRange sink) const
         if (isOutputRange!(OutRange, char))
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         formattedWrite(sink, "[%( 0x%x, %)]", offsets[]);
         formattedWrite(sink, ", [%( 0x%x, %)]", sz[]);
         formattedWrite(sink, ", [%( 0x%x, %)]", storage);
     }
 
 private:
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
     @property auto raw_ptr(size_t n)()inout pure nothrow @nogc
     {
         static if (n == 0)
@@ -986,7 +986,7 @@ private:
 
 @system unittest
 {
-    import std.conv : text;
+    import ripstd.conv : text;
     enum dg = (){
         // sizes are:
         // lvl0: 3, lvl1 : 2, lvl2: 1
@@ -1059,7 +1059,7 @@ private:
 
 @system unittest
 {// more bitpacking tests
-    import std.conv : text;
+    import ripstd.conv : text;
 
     alias Bitty =
       MultiArray!(BitPacked!(size_t, 3)
@@ -1124,7 +1124,7 @@ private:
 
 size_t spaceFor(size_t _bits)(size_t new_len) @safe pure nothrow @nogc
 {
-    import std.math.algebraic : nextPow2;
+    import ripstd.math.algebraic : nextPow2;
     enum bits = _bits == 1 ? 1 : nextPow2(_bits - 1);// see PackedArrayView
     static if (bits > 8*size_t.sizeof)
     {
@@ -1149,7 +1149,7 @@ template PackedArrayView(T)
 if ((is(T dummy == BitPacked!(U, sz), U, size_t sz)
     && isBitPackableType!U) || isBitPackableType!T)
 {
-    import std.math.algebraic : nextPow2;
+    import ripstd.math.algebraic : nextPow2;
     private enum bits = bitSizeOf!T;
     alias PackedArrayView = PackedArrayViewImpl!(T, bits > 1 ? nextPow2(bits - 1) : 1);
 }
@@ -1159,7 +1159,7 @@ template PackedPtr(T)
 if ((is(T dummy == BitPacked!(U, sz), U, size_t sz)
     && isBitPackableType!U) || isBitPackableType!T)
 {
-    import std.math.algebraic : nextPow2;
+    import ripstd.math.algebraic : nextPow2;
     private enum bits = bitSizeOf!T;
     alias PackedPtr = PackedPtrImpl!(T, bits > 1 ? nextPow2(bits - 1) : 1);
 }
@@ -1576,8 +1576,8 @@ private inout(PackedArrayView!T) packedArrayView(T)(inout(size_t)* ptr, size_t i
 string genUnrolledSwitchSearch(size_t size) @safe pure nothrow
 {
     import core.bitop : bsr;
-    import std.array : replace;
-    import std.conv : to;
+    import ripstd.array : replace;
+    import ripstd.conv : to;
     assert(isPow2OrZero(size));
     string code = `
     import core.bitop : bsr;
@@ -1610,7 +1610,7 @@ string genUnrolledSwitchSearch(size_t size) @safe pure nothrow
 
 bool isPow2OrZero(size_t sz) @safe pure nothrow @nogc
 {
-    // See also: std.math.isPowerOf2()
+    // See also: ripstd.math.isPowerOf2()
     return (sz & (sz-1)) == 0;
 }
 
@@ -1651,8 +1651,8 @@ template sharMethod(alias uniLowerBound)
     size_t sharMethod(alias _pred="a<b", Range, T)(Range range, T needle)
         if (is(T : ElementType!Range))
     {
-        import std.functional : binaryFun;
-        import std.math.algebraic : nextPow2, truncPow2;
+        import ripstd.functional : binaryFun;
+        import ripstd.math.algebraic : nextPow2, truncPow2;
         alias pred = binaryFun!_pred;
         if (range.length == 0)
             return 0;
@@ -1674,8 +1674,8 @@ alias sharSwitchLowerBound = sharMethod!switchUniformLowerBound;
 
 @safe unittest
 {
-    import std.array : array;
-    import std.range : assumeSorted, iota;
+    import ripstd.array : array;
+    import ripstd.range : assumeSorted, iota;
 
     auto stdLowerBound(T)(T[] range, T needle)
     {
@@ -1705,7 +1705,7 @@ alias sharSwitchLowerBound = sharMethod!switchUniformLowerBound;
 @trusted size_t genericReplace(Policy=void, T, Range)
     (ref T dest, size_t from, size_t to, Range stuff)
 {
-    import std.algorithm.mutation : copy;
+    import ripstd.algorithm.mutation : copy;
     size_t delta = to - from;
     size_t stuff_end = from+stuff.length;
     if (stuff.length > delta)
@@ -1741,7 +1741,7 @@ alias sharSwitchLowerBound = sharMethod!switchUniformLowerBound;
 // Simple storage manipulation policy
 @safe private struct GcPolicy
 {
-    import std.traits : isDynamicArray;
+    import ripstd.traits : isDynamicArray;
 
     static T[] dup(T)(const T[] arr)
     {
@@ -1796,7 +1796,7 @@ alias sharSwitchLowerBound = sharMethod!switchUniformLowerBound;
 // ditto
 @safe struct ReallocPolicy
 {
-    import std.range.primitives : hasLength;
+    import ripstd.range.primitives : hasLength;
 
     static T[] dup(T)(const T[] arr)
     {
@@ -1807,7 +1807,7 @@ alias sharSwitchLowerBound = sharMethod!switchUniformLowerBound;
 
     static T[] alloc(T)(size_t size) @trusted
     {
-        import std.internal.memory : enforceMalloc;
+        import ripstd.internal.memory : enforceMalloc;
 
         import core.checkedint : mulu;
         bool overflow;
@@ -1820,7 +1820,7 @@ alias sharSwitchLowerBound = sharMethod!switchUniformLowerBound;
 
     static T[] realloc(T)(scope T[] arr, size_t size) @trusted
     {
-        import std.internal.memory : enforceRealloc;
+        import ripstd.internal.memory : enforceRealloc;
         if (!size)
         {
             destroy(arr);
@@ -1854,7 +1854,7 @@ alias sharSwitchLowerBound = sharMethod!switchUniformLowerBound;
         int[] arr;
         ReallocPolicy.append(arr, 3);
 
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         assert(equal(arr, [3]));
     }
 
@@ -1868,7 +1868,7 @@ alias sharSwitchLowerBound = sharMethod!switchUniformLowerBound;
 
         arr = realloc(arr, nelems);
 
-        import std.algorithm.mutation : copy;
+        import ripstd.algorithm.mutation : copy;
         copy(value, arr[$-value.length..$]);
     }
 
@@ -1877,7 +1877,7 @@ alias sharSwitchLowerBound = sharMethod!switchUniformLowerBound;
         int[] arr;
         ReallocPolicy.append(arr, [1,2,3]);
 
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         assert(equal(arr, [1,2,3]));
     }
 
@@ -1895,7 +1895,7 @@ alias _RealArray = CowArray!ReallocPolicy;
 
 pure @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     with(ReallocPolicy)
     {
@@ -1959,8 +1959,8 @@ public template isIntegralPair(T, V=uint)
 public alias CodepointSet = InversionList!GcPolicy;
 
 
-//@@@BUG: std.typecons tuples depend on std.format to produce fields mixin
-// which relies on std.uni.isGraphical and this chain blows up with Forward reference error
+//@@@BUG: ripstd.typecons tuples depend on ripstd.format to produce fields mixin
+// which relies on ripstd.uni.isGraphical and this chain blows up with Forward reference error
 // hence below doesn't seem to work
 // public alias CodepointInterval = Tuple!(uint, "a", uint, "b");
 
@@ -2049,7 +2049,7 @@ pure:
 */
 public struct InversionList(SP=GcPolicy)
 {
-    import std.range : assumeSorted;
+    import ripstd.range : assumeSorted;
 
     /**
         Construct from another code point set of any type.
@@ -2085,8 +2085,8 @@ public struct InversionList(SP=GcPolicy)
     //helper function that avoids sanity check to be CTFE-friendly
     private static fromIntervals(Range)(Range intervals) pure
     {
-        import std.algorithm.iteration : map;
-        import std.range : roundRobin;
+        import ripstd.algorithm.iteration : map;
+        import ripstd.range : roundRobin;
         auto flattened = roundRobin(intervals.save.map!"a[0]"(),
             intervals.save.map!"a[1]"());
         InversionList set;
@@ -2097,7 +2097,7 @@ public struct InversionList(SP=GcPolicy)
     private static fromIntervals()(uint[] intervals...) pure
     in
     {
-        import std.conv : text;
+        import ripstd.conv : text;
         assert(intervals.length % 2 == 0, "Odd number of interval bounds [a, b)!");
         for (uint i = 0; i < intervals.length; i += 2)
         {
@@ -2118,7 +2118,7 @@ public struct InversionList(SP=GcPolicy)
     this()(uint[] intervals...)
     in
     {
-        import std.conv : text;
+        import ripstd.conv : text;
         assert(intervals.length % 2 == 0, "Odd number of interval bounds [a, b)!");
         for (uint i = 0; i < intervals.length; i += 2)
         {
@@ -2135,7 +2135,7 @@ public struct InversionList(SP=GcPolicy)
     ///
     pure @safe unittest
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         auto set = CodepointSet('a', 'z'+1, 'а', 'я'+1);
         foreach (v; 'a'..'z'+1)
@@ -2162,23 +2162,23 @@ public struct InversionList(SP=GcPolicy)
     {
         // TODO: change this to data[] once the -dip1000 errors have been fixed
         // see e.g. https://github.com/dlang/phobos/pull/6638
-        import std.array : array;
+        import ripstd.array : array;
         return Intervals!(typeof(data.array))(data.array);
     }
 
     @safe unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.typecons : tuple;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.typecons : tuple;
 
         auto set = CodepointSet('A', 'D'+1, 'a', 'd'+1);
 
         assert(set.byInterval.equal([tuple('A','E'), tuple('a','e')]));
     }
 
-    package(std) @property const(CodepointInterval)[] intervals() const
+    package(ripstd) @property const(CodepointInterval)[] intervals() const
     {
-        import std.array : array;
+        import ripstd.array : array;
         return Intervals!(typeof(data[]))(data[]).array;
     }
 
@@ -2205,9 +2205,9 @@ public struct InversionList(SP=GcPolicy)
 
     // Linear scan for `ch`. Useful only for small sets.
     // TODO:
-    // used internally in std.regex
+    // used internally in ripstd.regex
     // should be properly exposed in a public API ?
-    package(std) auto scanFor()(dchar ch) const
+    package(ripstd) auto scanFor()(dchar ch) const
     {
         immutable len = data.length;
         for (size_t i = 0; i < len; i++)
@@ -2281,8 +2281,8 @@ public:
     ///
     pure @safe unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.range : iota;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.range : iota;
 
         auto lower = unicode.LowerCase;
         auto upper = unicode.UpperCase;
@@ -2409,8 +2409,8 @@ public:
     ///
     pure @safe unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.range : iota;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.range : iota;
 
         auto set = unicode.ASCII;
         set.byCodepoint.equal(iota(0, 0x80));
@@ -2426,12 +2426,12 @@ public:
         )
         Example:
         ---
-        import std.conv;
+        import ripstd.conv;
         assert(unicode.ASCII.to!string == "[0..128$(RPAREN)");
         ---
     */
 
-    private import std.format.spec : FormatSpec;
+    private import ripstd.format.spec : FormatSpec;
 
     /***************************************
      * Obtain a textual representation of this InversionList
@@ -2444,7 +2444,7 @@ public:
      */
     void toString(Writer)(scope Writer sink, scope const ref FormatSpec!char fmt) /* const */
     {
-        import std.format.write : formatValue;
+        import ripstd.format.write : formatValue;
         auto range = byInterval;
         if (range.empty)
             return;
@@ -2467,9 +2467,9 @@ public:
     ///
     pure @safe unittest
     {
-        import std.conv : to;
-        import std.format : format;
-        import std.uni : unicode;
+        import ripstd.conv : to;
+        import ripstd.format : format;
+        import ripstd.uni : unicode;
 
         assert(unicode.Cyrillic.to!string ==
             "[1024..1157) [1159..1320) [7467..7468) [7544..7545) [11744..11776) [42560..42648) [42655..42656)");
@@ -2488,8 +2488,8 @@ public:
 
     pure @safe unittest
     {
-        import std.exception : assertThrown;
-        import std.format : format, FormatException;
+        import ripstd.exception : assertThrown;
+        import ripstd.format : format, FormatException;
         assertThrown!FormatException(format("%z", unicode.ASCII));
     }
 
@@ -2517,7 +2517,7 @@ public:
 
 private:
 
-  package(std)  // used from: std.regex.internal.parser
+  package(ripstd)  // used from: ripstd.regex.internal.parser
     ref intersect(U)(U rhs)
         if (isCodepointSet!U)
     {
@@ -2551,7 +2551,7 @@ private:
     }
 
     // same as the above except that skip & drop parts are swapped
-  package(std)  // used from: std.regex.internal.parser
+  package(ripstd)  // used from: ripstd.regex.internal.parser
     ref sub(U)(U rhs)
         if (isCodepointSet!U)
     {
@@ -2564,7 +2564,7 @@ private:
         return this;
     }
 
-  package(std)  // used from: std.regex.internal.parse
+  package(ripstd)  // used from: ripstd.regex.internal.parse
     ref add(U)(U rhs)
         if (isCodepointSet!U)
     {
@@ -2616,10 +2616,10 @@ public:
         assert((set & set.inverted).empty);
     }
 
-    package(std) static string toSourceCode(const(CodepointInterval)[] range, string funcName)
+    package(ripstd) static string toSourceCode(const(CodepointInterval)[] range, string funcName)
     {
-        import std.algorithm.searching : countUntil;
-        import std.format : format;
+        import ripstd.algorithm.searching : countUntil;
+        import ripstd.format : format;
         enum maxBinary = 3;
         static string linearScope(R)(R ivals, string indent)
         {
@@ -2724,7 +2724,7 @@ public:
 
         Example:
         ---
-        import std.stdio;
+        import ripstd.stdio;
 
         // construct set directly from [a, b$RPAREN intervals
         auto set = CodepointSet(10, 12, 45, 65, 100, 200);
@@ -2753,7 +2753,7 @@ public:
     */
     string toSourceCode(string funcName="")
     {
-        import std.array : array;
+        import ripstd.array : array;
         auto range = byInterval.array();
         return toSourceCode(range, funcName);
     }
@@ -2781,7 +2781,7 @@ private:
     // a random-access range of integral pairs
     static struct Intervals(Range)
     {
-        import std.range.primitives : hasAssignableElements;
+        import ripstd.range.primitives : hasAssignableElements;
 
         this(Range sp) scope
         {
@@ -2804,10 +2804,10 @@ private:
             return CodepointInterval(a, b);
         }
 
-        //may break sorted property - but we need std.sort to access it
-        //hence package(std) protection attribute
+        //may break sorted property - but we need ripstd.sort to access it
+        //hence package(ripstd) protection attribute
         static if (hasAssignableElements!Range)
-        package(std) @property void front(CodepointInterval val)
+        package(ripstd) @property void front(CodepointInterval val)
         {
             slice[start] = val.a;
             slice[start+1] = val.b;
@@ -2822,7 +2822,7 @@ private:
 
         //ditto about package
         static if (hasAssignableElements!Range)
-        package(std) @property void back(CodepointInterval val)
+        package(ripstd) @property void back(CodepointInterval val)
         {
             slice[end-2] = val.a;
             slice[end-1] = val.b;
@@ -2847,7 +2847,7 @@ private:
 
         //ditto about package
         static if (hasAssignableElements!Range)
-        package(std) void opIndexAssign(CodepointInterval val, size_t idx)
+        package(ripstd) void opIndexAssign(CodepointInterval val, size_t idx)
         {
             slice[start+idx*2] = val.a;
             slice[start+idx*2+1] = val.b;
@@ -2872,9 +2872,9 @@ private:
     // to make sure invariants hold
     void sanitize()
     {
-        import std.algorithm.comparison : max;
-        import std.algorithm.mutation : SwapStrategy;
-        import std.algorithm.sorting : sort;
+        import ripstd.algorithm.comparison : max;
+        import ripstd.algorithm.mutation : SwapStrategy;
+        import ripstd.algorithm.sorting : sort;
         if (data.length == 0)
             return;
         alias Ival = CodepointInterval;
@@ -2938,7 +2938,7 @@ private:
     }
     do
     {
-        import std.range : assumeSorted, SearchPolicy;
+        import ripstd.range : assumeSorted, SearchPolicy;
         auto range = assumeSorted(data[]);
         size_t pos;
         size_t a_idx = hint + range[hint..$].lowerBound!(SearchPolicy.gallop)(a).length;
@@ -3117,7 +3117,7 @@ private:
 
 pure @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     assert(unicode.ASCII.to!string() == "[0..128)");
 }
 
@@ -3189,7 +3189,7 @@ pure @system unittest
 
 struct CowArray(SP=GcPolicy)
 {
-    import std.range.primitives : hasLength;
+    import ripstd.range.primitives : hasLength;
 
   @safe:
     static auto reuse(uint[] arr)
@@ -3205,7 +3205,7 @@ struct CowArray(SP=GcPolicy)
     this(Range)(Range range)
         if (isInputRange!Range && hasLength!Range)
     {
-        import std.algorithm.mutation : copy;
+        import ripstd.algorithm.mutation : copy;
         length = range.length;
         copy(range, data[0..$-1]);
     }
@@ -3213,8 +3213,8 @@ struct CowArray(SP=GcPolicy)
     this(Range)(Range range)
         if (isForwardRange!Range && !hasLength!Range)
     {
-        import std.algorithm.mutation : copy;
-        import std.range.primitives : walkLength;
+        import ripstd.algorithm.mutation : copy;
+        import ripstd.range.primitives : walkLength;
         immutable len = walkLength(range.save);
         length = len;
         copy(range, data[0..$-1]);
@@ -3252,8 +3252,8 @@ struct CowArray(SP=GcPolicy)
     //+ an extra slot for ref-count
     @property void length(size_t len)
     {
-        import std.algorithm.comparison : min;
-        import std.algorithm.mutation : copy;
+        import ripstd.algorithm.comparison : min;
+        import ripstd.algorithm.mutation : copy;
         if (len == 0)
         {
             if (!empty)
@@ -3386,7 +3386,7 @@ private:
     }
     do
     {
-        import std.algorithm.mutation : copy;
+        import ripstd.algorithm.mutation : copy;
         // dec shared ref-count
         refCount = count - 1;
         // copy to the new chunk of RAM
@@ -3402,11 +3402,11 @@ private:
 
 pure @safe unittest// Uint24 tests
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.mutation : copy;
-    import std.conv : text;
-    import std.range : iota, chain;
-    import std.range.primitives : isBidirectionalRange, isOutputRange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.mutation : copy;
+    import ripstd.conv : text;
+    import ripstd.range : iota, chain;
+    import ripstd.range.primitives : isBidirectionalRange, isOutputRange;
     void funcRef(T)(ref T u24)
     {
         u24.length = 2;
@@ -3489,7 +3489,7 @@ pure @safe unittest// Uint24 tests
 
 pure @safe unittest// core set primitives test
 {
-    import std.conv : text;
+    import ripstd.conv : text;
     alias AllSets = AliasSeq!(InversionList!GcPolicy, InversionList!ReallocPolicy);
     foreach (CodeList; AllSets)
     {
@@ -3567,10 +3567,10 @@ pure @safe unittest// core set primitives test
 //test constructor to work with any order of intervals
 pure @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : text, to;
-    import std.range : chain, iota;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : text, to;
+    import ripstd.range : chain, iota;
+    import ripstd.typecons : tuple;
     //ensure constructor handles bad ordering and overlap
     auto c1 = CodepointSet('а', 'я'+1, 'А','Я'+1);
     foreach (ch; chain(iota('а', 'я'+1), iota('А','Я'+1)))
@@ -3611,7 +3611,7 @@ pure @safe unittest
 
 pure @safe unittest
 {   // full set operations
-    import std.conv : text;
+    import ripstd.conv : text;
     alias AllSets = AliasSeq!(InversionList!GcPolicy, InversionList!ReallocPolicy);
     foreach (CodeList; AllSets)
     {
@@ -3717,7 +3717,7 @@ pure @safe unittest
 
 pure @safe unittest// vs single dchar
 {
-    import std.conv : text;
+    import ripstd.conv : text;
     CodepointSet a = CodepointSet(10, 100, 120, 200);
     assert(a - 'A' == CodepointSet(10, 65, 66, 100, 120, 200), text(a - 'A'));
     assert((a & 'B') == CodepointSet(66, 67));
@@ -3725,9 +3725,9 @@ pure @safe unittest// vs single dchar
 
 pure @safe unittest// iteration & opIndex
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : text;
-    import std.typecons : tuple, Tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : text;
+    import ripstd.typecons : tuple, Tuple;
 
     static foreach (CodeList; AliasSeq!(InversionList!(ReallocPolicy)))
     {{
@@ -3740,7 +3740,7 @@ pure @safe unittest// iteration & opIndex
         // same @@@BUG as in https://issues.dlang.org/show_bug.cgi?id=8949 ?
         version (bug8949)
         {
-            import std.range : retro;
+            import ripstd.range : retro;
             assert(equal(retro(a.byInterval),
                 [tuple(cast(uint)'a', cast(uint)'n'), tuple(cast(uint)'A', cast(uint)'N')]
             ), text(retro(a.byInterval)));
@@ -3770,7 +3770,7 @@ pure @safe unittest// iteration & opIndex
 // debug helper to get a shortened array dump
 auto arrayRepr(T)(T x)
 {
-    import std.conv : text;
+    import ripstd.conv : text;
     if (x.length > 32)
     {
         return text(x[0 .. 16],"~...~", x[x.length-16 .. x.length]);
@@ -3813,7 +3813,7 @@ template mapTrieIndex(Prefix...)
 @trusted private struct TrieBuilder(Value, Key, Args...)
 if (isBitPackableType!Value && isValidArgsForTrie!(Key, Args))
 {
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
 
 private:
     // last index is not stored in table, it is used as an offset to values in a block.
@@ -3965,7 +3965,7 @@ private:
                 next_lvl_index = force!NextIdx(j/pageSize);
                 version (none)
                 {
-                import std.stdio : writefln, writeln;
+                import ripstd.stdio : writefln, writeln;
                 writefln("LEVEL(%s) page mapped idx: %s: 0..%s  ---> [%s..%s]"
                         ,level
                         ,indices[level-1], pageSize, j, j+pageSize);
@@ -3989,7 +3989,7 @@ private:
             // allocate next page
             version (none)
             {
-            import std.stdio : writefln;
+            import ripstd.stdio : writefln;
             writefln("LEVEL(%s) page allocated: %s"
                      , level, arrayRepr(slice[0 .. pageSize]));
             writefln("LEVEL(%s) index: %s ; page at this index %s"
@@ -4114,7 +4114,7 @@ if (isValidPrefixForTrie!(Key, Args)
     || (isValidPrefixForTrie!(Key, Args[1..$])
     && is(typeof(Args[0]) : size_t)))
 {
-    import std.range.primitives : isOutputRange;
+    import ripstd.range.primitives : isOutputRange;
     static if (is(typeof(Args[0]) : size_t))
     {
         private enum maxIndex = Args[0];
@@ -4224,7 +4224,7 @@ template callableWith(T)
 */
 template isValidPrefixForTrie(Key, Prefix...)
 {
-    import std.meta : allSatisfy;
+    import ripstd.meta : allSatisfy;
     enum isValidPrefixForTrie = allSatisfy!(callableWith!Key, Prefix); // TODO: tighten the screws
 }
 
@@ -4263,7 +4263,7 @@ template isValidArgsForTrie(Key, Args...)
     Example:
     ---
     {
-        import std.stdio;
+        import ripstd.stdio;
         auto set = unicode("Number");
         auto trie = codepointSetTrie!(8, 5, 8)(set);
         writeln("Input code points to test:");
@@ -4346,8 +4346,8 @@ if (sumOfIntegerTuple!sizes == 21)
 
 @system pure unittest
 {
-    import std.algorithm.comparison : max;
-    import std.algorithm.searching : count;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.algorithm.searching : count;
 
     // pick characters from the Greek script
     auto set = unicode.Greek;
@@ -4404,9 +4404,9 @@ if (sumOfIntegerTuple!sizes == 21)
     alias CodepointTrie = typeof(TrieBuilder!(T, dchar, lastDchar+1, Prefix)(T.init).build());
 }
 
-package(std) template cmpK0(alias Pred)
+package(ripstd) template cmpK0(alias Pred)
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
     static bool cmpK0(Value, Key)
         (Tuple!(Value, Key) a, Tuple!(Value, Key) b)
     {
@@ -4499,7 +4499,7 @@ if (isValidArgsForTrie!(Key, Args))
             && is(typeof(Range.init.front[0]) : Value)
             && is(typeof(Range.init.front[1]) : Key))
     {
-        import std.algorithm.sorting : multiSort;
+        import ripstd.algorithm.sorting : multiSort;
         alias Comps = GetComparators!(Prefix.length);
         if (unsorted)
             multiSort!(Comps)(range);
@@ -4543,8 +4543,8 @@ if (isValidArgsForTrie!(Key, Args))
     */
     auto buildTrie(Key, Value)(Value[Key] map, Value filler=Value.init)
     {
-        import std.array : array;
-        import std.range : zip;
+        import ripstd.array : array;
+        import ripstd.range : zip;
         auto range = array(zip(map.values, map.keys));
         return buildTrie(range, filler, true); // sort it
     }
@@ -4704,7 +4704,7 @@ mixin template ForwardStrings()
 {
     private bool fwdStr(string fn, C)(ref C[] str) const @trusted
     {
-        import std.utf : byCodeUnit;
+        import ripstd.utf : byCodeUnit;
         alias type = typeof(byCodeUnit(str));
         return mixin(fn~"(*cast(type*)&str)");
     }
@@ -4716,7 +4716,7 @@ template Utf8Matcher()
 
     void badEncoding() pure @safe
     {
-        import std.utf : UTFException;
+        import ripstd.utf : UTFException;
         throw new UTFException("Invalid UTF-8 sequence");
     }
 
@@ -4764,7 +4764,7 @@ template Utf8Matcher()
     static auto encode(size_t sz)(dchar ch)
         if (sz > 1)
     {
-        import std.utf : encodeUTF = encode;
+        import ripstd.utf : encodeUTF = encode;
         char[4] buf;
         encodeUTF(buf, ch);
         char[sz] ret;
@@ -4777,7 +4777,7 @@ template Utf8Matcher()
 
     auto build(Set)(Set set)
     {
-        import std.algorithm.iteration : map;
+        import ripstd.algorithm.iteration : map;
         auto ascii = set & unicode.ASCII;
         auto utf8_2 = set & CodepointSet(0x80, 0x800);
         auto utf8_3 = set & CodepointSet(0x800, 0x1_0000);
@@ -4794,8 +4794,8 @@ template Utf8Matcher()
     // from 3 primitives: tab!(size), lookup and Sizes
     mixin template DefMatcher()
     {
-        import std.format : format;
-        import std.meta : Erase, staticIndexOf;
+        import ripstd.format : format;
+        import ripstd.meta : Erase, staticIndexOf;
         enum hasASCII = staticIndexOf!(1, Sizes) >= 0;
         alias UniSizes = Erase!(1, Sizes);
 
@@ -4905,7 +4905,7 @@ template Utf8Matcher()
 
     struct Impl(Sizes...)
     {
-        import std.meta : allSatisfy, staticMap;
+        import ripstd.meta : allSatisfy, staticMap;
         static assert(allSatisfy!(validSize, Sizes),
             "Only lengths of 1, 2, 3 and 4 code unit are possible for UTF-8");
     private:
@@ -4916,14 +4916,14 @@ template Utf8Matcher()
         //static disptach helper UTF size ==> table
         alias tab(int i) = tables[i - 1];
 
-        package(std) @property CherryPick!(Impl, SizesToPick) subMatcher(SizesToPick...)()
+        package(ripstd) @property CherryPick!(Impl, SizesToPick) subMatcher(SizesToPick...)()
         {
             return CherryPick!(Impl, SizesToPick)(&this);
         }
 
         bool lookup(int size, Mode mode, Range)(ref Range inp) const
         {
-            import std.range : popFrontN;
+            import ripstd.range : popFrontN;
             if (inp.length < size)
             {
                 badEncoding();
@@ -4982,7 +4982,7 @@ template Utf8Matcher()
 
     struct CherryPick(I, Sizes...)
     {
-        import std.meta : allSatisfy;
+        import ripstd.meta : allSatisfy;
         static assert(allSatisfy!(validSize, Sizes),
             "Only lengths of 1, 2, 3 and 4 code unit are possible for UTF-8");
     private:
@@ -5002,7 +5002,7 @@ template Utf16Matcher()
 
     void badEncoding() pure @safe
     {
-        import std.utf : UTFException;
+        import ripstd.utf : UTFException;
         throw new UTFException("Invalid UTF-16 sequence");
     }
 
@@ -5034,7 +5034,7 @@ template Utf16Matcher()
 
     auto build(Set)(Set set)
     {
-        import std.algorithm.iteration : map;
+        import ripstd.algorithm.iteration : map;
         auto ascii = set & unicode.ASCII;
         auto bmp = (set & CodepointSet.fromIntervals(0x80, 0xFFFF+1))
             - CodepointSet.fromIntervals(0xD800, 0xDFFF+1);
@@ -5137,7 +5137,7 @@ template Utf16Matcher()
         if (Sizes.length >= 1 && Sizes.length <= 2)
     {
     private:
-        import std.meta : allSatisfy;
+        import ripstd.meta : allSatisfy;
         static assert(allSatisfy!(validSize, Sizes),
             "Only lengths of 1 and 2 code units are possible in UTF-16");
         static if (Sizes.length > 1)
@@ -5156,7 +5156,7 @@ template Utf16Matcher()
         }
         mixin DefMatcher;
 
-        package(std) @property CherryPick!(Impl, SizesToPick) subMatcher(SizesToPick...)()
+        package(ripstd) @property CherryPick!(Impl, SizesToPick) subMatcher(SizesToPick...)()
         {
             return CherryPick!(Impl, SizesToPick)(&this);
         }
@@ -5192,7 +5192,7 @@ template Utf16Matcher()
             }
             else
             {
-                import std.range : popFrontN;
+                import ripstd.range : popFrontN;
                 static if (sizeFlags & 2)
                 {
                     if (inp.length < 2)
@@ -5227,7 +5227,7 @@ template Utf16Matcher()
         if (Sizes.length >= 1 && Sizes.length <= 2)
     {
     private:
-        import std.meta : allSatisfy;
+        import ripstd.meta : allSatisfy;
         I* m;
         enum sizeFlags = I.sizeFlags;
 
@@ -5279,7 +5279,7 @@ if (isCodepointSet!Set)
 
 
 //a range of code units, packed with index to speed up forward iteration
-package(std) auto decoder(C)(C[] s, size_t offset=0)
+package(ripstd) auto decoder(C)(C[] s, size_t offset=0)
 if (is(C : wchar) || is(C : char))
 {
     static struct Decoder
@@ -5361,7 +5361,7 @@ pure @safe unittest
 
 pure @safe unittest
 {
-    import std.range : stride;
+    import ripstd.range : stride;
     static bool testAll(Matcher, Range)(scope ref Matcher m, ref Range r)
     {
         bool t = m.test(r);
@@ -5387,7 +5387,7 @@ pure @safe unittest
     auto uni24 = utf8.subMatcher!(2,4);
     foreach (ch; unicode.L.byCodepoint.stride(3))
     {
-        import std.utf : encode;
+        import ripstd.utf : encode;
         char[4] buf;
         wchar[2] buf16;
         auto len = encode(buf, ch);
@@ -5411,9 +5411,9 @@ pure @safe unittest
 // cover decode fail cases of Matcher
 pure @system unittest
 {
-    import std.algorithm.iteration : map;
-    import std.exception : collectException;
-    import std.format : format;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.exception : collectException;
+    import ripstd.format : format;
     auto utf16 = utfMatcher!wchar(unicode.L);
     auto utf8 = utfMatcher!char(unicode.L);
     //decode failure cases UTF-8
@@ -5480,7 +5480,7 @@ if (isCodepointSet!Set)
     $(D bool delegate(dchar ch)). )
 
     $(P Effectively this creates a 'tester' lambda suitable
-    for algorithms like std.algorithm.find that take unary predicates. )
+    for algorithms like ripstd.algorithm.find that take unary predicates. )
 
     See the $(S_LINK Synopsis, Synopsis) section for example.
 */
@@ -5522,7 +5522,7 @@ if (isIntegral!T || is(T:dchar))
 template bitSizeOf(Args...)
 if (Args.length == 1)
 {
-    import std.traits : ReturnType;
+    import ripstd.traits : ReturnType;
     alias T = Args[0];
     static if (__traits(compiles, { size_t val = T.bitSize; })) //(is(typeof(T.bitSize) : size_t))
     {
@@ -5624,16 +5624,16 @@ template Sequence(size_t start, size_t end)
 //---- TRIE TESTS ----
 @system unittest
 {
-    import std.algorithm.iteration : map;
-    import std.algorithm.sorting : sort;
-    import std.array : array;
-    import std.conv : text, to;
-    import std.range : iota;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.array : array;
+    import ripstd.conv : text, to;
+    import ripstd.range : iota;
     static trieStats(TRIE)(TRIE t)
     {
         version (std_uni_stats)
         {
-            import std.stdio : writefln, writeln;
+            import ripstd.stdio : writefln, writeln;
             writeln("---TRIE FOOTPRINT STATS---");
             static foreach (i; 0 .. t.table.dim)
             {
@@ -5773,9 +5773,9 @@ template idxTypes(Key, size_t fullBits, Prefix...)
 @safe pure int comparePropertyName(Char1, Char2)(const(Char1)[] a, const(Char2)[] b)
 if (is(Char1 : dchar) && is(Char2 : dchar))
 {
-    import std.algorithm.comparison : cmp;
-    import std.algorithm.iteration : map, filter;
-    import std.ascii : toLower;
+    import ripstd.algorithm.comparison : cmp;
+    import ripstd.algorithm.iteration : map, filter;
+    import ripstd.ascii : toLower;
     static bool pred(dchar c) {return !c.isWhite && c != '-' && c != '_';}
     return cmp(
         a.map!toLower.filter!pred,
@@ -5818,7 +5818,7 @@ if (is(Char1 : dchar) && is(Char2 : dchar))
 
 @safe uint decompressFrom(const(ubyte)[] arr, ref size_t idx) pure
 {
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
     immutable first = arr[idx++];
     if (!(first & 0x80)) // no top bit -> [0 .. 127]
         return first;
@@ -5832,7 +5832,7 @@ if (is(Char1 : dchar) && is(Char2 : dchar))
 }
 
 
-package(std) ubyte[] compressIntervals(Range)(Range intervals)
+package(ripstd) ubyte[] compressIntervals(Range)(Range intervals)
 if (isInputRange!Range && isIntegralPair!(ElementType!Range))
 {
     ubyte[] storage;
@@ -5853,8 +5853,8 @@ if (isInputRange!Range && isIntegralPair!(ElementType!Range))
 
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : tuple;
 
     auto run = [tuple(80, 127), tuple(128, (1 << 10)+128)];
     ubyte[] enc = [cast(ubyte) 80, 47, 1, (0b1_00 << 5) | (1 << 2), 0];
@@ -5875,7 +5875,7 @@ if (isInputRange!Range && isIntegralPair!(ElementType!Range))
 }
 
 // Creates a range of `CodepointInterval` that lazily decodes compressed data.
-@safe package(std) auto decompressIntervals(const(ubyte)[] data) pure
+@safe package(ripstd) auto decompressIntervals(const(ubyte)[] data) pure
 {
     return DecompressedIntervals(data);
 }
@@ -5940,8 +5940,8 @@ else
 // helper for looking up code point sets
 ptrdiff_t findUnicodeSet(alias table, C)(const scope C[] name)
 {
-    import std.algorithm.iteration : map;
-    import std.range : assumeSorted;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.range : assumeSorted;
     auto range = assumeSorted!((a,b) => propertyNameLess(a,b))
         (table.map!"a.name"());
     size_t idx = range.lowerBound(name).length;
@@ -5965,7 +5965,7 @@ bool loadUnicodeSet(alias table, Set, C)(const scope C[] name, ref Set dest)
 bool loadProperty(Set=CodepointSet, C)
     (const scope C[] name, ref Set target) pure
 {
-    import std.internal.unicode_tables : uniProps; // generated file
+    import ripstd.internal.unicode_tables : uniProps; // generated file
     alias ucmp = comparePropertyName;
     // conjure cumulative properties by hand
     if (ucmp(name, "L") == 0 || ucmp(name, "Letter") == 0)
@@ -6064,7 +6064,7 @@ bool loadProperty(Set=CodepointSet, C)
 // CTFE-only helper for checking property names at compile-time
 @safe bool isPrettyPropertyName(C)(const scope C[] name)
 {
-    import std.algorithm.searching : find;
+    import ripstd.algorithm.searching : find;
     auto names = [
         "L", "Letter",
         "LC", "Cased Letter",
@@ -6093,7 +6093,7 @@ template SetSearcher(alias table, string kind)
     static auto opCall(C)(const scope C[] name)
         if (is(C : dchar))
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         CodepointSet set;
         if (loadUnicodeSet!table(name, set))
             return set;
@@ -6116,10 +6116,10 @@ template SetSearcher(alias table, string kind)
 }
 
 // Characters that need escaping in string posed as regular expressions
-package(std) alias Escapables = AliasSeq!('[', ']', '\\', '^', '$', '.', '|', '?', ',', '-',
+package(ripstd) alias Escapables = AliasSeq!('[', ']', '\\', '^', '$', '.', '|', '?', ',', '-',
     ';', ':', '#', '&', '%', '/', '<', '>', '`',  '*', '+', '(', ')', '{', '}',  '~');
 
-package(std) CodepointSet memoizeExpr(string expr)()
+package(ripstd) CodepointSet memoizeExpr(string expr)()
 {
     if (__ctfe)
         return mixin(expr);
@@ -6135,14 +6135,14 @@ package(std) CodepointSet memoizeExpr(string expr)()
 }
 
 //property for \w character class
-package(std) @property CodepointSet wordCharacter() @safe
+package(ripstd) @property CodepointSet wordCharacter() @safe
 {
     return memoizeExpr!("unicode.Alphabetic | unicode.Mn | unicode.Mc
         | unicode.Me | unicode.Nd | unicode.Pc")();
 }
 
 //basic stack, just in case it gets used anywhere else then Parser
-package(std) struct Stack(T)
+package(ripstd) struct Stack(T)
 {
 @safe:
     T[] data;
@@ -6171,9 +6171,9 @@ package(std) struct Stack(T)
 
 //test if a given string starts with hex number of maxDigit that's a valid codepoint
 //returns it's value and skips these maxDigit chars on success, throws on failure
-package(std) dchar parseUniHex(Range)(ref Range str, size_t maxDigit)
+package(ripstd) dchar parseUniHex(Range)(ref Range str, size_t maxDigit)
 {
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
     //std.conv.parse is both @system and bogus
     uint val;
     for (int k = 0; k < maxDigit; k++)
@@ -6197,8 +6197,8 @@ package(std) dchar parseUniHex(Range)(ref Range str, size_t maxDigit)
 
 @safe unittest
 {
-    import std.algorithm.searching : canFind;
-    import std.exception : collectException;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.exception : collectException;
     string[] non_hex = [ "000j", "000z", "FffG", "0Z"];
     string[] hex = [ "01", "ff", "00af", "10FFFF" ];
     int[] value = [ 1, 0xFF, 0xAF, 0x10FFFF ];
@@ -6239,8 +6239,8 @@ CodepointSet getUnicodeSet(const scope char[] name, bool negated,  bool casefold
 
 struct UnicodeSetParser(Range)
 {
-    import std.exception : enforce;
-    import std.typecons : tuple, Tuple;
+    import ripstd.exception : enforce;
+    import ripstd.typecons : tuple, Tuple;
     Range range;
     bool casefold_;
 
@@ -6257,7 +6257,7 @@ struct UnicodeSetParser(Range)
     //also fetches next set operation
     Tuple!(CodepointSet,Operator) parseCharTerm()
     {
-        import std.range : drop;
+        import ripstd.range : drop;
         enum privateUseStart = '\U000F0000', privateUseEnd ='\U000FFFFD';
         enum State{ Start, Char, Escape, CharDash, CharDashEscape,
             PotentialTwinSymbolOperator }
@@ -6565,7 +6565,7 @@ struct UnicodeSetParser(Range)
     {
         ValStack vstack;
         OpStack opstack;
-        import std.functional : unaryFun;
+        import ripstd.functional : unaryFun;
         enforce(!empty, "unexpected end of input");
         enforce(front == '[', "expected '[' at the start of unicode set");
         //
@@ -6695,7 +6695,7 @@ struct UnicodeSetParser(Range)
 */
 @safe public struct unicode
 {
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
     /**
         Performs the lookup of set of $(CODEPOINTS)
         with compile-time correctness checking.
@@ -6722,7 +6722,7 @@ struct UnicodeSetParser(Range)
     ///
     @safe unittest
     {
-        import std.exception : collectException;
+        import ripstd.exception : collectException;
         auto ascii = unicode.ASCII;
         assert(ascii['A']);
         assert(ascii['~']);
@@ -6768,7 +6768,7 @@ struct UnicodeSetParser(Range)
     */
     struct block
     {
-        import std.internal.unicode_tables : blocks; // generated file
+        import ripstd.internal.unicode_tables : blocks; // generated file
         mixin SetSearcher!(blocks.tab, "block");
     }
 
@@ -6787,7 +6787,7 @@ struct UnicodeSetParser(Range)
     */
     struct script
     {
-        import std.internal.unicode_tables : scripts; // generated file
+        import ripstd.internal.unicode_tables : scripts; // generated file
         mixin SetSearcher!(scripts.tab, "script");
     }
 
@@ -6818,7 +6818,7 @@ struct UnicodeSetParser(Range)
     */
     struct hangulSyllableType
     {
-        import std.internal.unicode_tables : hangul; // generated file
+        import ripstd.internal.unicode_tables : hangul; // generated file
         mixin SetSearcher!(hangul.tab, "hangul syllable type");
     }
 
@@ -6834,7 +6834,7 @@ struct UnicodeSetParser(Range)
     }
 
     //parse control code of form \cXXX, c assumed to be the current symbol
-    static package(std) dchar parseControlCode(Parser)(ref Parser p)
+    static package(ripstd) dchar parseControlCode(Parser)(ref Parser p)
     {
         with(p)
         {
@@ -6849,10 +6849,10 @@ struct UnicodeSetParser(Range)
 
     //parse and return a CodepointSet for \p{...Property...} and \P{...Property..},
     //\ - assumed to be processed, p - is current
-    static package(std) CodepointSet parsePropertySpec(Range)(ref Range p,
+    static package(ripstd) CodepointSet parsePropertySpec(Range)(ref Range p,
         bool negated, bool casefold)
     {
-        static import std.ascii;
+        static import ripstd.ascii;
         with(p)
         {
             enum MAX_PROPERTY = 128;
@@ -6867,7 +6867,7 @@ struct UnicodeSetParser(Range)
                     && front !=':')
                 {
                     if (front != '-' && front != ' ' && front != '_')
-                        result[k++] = cast(char) std.ascii.toLower(front);
+                        result[k++] = cast(char) ripstd.ascii.toLower(front);
                     popFront();
                 }
                 enforce(k != MAX_PROPERTY, "invalid property name");
@@ -6903,7 +6903,7 @@ struct UnicodeSetParser(Range)
     ///
     @safe unittest
     {
-        import std.uni : unicode;
+        import ripstd.uni : unicode;
         string pat = "[a-zA-Z0-9]hello";
         auto set = unicode.parseSet(pat);
         // check some of the codepoints
@@ -6916,7 +6916,7 @@ private:
 
     static bool findAny(string name)
     {
-        import std.internal.unicode_tables : blocks, scripts, uniProps; // generated file
+        import ripstd.internal.unicode_tables : blocks, scripts, uniProps; // generated file
         return isPrettyPropertyName(name)
             || findSetName!(uniProps.tab)(name) || findSetName!(scripts.tab)(name)
             || (ucmp(name[0 .. 2],"In") == 0 && findSetName!(blocks.tab)(name[2..$]));
@@ -6924,8 +6924,8 @@ private:
 
     static auto loadAny(Set=CodepointSet, C)(const scope C[] name) pure
     {
-        import std.conv : to;
-        import std.internal.unicode_tables : blocks, scripts; // generated file
+        import ripstd.conv : to;
+        import ripstd.internal.unicode_tables : blocks, scripts; // generated file
         Set set;
         immutable loaded = loadProperty(name, set) || loadUnicodeSet!(scripts.tab)(name, set)
             || (name.length > 2 && ucmp(name[0 .. 2],"In") == 0
@@ -6942,7 +6942,7 @@ private:
 
 @safe unittest
 {
-    import std.internal.unicode_tables : blocks, uniProps; // generated file
+    import ripstd.internal.unicode_tables : blocks, uniProps; // generated file
     assert(unicode("InHebrew") == asSet(blocks.Hebrew));
     assert(unicode("separator") == (asSet(uniProps.Zs) | asSet(uniProps.Zl) | asSet(uniProps.Zp)));
     assert(unicode("In-Kharoshthi") == asSet(blocks.Kharoshthi));
@@ -6974,7 +6974,7 @@ template genericDecodeGrapheme(bool getValue)
 
     Value genericDecodeGrapheme(Input)(ref Input range)
     {
-        import std.internal.unicode_tables : isHangL, isHangT, isHangV; // generated file
+        import ripstd.internal.unicode_tables : isHangL, isHangT, isHangV; // generated file
         enum GraphemeState {
             Start,
             CR,
@@ -7151,7 +7151,7 @@ if (isInputRange!Input && is(immutable ElementType!Input == immutable dchar))
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     Grapheme gr;
     string s = " \u0020\u0308 ";
@@ -7217,9 +7217,9 @@ if (isInputRange!Range && is(immutable ElementType!Range == immutable dchar))
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range.primitives : walkLength;
-    import std.range : take, drop;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range.primitives : walkLength;
+    import ripstd.range : take, drop;
     auto text = "noe\u0308l"; // noël using e + combining diaeresis
     assert(text.walkLength == 5); // 5 code points
 
@@ -7231,7 +7231,7 @@ if (isInputRange!Range && is(immutable ElementType!Range == immutable dchar))
 }
 
 // For testing non-forward-range input ranges
-version (StdUnittest)
+version (RIPStdUnittest)
 private static struct InputRangeString
 {
     private string s;
@@ -7243,10 +7243,10 @@ private static struct InputRangeString
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.array : array;
-    import std.range : retro;
-    import std.range.primitives : walkLength;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.array : array;
+    import ripstd.range : retro;
+    import ripstd.range.primitives : walkLength;
     assert("".byGrapheme.walkLength == 0);
 
     auto reverse = "le\u0308on";
@@ -7325,8 +7325,8 @@ if (isInputRange!Range && is(immutable ElementType!Range == immutable Grapheme))
 auto byCodePoint(Range)(Range range)
 if (isInputRange!Range && is(immutable ElementType!Range == immutable dchar))
 {
-    import std.range.primitives : isBidirectionalRange, popBack;
-    import std.traits : isNarrowString;
+    import ripstd.range.primitives : isBidirectionalRange, popBack;
+    import ripstd.traits : isNarrowString;
     static if (isNarrowString!Range)
     {
         static struct Result
@@ -7349,9 +7349,9 @@ if (isInputRange!Range && is(immutable ElementType!Range == immutable dchar))
 ///
 @safe unittest
 {
-    import std.array : array;
-    import std.conv : text;
-    import std.range : retro;
+    import ripstd.array : array;
+    import ripstd.conv : text;
+    import ripstd.range : retro;
 
     string s = "noe\u0308l"; // noël
 
@@ -7367,9 +7367,9 @@ if (isInputRange!Range && is(immutable ElementType!Range == immutable dchar))
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range.primitives : walkLength;
-    import std.range : retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range.primitives : walkLength;
+    import ripstd.range : retro;
     assert("".byGrapheme.byCodePoint.equal(""));
 
     string text = "noe\u0308l";
@@ -7406,8 +7406,8 @@ if (isInputRange!Range && is(immutable ElementType!Range == immutable dchar))
 +/
 @safe struct Grapheme
 {
-    import std.exception : enforce;
-    import std.traits : isDynamicArray;
+    import ripstd.exception : enforce;
+    import ripstd.traits : isDynamicArray;
 
 public:
     /// Ctor
@@ -7491,7 +7491,7 @@ public:
     {
         static if (op == "~")
         {
-            import std.internal.memory : enforceRealloc;
+            import ripstd.internal.memory : enforceRealloc;
             if (!isBig)
             {
                 if (slen_ == small_cap)
@@ -7524,7 +7524,7 @@ public:
     ///
     @system unittest
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         auto g = Grapheme("A");
         assert(g.valid);
         g ~= '\u0301';
@@ -7569,7 +7569,7 @@ public:
 
     this(this) @nogc nothrow pure @trusted
     {
-        import std.internal.memory : enforceMalloc;
+        import ripstd.internal.memory : enforceMalloc;
         if (isBig)
         {// dup it
             import core.checkedint : addu, mulu;
@@ -7619,7 +7619,7 @@ private:
 
     void convertToBig() @nogc nothrow pure @trusted
     {
-        import std.internal.memory : enforceMalloc;
+        import ripstd.internal.memory : enforceMalloc;
         static assert(grow.max / 3 - 1 >= grow);
         enum nbytes = 3 * (grow + 1);
         size_t k = smallLength;
@@ -7651,7 +7651,7 @@ static assert(Grapheme.sizeof == size_t.sizeof*4);
 
 @system pure /*nothrow @nogc*/ unittest // TODO: string .front is GC and throw
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     Grapheme[3] data = [Grapheme("Ю"), Grapheme("У"), Grapheme("З")];
     assert(byGrapheme("ЮУЗ").equal(data[]));
 }
@@ -7659,9 +7659,9 @@ static assert(Grapheme.sizeof == size_t.sizeof*4);
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : filter;
-    import std.range : isRandomAccessRange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.range : isRandomAccessRange;
 
     string bold = "ku\u0308hn";
 
@@ -7705,10 +7705,10 @@ static assert(Grapheme.sizeof == size_t.sizeof*4);
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
-    import std.conv : text;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.conv : text;
+    import ripstd.range : iota;
 
     // not valid clusters (but it just a test)
     auto g  = Grapheme('a', 'b', 'c', 'd', 'e');
@@ -7779,12 +7779,12 @@ int sicmp(S1, S2)(scope S1 r1, scope S2 r2)
 if (isInputRange!S1 && isSomeChar!(ElementEncodingType!S1)
     && isInputRange!S2 && isSomeChar!(ElementEncodingType!S2))
 {
-    import std.internal.unicode_tables : sTable = simpleCaseTable; // generated file
-    import std.range.primitives : isInfinite;
-    import std.utf : decodeFront;
-    import std.traits : isDynamicArray;
-    import std.typecons : Yes;
-    static import std.ascii;
+    import ripstd.internal.unicode_tables : sTable = simpleCaseTable; // generated file
+    import ripstd.range.primitives : isInfinite;
+    import ripstd.utf : decodeFront;
+    import ripstd.traits : isDynamicArray;
+    import ripstd.typecons : Yes;
+    static import ripstd.ascii;
 
     static if ((isDynamicArray!S1 || isRandomAccessRange!S1)
         && (isDynamicArray!S2 || isRandomAccessRange!S2)
@@ -7810,7 +7810,7 @@ if (isInputRange!S1 && isSomeChar!(ElementEncodingType!S1)
             auto rhs = r2[i];
             if ((lhs | rhs) >= 0x80) goto NonAsciiPath;
             if (lhs == rhs) continue;
-            auto lowDiff = std.ascii.toLower(lhs) - std.ascii.toLower(rhs);
+            auto lowDiff = ripstd.ascii.toLower(lhs) - ripstd.ascii.toLower(rhs);
             if (lowDiff) return lowDiff;
         }
         static if (isInfinite!S1)
@@ -7837,7 +7837,7 @@ if (isInputRange!S1 && isSomeChar!(ElementEncodingType!S1)
             continue;
         if ((lhs | rhs) < 0x80)
         {
-            immutable d = std.ascii.toLower(lhs) - std.ascii.toLower(rhs);
+            immutable d = ripstd.ascii.toLower(lhs) - ripstd.ascii.toLower(rhs);
             if (!d) continue;
             return d;
         }
@@ -7899,8 +7899,8 @@ if (isInputRange!S1 && isSomeChar!(ElementEncodingType!S1)
 
 private int fullCasedCmp(Range)(dchar lhs, dchar rhs, ref Range rtail)
 {
-    import std.algorithm.searching : skipOver;
-    import std.internal.unicode_tables : fullCaseTable; // generated file
+    import ripstd.algorithm.searching : skipOver;
+    import ripstd.internal.unicode_tables : fullCaseTable; // generated file
     alias fTable = fullCaseTable;
     size_t idx = fullCaseTrie[lhs];
     // fullCaseTrie is packed index table
@@ -7959,10 +7959,10 @@ int icmp(S1, S2)(S1 r1, S2 r2)
 if (isForwardRange!S1 && isSomeChar!(ElementEncodingType!S1)
     && isForwardRange!S2 && isSomeChar!(ElementEncodingType!S2))
 {
-    import std.range.primitives : isInfinite;
-    import std.traits : isDynamicArray;
-    import std.utf : byDchar;
-    static import std.ascii;
+    import ripstd.range.primitives : isInfinite;
+    import ripstd.traits : isDynamicArray;
+    import ripstd.utf : byDchar;
+    static import ripstd.ascii;
 
     static if ((isDynamicArray!S1 || isRandomAccessRange!S1)
         && (isDynamicArray!S2 || isRandomAccessRange!S2)
@@ -7988,7 +7988,7 @@ if (isForwardRange!S1 && isSomeChar!(ElementEncodingType!S1)
             auto rhs = r2[i];
             if ((lhs | rhs) >= 0x80) goto NonAsciiPath;
             if (lhs == rhs) continue;
-            auto lowDiff = std.ascii.toLower(lhs) - std.ascii.toLower(rhs);
+            auto lowDiff = ripstd.ascii.toLower(lhs) - ripstd.ascii.toLower(rhs);
             if (lowDiff) return lowDiff;
         }
         static if (isInfinite!S1)
@@ -8046,7 +8046,7 @@ if (isForwardRange!S1 && isSomeChar!(ElementEncodingType!S1)
  */
 @safe @nogc nothrow pure unittest
 {
-    import std.utf : byDchar;
+    import ripstd.utf : byDchar;
 
     assert(icmp("Rußland".byDchar, "Russland".byDchar) == 0);
     assert(icmp("ᾩ -> \u1F70\u03B9".byDchar, "\u1F61\u03B9 -> ᾲ".byDchar) == 0);
@@ -8076,9 +8076,9 @@ if (isForwardRange!S1 && isSomeChar!(ElementEncodingType!S1)
 
 @safe unittest
 {
-    import std.algorithm.sorting : sort;
-    import std.conv : to;
-    import std.exception : assertCTFEable;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.conv : to;
+    import ripstd.exception : assertCTFEable;
     assertCTFEable!(
     {
     static foreach (cfunc; AliasSeq!(icmp, sicmp))
@@ -8117,21 +8117,21 @@ if (isForwardRange!S1 && isSomeChar!(ElementEncodingType!S1)
 // https://issues.dlang.org/show_bug.cgi?id=17372
 @safe pure unittest
 {
-    import std.algorithm.iteration : joiner, map;
-    import std.algorithm.sorting : sort;
-    import std.array : array;
+    import ripstd.algorithm.iteration : joiner, map;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.array : array;
     auto a = [["foo", "bar"], ["baz"]].map!(line => line.joiner(" ")).array.sort!((a, b) => icmp(a, b) < 0);
 }
 
-// This is package(std) for the moment to be used as a support tool for std.regex
+// This is package(ripstd) for the moment to be used as a support tool for ripstd.regex
 // It needs a better API
 /*
     Return a range of all $(CODEPOINTS) that casefold to
     and from this `ch`.
 */
-package(std) auto simpleCaseFoldings(dchar ch) @safe
+package(ripstd) auto simpleCaseFoldings(dchar ch) @safe
 {
-    import std.internal.unicode_tables : simpleCaseTable; // generated file
+    import ripstd.internal.unicode_tables : simpleCaseTable; // generated file
     alias sTable = simpleCaseTable;
     static struct Range
     {
@@ -8206,10 +8206,10 @@ package(std) auto simpleCaseFoldings(dchar ch) @safe
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.searching : canFind;
-    import std.array : array;
-    import std.exception : assertCTFEable;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.array : array;
+    import ripstd.exception : assertCTFEable;
     assertCTFEable!((){
         auto r = simpleCaseFoldings('Э').array;
         assert(r.length == 2);
@@ -8288,9 +8288,9 @@ enum {
 +/
 public dchar compose(dchar first, dchar second) pure nothrow @safe
 {
-    import std.algorithm.iteration : map;
-    import std.internal.unicode_comp : compositionTable, composeCntShift, composeIdxMask;
-    import std.range : assumeSorted;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.internal.unicode_comp : compositionTable, composeCntShift, composeIdxMask;
+    import ripstd.range : assumeSorted;
     immutable packed = compositionJumpTrie[first];
     if (packed == ushort.max)
         return dchar.init;
@@ -8335,8 +8335,8 @@ public dchar compose(dchar first, dchar second) pure nothrow @safe
 +/
 public Grapheme decompose(UnicodeDecomposition decompType=Canonical)(dchar ch) @safe
 {
-    import std.algorithm.searching : until;
-    import std.internal.unicode_decomp : decompCompatTable, decompCanonTable;
+    import ripstd.algorithm.searching : until;
+    import ripstd.internal.unicode_decomp : decompCompatTable, decompCanonTable;
     static if (decompType == Canonical)
     {
         alias table = decompCanonTable;
@@ -8357,7 +8357,7 @@ public Grapheme decompose(UnicodeDecomposition decompType=Canonical)(dchar ch) @
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert(compose('A','\u0308') == '\u00C4');
     assert(compose('A', 'B') == dchar.init);
@@ -8465,7 +8465,7 @@ Grapheme decomposeHangul(dchar ch) @safe
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     assert(decomposeHangul('\uD4DB')[].equal("\u1111\u1171\u11B6"));
 }
 
@@ -8505,8 +8505,8 @@ dchar composeJamo(dchar lead, dchar vowel, dchar trailing=dchar.init) pure nothr
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : text;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : text;
 
     static void testDecomp(UnicodeDecomposition T)(dchar ch, string r)
     {
@@ -8565,10 +8565,10 @@ enum {
 +/
 inout(C)[] normalize(NormalizationForm norm=NFC, C)(inout(C)[] input)
 {
-    import std.algorithm.mutation : SwapStrategy;
-    import std.algorithm.sorting : sort;
-    import std.array : appender;
-    import std.range : zip;
+    import ripstd.algorithm.mutation : SwapStrategy;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.array : appender;
+    import ripstd.range : zip;
 
     auto anchors = splitNormalized!norm(input);
     if (anchors[0] == input.length && anchors[1] == input.length)
@@ -8618,7 +8618,7 @@ inout(C)[] normalize(NormalizationForm norm=NFC, C)(inout(C)[] input)
             (zip(ccc[firstNonStable..$], decomposed[firstNonStable..$]));
         static if (norm == NFC || norm == NFKC)
         {
-            import std.algorithm.searching : countUntil;
+            import ripstd.algorithm.searching : countUntil;
             auto first = countUntil(ccc, 0);
             if (first >= 0) // no starters?? no recomposition
             {
@@ -8637,7 +8637,7 @@ inout(C)[] normalize(NormalizationForm norm=NFC, C)(inout(C)[] input)
             app.put(decomposed);
         else
         {
-            import std.algorithm.mutation : remove;
+            import ripstd.algorithm.mutation : remove;
             auto clean = remove!("a == dchar.init", SwapStrategy.stable)(decomposed);
             app.put(decomposed[0 .. clean.length]);
         }
@@ -8673,7 +8673,7 @@ inout(C)[] normalize(NormalizationForm norm=NFC, C)(inout(C)[] input)
 
 @safe unittest
 {
-    import std.conv : text;
+    import ripstd.conv : text;
 
     assert(normalize!NFD("abc\uF904def") == "abc\u6ED1def", text(normalize!NFD("abc\uF904def")));
     assert(normalize!NFKD("2¹⁰") == "210", normalize!NFKD("2¹⁰"));
@@ -8752,7 +8752,7 @@ private size_t recompose(size_t start, dchar[] input, ubyte[] ccc) pure nothrow 
 // the rest of input starting with stable code point
 private auto splitNormalized(NormalizationForm norm, C)(const(C)[] input)
 {
-    import std.typecons : tuple;
+    import ripstd.typecons : tuple;
     ubyte lastCC = 0;
 
     foreach (idx, dchar ch; input)
@@ -8780,8 +8780,8 @@ private auto splitNormalized(NormalizationForm norm, C)(const(C)[] input)
 
 private auto seekStable(NormalizationForm norm, C)(size_t idx, const scope C[] input)
 {
-    import std.typecons : tuple;
-    import std.utf : codeLength;
+    import ripstd.typecons : tuple;
+    import ripstd.utf : codeLength;
 
     auto br = input[0 .. idx];
     size_t region_start = 0;// default
@@ -8864,7 +8864,7 @@ version (std_uni_bootstrap)
     // up to date optimal versions of all of isXXX functions
     @safe pure nothrow @nogc public bool isWhite(dchar c)
     {
-        import std.ascii : isWhite;
+        import ripstd.ascii : isWhite;
         return isWhite(c) ||
                c == lineSep || c == paraSep ||
                c == '\u0085' || c == '\u00A0' || c == '\u1680' || c == '\u180E' ||
@@ -8878,7 +8878,7 @@ else
 // trusted -> avoid bounds check
 @trusted pure nothrow @nogc private
 {
-    import std.internal.unicode_tables; // : toLowerTable, toTitleTable, toUpperTable; // generated file
+    import ripstd.internal.unicode_tables; // : toLowerTable, toTitleTable, toUpperTable; // generated file
 
     // hide template instances behind functions
     // https://issues.dlang.org/show_bug.cgi?id=13232
@@ -8905,7 +8905,7 @@ public:
 @safe pure nothrow @nogc
 public bool isWhite(dchar c)
 {
-    import std.internal.unicode_tables : isWhiteGen; // generated file
+    import ripstd.internal.unicode_tables : isWhiteGen; // generated file
     return isWhiteGen(c); // call pregenerated binary search
 }
 
@@ -8915,7 +8915,7 @@ public bool isWhite(dchar c)
 @safe pure nothrow @nogc
 bool isLower(dchar c)
 {
-    import std.ascii : isLower, isASCII;
+    import ripstd.ascii : isLower, isASCII;
     if (isASCII(c))
         return isLower(c);
     return lowerCaseTrie[c];
@@ -8923,7 +8923,7 @@ bool isLower(dchar c)
 
 @safe unittest
 {
-    import std.ascii : isLower;
+    import ripstd.ascii : isLower;
     foreach (v; 0 .. 0x80)
         assert(isLower(v) == .isLower(v));
     assert(.isLower('я'));
@@ -8948,7 +8948,7 @@ bool isLower(dchar c)
 @safe pure nothrow @nogc
 bool isUpper(dchar c)
 {
-    import std.ascii : isUpper, isASCII;
+    import ripstd.ascii : isUpper, isASCII;
     if (isASCII(c))
         return isUpper(c);
     return upperCaseTrie[c];
@@ -8956,7 +8956,7 @@ bool isUpper(dchar c)
 
 @safe unittest
 {
-    import std.ascii : isLower;
+    import ripstd.ascii : isLower;
     foreach (v; 0 .. 0x80)
         assert(isLower(v) == .isLower(v));
     assert(!isUpper('й'));
@@ -9003,9 +9003,9 @@ private alias LowerTriple = AliasSeq!(toLowerIndex, MAX_SIMPLE_LOWER, toLowerTab
 private ElementEncodingType!S[] toCase(alias indexFn, uint maxIdx, alias tableFn, alias asciiConvert, S)(S s)
 if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && isSomeChar!(ElementType!S)))
 {
-    import std.array : appender, array;
-    import std.ascii : isASCII;
-    import std.utf : byDchar, codeLength;
+    import ripstd.array : appender, array;
+    import ripstd.ascii : isASCII;
+    import ripstd.utf : byDchar, codeLength;
 
     alias C = ElementEncodingType!S;
 
@@ -9058,7 +9058,7 @@ if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && i
 // https://issues.dlang.org/show_bug.cgi?id=12428
 @safe unittest
 {
-    import std.array : replicate;
+    import ripstd.array : replicate;
     auto s = "abcdefghij".replicate(300);
     s = s[0 .. 10];
 
@@ -9090,7 +9090,7 @@ if (isInputRange!Range &&
 
         @property auto front()
         {
-            import std.ascii : isASCII;
+            import ripstd.ascii : isASCII;
 
             if (!nLeft)
             {
@@ -9183,15 +9183,15 @@ if (isInputRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 {
     static if (ElementEncodingType!Range.sizeof < dchar.sizeof)
     {
-        import std.utf : byDchar;
+        import ripstd.utf : byDchar;
 
         // Decode first
         return asLowerCase(str.byDchar);
     }
     else
     {
-        static import std.ascii;
-        return toCaser!(LowerTriple, std.ascii.toLower)(str);
+        static import ripstd.ascii;
+        return toCaser!(LowerTriple, ripstd.ascii.toLower)(str);
     }
 }
 
@@ -9202,22 +9202,22 @@ if (isInputRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 {
     static if (ElementEncodingType!Range.sizeof < dchar.sizeof)
     {
-        import std.utf : byDchar;
+        import ripstd.utf : byDchar;
 
         // Decode first
         return asUpperCase(str.byDchar);
     }
     else
     {
-        static import std.ascii;
-        return toCaser!(UpperTriple, std.ascii.toUpper)(str);
+        static import ripstd.ascii;
+        return toCaser!(UpperTriple, ripstd.ascii.toUpper)(str);
     }
 }
 
 ///
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert("hEllo".asUpperCase.equal("HELLO"));
 }
@@ -9226,7 +9226,7 @@ if (isInputRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 auto asLowerCase(Range)(auto ref Range str)
 if (isConvertibleToString!Range)
 {
-    import std.traits : StringTypeOf;
+    import ripstd.traits : StringTypeOf;
     return asLowerCase!(StringTypeOf!Range)(str);
 }
 
@@ -9234,7 +9234,7 @@ if (isConvertibleToString!Range)
 auto asUpperCase(Range)(auto ref Range str)
 if (isConvertibleToString!Range)
 {
-    import std.traits : StringTypeOf;
+    import ripstd.traits : StringTypeOf;
     return asUpperCase!(StringTypeOf!Range)(str);
 }
 
@@ -9250,7 +9250,7 @@ if (isConvertibleToString!Range)
 
     static bool testAliasedString(alias func, Args...)(string s, Args args)
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         auto a = func(TestAliasedString(s), args);
         auto b = func(s, args);
         static if (is(typeof(equal(a, b))))
@@ -9270,7 +9270,7 @@ if (isConvertibleToString!Range)
 
 @safe unittest
 {
-    import std.array : array;
+    import ripstd.array : array;
 
     auto a = "HELLo".asLowerCase;
     auto savea = a.save;
@@ -9284,7 +9284,7 @@ if (isConvertibleToString!Range)
 
     foreach (i, slwr; lower)
     {
-        import std.utf : byChar;
+        import ripstd.utf : byChar;
 
         auto sx = slwr.asUpperCase.byChar.array;
         assert(sx == toUpper(slwr));
@@ -9297,14 +9297,14 @@ if (isConvertibleToString!Range)
     {
     }
 
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     "HELLo"w.asLowerCase.equal("hello"d);
     "HELLo"w.asUpperCase.equal("HELLO"d);
     "HELLo"d.asLowerCase.equal("hello"d);
     "HELLo"d.asUpperCase.equal("HELLO"d);
 
-    import std.utf : byChar;
+    import ripstd.utf : byChar;
     assert(toLower("\u1Fe2") == asLowerCase("\u1Fe2").byChar.array);
 }
 
@@ -9425,7 +9425,7 @@ if (isInputRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 {
     static if (ElementEncodingType!Range.sizeof < dchar.sizeof)
     {
-        import std.utf : byDchar;
+        import ripstd.utf : byDchar;
 
         // Decode first
         return toCapitalizer!UpperTriple(str.byDchar);
@@ -9439,7 +9439,7 @@ if (isInputRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 ///
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert("hEllo".asCapitalized.equal("Hello"));
 }
@@ -9447,7 +9447,7 @@ if (isInputRange!Range && isSomeChar!(ElementEncodingType!Range) &&
 auto asCapitalized(Range)(auto ref Range str)
 if (isConvertibleToString!Range)
 {
-    import std.traits : StringTypeOf;
+    import ripstd.traits : StringTypeOf;
     return asCapitalized!(StringTypeOf!Range)(str);
 }
 
@@ -9459,7 +9459,7 @@ if (isConvertibleToString!Range)
 
 @safe unittest
 {
-    import std.array : array;
+    import ripstd.array : array;
 
     auto a = "hELLo".asCapitalized;
     auto savea = a.save;
@@ -9482,7 +9482,7 @@ if (isConvertibleToString!Range)
 
     foreach (i; 0 .. cases.length)
     {
-        import std.utf : byChar;
+        import ripstd.utf : byChar;
 
         auto r = cases[i][0].asCapitalized.byChar.array;
         auto result = cases[i][1];
@@ -9494,18 +9494,18 @@ if (isConvertibleToString!Range)
     {
     }
 
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     "HELLo"w.asCapitalized.equal("Hello"d);
     "hElLO"w.asCapitalized.equal("Hello"d);
     "hello"d.asCapitalized.equal("Hello"d);
     "HELLO"d.asCapitalized.equal("Hello"d);
 
-    import std.utf : byChar;
+    import ripstd.utf : byChar;
     assert(asCapitalized("\u0130").byChar.array == asUpperCase("\u0130").byChar.array);
 }
 
-// TODO: helper, I wish std.utf was more flexible (and stright)
+// TODO: helper, I wish ripstd.utf was more flexible (and stright)
 private size_t encodeTo(scope char[] buf, size_t idx, dchar c) @trusted pure nothrow @nogc
 {
     if (c <= 0x7F)
@@ -9550,10 +9550,10 @@ private size_t encodeTo(scope char[] buf, size_t idx, dchar c) @trusted pure not
     assert(s == "X\xC2\xA9d");
 }
 
-// TODO: helper, I wish std.utf was more flexible (and stright)
+// TODO: helper, I wish ripstd.utf was more flexible (and stright)
 private size_t encodeTo(scope wchar[] buf, size_t idx, dchar c) @trusted pure
 {
-    import std.utf : UTFException;
+    import ripstd.utf : UTFException;
     if (c <= 0xFFFF)
     {
         if (0xD800 <= c && c <= 0xDFFF)
@@ -9582,7 +9582,7 @@ private size_t encodeTo(scope dchar[] buf, size_t idx, dchar c) @trusted pure no
 private void toCaseInPlace(alias indexFn, uint maxIdx, alias tableFn, C)(ref C[] s) @trusted pure
 if (is(C == char) || is(C == wchar)  || is(C == dchar))
 {
-    import std.utf : decode, codeLength;
+    import ripstd.utf : decode, codeLength;
     size_t curIdx = 0;
     size_t destIdx = 0;
     alias slowToCase = toCaseInPlaceAlloc!(indexFn, maxIdx, tableFn);
@@ -9650,7 +9650,7 @@ private template toCaseLength(alias indexFn, uint maxIdx, alias tableFn)
 {
     size_t toCaseLength(C)(const scope C[] str)
     {
-        import std.utf : decode, codeLength;
+        import ripstd.utf : decode, codeLength;
         size_t codeLen = 0;
         size_t lastNonTrivial = 0;
         size_t curIdx = 0;
@@ -9701,7 +9701,7 @@ private template toCaseInPlaceAlloc(alias indexFn, uint maxIdx, alias tableFn)
         size_t destIdx) @trusted pure
         if (is(C == char) || is(C == wchar) || is(C == dchar))
     {
-        import std.utf : decode;
+        import ripstd.utf : decode;
         alias caseLength = toCaseLength!(indexFn, maxIdx, tableFn);
         auto trueLength = destIdx + caseLength(s[curIdx..$]);
         C[] ns = new C[trueLength];
@@ -9836,12 +9836,12 @@ dchar toLower(dchar c)
 ElementEncodingType!S[] toLower(S)(S s)
 if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && isSomeChar!(ElementType!S)))
 {
-    static import std.ascii;
+    static import ripstd.ascii;
 
     static if (isSomeString!S)
-        return () @trusted { return toCase!(LowerTriple, std.ascii.toLower)(s); } ();
+        return () @trusted { return toCase!(LowerTriple, ripstd.ascii.toLower)(s); } ();
     else
-        return toCase!(LowerTriple, std.ascii.toLower)(s);
+        return toCase!(LowerTriple, ripstd.ascii.toLower)(s);
 }
 
 // overloads for the most common cases to reduce compile time
@@ -9874,10 +9874,10 @@ if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && i
 
 @safe unittest
 {
-    static import std.ascii;
-    import std.format : format;
+    static import ripstd.ascii;
+    import ripstd.format : format;
     foreach (ch; 0 .. 0x80)
-        assert(std.ascii.toLower(ch) == toLower(ch));
+        assert(ripstd.ascii.toLower(ch) == toLower(ch));
     assert(toLower('Я') == 'я');
     assert(toLower('Δ') == 'δ');
     foreach (ch; unicode.upperCase.byCodepoint)
@@ -9903,7 +9903,7 @@ if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && i
 
 @safe unittest
 {
-    import std.algorithm.comparison : cmp;
+    import ripstd.algorithm.comparison : cmp;
     string s1 = "FoL";
     string s2 = toLower(s1);
     assert(cmp(s2, "fol") == 0, s2);
@@ -9954,8 +9954,8 @@ if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && i
 
 @safe pure unittest
 {
-    import std.algorithm.comparison : cmp, equal;
-    import std.utf : byCodeUnit;
+    import ripstd.algorithm.comparison : cmp, equal;
+    import ripstd.utf : byCodeUnit;
     auto r1 = "FoL".byCodeUnit;
     assert(r1.toLower.cmp("fol") == 0);
     auto r2 = "A\u0460B\u0461d".byCodeUnit;
@@ -9999,9 +9999,9 @@ dchar toUpper(dchar c)
 ///
 @safe unittest
 {
-    import std.algorithm.iteration : map;
-    import std.algorithm.mutation : copy;
-    import std.array : appender;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.algorithm.mutation : copy;
+    import ripstd.array : appender;
 
     auto abuf = appender!(char[])();
     "hello".map!toUpper.copy(abuf);
@@ -10010,10 +10010,10 @@ dchar toUpper(dchar c)
 
 @safe unittest
 {
-    static import std.ascii;
-    import std.format : format;
+    static import ripstd.ascii;
+    import ripstd.format : format;
     foreach (ch; 0 .. 0x80)
-        assert(std.ascii.toUpper(ch) == toUpper(ch));
+        assert(ripstd.ascii.toUpper(ch) == toUpper(ch));
     assert(toUpper('я') == 'Я');
     assert(toUpper('δ') == 'Δ');
     auto title = unicode.Titlecase_Letter;
@@ -10040,12 +10040,12 @@ dchar toUpper(dchar c)
 ElementEncodingType!S[] toUpper(S)(S s)
 if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && isSomeChar!(ElementType!S)))
 {
-    static import std.ascii;
+    static import ripstd.ascii;
 
     static if (isSomeString!S)
-        return () @trusted { return toCase!(UpperTriple, std.ascii.toUpper)(s); } ();
+        return () @trusted { return toCase!(UpperTriple, ripstd.ascii.toUpper)(s); } ();
     else
-        return toCase!(UpperTriple, std.ascii.toUpper)(s);
+        return toCase!(UpperTriple, ripstd.ascii.toUpper)(s);
 }
 
 // overloads for the most common cases to reduce compile time
@@ -10077,7 +10077,7 @@ if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && i
 
 @safe unittest
 {
-    import std.algorithm.comparison : cmp;
+    import ripstd.algorithm.comparison : cmp;
 
     string s1 = "FoL";
     string s2;
@@ -10108,7 +10108,7 @@ if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && i
 {
     static void doTest(C)(const(C)[] s, const(C)[] trueUp, const(C)[] trueLow)
     {
-        import std.format : format;
+        import ripstd.format : format;
         string diff = "src: %( %x %)\nres: %( %x %)\ntru: %( %x %)";
         auto low = s.toLower() , up = s.toUpper();
         auto lowInp = s.dup, upInp = s.dup;
@@ -10164,8 +10164,8 @@ if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && i
 // test random access ranges
 @safe pure unittest
 {
-    import std.algorithm.comparison : cmp;
-    import std.utf : byCodeUnit;
+    import ripstd.algorithm.comparison : cmp;
+    import ripstd.utf : byCodeUnit;
     auto s1 = "FoL".byCodeUnit;
     assert(s1.toUpper.cmp("FOL") == 0);
     auto s2 = "a\u0460B\u0461d".byCodeUnit;
@@ -10266,12 +10266,12 @@ bool isNumber(dchar c)
 @safe pure nothrow @nogc
 bool isAlphaNum(dchar c)
 {
-    static import std.ascii;
+    static import ripstd.ascii;
 
     // optimization for ascii case
-    if (std.ascii.isASCII(c))
+    if (ripstd.ascii.isASCII(c))
     {
-        return std.ascii.isAlphaNum(c);
+        return ripstd.ascii.isAlphaNum(c);
     }
     else
     {
@@ -10303,12 +10303,12 @@ bool isAlphaNum(dchar c)
 @safe pure nothrow @nogc
 bool isPunctuation(dchar c)
 {
-    static import std.ascii;
+    static import ripstd.ascii;
 
     // optimization for ascii case
     if (c <= 0x7F)
     {
-        return std.ascii.isPunctuation(c);
+        return ripstd.ascii.isPunctuation(c);
     }
     else
     {
@@ -10341,7 +10341,7 @@ bool isSymbol(dchar c)
 
 @safe unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
     assert(isSymbol('\u0024'));
     assert(isSymbol('\u002B'));
     assert(isSymbol('\u005E'));
@@ -10359,7 +10359,7 @@ bool isSymbol(dchar c)
 @safe pure nothrow @nogc
 bool isSpace(dchar c)
 {
-    import std.internal.unicode_tables : isSpaceGen; // generated file
+    import ripstd.internal.unicode_tables : isSpaceGen; // generated file
     return isSpaceGen(c);
 }
 
@@ -10389,7 +10389,7 @@ bool isGraphical(dchar c)
 @safe unittest
 {
     auto set = unicode("Graphical");
-    import std.format : format;
+    import ripstd.format : format;
     foreach (ch; set.byCodepoint)
         assert(isGraphical(ch), format("%4x", ch));
     foreach (ch; 0 .. 0x4000)
@@ -10404,7 +10404,7 @@ bool isGraphical(dchar c)
 @safe pure nothrow @nogc
 bool isControl(dchar c)
 {
-    import std.internal.unicode_tables : isControlGen; // generated file
+    import ripstd.internal.unicode_tables : isControlGen; // generated file
     return isControlGen(c);
 }
 
@@ -10428,7 +10428,7 @@ bool isControl(dchar c)
 @safe pure nothrow @nogc
 bool isFormat(dchar c)
 {
-    import std.internal.unicode_tables : isFormatGen; // generated file
+    import ripstd.internal.unicode_tables : isFormatGen; // generated file
     return isFormatGen(c);
 }
 
@@ -10517,7 +10517,7 @@ private:
 
 @safe pure nothrow @nogc @property
 {
-    import std.internal.unicode_tables; // generated file
+    import ripstd.internal.unicode_tables; // generated file
 
     // It's important to use auto return here, so that the compiler
     // only runs semantic on the return type if the function gets
@@ -10538,28 +10538,28 @@ private:
     //normalization quick-check tables
     auto nfcQCTrie()
     {
-        import std.internal.unicode_norm : nfcQCTrieEntries;
+        import ripstd.internal.unicode_norm : nfcQCTrieEntries;
         static immutable res = asTrie(nfcQCTrieEntries);
         return res;
     }
 
     auto nfdQCTrie()
     {
-        import std.internal.unicode_norm : nfdQCTrieEntries;
+        import ripstd.internal.unicode_norm : nfdQCTrieEntries;
         static immutable res = asTrie(nfdQCTrieEntries);
         return res;
     }
 
     auto nfkcQCTrie()
     {
-        import std.internal.unicode_norm : nfkcQCTrieEntries;
+        import ripstd.internal.unicode_norm : nfkcQCTrieEntries;
         static immutable res = asTrie(nfkcQCTrieEntries);
         return res;
     }
 
     auto nfkdQCTrie()
     {
-        import std.internal.unicode_norm : nfkdQCTrieEntries;
+        import ripstd.internal.unicode_norm : nfkdQCTrieEntries;
         static immutable res = asTrie(nfkdQCTrieEntries);
         return res;
     }
@@ -10567,28 +10567,28 @@ private:
     //grapheme breaking algorithm tables
     auto mcTrie()
     {
-        import std.internal.unicode_grapheme : mcTrieEntries;
+        import ripstd.internal.unicode_grapheme : mcTrieEntries;
         static immutable res = asTrie(mcTrieEntries);
         return res;
     }
 
     auto graphemeExtendTrie()
     {
-        import std.internal.unicode_grapheme : graphemeExtendTrieEntries;
+        import ripstd.internal.unicode_grapheme : graphemeExtendTrieEntries;
         static immutable res = asTrie(graphemeExtendTrieEntries);
         return res;
     }
 
     auto hangLV()
     {
-        import std.internal.unicode_grapheme : hangulLVTrieEntries;
+        import ripstd.internal.unicode_grapheme : hangulLVTrieEntries;
         static immutable res = asTrie(hangulLVTrieEntries);
         return res;
     }
 
     auto hangLVT()
     {
-        import std.internal.unicode_grapheme : hangulLVTTrieEntries;
+        import ripstd.internal.unicode_grapheme : hangulLVTTrieEntries;
         static immutable res = asTrie(hangulLVTTrieEntries);
         return res;
     }
@@ -10596,28 +10596,28 @@ private:
     // tables below are used for composition/decomposition
     auto combiningClassTrie()
     {
-        import std.internal.unicode_comp : combiningClassTrieEntries;
+        import ripstd.internal.unicode_comp : combiningClassTrieEntries;
         static immutable res = asTrie(combiningClassTrieEntries);
         return res;
     }
 
     auto compatMappingTrie()
     {
-        import std.internal.unicode_decomp : compatMappingTrieEntries;
+        import ripstd.internal.unicode_decomp : compatMappingTrieEntries;
         static immutable res = asTrie(compatMappingTrieEntries);
         return res;
     }
 
     auto canonMappingTrie()
     {
-        import std.internal.unicode_decomp : canonMappingTrieEntries;
+        import ripstd.internal.unicode_decomp : canonMappingTrieEntries;
         static immutable res = asTrie(canonMappingTrieEntries);
         return res;
     }
 
     auto compositionJumpTrie()
     {
-        import std.internal.unicode_comp : compositionJumpTrieEntries;
+        import ripstd.internal.unicode_comp : compositionJumpTrieEntries;
         static immutable res = asTrie(compositionJumpTrieEntries);
         return res;
     }

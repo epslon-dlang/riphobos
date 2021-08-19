@@ -11,12 +11,12 @@ module ripstd.experimental.allocator.building_blocks.stats_collector;
 ///
 @safe unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.experimental.allocator.building_blocks.free_list : FreeList;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
     alias Allocator = StatsCollector!(GCAllocator, Options.bytesUsed);
 }
 
-import std.experimental.allocator.common;
+import ripstd.experimental.allocator.common;
 
 /**
 _Options for `StatsCollector` defined below. Each enables during
@@ -172,8 +172,8 @@ struct StatsCollector(Allocator, ulong flags = Options.all,
     ulong perCallFlags = 0)
 {
 private:
-    import std.traits : hasMember, Signed;
-    import std.typecons : Ternary;
+    import ripstd.traits : hasMember, Signed;
+    import ripstd.typecons : Ternary;
 
     static string define(string type, string[] names...)
     {
@@ -366,12 +366,12 @@ public:
             & (Options.numAllocate | Options.numAllocateOK
                 | Options.bytesAllocated)))
         {
-            package(std) void[] allocateZeroed()(size_t n)
+            package(ripstd) void[] allocateZeroed()(size_t n)
             { return allocateZeroedImpl(n); }
         }
         else
         {
-            package(std) void[] allocateZeroed(string f = __FILE__, ulong n = __LINE__)
+            package(ripstd) void[] allocateZeroed(string f = __FILE__, ulong n = __LINE__)
                 (size_t bytes)
             { return allocateZeroedImpl!(f, n)(bytes); }
         }
@@ -627,8 +627,8 @@ public:
     */
     void reportStatistics(R)(auto ref R output)
     {
-        import std.conv : to;
-        import std.traits : EnumMembers;
+        import ripstd.conv : to;
+        import ripstd.traits : EnumMembers;
         foreach (e; EnumMembers!Options)
         {
             static if ((flags & e) && e != Options.numAll
@@ -661,7 +661,7 @@ public:
             */
             string toString() const
             {
-                import std.conv : text, to;
+                import ripstd.conv : text, to;
                 auto result = text(file, "(", line, "): [");
                 foreach (i, opt; opts)
                 {
@@ -709,8 +709,8 @@ public:
 
         private PerCallStatistics* statsAt(string f, uint n, opts...)()
         {
-            import std.array : array;
-            import std.range : repeat;
+            import ripstd.array : array;
+            import ripstd.range : repeat;
 
             static PerCallStatistics s = { f, n, [ opts ],
                 repeat(0UL, opts.length).array };
@@ -728,7 +728,7 @@ public:
 
         private void addPerCall(string f, uint n, names...)(ulong[] values...)
         {
-            import std.array : join;
+            import ripstd.array : join;
             enum ulong mask = mixin("Options."~[names].join("|Options."));
             static if (perCallFlags & mask)
             {
@@ -754,8 +754,8 @@ public:
 ///
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.free_list : FreeList;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     alias Allocator = StatsCollector!(GCAllocator, Options.all, Options.all);
 
     Allocator alloc;
@@ -763,9 +763,9 @@ public:
     alloc.reallocate(b, 20);
     alloc.deallocate(b);
 
-    import std.file : deleteme, remove;
-    import std.range : walkLength;
-    import std.stdio : File;
+    import ripstd.file : deleteme, remove;
+    import ripstd.range : walkLength;
+    import ripstd.stdio : File;
 
     auto f = deleteme ~ "-dlang.std.experimental.allocator.stats_collector.txt";
     scope(exit) remove(f);
@@ -778,8 +778,8 @@ public:
 {
     void test(Allocator)()
     {
-        import std.range : walkLength;
-        import std.typecons : Ternary;
+        import ripstd.range : walkLength;
+        import ripstd.typecons : Ternary;
 
         Allocator a;
         assert((() pure nothrow @safe @nogc => a.empty)() == Ternary.yes);
@@ -806,8 +806,8 @@ public:
         assert(a.bytesUsed == 0);
      }
 
-    import std.experimental.allocator.building_blocks.free_list : FreeList;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     test!(StatsCollector!(GCAllocator, Options.all, Options.all));
     test!(StatsCollector!(FreeList!(GCAllocator, 128), Options.all,
         Options.all));
@@ -817,7 +817,7 @@ public:
 {
     void test(Allocator)()
     {
-        import std.range : walkLength;
+        import ripstd.range : walkLength;
         Allocator a;
         auto b1 = a.allocate(100);
         assert((() nothrow @safe => a.expand(b1, 0))());
@@ -829,23 +829,23 @@ public:
         () nothrow @nogc { a.deallocate(b1); }();
         () nothrow @nogc { a.deallocate(b3); }();
     }
-    import std.experimental.allocator.building_blocks.free_list : FreeList;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     test!(StatsCollector!(GCAllocator, 0, 0));
 }
 
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     StatsCollector!(GCAllocator, 0, 0) a;
 
-    // calls std.experimental.allocator.common.goodAllocSize
+    // calls ripstd.experimental.allocator.common.goodAllocSize
     assert((() pure nothrow @safe @nogc => a.goodAllocSize(1))());
 }
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
 
     auto a = StatsCollector!(Region!(), Options.all, Options.all)(Region!()(new ubyte[1024 * 64]));
     auto b = a.allocate(42);
@@ -859,7 +859,7 @@ public:
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
 
     auto a = StatsCollector!(Region!(), Options.all)(Region!()(new ubyte[1024 * 64]));
     auto b = a.alignedAllocate(42, 128);

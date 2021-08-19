@@ -4,9 +4,9 @@ Used with the dummy ranges for testing higher order ranges.
 */
 module ripstd.internal.test.dummyrange;
 
-import std.meta;
-import std.range.primitives;
-import std.typecons;
+import ripstd.meta;
+import ripstd.range.primitives;
+import ripstd.typecons;
 
 enum RangeType
 {
@@ -28,7 +28,7 @@ enum ReturnBy
     Value
 }
 
-import std.traits : isArray;
+import ripstd.traits : isArray;
 
 // Range that's useful for testing other higher order ranges,
 // can be parametrized with attributes.  It just dumbs down an array of
@@ -253,7 +253,7 @@ Reference type input range
 */
 class ReferenceInputRange(T)
 {
-    import std.array : array;
+    import ripstd.array : array;
 
     this(Range)(Range r) if (isInputRange!Range) {_payload = array(r);}
     final @property ref T front(){return _payload.front;}
@@ -321,13 +321,13 @@ if (is(T == uint))
 {
     static auto iota(size_t low = 1, size_t high = 11)
     {
-        import std.range : iota;
+        import ripstd.range : iota;
         return iota(cast(uint) low, cast(uint) high);
     }
 
     static void initialize(ref uint[] arr)
     {
-        import std.array : array;
+        import ripstd.array : array;
         arr = iota().array;
     }
 
@@ -340,17 +340,17 @@ if (is(T == uint))
 pure struct Cmp(T)
 if (is(T == double))
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     static auto iota(size_t low = 1, size_t high = 11)
     {
-        import std.range : iota;
+        import ripstd.range : iota;
         return iota(cast(double) low, cast(double) high, 1.0);
     }
 
     static void initialize(ref double[] arr)
     {
-        import std.array : array;
+        import ripstd.array : array;
         arr = iota().array;
     }
 
@@ -388,14 +388,14 @@ if (is(T == TestFoo))
 {
     static auto iota(size_t low = 1, size_t high = 11)
     {
-        import std.algorithm.iteration : map;
-        import std.range : iota;
+        import ripstd.algorithm.iteration : map;
+        import ripstd.range : iota;
         return iota(cast(int) low, cast(int) high).map!(a => TestFoo(a));
     }
 
     static void initialize(ref TestFoo[] arr)
     {
-        import std.array : array;
+        import ripstd.array : array;
         arr = iota().array;
     }
 
@@ -417,8 +417,8 @@ if (is(T == TestFoo))
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota, retro, repeat;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota, retro, repeat;
 
     static void testInputRange(T,Cmp)()
     {
@@ -535,7 +535,7 @@ if (is(T == TestFoo))
         }
     }
 
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static foreach (S; AliasSeq!(uint, double, TestFoo))
     {

@@ -53,9 +53,9 @@
  * Source:    $(PHOBOSSRC std/mathspecial.d)
  */
 module ripstd.mathspecial;
-import std.internal.math.errorfunction;
-import std.internal.math.gammafunction;
-public import std.math;
+import ripstd.internal.math.errorfunction;
+import ripstd.internal.math.gammafunction;
+public import ripstd.math;
 
 /* ***********************************************
  *            GAMMA AND RELATED FUNCTIONS        *
@@ -87,7 +87,7 @@ nothrow:
  */
 real gamma(real x)
 {
-    return std.internal.math.gammafunction.gamma(x);
+    return ripstd.internal.math.gammafunction.gamma(x);
 }
 
 /** Natural logarithm of the gamma function, $(GAMMA)(x)
@@ -106,7 +106,7 @@ real gamma(real x)
  */
 real logGamma(real x)
 {
-    return std.internal.math.gammafunction.logGamma(x);
+    return ripstd.internal.math.gammafunction.logGamma(x);
 }
 
 /** The sign of $(GAMMA)(x).
@@ -176,7 +176,7 @@ real beta(real x, real y)
  */
 real digamma(real x)
 {
-    return std.internal.math.gammafunction.digamma(x);
+    return ripstd.internal.math.gammafunction.digamma(x);
 }
 
 /** Log Minus Digamma function
@@ -187,7 +187,7 @@ real digamma(real x)
  */
 real logmdigamma(real x)
 {
-    return std.internal.math.gammafunction.logmdigamma(x);
+    return ripstd.internal.math.gammafunction.logmdigamma(x);
 }
 
 /** Inverse of the Log Minus Digamma function
@@ -198,7 +198,7 @@ real logmdigamma(real x)
  */
 real logmdigammaInverse(real x)
 {
-    return std.internal.math.gammafunction.logmdigammaInverse(x);
+    return ripstd.internal.math.gammafunction.logmdigammaInverse(x);
 }
 
 /** Incomplete beta integral
@@ -224,7 +224,7 @@ real logmdigammaInverse(real x)
  */
 real betaIncomplete(real a, real b, real x )
 {
-    return std.internal.math.gammafunction.betaIncomplete(a, b, x);
+    return ripstd.internal.math.gammafunction.betaIncomplete(a, b, x);
 }
 
 /** Inverse of incomplete beta integral
@@ -237,7 +237,7 @@ real betaIncomplete(real a, real b, real x )
  */
 real betaIncompleteInverse(real a, real b, real y )
 {
-    return std.internal.math.gammafunction.betaIncompleteInv(a, b, y);
+    return ripstd.internal.math.gammafunction.betaIncompleteInv(a, b, y);
 }
 
 /** Incomplete gamma integral and its complement
@@ -262,7 +262,7 @@ in
 }
 do
 {
-    return std.internal.math.gammafunction.gammaIncomplete(a, x);
+    return ripstd.internal.math.gammafunction.gammaIncomplete(a, x);
 }
 
 /** ditto */
@@ -274,7 +274,7 @@ in
 }
 do
 {
-    return std.internal.math.gammafunction.gammaIncompleteCompl(a, x);
+    return ripstd.internal.math.gammafunction.gammaIncompleteCompl(a, x);
 }
 
 /** Inverse of complemented incomplete gamma integral
@@ -291,7 +291,7 @@ in
 }
 do
 {
-    return std.internal.math.gammafunction.gammaIncompleteComplInv(a, p);
+    return ripstd.internal.math.gammafunction.gammaIncompleteComplInv(a, p);
 }
 
 
@@ -311,7 +311,7 @@ do
  */
 real erf(real x)
 {
-    return std.internal.math.errorfunction.erf(x);
+    return ripstd.internal.math.errorfunction.erf(x);
 }
 
 /** Complementary error function
@@ -325,7 +325,7 @@ real erf(real x)
  */
 real erfc(real x)
 {
-    return std.internal.math.errorfunction.erfc(x);
+    return ripstd.internal.math.errorfunction.erfc(x);
 }
 
 
@@ -348,7 +348,7 @@ real erfc(real x)
  */
 real normalDistribution(real x)
 {
-    return std.internal.math.errorfunction.normalDistributionImpl(x);
+    return ripstd.internal.math.errorfunction.normalDistributionImpl(x);
 }
 
 /** Inverse of Standard normal distribution function
@@ -366,5 +366,5 @@ in
 }
 do
 {
-    return std.internal.math.errorfunction.normalDistributionInvImpl(p);
+    return ripstd.internal.math.errorfunction.normalDistributionInvImpl(p);
 }

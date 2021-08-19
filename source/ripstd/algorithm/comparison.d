@@ -58,13 +58,13 @@ T2=$(TR $(TDNW $(LREF $1)) $(TD $+))
  */
 module ripstd.algorithm.comparison;
 
-import std.functional : unaryFun, binaryFun;
-import std.range.primitives;
-import std.traits;
-import std.meta : allSatisfy;
-import std.typecons : tuple, Tuple, Flag, Yes;
+import ripstd.functional : unaryFun, binaryFun;
+import ripstd.range.primitives;
+import ripstd.traits;
+import ripstd.meta : allSatisfy;
+import ripstd.typecons : tuple, Tuple, Flag, Yes;
 
-import std.internal.attributes : betterC;
+import ripstd.internal.attributes : betterC;
 
 /**
 Find `value` _among `values`, returning the 1-based index
@@ -91,7 +91,7 @@ if (Values.length != 0)
 {
     foreach (uint i, ref v; values)
     {
-        import std.functional : binaryFun;
+        import ripstd.functional : binaryFun;
         if (binaryFun!pred(value, v)) return i + 1;
     }
     return 0;
@@ -141,7 +141,7 @@ efficient search, but one that only supports matching on equality:
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     if (auto pos = 3.among(1, 2, 3))
         assert(pos == 3);
@@ -240,7 +240,7 @@ Note: `castSwitch` can only be used with object types.
 auto castSwitch(choices...)(Object switchObject)
 {
     import core.exception : SwitchError;
-    import std.format : format;
+    import ripstd.format : format;
 
     // Check to see if all handlers return void.
     enum areAllHandlersVoidResult = {
@@ -374,8 +374,8 @@ auto castSwitch(choices...)(Object switchObject)
 ///
 @system unittest
 {
-    import std.algorithm.iteration : map;
-    import std.format : format;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.format : format;
 
     class A
     {
@@ -405,7 +405,7 @@ auto castSwitch(choices...)(Object switchObject)
 /// Using with void handlers:
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     class A { }
     class B { }
@@ -427,7 +427,7 @@ auto castSwitch(choices...)(Object switchObject)
 @system unittest
 {
     import core.exception : SwitchError;
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     interface I { }
     class A : I { }
@@ -532,7 +532,7 @@ auto clamp(T1, T2, T3)(T1 val, T2 lower, T3 upper)
 if (is(typeof(max(min(val, upper), lower))))
 in
 {
-    import std.functional : greaterThan;
+    import ripstd.functional : greaterThan;
     assert(!lower.greaterThan(upper), "Lower can't be greater than upper.");
 }
 do
@@ -570,7 +570,7 @@ do
     static assert(is(typeof(clamp(-1L, -2L, 2UL)) == long));
 
     // user-defined types
-    import std.datetime : Date;
+    import ripstd.datetime : Date;
     assert(clamp(Date(1982, 1, 4), Date(1012, 12, 21), Date(2012, 12, 21)) == Date(1982, 1, 4));
     assert(clamp(Date(1982, 1, 4), Date.min, Date.max) == Date(1982, 1, 4));
     // UFCS style
@@ -680,7 +680,7 @@ if (isInputRange!R1 && isInputRange!R2)
         }
         else
         {
-            import std.utf : decode;
+            import ripstd.utf : decode;
 
             for (size_t i1, i2;;)
             {
@@ -711,7 +711,7 @@ if (isInputRange!R1 && isInputRange!R2)
     }
     else
     {
-        import std.utf : decode;
+        import ripstd.utf : decode;
 
         for (size_t i1, i2;;)
         {
@@ -808,7 +808,7 @@ pure @safe unittest
 {
     static bool ltCi(dchar a, dchar b)// less than, case insensitive
     {
-        import std.ascii : toUpper;
+        import ripstd.ascii : toUpper;
         return toUpper(a) < toUpper(b);
     }
     static assert(cmp!ltCi("apple2", "APPLE1") > 0);
@@ -842,7 +842,7 @@ pure @safe unittest
 
 nothrow pure @safe @nogc unittest
 {
-    import std.array : staticArray;
+    import ripstd.array : staticArray;
     // Test cmp when opCmp returns float.
     struct F
     {
@@ -868,7 +868,7 @@ nothrow pure @safe @nogc unittest
 nothrow pure @safe unittest
 {
     // Parallelism (was broken by inferred return type "immutable int")
-    import std.parallelism : task;
+    import ripstd.parallelism : task;
     auto t = task!cmp("foo", "bar");
 }
 
@@ -914,7 +914,7 @@ template equal(alias pred = "a == b")
 
         static if (useCodePoint)
         {
-            import std.utf : byDchar;
+            import ripstd.utf : byDchar;
             return equal(r1.byDchar, r2.byDchar);
         }
         else
@@ -936,7 +936,7 @@ template equal(alias pred = "a == b")
                 isAutodecodableString!Range1 != isAutodecodableString!Range2 &&
                 is(immutable ElementEncodingType!Range1 == immutable ElementEncodingType!Range2))
             {
-                import std.utf : byCodeUnit;
+                import ripstd.utf : byCodeUnit;
 
                 static if (isAutodecodableString!Range1)
                     return equal(r1.byCodeUnit, r2);
@@ -974,8 +974,8 @@ template equal(alias pred = "a == b")
 ///
 @safe @nogc unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.math.operations : isClose;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.math.operations : isClose;
 
     int[4] a = [ 1, 2, 4, 3 ];
     assert(!equal(a[], a[1..$]));
@@ -1000,8 +1000,8 @@ range of range (of range...) comparisons.
  +/
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota, chunks;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota, chunks;
     assert(equal!(equal!equal)(
         [[[0, 1], [2, 3]], [[4, 5], [6, 7]]],
         iota(0, 8).chunks(2).chunks(2)
@@ -1010,10 +1010,10 @@ range of range (of range...) comparisons.
 
 @safe unittest
 {
-    import std.algorithm.iteration : map;
-    import std.internal.test.dummyrange : ReferenceForwardRange,
+    import ripstd.algorithm.iteration : map;
+    import ripstd.internal.test.dummyrange : ReferenceForwardRange,
         ReferenceInputRange, ReferenceInfiniteForwardRange;
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     // various strings
     assert(equal("æøå", "æøå")); //UTF8 vs UTF8
@@ -1074,7 +1074,7 @@ range of range (of range...) comparisons.
 
 @safe @nogc pure unittest
 {
-    import std.utf : byChar, byDchar, byWchar;
+    import ripstd.utf : byChar, byDchar, byWchar;
 
     assert(equal("æøå".byChar, "æøå"));
     assert(equal("æøå".byChar, "æøå"w));
@@ -1161,7 +1161,7 @@ private struct Levenshtein(Range, alias equals, CostType = size_t)
 {
     EditOp[] path()
     {
-        import std.algorithm.mutation : reverse;
+        import ripstd.algorithm.mutation : reverse;
 
         EditOp[] result;
         size_t i = rows - 1, j = cols - 1;
@@ -1401,8 +1401,8 @@ if (isForwardRange!(Range1) && isForwardRange!(Range2))
 ///
 @safe unittest
 {
-    import std.algorithm.iteration : filter;
-    import std.uni : toUpper;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.uni : toUpper;
 
     assert(levenshteinDistance("cat", "rat") == 1);
     assert(levenshteinDistance("parks", "spark") == 2);
@@ -1425,7 +1425,7 @@ size_t levenshteinDistance(alias equals = (a,b) => a == b, Range1, Range2)
     (auto ref Range1 s, auto ref Range2 t)
 if (isConvertibleToString!Range1 || isConvertibleToString!Range2)
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
     alias Types = staticMap!(convertToString, Range1, Range2);
     return levenshteinDistance!(equals, Types)(s, t);
 }
@@ -1496,7 +1496,7 @@ levenshteinDistanceAndPath(alias equals = (a,b) => a == b, Range1, Range2)
     (auto ref Range1 s, auto ref Range2 t)
 if (isConvertibleToString!Range1 || isConvertibleToString!Range2)
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
     alias Types = staticMap!(convertToString, Range1, Range2);
     return levenshteinDistanceAndPath!(equals, Types)(s, t);
 }
@@ -1559,7 +1559,7 @@ if (T.length >= 2 && !is(CommonType!T == void))
         alias Result = CommonType!(T0, T1);
 
     // Perform the computation.
-    import std.functional : lessThan;
+    import ripstd.functional : lessThan;
     immutable chooseB = lessThan!(T0, T1)(a, b);
     return cast(Result) (chooseB ? b : a);
 }
@@ -1596,7 +1596,7 @@ if (T.length >= 2 && !is(CommonType!T == void))
     assert(max(a, f) == 5);
 
     //Test user-defined types
-    import std.datetime : Date;
+    import ripstd.datetime : Date;
     assert(max(Date(2012, 12, 21), Date(1982, 1, 4)) == Date(2012, 12, 21));
     assert(max(Date(1982, 1, 4), Date(2012, 12, 21)) == Date(2012, 12, 21));
     assert(max(Date(1982, 1, 4), Date.min) == Date(1982, 1, 4));
@@ -1659,7 +1659,7 @@ if (T.length >= 2 && !is(CommonType!T == void))
         alias Result = CommonType!(T0, T1);
 
     // Engage!
-    import std.functional : lessThan;
+    import ripstd.functional : lessThan;
     immutable chooseB = lessThan!(T1, T0)(b, a);
     return cast(Result) (chooseB ? b : a);
 }
@@ -1701,7 +1701,7 @@ store the lowest values.
 /// User-defined types that support comparison with < are supported.
 @safe unittest  // not @nogc due to `Date`
 {
-    import std.datetime;
+    import ripstd.datetime;
     assert(min(Date(2012, 12, 21), Date(1982, 1, 4)) == Date(1982, 1, 4));
     assert(min(Date(1982, 1, 4), Date(2012, 12, 21)) == Date(1982, 1, 4));
     assert(min(Date(1982, 1, 4), Date.min) == Date.min);
@@ -1756,7 +1756,7 @@ if (isInputRange!(Range1) && isInputRange!(Range2))
 
 @safe @nogc unittest
 {
-    import std.range : only;
+    import ripstd.range : only;
 
     int[3] a = [ 1, 2, 3 ];
     int[4] b = [ 1, 2, 4, 5 ];
@@ -1865,14 +1865,14 @@ auto predSwitch(alias pred = "a == b", T, R ...)(T switchExpression, lazy R choi
     assert(factorial(3) == 6);
 
     //Void return expressions are allowed if they always throw:
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!Exception(factorial(-9));
 }
 
 @system unittest
 {
     import core.exception : SwitchError;
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     //Nothing matches - with default return expression:
     assert(20.predSwitch!"a < b"(
@@ -1979,7 +1979,7 @@ if (isInputRange!Range1 && isInputRange!Range2)
 
 @safe @nogc pure unittest
 {
-    import std.range : only;
+    import ripstd.range : only;
     assert(isSameLength(only(1, 2, 3), only(4, 5, 6)));
     assert(isSameLength(only(0.3, 90.4, 23.7, 119.2), only(42.6, 23.6, 95.5, 6.3)));
     assert(!isSameLength(only(1, 3, 3), only(4, 5)));
@@ -1987,7 +1987,7 @@ if (isInputRange!Range1 && isInputRange!Range2)
 
 @safe nothrow pure unittest
 {
-    import std.internal.test.dummyrange;
+    import ripstd.internal.test.dummyrange;
 
     auto r1 = new ReferenceInputRange!int([1, 2, 3]);
     auto r2 = new ReferenceInputRange!int([4, 5, 6]);
@@ -2099,7 +2099,7 @@ if (is(typeof(binaryFun!(pred))) &&
     !isInfinite!Range1 &&
     !isInfinite!Range2)
 {
-    import std.algorithm.searching : count;
+    import ripstd.algorithm.searching : count;
 
     alias predEquals = binaryFun!(pred);
     alias E1 = Unqual!(ElementType!Range1);
@@ -2165,7 +2165,7 @@ if (is(typeof(binaryFun!(pred))) &&
 ///
 @safe pure unittest
 {
-    import std.typecons : Yes;
+    import ripstd.typecons : Yes;
 
     assert(isPermutation([1, 2, 3], [3, 2, 1]));
     assert(isPermutation([1.1, 2.3, 3.5], [2.3, 3.5, 1.1]));
@@ -2194,7 +2194,7 @@ if (is(typeof(binaryFun!(pred))) &&
 
 @safe pure unittest
 {
-    import std.internal.test.dummyrange;
+    import ripstd.internal.test.dummyrange;
 
     auto r1 = new ReferenceForwardRange!int([1, 2, 3, 4]);
     auto r2 = new ReferenceForwardRange!int([1, 2, 4, 3]);

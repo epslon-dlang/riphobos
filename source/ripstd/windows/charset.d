@@ -51,11 +51,11 @@ else:
 version (Windows):
 
 import core.sys.windows.winbase, core.sys.windows.winnls;
-import std.conv;
-import std.string;
-import std.windows.syserror;
+import ripstd.conv;
+import ripstd.string;
+import ripstd.windows.syserror;
 
-import std.internal.cstring;
+import ripstd.internal.cstring;
 
 const(char)* toMBSz(scope const(char)[] s, uint codePage = 0)
 {
@@ -85,7 +85,7 @@ const(char)* toMBSz(scope const(char)[] s, uint codePage = 0)
             return result.ptr;
         }
     }
-    return std.string.toStringz(s);
+    return ripstd.string.toStringz(s);
 }
 
 string fromMBSz(return scope immutable(char)* s, int codePage = 0)

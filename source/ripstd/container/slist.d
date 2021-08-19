@@ -21,8 +21,8 @@ module ripstd.container.slist;
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container : SList;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container : SList;
 
     auto s = SList!int(1, 2, 3);
     assert(equal(s[], [1, 2, 3]));
@@ -34,8 +34,8 @@ module ripstd.container.slist;
     assert(equal(s[], [5, 6, 2, 3]));
 
     // If you want to apply range operations, simply slice it.
-    import std.algorithm.searching : countUntil;
-    import std.range : popFrontN, walkLength;
+    import ripstd.algorithm.searching : countUntil;
+    import ripstd.range : popFrontN, walkLength;
 
     auto sl = SList!int(1, 2, 3, 4, 5);
     assert(countUntil(sl[], 2) == 1);
@@ -45,7 +45,7 @@ module ripstd.container.slist;
     assert(walkLength(r) == 3);
 }
 
-public import std.container.util;
+public import ripstd.container.util;
 
 /**
    Implements a simple and fast singly-linked list.
@@ -56,10 +56,10 @@ public import std.container.util;
 struct SList(T)
 if (!is(T == shared))
 {
-    import std.exception : enforce;
-    import std.range : Take;
-    import std.range.primitives : isInputRange, isForwardRange, ElementType;
-    import std.traits : isImplicitlyConvertible;
+    import ripstd.exception : enforce;
+    import ripstd.range : Take;
+    import ripstd.range.primitives : isInputRange, isForwardRange, ElementType;
+    import ripstd.traits : isImplicitlyConvertible;
 
     private struct Node
     {
@@ -140,7 +140,7 @@ if (!is(T == shared))
     private static auto createNodeChain(Stuff)(Stuff stuff)
     if (isImplicitlyConvertible!(Stuff, T))
     {
-        import std.range : only;
+        import ripstd.range : only;
         return createNodeChain(only(stuff));
     }
 
@@ -255,7 +255,7 @@ Defines the container's primary range, which embodies a forward range.
 
         T moveFront()
         {
-            import std.algorithm.mutation : move;
+            import ripstd.algorithm.mutation : move;
 
             assert(!empty, "SList.Range.moveFront: Range is empty");
             return move(_head._payload);
@@ -334,7 +334,7 @@ define `opBinary`.
     SList opBinary(string op, Stuff)(Stuff rhs)
     if (op == "~" && is(typeof(SList(rhs))))
     {
-        import std.range : chain, only;
+        import ripstd.range : chain, only;
 
         static if (isInputRange!Stuff)
             alias r = rhs;
@@ -348,7 +348,7 @@ define `opBinary`.
     SList opBinaryRight(string op, Stuff)(Stuff lhs)
     if (op == "~" && !is(typeof(lhs.opBinary!"~"(this))) && is(typeof(SList(lhs))))
     {
-        import std.range : chain, only;
+        import ripstd.range : chain, only;
 
         static if (isInputRange!Stuff)
             alias r = lhs;
@@ -431,7 +431,7 @@ Complexity: $(BIGOH 1).
      */
     T removeAny()
     {
-        import std.algorithm.mutation : move;
+        import ripstd.algorithm.mutation : move;
 
         assert(!empty, "SList.removeAny: List is empty");
         auto result = move(_first._payload);
@@ -508,9 +508,9 @@ Example:
 --------------------
 auto sl = SList!string(["a", "b", "d"]);
 sl.insertAfter(sl[], "e"); // insert at the end (slowest)
-assert(std.algorithm.equal(sl[], ["a", "b", "d", "e"]));
-sl.insertAfter(std.range.take(sl[], 2), "c"); // insert after "b"
-assert(std.algorithm.equal(sl[], ["a", "b", "c", "d", "e"]));
+assert(ripstd.algorithm.equal(sl[], ["a", "b", "d", "e"]));
+sl.insertAfter(ripstd.range.take(sl[], 2), "c"); // insert after "b"
+assert(ripstd.algorithm.equal(sl[], ["a", "b", "c", "d", "e"]));
 --------------------
      */
 
@@ -647,7 +647,7 @@ Complexity: $(BIGOH n)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto e = SList!int();
     auto b = e.linearRemoveElement(2);
@@ -679,7 +679,7 @@ Complexity: $(BIGOH n)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto a = SList!int(5);
     auto b = a;
@@ -702,14 +702,14 @@ Complexity: $(BIGOH n)
 
 @safe unittest
 {
-    import std.range.primitives;
+    import ripstd.range.primitives;
     auto s = SList!int(1, 2, 5, 10);
     assert(walkLength(s[]) == 4);
 }
 
 @safe unittest
 {
-    import std.range : take;
+    import ripstd.range : take;
     auto src = take([0, 1, 2, 3], 3);
     auto s = SList!int(src);
     assert(s == SList!int(0, 1, 2));
@@ -779,7 +779,7 @@ Complexity: $(BIGOH n)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto s = SList!int(1, 2, 3);
     s.removeFront();
@@ -804,7 +804,7 @@ Complexity: $(BIGOH n)
 
 @safe unittest
 {
-    import std.range : take;
+    import ripstd.range : take;
     auto s = SList!int(1, 2, 3, 4);
     auto r = take(s[], 2);
     assert(s.insertAfter(r, 5) == 1);
@@ -813,8 +813,8 @@ Complexity: $(BIGOH n)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : take;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : take;
 
     // insertAfter documentation example
     auto sl = SList!string(["a", "b", "d"]);
@@ -826,7 +826,7 @@ Complexity: $(BIGOH n)
 
 @safe unittest
 {
-    import std.range.primitives;
+    import ripstd.range.primitives;
     auto s = SList!int(1, 2, 3, 4, 5);
     auto r = s[];
     popFrontN(r, 3);
@@ -846,8 +846,8 @@ Complexity: $(BIGOH n)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range;
 
     auto s = SList!int(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     auto r = s[];
@@ -861,7 +861,7 @@ Complexity: $(BIGOH n)
 
 @safe unittest
 {
-    import std.range.primitives;
+    import ripstd.range.primitives;
     auto lst = SList!int(1, 5, 42, 9);
     assert(!lst.empty);
     assert(lst.front == 1);
@@ -922,7 +922,7 @@ Complexity: $(BIGOH n)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto s = SList!int([1, 2, 3]);
     assert(s[].equal([1, 2, 3]));

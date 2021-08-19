@@ -14,7 +14,7 @@
  *          http://www.boost.org/LICENSE_1_0.txt)
  */
 module ripstd.windows.syserror;
-import std.traits : isSomeString;
+import ripstd.traits : isSomeString;
 
 version (StdDdoc)
 {
@@ -66,10 +66,10 @@ else:
 version (Windows):
 
 import core.sys.windows.winbase, core.sys.windows.winnt;
-import std.array : appender;
-import std.conv : to;
-import std.format.write : formattedWrite;
-import std.windows.charset;
+import ripstd.array : appender;
+import ripstd.conv : to;
+import ripstd.format.write : formattedWrite;
+import ripstd.windows.charset;
 
 string sysErrorString(
     DWORD errCode,
@@ -106,7 +106,7 @@ bool putSysError(Writer)(DWORD code, Writer w, /*WORD*/int langId = 0)
 
     if (lpMsgBuf)
     {
-        import std.string : strip;
+        import ripstd.string : strip;
         w.put(lpMsgBuf[0 .. res].strip());
         return true;
     }
@@ -165,7 +165,7 @@ T wenforce(T)(T condition, const(char)[] name, const(wchar)* namez, string file 
         static string trustedToString(const(wchar)* stringz) @trusted
         {
             import core.stdc.wchar_ : wcslen;
-            import std.conv : to;
+            import ripstd.conv : to;
             auto len = wcslen(stringz);
             return to!string(stringz[0 .. len]);
         }
@@ -180,9 +180,9 @@ T wenforce(T)(T condition, const(char)[] name, const(wchar)* namez, string file 
 version (Windows)
 @system unittest
 {
-    import std.algorithm.searching : startsWith, endsWith;
-    import std.exception;
-    import std.string;
+    import ripstd.algorithm.searching : startsWith, endsWith;
+    import ripstd.exception;
+    import ripstd.string;
 
     auto e = collectException!WindowsException(
         DeleteFileA("unexisting.txt").wenforce("DeleteFile")

@@ -2,12 +2,12 @@
 
 module ripstd.regex.internal.tests2;
 
-package(std.regex):
+package(ripstd.regex):
 
-import std.conv, std.exception, std.meta, std.range,
-    std.typecons, std.regex;
+import ripstd.conv, ripstd.exception, ripstd.meta, ripstd.range,
+    ripstd.typecons, ripstd.regex;
 
-import std.uni : Escapables; // characters that need escaping
+import ripstd.uni : Escapables; // characters that need escaping
 
 @safe unittest
 {
@@ -43,7 +43,7 @@ import std.uni : Escapables; // characters that need escaping
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto cr8 = ctRegex!("^(a)(b)?(c*)");
     auto m8 = bmatch("abcc",cr8);
     assert(m8);
@@ -58,7 +58,7 @@ import std.uni : Escapables; // characters that need escaping
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto rtr = regex("a|b|c");
     static ctr = regex("a|b|c");
     assert(equal(rtr.ir,ctr.ir));
@@ -71,8 +71,8 @@ import std.uni : Escapables; // characters that need escaping
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
     enum cx = ctRegex!"(A|B|C)";
     auto mx = match("B",cx);
     assert(mx);
@@ -102,8 +102,8 @@ import std.uni : Escapables; // characters that need escaping
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
 //global matching
     void test_body(alias matchFn)()
     {
@@ -142,11 +142,11 @@ import std.uni : Escapables; // characters that need escaping
     test_body!match();
 }
 
-//tests for accumulated std.regex issues and other regressions
+//tests for accumulated ripstd.regex issues and other regressions
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
     void test_body(alias matchFn)()
     {
         // https://issues.dlang.org/show_bug.cgi?id=5857
@@ -229,7 +229,7 @@ import std.uni : Escapables; // characters that need escaping
 {
     void test(alias matchFn)()
     {
-        import std.uni : toUpper;
+        import ripstd.uni : toUpper;
 
         static foreach (i, v; AliasSeq!(string, wstring, dstring))
         {{
@@ -239,16 +239,16 @@ import std.uni : Escapables; // characters that need escaping
                 return toUpper(m.hit);
             }
             alias String = v;
-            assert(std.regex.replace!(matchFn)(to!String("ark rapacity"), regex(to!String("r")), to!String("c"))
+            assert(ripstd.regex.replace!(matchFn)(to!String("ark rapacity"), regex(to!String("r")), to!String("c"))
                    == to!String("ack rapacity"));
-            assert(std.regex.replace!(matchFn)(to!String("ark rapacity"), regex(to!String("r"), "g"), to!String("c"))
+            assert(ripstd.regex.replace!(matchFn)(to!String("ark rapacity"), regex(to!String("r"), "g"), to!String("c"))
                    == to!String("ack capacity"));
-            assert(std.regex.replace!(matchFn)(to!String("noon"), regex(to!String("^n")), to!String("[$&]"))
+            assert(ripstd.regex.replace!(matchFn)(to!String("noon"), regex(to!String("^n")), to!String("[$&]"))
                    == to!String("[n]oon"));
-            assert(std.regex.replace!(matchFn)(
+            assert(ripstd.regex.replace!(matchFn)(
                 to!String("test1 test2"), regex(to!String(`\w+`),"g"), to!String("$`:$'")
             ) == to!String(": test2 test1 :"));
-            auto s = std.regex.replace!(baz!(Captures!(String)))(to!String("Strap a rocket engine on a chicken."),
+            auto s = ripstd.regex.replace!(baz!(Captures!(String)))(to!String("Strap a rocket engine on a chicken."),
                     regex(to!String("[ar]"), "g"));
             assert(s == "StRAp A Rocket engine on A chicken.");
         }}
@@ -261,7 +261,7 @@ import std.uni : Escapables; // characters that need escaping
 // tests for splitter
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto s1 = ", abc, de,     fg, hi, ";
     auto sp1 = splitter(s1, regex(", *"));
     auto w1 = ["", "abc", "de", "fg", "hi", ""];
@@ -287,7 +287,7 @@ import std.uni : Escapables; // characters that need escaping
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto s1 = ", abc, de,  fg, hi, ";
     auto w1 = ["", "abc", "de", "fg", "hi", ""];
     assert(equal(split(s1, regex(", *")), w1[]));
@@ -336,12 +336,12 @@ import std.uni : Escapables; // characters that need escaping
 // https://issues.dlang.org/show_bug.cgi?id=7679
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {{
         enum re = ctRegex!(to!S(r"\."));
         auto str = to!S("a.b");
-        assert(equal(std.regex.splitter(str, re), [to!S("a"), to!S("b")]));
+        assert(equal(ripstd.regex.splitter(str, re), [to!S("a"), to!S("b")]));
         assert(split(str, re) == [to!S("a"), to!S("b")]);
     }}
 }
@@ -396,7 +396,7 @@ import std.uni : Escapables; // characters that need escaping
 // https://issues.dlang.org/show_bug.cgi?id=9211
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto rx_1 =  regex(r"^(\w)*(\d)");
     auto m = match("1234", rx_1);
     assert(equal(m.front, ["1234", "3", "4"]));
@@ -482,7 +482,7 @@ import std.uni : Escapables; // characters that need escaping
 // https://issues.dlang.org/show_bug.cgi?id=11839
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     assert(regex(`(?P<var1>\w+)`).namedCaptures.equal(["var1"]));
     assert(collectException(regex(`(?P<1>\w+)`)));
     assert(regex(`(?P<v1>\w+)`).namedCaptures.equal(["v1"]));
@@ -554,9 +554,9 @@ import std.uni : Escapables; // characters that need escaping
 version (none) // TODO: revist once we have proper benchmark framework
 @safe unittest
 {
-    import std.datetime.stopwatch : StopWatch, AutoStart;
-    import std.math.algebraic : abs;
-    import std.conv : to;
+    import ripstd.datetime.stopwatch : StopWatch, AutoStart;
+    import ripstd.math.algebraic : abs;
+    import ripstd.conv : to;
     enum re1 = ctRegex!`[0-9][0-9]`;
     immutable static re2 = ctRegex!`[0-9][0-9]`;
     immutable iterations = 1_000_000;
@@ -598,9 +598,9 @@ version (none) // TODO: revist once we have proper benchmark framework
 // https://issues.dlang.org/show_bug.cgi?id=14615
 @safe unittest
 {
-    import std.array : appender;
-    import std.regex : replaceFirst, replaceFirstInto, regex;
-    import std.stdio : writeln;
+    import ripstd.array : appender;
+    import ripstd.regex : replaceFirst, replaceFirstInto, regex;
+    import ripstd.stdio : writeln;
 
     auto example = "Hello, world!";
     auto pattern = regex("^Hello, (bug)");  // won't find this one
@@ -653,7 +653,7 @@ version (none) // TODO: revist once we have proper benchmark framework
 // https://issues.dlang.org/show_bug.cgi?id=17157
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto ctr = ctRegex!"(a)|(b)|(c)|(d)";
     auto r = regex("(a)|(b)|(c)|(d)", "g");
     auto s = "--a--b--c--d--";
@@ -670,7 +670,7 @@ version (none) // TODO: revist once we have proper benchmark framework
 // https://issues.dlang.org/show_bug.cgi?id=17667
 @safe unittest
 {
-    import std.algorithm.searching : canFind;
+    import ripstd.algorithm.searching : canFind;
     void willThrow(T, size_t line = __LINE__)(T arg, string msg)
     {
         auto e = collectException(regex(arg));
@@ -686,7 +686,7 @@ version (none) // TODO: revist once we have proper benchmark framework
 // https://issues.dlang.org/show_bug.cgi?id=17668
 @safe unittest
 {
-    import std.algorithm.searching;
+    import ripstd.algorithm.searching;
     auto e = collectException!RegexException(regex(q"<[^]>"));
     assert(e.msg.canFind("no operand for '^'"), e.msg);
 }

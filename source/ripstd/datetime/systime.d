@@ -44,7 +44,7 @@ else version (WatchOS)
 /// Get the current time as a $(LREF SysTime)
 @safe unittest
 {
-    import std.datetime.timezone : LocalTime;
+    import ripstd.datetime.timezone : LocalTime;
     SysTime today = Clock.currTime();
     assert(today.timezone is LocalTime());
 }
@@ -52,8 +52,8 @@ else version (WatchOS)
 /// Construct a $(LREF SysTime) from a ISO time string
 @safe unittest
 {
-    import std.datetime.date : DateTime;
-    import std.datetime.timezone : UTC;
+    import ripstd.datetime.date : DateTime;
+    import ripstd.datetime.timezone : UTC;
 
     auto st = SysTime.fromISOExtString("2018-01-01T10:30:00Z");
     assert(st == SysTime(DateTime(2018, 1, 1, 10, 30, 0), UTC()));
@@ -63,8 +63,8 @@ else version (WatchOS)
 @safe unittest
 {
     import core.time : hours;
-    import std.datetime.date : DateTime;
-    import std.datetime.timezone : SimpleTimeZone;
+    import ripstd.datetime.date : DateTime;
+    import ripstd.datetime.timezone : SimpleTimeZone;
 
     auto ny = SysTime(
         DateTime(2018, 1, 1, 10, 30, 0),
@@ -79,14 +79,14 @@ else version (WatchOS)
 // Note: reconsider using specific imports below after
 // https://issues.dlang.org/show_bug.cgi?id=17630 has been fixed
 import core.time;// : ClockType, convert, dur, Duration, seconds, TimeException;
-import std.datetime.date;// : _monthNames, AllowDayOverflow, CmpTimeUnits, Date,
+import ripstd.datetime.date;// : _monthNames, AllowDayOverflow, CmpTimeUnits, Date,
     //DateTime, DateTimeException, DayOfWeek, enforceValid, getDayOfWeek, maxDay,
     //Month, splitUnitsFromHNSecs, TimeOfDay, validTimeUnits, yearIsLeapYear;
-import std.datetime.timezone;// : LocalTime, SimpleTimeZone, TimeZone, UTC;
-import std.exception : enforce;
-import std.format : format;
-import std.range.primitives;
-import std.traits : isIntegral, isSigned, isSomeString, isNarrowString;
+import ripstd.datetime.timezone;// : LocalTime, SimpleTimeZone, TimeZone, UTC;
+import ripstd.exception : enforce;
+import ripstd.format : format;
+import ripstd.range.primitives;
+import ripstd.traits : isIntegral, isSigned, isSomeString, isNarrowString;
 
 version (Windows)
 {
@@ -101,10 +101,10 @@ else version (Posix)
     import core.sys.posix.sys.types : time_t;
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     import core.exception : AssertError;
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 }
 
 
@@ -152,7 +152,7 @@ public:
 
     @safe unittest
     {
-        import std.format : format;
+        import ripstd.format : format;
         import core.time;
         assert(currTime().timezone is LocalTime());
         assert(currTime(UTC()).timezone is UTC());
@@ -164,10 +164,10 @@ public:
         version (Posix)
         {
             static import core.stdc.time;
-            static import std.math;
+            static import ripstd.math;
             immutable unixTimeD = currTime().toUnixTime();
             immutable unixTimeC = core.stdc.time.time(null);
-            assert(std.math.abs(unixTimeC - unixTimeD) <= 2);
+            assert(ripstd.math.abs(unixTimeC - unixTimeD) <= 2);
         }
 
         auto norm1 = Clock.currTime;
@@ -175,7 +175,7 @@ public:
         assert(norm1 <= norm2, format("%s %s", norm1, norm2));
         assert(abs(norm1 - norm2) <= seconds(2));
 
-        import std.meta : AliasSeq;
+        import ripstd.meta : AliasSeq;
         static foreach (ct; AliasSeq!(ClockType.coarse, ClockType.precise, ClockType.second))
         {{
             static if (clockSupported(ct))
@@ -397,9 +397,9 @@ public:
 
     @safe unittest
     {
-        import std.format : format;
-        import std.math.algebraic : abs;
-        import std.meta : AliasSeq;
+        import ripstd.format : format;
+        import ripstd.math.algebraic : abs;
+        import ripstd.meta : AliasSeq;
         enum limit = convert!("seconds", "hnsecs")(2);
 
         auto norm1 = Clock.currStdTime;
@@ -428,7 +428,7 @@ private:
 /// Get the current time as a $(LREF SysTime)
 @safe unittest
 {
-    import std.datetime.timezone : LocalTime;
+    import ripstd.datetime.timezone : LocalTime;
     SysTime today = Clock.currTime();
     assert(today.timezone is LocalTime());
 }
@@ -485,7 +485,7 @@ struct SysTime
 {
     import core.stdc.time : tm;
     version (Posix) import core.sys.posix.sys.time : timeval;
-    import std.typecons : Rebindable;
+    import ripstd.typecons : Rebindable;
 
 public:
 
@@ -729,7 +729,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         assert(SysTime(DateTime.init, UTC()) == SysTime(0, UTC()));
         assert(SysTime(DateTime.init, UTC()) == SysTime(0));
@@ -800,9 +800,9 @@ public:
 
     @safe unittest
     {
-        import std.algorithm.iteration : map;
-        import std.array : array;
-        import std.range : chain;
+        import ripstd.algorithm.iteration : map;
+        import ripstd.array : array;
+        import ripstd.range : chain;
 
         assert(SysTime(DateTime.init, UTC()).opCmp(SysTime(0, UTC())) == 0);
         assert(SysTime(DateTime.init, UTC()).opCmp(SysTime(0)) == 0);
@@ -931,7 +931,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
         static void test(SysTime sysTime, long expected)
         {
             assert(sysTime.year == expected, format("Value given: %s", sysTime));
@@ -1000,7 +1000,7 @@ public:
     ///
     @safe unittest
     {
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(1999, 7, 6, 9, 7, 5)).year == 1999);
         assert(SysTime(DateTime(2010, 10, 4, 0, 0, 30)).year == 2010);
@@ -1009,7 +1009,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         static void test(SysTime st, int year, SysTime expected)
         {
@@ -1075,7 +1075,7 @@ public:
     ///
     @safe unittest
     {
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(0, 1, 1, 12, 30, 33)).yearBC == 1);
         assert(SysTime(DateTime(-1, 1, 1, 10, 7, 2)).yearBC == 2);
@@ -1084,7 +1084,7 @@ public:
 
     @safe unittest
     {
-        import std.exception : assertNotThrown;
+        import ripstd.exception : assertNotThrown;
         foreach (st; testSysTimesBC)
         {
             auto msg = format("SysTime: %s", st);
@@ -1150,7 +1150,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
         static void test(SysTime st, int year, SysTime expected)
         {
             st.yearBC = year;
@@ -1222,7 +1222,7 @@ public:
     ///
     @safe unittest
     {
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(1999, 7, 6, 9, 7, 5)).month == 7);
         assert(SysTime(DateTime(2010, 10, 4, 0, 0, 30)).month == 10);
@@ -1231,7 +1231,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         static void test(SysTime sysTime, Month expected)
         {
@@ -1300,8 +1300,8 @@ public:
 
     @safe unittest
     {
-        import std.algorithm.iteration : filter;
-        import std.range : chain;
+        import ripstd.algorithm.iteration : filter;
+        import ripstd.range : chain;
 
         static void test(SysTime st, Month month, SysTime expected)
         {
@@ -1393,7 +1393,7 @@ public:
     ///
     @safe unittest
     {
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(1999, 7, 6, 9, 7, 5)).day == 6);
         assert(SysTime(DateTime(2010, 10, 4, 0, 0, 30)).day == 4);
@@ -1402,7 +1402,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         static void test(SysTime sysTime, int expected)
         {
@@ -1472,8 +1472,8 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
-        import std.traits : EnumMembers;
+        import ripstd.range : chain;
+        import ripstd.traits : EnumMembers;
 
         foreach (day; chain(testDays))
         {
@@ -1566,7 +1566,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         static void test(SysTime sysTime, int expected)
         {
@@ -1644,7 +1644,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         foreach (hour; chain(testHours))
         {
@@ -1696,7 +1696,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         static void test(SysTime sysTime, int expected)
         {
@@ -1777,7 +1777,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         foreach (minute; testMinSecs)
         {
@@ -1830,7 +1830,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         static void test(SysTime sysTime, int expected)
         {
@@ -1913,7 +1913,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         foreach (second; testMinSecs)
         {
@@ -1962,7 +1962,7 @@ public:
     @safe unittest
     {
         import core.time : msecs, usecs, hnsecs, nsecs;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         auto dt = DateTime(1982, 4, 1, 20, 59, 22);
         assert(SysTime(dt, msecs(213)).fracSecs == msecs(213));
@@ -1976,7 +1976,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
         import core.time;
 
         assert(SysTime(0, UTC()).fracSecs == Duration.zero);
@@ -2056,7 +2056,7 @@ public:
     @safe unittest
     {
         import core.time : Duration, msecs, hnsecs, nsecs;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         auto st = SysTime(DateTime(1982, 4, 1, 20, 59, 22));
         assert(st.fracSecs == Duration.zero);
@@ -2075,7 +2075,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
         import core.time;
 
         foreach (fracSec; testFracSecs)
@@ -2412,8 +2412,8 @@ public:
     @safe unittest
     {
         import core.time : hours;
-        import std.datetime.date : DateTime;
-        import std.datetime.timezone : SimpleTimeZone, UTC;
+        import ripstd.datetime.date : DateTime;
+        import ripstd.datetime.timezone : SimpleTimeZone, UTC;
 
         assert(SysTime(DateTime(1970, 1, 1), UTC()).toUnixTime() == 0);
 
@@ -2434,7 +2434,7 @@ public:
 
     @safe unittest
     {
-        import std.meta : AliasSeq;
+        import ripstd.meta : AliasSeq;
         import core.time;
         assert(SysTime(DateTime(1970, 1, 1), UTC()).toUnixTime() == 0);
         static foreach (units; ["hnsecs", "usecs", "msecs"])
@@ -2470,8 +2470,8 @@ public:
     @safe unittest
     {
         import core.time : hours;
-        import std.datetime.date : DateTime;
-        import std.datetime.timezone : SimpleTimeZone, UTC;
+        import ripstd.datetime.date : DateTime;
+        import ripstd.datetime.timezone : SimpleTimeZone, UTC;
 
         assert(SysTime.fromUnixTime(0) ==
                SysTime(DateTime(1970, 1, 1), UTC()));
@@ -2511,7 +2511,7 @@ public:
     /++
         Returns a `timeval` which represents this $(LREF SysTime).
 
-        Note that like all conversions in std.datetime, this is a truncating
+        Note that like all conversions in ripstd.datetime, this is a truncating
         conversion.
 
         If `timeval.tv_sec` is int, and the result can't fit in an int, then
@@ -2632,7 +2632,7 @@ public:
 
         version (Posix)
         {
-            import std.utf : toUTFz;
+            import ripstd.utf : toUTFz;
             timeInfo.tm_gmtoff = cast(int) convert!("hnsecs", "seconds")(adjTime - _stdTime);
             auto zone = timeInfo.tm_isdst ? _timezone.dstName : _timezone.stdName;
             timeInfo.tm_zone = zone.toUTFz!(char*)();
@@ -2643,12 +2643,12 @@ public:
 
     @system unittest
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         import core.time;
 
         version (Posix)
         {
-            import std.datetime.timezone : clearTZEnvVar, setTZEnvVar;
+            import ripstd.datetime.timezone : clearTZEnvVar, setTZEnvVar;
             setTZEnvVar("America/Los_Angeles");
             scope(exit) clearTZEnvVar();
         }
@@ -3936,7 +3936,7 @@ public:
     ///
     @safe unittest
     {
-        import std.datetime.date : AllowDayOverflow, DateTime;
+        import ripstd.datetime.date : AllowDayOverflow, DateTime;
 
         auto st1 = SysTime(DateTime(2010, 1, 1, 12, 33, 33));
         st1.roll!"months"(1);
@@ -4819,7 +4819,7 @@ public:
     @safe unittest
     {
         import core.time : msecs, hnsecs;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         auto st1 = SysTime(DateTime(2010, 1, 1, 11, 23, 12));
         st1.roll!"days"(1);
@@ -6279,7 +6279,7 @@ public:
     @safe unittest
     {
         import core.time : hours, seconds;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(2015, 12, 31, 23, 59, 59)) + seconds(1) ==
                SysTime(DateTime(2016, 1, 1, 0, 0, 0)));
@@ -6753,12 +6753,12 @@ public:
 
         version (Posix)
         {
-            import std.datetime.timezone : PosixTimeZone;
+            import ripstd.datetime.timezone : PosixTimeZone;
             immutable tz = PosixTimeZone.getTimeZone("America/Los_Angeles");
         }
         else version (Windows)
         {
-            import std.datetime.timezone : WindowsTimeZone;
+            import ripstd.datetime.timezone : WindowsTimeZone;
             immutable tz = WindowsTimeZone.getTimeZone("Pacific Standard Time");
         }
 
@@ -6822,7 +6822,7 @@ public:
     @safe unittest
     {
         import core.time;
-        import std.datetime.date : Date;
+        import ripstd.datetime.date : Date;
 
         assert(SysTime(Date(1999, 2, 1)).diffMonths(
                    SysTime(Date(1999, 1, 31))) == 1);
@@ -6924,7 +6924,7 @@ public:
     @safe unittest
     {
         import core.time;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(1999, 1, 1, 12, 22, 7)).dayOfYear == 1);
         assert(SysTime(DateTime(1999, 12, 31, 7, 2, 59)).dayOfYear == 365);
@@ -7010,7 +7010,7 @@ public:
     @safe unittest
     {
         import core.time;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(1, 1, 1, 0, 0, 0)).dayOfGregorianCal == 1);
         assert(SysTime(DateTime(1, 12, 31, 23, 59, 59)).dayOfGregorianCal == 365);
@@ -7392,7 +7392,7 @@ public:
     @safe unittest
     {
         import core.time;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         auto st = SysTime(DateTime(0, 1, 1, 12, 0, 0));
         st.dayOfGregorianCal = 1;
@@ -7641,7 +7641,7 @@ public:
     @safe unittest
     {
         import core.time;
-        import std.datetime.date : Date;
+        import ripstd.datetime.date : Date;
 
         auto st = SysTime(Date(1999, 7, 6));
         const cst = SysTime(Date(2010, 5, 1));
@@ -7694,7 +7694,7 @@ public:
     @safe unittest
     {
         import core.time : msecs, usecs, hnsecs;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(1999, 1, 6, 0, 0, 0)).endOfMonth ==
                SysTime(DateTime(1999, 1, 31, 23, 59, 59), hnsecs(9_999_999)));
@@ -7769,7 +7769,7 @@ public:
     @safe unittest
     {
         import core.time;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(1999, 1, 6, 0, 0, 0)).daysInMonth == 31);
         assert(SysTime(DateTime(1999, 2, 7, 19, 30, 0)).daysInMonth == 28);
@@ -7834,7 +7834,7 @@ public:
     @safe unittest
     {
         import core.time;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(1, 1, 1, 12, 7, 0)).isAD);
         assert(SysTime(DateTime(2010, 12, 31, 0, 0, 0)).isAD);
@@ -8168,7 +8168,7 @@ public:
       +/
     string toISOString() @safe const nothrow scope
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto app = appender!string();
         app.reserve(30);
         try
@@ -8226,7 +8226,7 @@ public:
     @safe unittest
     {
         import core.time : msecs, hnsecs;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(2010, 7, 4, 7, 6, 12)).toISOString() ==
                "20100704T070612");
@@ -8328,7 +8328,7 @@ public:
       +/
     string toISOExtString() @safe const nothrow scope
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto app = appender!string();
         app.reserve(35);
         try
@@ -8386,7 +8386,7 @@ public:
     @safe unittest
     {
         import core.time : msecs, hnsecs;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(2010, 7, 4, 7, 6, 12)).toISOExtString() ==
                "2010-07-04T07:06:12");
@@ -8492,7 +8492,7 @@ public:
       +/
     string toSimpleString() @safe const nothrow scope
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto app = appender!string();
         app.reserve(35);
         try
@@ -8550,7 +8550,7 @@ public:
     @safe unittest
     {
         import core.time : msecs, hnsecs;
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
 
         assert(SysTime(DateTime(2010, 7, 4, 7, 6, 12)).toSimpleString() ==
                "2010-Jul-04 07:06:12");
@@ -8740,10 +8740,10 @@ public:
     static SysTime fromISOString(S)(scope const S isoString, immutable TimeZone tz = null) @safe
         if (isSomeString!S)
     {
-        import std.algorithm.searching : startsWith, find;
-        import std.conv : to;
-        import std.string : strip;
-        import std.utf : byCodeUnit;
+        import ripstd.algorithm.searching : startsWith, find;
+        import ripstd.conv : to;
+        import ripstd.string : strip;
+        import ripstd.utf : byCodeUnit;
 
         auto str = strip(isoString);
         immutable skipFirst = str.startsWith('+', '-');
@@ -8824,8 +8824,8 @@ public:
     @safe unittest
     {
         import core.time : hours, msecs, usecs, hnsecs;
-        import std.datetime.date : DateTime;
-        import std.datetime.timezone : SimpleTimeZone, UTC;
+        import ripstd.datetime.date : DateTime;
+        import ripstd.datetime.timezone : SimpleTimeZone, UTC;
 
         assert(SysTime.fromISOString("20100704T070612") ==
                SysTime(DateTime(2010, 7, 4, 7, 6, 12)));
@@ -8986,8 +8986,8 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=17801
     @safe unittest
     {
-        import std.conv : to;
-        import std.meta : AliasSeq;
+        import ripstd.conv : to;
+        import ripstd.meta : AliasSeq;
         static foreach (C; AliasSeq!(char, wchar, dchar))
         {
             static foreach (S; AliasSeq!(C[], const(C)[], immutable(C)[]))
@@ -9039,9 +9039,9 @@ public:
     static SysTime fromISOExtString(S)(scope const S isoExtString, immutable TimeZone tz = null) @safe
         if (isSomeString!(S))
     {
-        import std.algorithm.searching : countUntil, find;
-        import std.conv : to;
-        import std.string : strip, indexOf;
+        import ripstd.algorithm.searching : countUntil, find;
+        import ripstd.conv : to;
+        import ripstd.string : strip, indexOf;
 
         auto str = strip(isoExtString);
 
@@ -9100,8 +9100,8 @@ public:
     @safe unittest
     {
         import core.time : hours, msecs, usecs, hnsecs;
-        import std.datetime.date : DateTime;
-        import std.datetime.timezone : SimpleTimeZone, UTC;
+        import ripstd.datetime.date : DateTime;
+        import ripstd.datetime.timezone : SimpleTimeZone, UTC;
 
         assert(SysTime.fromISOExtString("2010-07-04T07:06:12") ==
                SysTime(DateTime(2010, 7, 4, 7, 6, 12)));
@@ -9234,8 +9234,8 @@ public:
     @safe unittest
     {
         import core.time;
-        import std.conv : to;
-        import std.meta : AliasSeq;
+        import ripstd.conv : to;
+        import ripstd.meta : AliasSeq;
         static foreach (C; AliasSeq!(char, wchar, dchar))
         {
             static foreach (S; AliasSeq!(C[], const(C)[], immutable(C)[]))
@@ -9287,9 +9287,9 @@ public:
     static SysTime fromSimpleString(S)(scope const S simpleString, immutable TimeZone tz = null) @safe
         if (isSomeString!(S))
     {
-        import std.algorithm.searching : find;
-        import std.conv : to;
-        import std.string : strip, indexOf;
+        import ripstd.algorithm.searching : find;
+        import ripstd.conv : to;
+        import ripstd.string : strip, indexOf;
 
         auto str = strip(simpleString);
 
@@ -9348,8 +9348,8 @@ public:
     @safe unittest
     {
         import core.time : hours, msecs, usecs, hnsecs;
-        import std.datetime.date : DateTime;
-        import std.datetime.timezone : SimpleTimeZone, UTC;
+        import ripstd.datetime.date : DateTime;
+        import ripstd.datetime.timezone : SimpleTimeZone, UTC;
 
         assert(SysTime.fromSimpleString("2010-Jul-04 07:06:12") ==
                SysTime(DateTime(2010, 7, 4, 7, 6, 12)));
@@ -9485,8 +9485,8 @@ public:
     @safe unittest
     {
         import core.time;
-        import std.conv : to;
-        import std.meta : AliasSeq;
+        import ripstd.conv : to;
+        import ripstd.meta : AliasSeq;
         static foreach (C; AliasSeq!(char, wchar, dchar))
         {
             static foreach (S; AliasSeq!(C[], const(C)[], immutable(C)[]))
@@ -9619,8 +9619,8 @@ private:
 @safe unittest
 {
     import core.time : days, hours, seconds;
-    import std.datetime.date : DateTime;
-    import std.datetime.timezone : SimpleTimeZone, UTC;
+    import ripstd.datetime.date : DateTime;
+    import ripstd.datetime.timezone : SimpleTimeZone, UTC;
 
     // make a specific point in time in the UTC timezone
     auto st = SysTime(DateTime(2018, 1, 1, 10, 30, 0), UTC());
@@ -9659,7 +9659,7 @@ private:
     for the same thing, but they aren't actually clock ticks, and the term
     "ticks" $(I is) used for actual clock ticks for $(REF MonoTime, core,time),
     so it didn't make sense to use the term ticks here. So, for better or worse,
-    std.datetime uses the term "std time" for this.
+    ripstd.datetime uses the term "std time" for this.
 
     Params:
         unixTime = The unix time to convert.
@@ -9675,8 +9675,8 @@ long unixTimeToStdTime(long unixTime) @safe pure nothrow @nogc
 ///
 @safe unittest
 {
-    import std.datetime.date : DateTime;
-    import std.datetime.timezone : UTC;
+    import ripstd.datetime.date : DateTime;
+    import ripstd.datetime.timezone : UTC;
 
     // Midnight, January 1st, 1970
     assert(unixTimeToStdTime(0) == 621_355_968_000_000_000L);
@@ -9726,7 +9726,7 @@ long unixTimeToStdTime(long unixTime) @safe pure nothrow @nogc
     for the same thing, but they aren't actually clock ticks, and the term
     "ticks" $(I is) used for actual clock ticks for $(REF MonoTime, core,time),
     so it didn't make sense to use the term ticks here. So, for better or worse,
-    std.datetime uses the term "std time" for this.
+    ripstd.datetime uses the term "std time" for this.
 
     By default, the return type is time_t (which is normally an alias for
     int on 32-bit systems and long on 64-bit systems), but if a different
@@ -9757,7 +9757,7 @@ if (is(T == int) || is(T == long))
     immutable unixTime = convert!("hnsecs", "seconds")(stdTime - 621_355_968_000_000_000L);
 
     static assert(is(time_t == int) || is(time_t == long),
-                  "Currently, std.datetime only supports systems where time_t is int or long");
+                  "Currently, ripstd.datetime only supports systems where time_t is int or long");
 
     static if (is(T == long))
         return unixTime;
@@ -10168,7 +10168,7 @@ SysTime DosFileTimeToSysTime(DosFileTime dft, immutable TimeZone tz = LocalTime(
 ///
 @safe unittest
 {
-    import std.datetime.date : DateTime;
+    import ripstd.datetime.date : DateTime;
 
     assert(DosFileTimeToSysTime(0b00000000001000010000000000000000) == SysTime(DateTime(1980, 1, 1, 0, 0, 0)));
     assert(DosFileTimeToSysTime(0b11111111100111111011111101111101) == SysTime(DateTime(2107, 12, 31, 23, 59, 58)));
@@ -10218,7 +10218,7 @@ DosFileTime SysTimeToDosFileTime(scope SysTime sysTime) @safe
 ///
 @safe unittest
 {
-    import std.datetime.date : DateTime;
+    import ripstd.datetime.date : DateTime;
 
     assert(SysTimeToDosFileTime(SysTime(DateTime(1980, 1, 1, 0, 0, 0))) == 0b00000000001000010000000000000000);
     assert(SysTimeToDosFileTime(SysTime(DateTime(2107, 12, 31, 23, 59, 58))) == 0b11111111100111111011111101111101);
@@ -10272,7 +10272,7 @@ DosFileTime SysTimeToDosFileTime(scope SysTime sysTime) @safe
   +/
 SysTime parseRFC822DateTime()(scope const char[] value) @safe
 {
-    import std.string : representation;
+    import ripstd.string : representation;
     return parseRFC822DateTime(value.representation);
 }
 
@@ -10281,13 +10281,13 @@ SysTime parseRFC822DateTime(R)(scope R value)
 if (isRandomAccessRange!R && hasSlicing!R && hasLength!R &&
     (is(immutable ElementType!R == immutable char) || is(immutable ElementType!R == immutable ubyte)))
 {
-    import std.algorithm.searching : find, all;
-    import std.ascii : isDigit, isAlpha, isPrintable;
-    import std.conv : to;
-    import std.functional : not;
-    import std.string : capitalize, format;
-    import std.traits : EnumMembers, isArray;
-    import std.typecons : Rebindable;
+    import ripstd.algorithm.searching : find, all;
+    import ripstd.ascii : isDigit, isAlpha, isPrintable;
+    import ripstd.conv : to;
+    import ripstd.functional : not;
+    import ripstd.string : capitalize, format;
+    import ripstd.traits : EnumMembers, isArray;
+    import ripstd.typecons : Rebindable;
 
     void stripAndCheckLen(R valueBefore, size_t minLen, size_t line = __LINE__)
     {
@@ -10484,9 +10484,9 @@ afterMon: stripAndCheckLen(value[3 .. value.length], "1200:00A".length);
 @safe unittest
 {
     import core.time : hours;
-    import std.datetime.date : DateTime, DateTimeException;
-    import std.datetime.timezone : SimpleTimeZone, UTC;
-    import std.exception : assertThrown;
+    import ripstd.datetime.date : DateTime, DateTimeException;
+    import ripstd.datetime.timezone : SimpleTimeZone, UTC;
+    import ripstd.exception : assertThrown;
 
     auto tz = new immutable SimpleTimeZone(hours(-8));
     assert(parseRFC822DateTime("Sat, 6 Jan 1990 12:14:19 -0800") ==
@@ -10499,16 +10499,16 @@ afterMon: stripAndCheckLen(value[3 .. value.length], "1200:00A".length);
     assertThrown!DateTimeException(parseRFC822DateTime(badStr));
 }
 
-version (StdUnittest) private void testParse822(alias cr)(string str, SysTime expected, size_t line = __LINE__)
+version (RIPStdUnittest) private void testParse822(alias cr)(string str, SysTime expected, size_t line = __LINE__)
 {
-    import std.format : format;
+    import ripstd.format : format;
     auto value = cr(str);
     auto result = parseRFC822DateTime(value);
     if (result != expected)
         throw new AssertError(format("wrong result. expected [%s], actual[%s]", expected, result), __FILE__, line);
 }
 
-version (StdUnittest) private void testBadParse822(alias cr)(string str, size_t line = __LINE__)
+version (RIPStdUnittest) private void testBadParse822(alias cr)(string str, size_t line = __LINE__)
 {
     try
         parseRFC822DateTime(cr(str));
@@ -10520,15 +10520,15 @@ version (StdUnittest) private void testBadParse822(alias cr)(string str, size_t 
 @system unittest
 {
     import core.time;
-    import std.algorithm.iteration : filter, map;
-    import std.algorithm.searching : canFind;
-    import std.array : array;
-    import std.ascii : letters;
-    import std.format : format;
-    import std.meta : AliasSeq;
-    import std.range : chain, iota, take;
-    import std.stdio : writefln, writeln;
-    import std.string : representation;
+    import ripstd.algorithm.iteration : filter, map;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.array : array;
+    import ripstd.ascii : letters;
+    import ripstd.format : format;
+    import ripstd.meta : AliasSeq;
+    import ripstd.range : chain, iota, take;
+    import ripstd.stdio : writefln, writeln;
+    import ripstd.string : representation;
 
     static struct Rand3Letters
     {
@@ -10536,8 +10536,8 @@ version (StdUnittest) private void testBadParse822(alias cr)(string str, size_t 
         @property auto front() { return _mon; }
         void popFront()
         {
-            import std.exception : assumeUnique;
-            import std.random : rndGen;
+            import ripstd.exception : assumeUnique;
+            import ripstd.random : rndGen;
             _mon = rndGen.map!(a => letters[a % letters.length])().take(3).array().assumeUnique();
         }
         string _mon;
@@ -10649,7 +10649,7 @@ version (StdUnittest) private void testBadParse822(alias cr)(string str, size_t 
             test(format("17 %s 2012 00:05 +0000", mon), SysTime(DateTime(2012, i + 1, 17, 0, 5, 0), UTC()));
         }
 
-        import std.uni : toLower, toUpper;
+        import ripstd.uni : toLower, toUpper;
         foreach (mon; chain(_monthNames[].map!(a => toLower(a))(),
                             _monthNames[].map!(a => toUpper(a))(),
                             ["Jam", "Jen", "Fec", "Fdb", "Mas", "Mbr", "Aps", "Aqr", "Mai", "Miy",
@@ -10798,14 +10798,14 @@ version (StdUnittest) private void testBadParse822(alias cr)(string str, size_t 
 // Obsolete Format per section 4.3 of RFC 5322.
 @system unittest
 {
-    import std.algorithm.iteration : filter, map;
-    import std.ascii : letters;
-    import std.exception : collectExceptionMsg;
-    import std.format : format;
-    import std.meta : AliasSeq;
-    import std.range : chain, iota;
-    import std.stdio : writefln, writeln;
-    import std.string : representation;
+    import ripstd.algorithm.iteration : filter, map;
+    import ripstd.ascii : letters;
+    import ripstd.exception : collectExceptionMsg;
+    import ripstd.format : format;
+    import ripstd.meta : AliasSeq;
+    import ripstd.range : chain, iota;
+    import ripstd.stdio : writefln, writeln;
+    import ripstd.string : representation;
 
     auto std1 = SysTime(DateTime(2012, 12, 21, 13, 14, 15), UTC());
     auto std2 = SysTime(DateTime(2012, 12, 21, 13, 14, 0), UTC());
@@ -11022,7 +11022,7 @@ private:
   +/
 string fracSecsToISOString(int hnsecs) @safe pure nothrow
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto w = appender!string();
     try
         fracSecsToISOString(w, hnsecs);
@@ -11033,8 +11033,8 @@ string fracSecsToISOString(int hnsecs) @safe pure nothrow
 
 void fracSecsToISOString(W)(ref W writer, int hnsecs)
 {
-    import std.conv : toChars;
-    import std.range : padLeft;
+    import ripstd.conv : toChars;
+    import ripstd.range : padLeft;
 
     assert(hnsecs >= 0);
 
@@ -11083,10 +11083,10 @@ void fracSecsToISOString(W)(ref W writer, int hnsecs)
 static Duration fracSecsFromISOString(S)(scope const S isoString) @safe pure
 if (isSomeString!S)
 {
-    import std.algorithm.searching : all;
-    import std.ascii : isDigit;
-    import std.conv : to;
-    import std.string : representation;
+    import ripstd.algorithm.searching : all;
+    import ripstd.ascii : isDigit;
+    import ripstd.conv : to;
+    import ripstd.string : representation;
 
     if (isoString.empty)
         return Duration.zero;
@@ -11312,11 +11312,11 @@ if (isRandomAccessRange!R && hasSlicing!R && hasLength!R &&
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
-    import std.meta : AliasSeq;
-    import std.stdio : writeln;
-    import std.string : representation;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.meta : AliasSeq;
+    import ripstd.stdio : writeln;
+    import ripstd.string : representation;
 
     static foreach (cr; AliasSeq!(function(string a){return cast(ubyte[]) a;},
                            function(string a){return map!(b => cast(char) b)(a.representation);}))
@@ -11411,13 +11411,13 @@ if (isRandomAccessRange!R && hasSlicing!R && hasLength!R &&
     }
 }
 
-// This is so that we don't have to worry about std.conv.to throwing. It also
-// doesn't have to worry about quite as many cases as std.conv.to, since it
+// This is so that we don't have to worry about ripstd.conv.to throwing. It also
+// doesn't have to worry about quite as many cases as ripstd.conv.to, since it
 // doesn't have to worry about a sign on the value or about whether it fits.
 T _convDigits(T, R)(R str)
 if (isIntegral!T && isSigned!T) // The constraints on R were already covered by parseRFC822DateTime.
 {
-    import std.ascii : isDigit;
+    import ripstd.ascii : isDigit;
 
     assert(!str.empty);
     T num = 0;
@@ -11434,8 +11434,8 @@ if (isIntegral!T && isSigned!T) // The constraints on R were already covered by 
 
 @safe unittest
 {
-    import std.conv : to;
-    import std.range : chain, iota;
+    import ripstd.conv : to;
+    import ripstd.range : chain, iota;
     foreach (i; chain(iota(0, 101), [250, 999, 1000, 1001, 2345, 9999]))
     {
         assert(_convDigits!int(to!string(i)) == i, i.to!string);
@@ -11450,7 +11450,7 @@ if (isIntegral!T && isSigned!T) // The constraints on R were already covered by 
 // NOTE: all the non-simple array literals are wrapped in functions, because
 // otherwise importing causes re-evaluation of the static initializers using
 // CTFE with unittests enabled
-version (StdUnittest)
+version (RIPStdUnittest)
 {
 private @safe:
     // Variables to help in testing.
@@ -11756,20 +11756,20 @@ private @safe:
 
     void initializeTests()
     {
-        import std.algorithm.sorting : sort;
-        import std.typecons : Rebindable;
+        import ripstd.algorithm.sorting : sort;
+        import ripstd.typecons : Rebindable;
         immutable lt = LocalTime().utcToTZ(0);
         currLocalDiffFromUTC = dur!"hnsecs"(lt);
 
         version (Posix)
         {
-            import std.datetime.timezone : PosixTimeZone;
+            import ripstd.datetime.timezone : PosixTimeZone;
             immutable otherTZ = lt < 0 ? PosixTimeZone.getTimeZone("Australia/Sydney")
                                        : PosixTimeZone.getTimeZone("America/Denver");
         }
         else version (Windows)
         {
-            import std.datetime.timezone : WindowsTimeZone;
+            import ripstd.datetime.timezone : WindowsTimeZone;
             immutable otherTZ = lt < 0 ? WindowsTimeZone.getTimeZone("AUS Eastern Standard Time")
                                        : WindowsTimeZone.getTimeZone("Mountain Standard Time");
         }

@@ -11,7 +11,7 @@ composite allocators.
 */
 struct NullAllocator
 {
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
 
     nothrow @nogc pure @safe:
     /**
@@ -84,7 +84,7 @@ nothrow @nogc pure @safe unittest
     assert(a.deallocate(b));
     assert(a.deallocateAll());
 
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
     assert(a.empty == Ternary.yes);
     assert(a.owns(null) == Ternary.no);
 

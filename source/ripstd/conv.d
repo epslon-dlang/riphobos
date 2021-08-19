@@ -47,19 +47,19 @@ Source:    $(PHOBOSSRC std/conv.d)
 */
 module ripstd.conv;
 
-public import std.ascii : LetterCase;
+public import ripstd.ascii : LetterCase;
 
-import std.meta;
-import std.range.primitives;
-import std.traits;
-import std.typecons : Flag, Yes, No, tuple;
+import ripstd.meta;
+import ripstd.range.primitives;
+import ripstd.traits;
+import ripstd.typecons : Flag, Yes, No, tuple;
 
-// Same as std.string.format, but "self-importing".
+// Same as ripstd.string.format, but "self-importing".
 // Helps reduce code and imports, particularly in static asserts.
 // Also helps with missing imports errors.
 package template convFormat()
 {
-    import std.format : format;
+    import ripstd.format : format;
     alias convFormat = format;
 }
 
@@ -70,7 +70,7 @@ package template convFormat()
  */
 class ConvException : Exception
 {
-    import std.exception : basicExceptionCtors;
+    import ripstd.exception : basicExceptionCtors;
     ///
     mixin basicExceptionCtors;
 }
@@ -78,7 +78,7 @@ class ConvException : Exception
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!ConvException(to!int("abc"));
 }
 
@@ -144,9 +144,9 @@ private
         }
         else
         {
-            import std.array : appender;
-            import std.format.spec : FormatSpec;
-            import std.format.write : formatValue;
+            import ripstd.array : appender;
+            import ripstd.format.spec : FormatSpec;
+            import ripstd.format.write : formatValue;
 
             auto w = appender!T();
             FormatSpec!(ElementEncodingType!T) f;
@@ -187,7 +187,7 @@ class ConvOverflowException : ConvException
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!ConvOverflowException(to!ubyte(1_000_000));
 }
 
@@ -261,7 +261,7 @@ template to(T)
  */
 @safe pure unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     int a = 420;
     assert(to!long(a) == a);
@@ -312,7 +312,7 @@ template to(T)
  */
 @safe pure unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     assert(to!char("a") == 'a');
     assertThrown(to!char("ñ")); // 'ñ' does not fit into a char
@@ -335,7 +335,7 @@ template to(T)
  */
 @safe pure unittest
 {
-    import std.string : split;
+    import ripstd.string : split;
 
     int[] a = [1, 2, 3];
     auto b = to!(float[])(a);
@@ -371,7 +371,7 @@ template to(T)
  */
 @safe pure unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     // Testing object conversions
     class A {}
     class B : A {}
@@ -466,7 +466,7 @@ template to(T)
 // Tests for issue 8729: do NOT skip leading WS
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
     static foreach (T; AliasSeq!(byte, ubyte, short, ushort, int, uint, long, ulong))
     {
         assertThrown!ConvException(to!T(" 0"));
@@ -539,13 +539,13 @@ if (isImplicitlyConvertible!(S, T) &&
     // Conversion from integer to integer, and changing its sign
     static if (isUnsignedInt!S && isSignedInt!T && S.sizeof == T.sizeof)
     {   // unsigned to signed & same size
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         enforce(value <= cast(S) T.max,
                 new ConvOverflowException("Conversion positive overflow"));
     }
     else static if (isSignedInt!S && isUnsignedInt!T)
     {   // signed to unsigned
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         enforce(0 <= value,
                 new ConvOverflowException("Conversion negative overflow"));
     }
@@ -571,7 +571,7 @@ if (isImplicitlyConvertible!(S, T) &&
 // https://issues.dlang.org/show_bug.cgi?id=6377
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
     // Conversion between same size
     static foreach (S; AliasSeq!(byte, short, int, long))
     {{
@@ -681,7 +681,7 @@ if (!isImplicitlyConvertible!(S, T) &&
     }
     cast(void) to!(Test.T)(Test.S());
 
-    // make sure std.conv.to is doing the same thing as initialization
+    // make sure ripstd.conv.to is doing the same thing as initialization
     Test.S s;
     Test.T t = s;
 }
@@ -884,7 +884,7 @@ if (!isImplicitlyConvertible!(S, T) &&
 // Unittest for 6288
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     alias Identity(T)      =              T;
     alias toConst(T)       =        const T;
@@ -972,7 +972,7 @@ if (!(isImplicitlyConvertible!(S, T) &&
     }
     else static if (isExactSomeString!S)
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         // other string-to-string
         //Use Appender directly instead of toStr, which also uses a formatedWrite
         auto w = appender!T();
@@ -987,7 +987,7 @@ if (!(isImplicitlyConvertible!(S, T) &&
     else static if (is(S == void[]) || is(S == const(void)[]) || is(S == immutable(void)[]))
     {
         import core.stdc.string : memcpy;
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         // Converting void array to string
         alias Char = Unqual!(ElementEncodingType!T);
         auto raw = cast(const(ubyte)[]) value;
@@ -1038,9 +1038,9 @@ if (!(isImplicitlyConvertible!(S, T) &&
             }
         }
 
-        import std.array : appender;
-        import std.format.spec : FormatSpec;
-        import std.format.write : formatValue;
+        import ripstd.array : appender;
+        import ripstd.format.spec : FormatSpec;
+        import ripstd.format.write : formatValue;
 
         //Default case, delegate to format
         //Note: we don't call toStr directly, to avoid duplicate work.
@@ -1101,9 +1101,9 @@ if (!(isImplicitlyConvertible!(S, T) &&
     !isEnumStrToStr!(S, T) && !isNullToStr!(S, T)) &&
     !isInfinite!S && isExactSomeString!T && !isCopyable!S && !isStaticArray!S)
 {
-    import std.array : appender;
-    import std.format.spec : FormatSpec;
-    import std.format.write : formatValue;
+    import ripstd.array : appender;
+    import ripstd.format.spec : FormatSpec;
+    import ripstd.format.write : formatValue;
 
     auto w = appender!T();
     FormatSpec!(ElementEncodingType!T) f;
@@ -1181,7 +1181,7 @@ if (is (T == immutable) && isExactSomeString!T && is(S == enum))
 
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
     void dg()
     {
         // string to string conversion
@@ -1261,7 +1261,7 @@ if (is (T == immutable) && isExactSomeString!T && is(S == enum))
 
 @safe pure nothrow unittest
 {
-    import std.exception;
+    import ripstd.exception;
     // Conversion representing integer values with string
 
     static foreach (Int; AliasSeq!(ubyte, ushort, uint, ulong))
@@ -1438,7 +1438,7 @@ do
         return cast(T) buffer[index .. $].dup;
     }
 
-    import std.array : array;
+    import ripstd.array : array;
     switch (radix)
     {
         case 10:
@@ -1493,7 +1493,7 @@ if (!isImplicitlyConvertible!(S, T) &&
 {
     static if (isFloatingPoint!S && isIntegral!T)
     {
-        import std.math.traits : isNaN;
+        import ripstd.math.traits : isNaN;
         if (value.isNaN) throw new ConvException("Input was NaN");
     }
 
@@ -1526,7 +1526,7 @@ if (!isImplicitlyConvertible!(S, T) &&
 
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     dchar a = ' ';
     assert(to!char(a) == ' ');
@@ -1551,7 +1551,7 @@ if (!isImplicitlyConvertible!(S, T) &&
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     // Narrowing conversions from enum -> integral should be allowed, but they
     // should throw at runtime if the enum value doesn't fit in the target
@@ -1584,8 +1584,8 @@ if (!isImplicitlyConvertible!(S, T) &&
 
 @safe unittest
 {
-    import std.exception;
-    import std.math.traits : isNaN;
+    import ripstd.exception;
+    import ripstd.math.traits : isNaN;
 
     double d = double.nan;
     float f = to!float(d);
@@ -1610,7 +1610,7 @@ if (!isImplicitlyConvertible!(S, T) &&
 
     static if (isStaticArray!T)
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         auto res = to!(E[])(value);
         enforce!ConvException(T.length == res.length,
             convFormat("Length mismatch when converting to static array: %s vs %s", T.length, res.length));
@@ -1618,7 +1618,7 @@ if (!isImplicitlyConvertible!(S, T) &&
     }
     else
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto w = appender!(E[])();
         w.reserve(value.length);
         foreach (ref e; value)
@@ -1631,7 +1631,7 @@ if (!isImplicitlyConvertible!(S, T) &&
 
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     // array to array conversions
     uint[] a = [ 1u, 2, 3 ];
@@ -1655,7 +1655,7 @@ if (!isImplicitlyConvertible!(S, T) &&
     Wrap[] warr = to!(Wrap[])(["foo", "bar"]);  // should work
 
     // https://issues.dlang.org/show_bug.cgi?id=12633
-    import std.conv : to;
+    import ripstd.conv : to;
     const s2 = ["10", "20"];
 
     immutable int[2] a3 = s2.to!(int[2]);
@@ -1717,7 +1717,7 @@ if (!isImplicitlyConvertible!(S, T) && isAssociativeArray!S &&
 // https://issues.dlang.org/show_bug.cgi?id=8705, from doc
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     int[string][double[int[]]] a;
     auto b = to!(short[wstring][string[double[]]])(a);
     a = [null:["hello":int.max]];
@@ -1734,8 +1734,8 @@ if (!isImplicitlyConvertible!(S, T) && isAssociativeArray!S &&
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.array : byPair;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.array : byPair;
 
     int[int] a;
     assert(a.to!(int[int]) == a);
@@ -1753,7 +1753,7 @@ if (!isImplicitlyConvertible!(S, T) && isAssociativeArray!S &&
     }
     static void testFloatingToIntegral(Floating, Integral)()
     {
-        import std.math : floatTraits, RealFormat;
+        import ripstd.math : floatTraits, RealFormat;
 
         bool convFails(Source, Target, E)(Source src)
         {
@@ -1993,7 +1993,7 @@ if (isInputRange!S && !isInfinite!S && isSomeChar!(ElementEncodingType!S) &&
 // https://issues.dlang.org/show_bug.cgi?id=15800
 @safe unittest
 {
-    import std.utf : byCodeUnit, byChar, byWchar, byDchar;
+    import ripstd.utf : byCodeUnit, byChar, byWchar, byDchar;
 
     assert(to!int(byCodeUnit("10")) == 10);
     assert(to!int(byCodeUnit("10"), 10) == 10);
@@ -2023,7 +2023,7 @@ private T toImpl(T, S)(S value)
 if (isSomeChar!T && !is(typeof(parse!T(value))) &&
     is(typeof(parse!dchar(value))))
 {
-    import std.utf : encode;
+    import ripstd.utf : encode;
 
     immutable dchar codepoint = parse!dchar(value);
     if (!value.empty)
@@ -2039,7 +2039,7 @@ if (isSomeChar!T && !is(typeof(parse!T(value))) &&
 
 @safe pure unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     assert(toImpl!wchar("a") == 'a');
 
@@ -2072,7 +2072,7 @@ if (is(T == enum) && !is(S == enum)
 
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
     enum En8143 : int { A = 10, B = 20, C = 30, D = 20 }
     enum En8143[][] m3 = to!(En8143[][])([[10, 30], [30, 10]]);
     static assert(m3 == [[En8143.A, En8143.C], [En8143.C, En8143.A]]);
@@ -2087,7 +2087,7 @@ if (is(T == enum) && !is(S == enum)
 // https://issues.dlang.org/show_bug.cgi?id=20539
 @safe pure unittest
 {
-    import std.exception : assertNotThrown;
+    import ripstd.exception : assertNotThrown;
 
     // To test that the bug is fixed it is required that the struct is static,
     // otherwise, the frame pointer makes the test pass even if the bug is not
@@ -2137,8 +2137,8 @@ template roundTo(Target)
     Target roundTo(Source)(Source value)
     {
         import core.math : abs = fabs;
-        import std.math.exponential : log2;
-        import std.math.rounding : trunc;
+        import ripstd.math.exponential : log2;
+        import ripstd.math.rounding : trunc;
 
         static assert(isFloatingPoint!Source);
         static assert(isIntegral!Target);
@@ -2169,7 +2169,7 @@ template roundTo(Target)
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     // boundary values
     static foreach (Int; AliasSeq!(byte, ubyte, short, ushort, int, uint))
     {
@@ -2182,7 +2182,7 @@ template roundTo(Target)
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertThrown!ConvException(roundTo!int(float.init));
     auto ex = collectException(roundTo!int(float.init));
     assert(ex.msg == "Input was NaN");
@@ -2248,11 +2248,11 @@ if (isInputRange!Source &&
     isSomeChar!(ElementType!Source) &&
     is(immutable Target == immutable bool))
 {
-    import std.ascii : toLower;
+    import ripstd.ascii : toLower;
 
     static if (isNarrowString!Source)
     {
-        import std.string : representation;
+        import ripstd.string : representation;
         auto s = source.representation;
     }
     else
@@ -2296,7 +2296,7 @@ Lerr:
 ///
 @safe unittest
 {
-    import std.typecons : Flag, Yes, No;
+    import ripstd.typecons : Flag, Yes, No;
     auto s = "true";
     bool b = parse!bool(s);
     assert(b);
@@ -2313,8 +2313,8 @@ Lerr:
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.exception;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.exception;
     struct InputString
     {
         string _s;
@@ -2398,7 +2398,7 @@ if (isSomeChar!(ElementType!Source) &&
 
         static if (isNarrowString!Source)
         {
-            import std.string : representation;
+            import ripstd.string : representation;
             auto source = s.representation;
         }
         else
@@ -2489,7 +2489,7 @@ Lerr:
 ///
 @safe pure unittest
 {
-    import std.typecons : Flag, Yes, No;
+    import ripstd.typecons : Flag, Yes, No;
     string s = "123";
     auto a = parse!int(s);
     assert(a == 123);
@@ -2505,8 +2505,8 @@ Lerr:
 ///
 @safe pure unittest
 {
-    import std.string : tr;
-    import std.typecons : Flag, Yes, No;
+    import ripstd.string : tr;
+    import ripstd.typecons : Flag, Yes, No;
     string test = "123 \t  76.14";
     auto a = parse!uint(test);
     assert(a == 123);
@@ -2625,7 +2625,7 @@ Lerr:
 
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     immutable string[] errors =
     [
@@ -2712,7 +2712,7 @@ Lerr:
         {
             // Ensure error message contains failing character, not the character
             // beyond.
-            import std.algorithm.searching : canFind;
+            import ripstd.algorithm.searching : canFind;
             assert( e.msg.canFind(charInMsg) &&
                    !e.msg.canFind(charNotInMsg));
         }
@@ -2731,7 +2731,7 @@ Lerr:
 
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!({ string s =  "1234abc"; assert(parse! int(s) ==  1234 && s == "abc"); });
     assertCTFEable!({ string s = "-1234abc"; assert(parse! int(s) == -1234 && s == "abc"); });
     assertCTFEable!({ string s =  "1234abc"; assert(parse!uint(s) ==  1234 && s == "abc"); });
@@ -2747,7 +2747,7 @@ Lerr:
 // https://issues.dlang.org/show_bug.cgi?id=13931
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     assertThrown!ConvOverflowException("-21474836480".to!int());
     assertThrown!ConvOverflowException("-92233720368547758080".to!long());
@@ -2794,7 +2794,7 @@ in
 do
 {
     import core.checkedint : mulu, addu;
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
 
     if (radix == 10)
     {
@@ -2808,7 +2808,7 @@ do
 
     static if (isNarrowString!Source)
     {
-        import std.string : representation;
+        import ripstd.string : representation;
         auto s = source.representation;
     }
     else
@@ -2895,7 +2895,7 @@ do
 // https://issues.dlang.org/show_bug.cgi?id=7302
 @safe pure unittest
 {
-    import std.range : cycle;
+    import ripstd.range : cycle;
     auto r = cycle("2A!");
     auto u = parse!uint(r, 16);
     assert(u == 42);
@@ -2910,7 +2910,7 @@ do
 // https://issues.dlang.org/show_bug.cgi?id=13163
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
     foreach (s; ["fff", "123"])
         assertThrown!ConvOverflowException(s.parse!ubyte(16));
 }
@@ -2928,7 +2928,7 @@ do
 // https://issues.dlang.org/show_bug.cgi?id=18248
 @safe pure unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto str = ";";
     assertThrown(str.parse!uint(16));
@@ -2956,8 +2956,8 @@ auto parse(Target, Source, Flag!"doCount" doCount = No.doCount)(ref Source s)
 if (isSomeString!Source && !is(Source == enum) &&
     is(Target == enum))
 {
-    import std.algorithm.searching : startsWith;
-    import std.traits : Unqual, EnumMembers;
+    import ripstd.algorithm.searching : startsWith;
+    import ripstd.traits : Unqual, EnumMembers;
 
     Unqual!Target result;
     size_t longest_match = 0;
@@ -2993,7 +2993,7 @@ if (isSomeString!Source && !is(Source == enum) &&
 ///
 @safe unittest
 {
-    import std.typecons : Flag, Yes, No, tuple;
+    import ripstd.typecons : Flag, Yes, No, tuple;
     enum EnumType : bool { a = true, b = false, c = a }
 
     auto str = "a";
@@ -3007,7 +3007,7 @@ if (isSomeString!Source && !is(Source == enum) &&
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     enum EB : bool { a = true, b = false, c = a }
     enum EU { a, b, c }
@@ -3067,12 +3067,12 @@ auto parse(Target, Source, Flag!"doCount" doCount = No.doCount)(ref Source sourc
 if (isInputRange!Source && isSomeChar!(ElementType!Source) && !is(Source == enum) &&
     isFloatingPoint!Target && !is(Target == enum))
 {
-    import std.ascii : isDigit, isAlpha, toLower, toUpper, isHexDigit;
-    import std.exception : enforce;
+    import ripstd.ascii : isDigit, isAlpha, toLower, toUpper, isHexDigit;
+    import ripstd.exception : enforce;
 
     static if (isNarrowString!Source)
     {
-        import std.string : representation;
+        import ripstd.string : representation;
         auto p = source.representation;
     }
     else
@@ -3391,9 +3391,9 @@ if (isInputRange!Source && isSomeChar!(ElementType!Source) && !is(Source == enum
 ///
 @safe unittest
 {
-    import std.math.operations : isClose;
-    import std.math.traits : isNaN, isInfinity;
-    import std.typecons : Flag, Yes, No;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.traits : isNaN, isInfinity;
+    import ripstd.typecons : Flag, Yes, No;
     auto str = "123.456";
     assert(parse!double(str).isClose(123.456));
     auto str2 = "123.456";
@@ -3423,9 +3423,9 @@ if (isInputRange!Source && isSomeChar!(ElementType!Source) && !is(Source == enum
 
 @safe unittest
 {
-    import std.exception;
-    import std.math.traits : isNaN, isInfinity;
-    import std.math.algebraic : fabs;
+    import ripstd.exception;
+    import ripstd.math.traits : isNaN, isInfinity;
+    import ripstd.math.algebraic : fabs;
 
     // Compare reals with given precision
     bool feq(in real rx, in real ry, in real precision = 0.000001L)
@@ -3541,11 +3541,11 @@ if (isInputRange!Source && isSomeChar!(ElementType!Source) && !is(Source == enum
 @system unittest
 {
     // @system because strtod is not @safe.
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     static if (floatTraits!real.realFormat == RealFormat.ieeeDouble)
     {
-        import core.stdc.stdlib, std.exception, std.math;
+        import core.stdc.stdlib, ripstd.exception, ripstd.math;
 
         //Should be parsed exactly: 53 bit mantissa
         string s = "0x1A_BCDE_F012_3456p10";
@@ -3625,7 +3625,7 @@ if (isInputRange!Source && isSomeChar!(ElementType!Source) && !is(Source == enum
 {
     import core.stdc.errno;
     import core.stdc.stdlib;
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     errno = 0;  // In case it was set by another unittest in a different module.
     struct longdouble
@@ -3696,7 +3696,7 @@ if (isInputRange!Source && isSomeChar!(ElementType!Source) && !is(Source == enum
 
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     // https://issues.dlang.org/show_bug.cgi?id=4959
     {
@@ -3833,7 +3833,7 @@ if (!isSomeString!Source && isInputRange!Source && isSomeChar!(ElementType!Sourc
 ///
 @safe pure unittest
 {
-    import std.typecons : Flag, Yes, No;
+    import ripstd.typecons : Flag, Yes, No;
     auto s = "Hello, World!";
     char first = parse!char(s);
     assert(first == 'H');
@@ -3852,7 +3852,7 @@ if (!isSomeString!Source && isInputRange!Source && isSomeChar!(ElementType!Sourc
 */
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     assert(to!bool("TruE") == true);
     assert(to!bool("faLse"d) == false);
@@ -3902,7 +3902,7 @@ if (isInputRange!Source &&
     isSomeChar!(ElementType!Source) &&
     is(immutable Target == immutable typeof(null)))
 {
-    import std.ascii : toLower;
+    import ripstd.ascii : toLower;
     foreach (c; "null")
     {
         if (s.empty || toLower(s.front) != c)
@@ -3922,8 +3922,8 @@ if (isInputRange!Source &&
 ///
 @safe pure unittest
 {
-    import std.exception : assertThrown;
-    import std.typecons : Flag, Yes, No;
+    import ripstd.exception : assertThrown;
+    import ripstd.typecons : Flag, Yes, No;
 
     alias NullType = typeof(null);
     auto s1 = "null";
@@ -3951,7 +3951,7 @@ if (isInputRange!Source &&
 //Used internally by parse Array/AA, to remove ascii whites
 package auto skipWS(R, Flag!"doCount" doCount = No.doCount)(ref R r)
 {
-    import std.ascii : isWhite;
+    import ripstd.ascii : isWhite;
     static if (isSomeString!R)
     {
         //Implementation inspired from stripLeft.
@@ -4015,7 +4015,7 @@ auto parse(Target, Source, Flag!"doCount" doCount = No.doCount)(ref Source s, dc
 if (isSomeString!Source && !is(Source == enum) &&
     isDynamicArray!Target && !is(Target == enum))
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     auto result = appender!Target();
 
@@ -4061,7 +4061,7 @@ if (isSomeString!Source && !is(Source == enum) &&
 ///
 @safe pure unittest
 {
-    import std.typecons : Flag, Yes, No;
+    import ripstd.typecons : Flag, Yes, No;
     auto s1 = `[['h', 'e', 'l', 'l', 'o'], "world"]`;
     auto a1 = parse!(string[])(s1);
     assert(a1 == ["hello", "world"]);
@@ -4080,7 +4080,7 @@ if (isSomeString!Source && !is(Source == enum) &&
 // https://issues.dlang.org/show_bug.cgi?id=9615
 @safe unittest
 {
-    import std.typecons : Flag, Yes, No, tuple;
+    import ripstd.typecons : Flag, Yes, No, tuple;
     string s0 = "[1,2, ]";
     string s1 = "[1,2, \t\v\r\n]";
     string s2 = "[1,2]";
@@ -4110,7 +4110,7 @@ if (isSomeString!Source && !is(Source == enum) &&
     s3 = `[    ]`;
     assert(tuple([], s3.length) == s3.parse!(string[], string, Yes.doCount));
 
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     string s5 = "[,]";
     string s6 = "[, \t,]";
     assertThrown!ConvException(parse!(string[])(s5));
@@ -4149,8 +4149,8 @@ if (isSomeString!Source && !is(Source == enum) &&
 
 @safe pure unittest
 {
-    import std.exception;
-    import std.typecons : Flag, Yes, No;
+    import ripstd.exception;
+    import ripstd.typecons : Flag, Yes, No;
 
     //Check proper failure
     auto s = "[ 1 , 2 , 3 ]";
@@ -4264,7 +4264,7 @@ Lfewerr:
 
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     auto s1 = "[1,2,3,4]";
     auto sa1 = parse!(int[4])(s1);
@@ -4360,9 +4360,9 @@ if (isSomeString!Source && !is(Source == enum) &&
 ///
 @safe pure unittest
 {
-    import std.typecons : Flag, Yes, No, tuple;
-    import std.range.primitives : save;
-    import std.array : assocArray;
+    import ripstd.typecons : Flag, Yes, No, tuple;
+    import ripstd.range.primitives : save;
+    import ripstd.array : assocArray;
     auto s1 = "[1:10, 2:20, 3:30]";
     auto copyS1 = s1.save;
     auto aa1 = parse!(int[int])(s1);
@@ -4390,7 +4390,7 @@ if (isSomeString!Source && !is(Source == enum) &&
 
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     //Check proper failure
     auto s = "[1:10, 2:20, 3:30]";
@@ -4418,7 +4418,7 @@ if (isInputRange!Source && isSomeChar!(ElementType!Source))
     // consumes 1 element from Source
     dchar getHexDigit()(ref Source s_ = s)  // workaround
     {
-        import std.ascii : isAlpha, isHexDigit;
+        import ripstd.ascii : isAlpha, isHexDigit;
         if (s_.empty)
             throw parseError("Unterminated escape sequence");
         s_.popFront();
@@ -4578,7 +4578,7 @@ if (isInputRange!Source && isSomeChar!(ElementType!Source))
 
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     string[] ss = [
         `hello!`,  //Not an escape
@@ -4606,7 +4606,7 @@ auto parseElement(Target, Source, Flag!"doCount" doCount = No.doCount)(ref Sourc
 if (isInputRange!Source && isSomeChar!(ElementType!Source) && !is(Source == enum) &&
     isExactSomeString!Target)
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto result = appender!Target();
 
     // parse array of chars
@@ -4769,8 +4769,8 @@ private S textImpl(S, U...)(U args)
     }
     else
     {
-        import std.array : appender;
-        import std.traits : isSomeChar, isSomeString;
+        import ripstd.array : appender;
+        import ripstd.traits : isSomeChar, isSomeString;
 
         auto app = appender!S();
 
@@ -5039,9 +5039,9 @@ public import core.lifetime : emplace;
 // https://issues.dlang.org/show_bug.cgi?id=9559
 @safe unittest
 {
-    import std.algorithm.iteration : map;
-    import std.array : array;
-    import std.typecons : Nullable;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.array : array;
+    import ripstd.typecons : Nullable;
     alias I = Nullable!int;
     auto ints = [0, 1, 2].map!(i => i & 1 ? I.init : I(i))();
     auto asArray = array(ints);
@@ -5049,9 +5049,9 @@ public import core.lifetime : emplace;
 
 @system unittest //http://forum.dlang.org/post/nxbdgtdlmwscocbiypjs@forum.dlang.org
 {
-    import std.array : array;
-    import std.datetime : SysTime, UTC;
-    import std.math.traits : isNaN;
+    import ripstd.array : array;
+    import ripstd.datetime : SysTime, UTC;
+    import ripstd.math.traits : isNaN;
 
     static struct A
     {
@@ -5089,8 +5089,8 @@ public import core.lifetime : emplace;
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
     // Check fix for https://issues.dlang.org/show_bug.cgi?id=2971
     assert(equal(map!(to!int)(["42", "34", "345"]), [42, 34, 345]));
 }
@@ -5116,7 +5116,7 @@ if (isIntegral!T && isOutputRange!(W, char))
 
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto result = appender!(char[])();
     toTextRange(-1, result);
     assert(result.data == "-1");
@@ -5141,7 +5141,7 @@ if (isIntegral!T)
 ///
 @safe unittest
 {
-    import std.traits : Unsigned;
+    import ripstd.traits : Unsigned;
     immutable int s = 42;
     auto u1 = unsigned(s); //not qualified
     static assert(is(typeof(u1) == uint));
@@ -5219,7 +5219,7 @@ if (isIntegral!T)
 ///
 @safe unittest
 {
-    import std.traits : Signed;
+    import ripstd.traits : Signed;
 
     immutable uint u = 42;
     auto s1 = signed(u); //not qualified
@@ -5380,8 +5380,8 @@ an even number of hexadecimal digits (regardless of the case).
 @safe pure @nogc
 private bool isHexLiteral(String)(scope const String hexData)
 {
-    import std.ascii : isHexDigit;
-    import std.uni : lineSep, paraSep, nelSep;
+    import ripstd.ascii : isHexDigit;
+    import ripstd.uni : lineSep, paraSep, nelSep;
     size_t i;
     foreach (const dchar c; hexData)
     {
@@ -5421,7 +5421,7 @@ private bool isHexLiteral(String)(scope const String hexData)
 
 @safe unittest
 {
-    import std.ascii;
+    import ripstd.ascii;
     // empty/whites
     static assert( "".isHexLiteral);
     static assert( " \r".isHexLiteral);
@@ -5548,7 +5548,7 @@ if (hexData.isHexLiteral)
 @trusted nothrow pure
 private auto hexStrLiteral(String)(scope String hexData)
 {
-    import std.ascii : isHexDigit;
+    import ripstd.ascii : isHexDigit;
     alias C = Unqual!(ElementEncodingType!String);    // char, wchar or dchar
     C[] result;
     result.length = 1 + hexData.length * 2 + 1;       // don't forget the " "
@@ -5756,7 +5756,7 @@ if ((radix == 2 || radix == 8 || radix == 10 || radix == 16) &&
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert(toChars(1).equal("1"));
     assert(toChars(1_000_000).equal("1000000"));
@@ -5769,8 +5769,8 @@ if ((radix == 2 || radix == 8 || radix == 10 || radix == 16) &&
 
 @safe unittest
 {
-    import std.array;
-    import std.range;
+    import ripstd.array;
+    import ripstd.range;
 
     {
         assert(toChars!2(0u).array == "0");
@@ -5854,7 +5854,7 @@ if ((radix == 2 || radix == 8 || radix == 10 || radix == 16) &&
 
 @safe unittest // opSlice (issue 16192)
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static struct Test { ubyte radix; uint number; }
 

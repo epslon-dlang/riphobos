@@ -3,7 +3,7 @@
 /++
     Functions which operate on ASCII characters.
 
-    All of the functions in std.ascii accept Unicode characters but
+    All of the functions in ripstd.ascii accept Unicode characters but
     effectively ignore them if they're not ASCII. All `isX` functions return
     `false` for non-ASCII characters, and all `toX` functions do nothing
     to non-ASCII characters.
@@ -83,7 +83,7 @@ enum LetterCase : bool
 ///
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     assert(42.to!string(16, LetterCase.upper) == "2A");
     assert(42.to!string(16, LetterCase.lower) == "2a");
@@ -92,10 +92,10 @@ enum LetterCase : bool
 ///
 @safe unittest
 {
-    import std.digest.hmac : hmac;
-    import std.digest : toHexString;
-    import std.digest.sha : SHA1;
-    import std.string : representation;
+    import ripstd.digest.hmac : hmac;
+    import ripstd.digest : toHexString;
+    import ripstd.digest.sha : SHA1;
+    import ripstd.string : representation;
 
     const sha1HMAC = "A very long phrase".representation
         .hmac!SHA1("secret".representation)
@@ -146,7 +146,7 @@ enum ControlChar : char
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.algorithm.comparison, std.algorithm.searching, std.range, std.traits;
+    import ripstd.algorithm.comparison, ripstd.algorithm.searching, ripstd.range, ripstd.traits;
 
     // Because all ASCII characters fit in char, so do these
     static assert(ControlChar.ack.sizeof == 1);
@@ -167,7 +167,7 @@ enum ControlChar : char
 ///
 @safe pure nothrow unittest
 {
-    import std.conv;
+    import ripstd.conv;
     //Control character table can be used in place of hexcodes.
     with (ControlChar) assert(text("Phobos", us, "Deimos", us, "Tango", rs) == "Phobos\x1FDeimos\x1FTango\x1E");
 }
@@ -203,7 +203,7 @@ bool isAlphaNum(dchar c) @safe pure nothrow @nogc
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     foreach (c; chain(digits, octalDigits, fullHexDigits, letters, lowercase, uppercase))
         assert(isAlphaNum(c));
 
@@ -235,7 +235,7 @@ bool isAlpha(dchar c) @safe pure nothrow @nogc
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     foreach (c; chain(letters, lowercase, uppercase))
         assert(isAlpha(c));
 
@@ -267,7 +267,7 @@ bool isLower(dchar c) @safe pure nothrow @nogc
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     foreach (c; lowercase)
         assert(isLower(c));
 
@@ -299,7 +299,7 @@ bool isUpper(dchar c) @safe pure nothrow @nogc
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     foreach (c; uppercase)
         assert(isUpper(c));
 
@@ -332,7 +332,7 @@ bool isDigit(dchar c) @safe pure nothrow @nogc
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     foreach (c; digits)
         assert(isDigit(c));
 
@@ -362,7 +362,7 @@ bool isOctalDigit(dchar c) @safe pure nothrow @nogc
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     foreach (c; octalDigits)
         assert(isOctalDigit(c));
 
@@ -393,7 +393,7 @@ bool isHexDigit(dchar c) @safe pure nothrow @nogc
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     foreach (c; fullHexDigits)
         assert(isHexDigit(c));
 
@@ -424,14 +424,14 @@ bool isWhite(dchar c) @safe pure nothrow @nogc
     assert(!isWhite('#'));
 
     // N.B.: Does not return true for non-ASCII Unicode whitespace characters.
-    static import std.uni;
-    assert(std.uni.isWhite('\u00A0'));
-    assert(!isWhite('\u00A0')); // std.ascii.isWhite
+    static import ripstd.uni;
+    assert(ripstd.uni.isWhite('\u00A0'));
+    assert(!isWhite('\u00A0')); // ripstd.ascii.isWhite
 }
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     foreach (c; whitespace)
         assert(isWhite(c));
 
@@ -468,7 +468,7 @@ bool isControl(dchar c) @safe pure nothrow @nogc
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     foreach (dchar c; 0 .. 32)
         assert(isControl(c));
     assert(isControl(127));
@@ -635,7 +635,7 @@ bool isASCII(dchar c) @safe pure nothrow @nogc
 auto toLower(C)(C c)
 if (is(C : dchar))
 {
-    import std.traits : OriginalType;
+    import ripstd.traits : OriginalType;
 
     static if (!__traits(isScalar, C))
         alias R = dchar;
@@ -659,7 +659,7 @@ if (is(C : dchar))
 @safe pure nothrow unittest
 {
 
-    import std.meta;
+    import ripstd.meta;
     static foreach (C; AliasSeq!(char, wchar, dchar, immutable char, ubyte))
     {
         foreach (i, c; uppercase)
@@ -697,7 +697,7 @@ if (is(C : dchar))
 auto toUpper(C)(C c)
 if (is(C : dchar))
 {
-    import std.traits : OriginalType;
+    import ripstd.traits : OriginalType;
 
     static if (!__traits(isScalar, C))
         alias R = dchar;
@@ -720,7 +720,7 @@ if (is(C : dchar))
 
 @safe pure nothrow unittest
 {
-    import std.meta;
+    import ripstd.meta;
     static foreach (C; AliasSeq!(char, wchar, dchar, immutable char, ubyte))
     {
         foreach (i, c; lowercase)
@@ -746,8 +746,8 @@ if (is(C : dchar))
 
 @safe unittest //Test both toUpper and toLower with non-builtin
 {
-    import std.meta;
-    import std.traits;
+    import ripstd.meta;
+    import ripstd.traits;
 
     //User Defined [Char|Wchar|Dchar]
     static struct UDC {  char c; alias c this; }

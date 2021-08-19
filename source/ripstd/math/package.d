@@ -158,23 +158,23 @@ $(TR $(TDNW $(SUBMODULE Hardware Control, hardware)) $(TD
  */
 module ripstd.math;
 
-public import std.math.algebraic;
-public import std.math.constants;
-public import std.math.exponential;
-public import std.math.operations;
-public import std.math.hardware;
-public import std.math.remainder;
-public import std.math.rounding;
-public import std.math.traits;
-public import std.math.trigonometry;
+public import ripstd.math.algebraic;
+public import ripstd.math.constants;
+public import ripstd.math.exponential;
+public import ripstd.math.operations;
+public import ripstd.math.hardware;
+public import ripstd.math.remainder;
+public import ripstd.math.rounding;
+public import ripstd.math.traits;
+public import ripstd.math.trigonometry;
 
 // @@@DEPRECATED_2.102@@@
 // Note: Exposed accidentally, should be deprecated / removed
-deprecated("std.meta.AliasSeq was unintentionally available from std.math "
-           ~ "and will be removed after 2.102. Please import std.meta instead")
-public import std.meta : AliasSeq;
+deprecated("ripstd.meta.AliasSeq was unintentionally available from ripstd.math "
+           ~ "and will be removed after 2.102. Please import ripstd.meta instead")
+public import ripstd.meta : AliasSeq;
 
-package(std): // Not public yet
+package(ripstd): // Not public yet
 /* Return the value that lies halfway between x and y on the IEEE number line.
  *
  * Formally, the result is the arithmetic mean of the binary significands of x
@@ -344,7 +344,7 @@ enum RealFormat
 // They supplement the built-in floating point properties.
 template floatTraits(T)
 {
-    import std.traits : Unqual;
+    import ripstd.traits : Unqual;
 
     // EXPMASK is a ushort mask to select the exponent portion (without sign)
     // EXPSHIFT is the number of bits the exponent is left-shifted by in its ushort

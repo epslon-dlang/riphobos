@@ -22,7 +22,7 @@ module ripstd.internal.cstring;
     {
         import core.stdc.stdlib : free;
         import core.sys.posix.stdlib : setenv;
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         void setEnvironment(scope const(char)[] name, scope const(char)[] value)
         { enforce(setenv(name.tempCString(), value.tempCString(), 1) != -1); }
@@ -31,15 +31,15 @@ module ripstd.internal.cstring;
     version (Windows)
     {
         import core.sys.windows.winbase : SetEnvironmentVariableW;
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         void setEnvironment(scope const(char)[] name, scope const(char)[] value)
         { enforce(SetEnvironmentVariableW(name.tempCStringW(), value.tempCStringW())); }
     }
 }
 
-import std.range;
-import std.traits;
+import ripstd.range;
+import ripstd.traits;
 
 /**
 Creates temporary 0-terminated $(I C string) with copy of passed text.
@@ -106,7 +106,7 @@ if (isSomeChar!To && (isInputRange!From || isSomeString!From) &&
         }
         else
         {
-            import std.internal.memory : enforceMalloc;
+            import ripstd.internal.memory : enforceMalloc;
             if (false)
             {
                 // This code is removed by the compiler but causes `@safe`ty
@@ -135,7 +135,7 @@ if (isSomeChar!To && (isInputRange!From || isSomeString!From) &&
         {
             strLength = str.length;
         }
-        import std.utf : byUTF;
+        import ripstd.utf : byUTF;
         static if (isSomeString!From)
             auto r = cast(const(CF)[])str;  // because inout(CF) causes problems with byUTF
         else
@@ -194,7 +194,7 @@ nothrow @nogc @system unittest
     assert(arrayFor("abc"d.tempCString().ptr) == "abc");
     assert(arrayFor("abc".tempCString!wchar().buffPtr) == "abc"w);
 
-    import std.utf : byChar, byWchar;
+    import ripstd.utf : byChar, byWchar;
     char[300] abc = 'a';
     assert(arrayFor(tempCString(abc[].byChar).buffPtr) == abc);
     assert(arrayFor(tempCString(abc[].byWchar).buffPtr) == abc);
@@ -253,7 +253,7 @@ private:
 
     To* _ptr;
     size_t _length;        // length of the string
-    version (StdUnittest)
+    version (RIPStdUnittest)
     // the 'small string optimization'
     {
         // smaller size to trigger reallocations. Padding is to account for
@@ -274,7 +274,7 @@ private To[] trustedRealloc(To)(scope To[] buf, size_t strLength, bool bufIsOnSt
 {
     pragma(inline, false);  // because it's rarely called
 
-    import std.internal.memory : enforceMalloc, enforceRealloc;
+    import ripstd.internal.memory : enforceMalloc, enforceRealloc;
 
     size_t newlen = buf.length * 3 / 2;
 

@@ -102,11 +102,11 @@ T2=$(TR $(TDNW $(LREF $1)) $(TD $+))
  */
 module ripstd.algorithm.searching;
 
-import std.functional : unaryFun, binaryFun;
-import std.meta : allSatisfy;
-import std.range.primitives;
-import std.traits;
-import std.typecons : Tuple, Flag, Yes, No, tuple;
+import ripstd.functional : unaryFun, binaryFun;
+import ripstd.meta : allSatisfy;
+import ripstd.range.primitives;
+import ripstd.traits;
+import ripstd.typecons : Tuple, Flag, Yes, No, tuple;
 
 /++
 Checks if $(I _all) of the elements satisfy `pred`.
@@ -123,7 +123,7 @@ template all(alias pred = "a")
     {
         static assert(is(typeof(unaryFun!pred(range.front))),
                 "`" ~ pred.stringof[1..$-1] ~ "` isn't a unary predicate function for range.front");
-        import std.functional : not;
+        import ripstd.functional : not;
 
         return find!(not!(unaryFun!pred))(range).empty;
     }
@@ -179,7 +179,7 @@ template any(alias pred = "a")
 ///
 @safe unittest
 {
-    import std.ascii : isWhite;
+    import ripstd.ascii : isWhite;
     assert( all!(any!isWhite)(["a a", "b b"]));
     assert(!any!(all!isWhite)(["a a", "b b"]));
 }
@@ -237,7 +237,7 @@ if (isInputRange!(Range) && is(typeof(r.front == lPar)))
 
     static if (is(immutable ElementEncodingType!Range == immutable E) && isNarrowString!Range)
     {
-        import std.utf : byCodeUnit;
+        import ripstd.utf : byCodeUnit;
         auto rn = r.byCodeUnit;
     }
     else
@@ -315,7 +315,7 @@ is ignored.
     static bool needlematch(R)(R needle,
                               size_t portion, size_t offset)
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         ptrdiff_t virtual_begin = needle.length - offset - portion;
         ptrdiff_t ignore = 0;
         if (virtual_begin < 0)
@@ -363,7 +363,7 @@ public:
     ///
     Range beFound(Range haystack) scope
     {
-        import std.algorithm.comparison : max;
+        import ripstd.algorithm.comparison : max;
 
         if (!needle.length) return haystack;
         if (needle.length > haystack.length) return haystack[$ .. $];
@@ -443,7 +443,7 @@ if (isForwardRange!R1 && isInputRange!R2 &&
     !isNarrowString!R1 &&
     is(typeof(binaryFun!pred(r1.front, r2.front))))
 {
-    import std.algorithm.comparison : min;
+    import ripstd.algorithm.comparison : min;
     static if (isRandomAccessRange!R1 && isRandomAccessRange!R2 &&
                hasLength!R1 && hasLength!R2 &&
                hasSlicing!R1)
@@ -460,7 +460,7 @@ if (isForwardRange!R1 && isInputRange!R2 &&
     }
     else
     {
-        import std.range : takeExactly;
+        import ripstd.range : takeExactly;
         auto result = r1.save;
         size_t i = 0;
         for (;
@@ -482,7 +482,7 @@ auto commonPrefix(alias pred, R1, R2)(R1 r1, R2 r2)
 if (isNarrowString!R1 && isInputRange!R2 &&
     is(typeof(binaryFun!pred(r1.front, r2.front))))
 {
-    import std.utf : decode;
+    import ripstd.utf : decode;
 
     auto result = r1.save;
     immutable len = r1.length;
@@ -510,11 +510,11 @@ if (isNarrowString!R1 && isInputRange!R2 && !isNarrowString!R2 &&
 auto commonPrefix(R1, R2)(R1 r1, R2 r2)
 if (isNarrowString!R1 && isNarrowString!R2)
 {
-    import std.algorithm.comparison : min;
+    import ripstd.algorithm.comparison : min;
 
     static if (ElementEncodingType!R1.sizeof == ElementEncodingType!R2.sizeof)
     {
-        import std.utf : stride, UTFException;
+        import ripstd.utf : stride, UTFException;
 
         immutable limit = min(r1.length, r2.length);
         for (size_t i = 0; i < limit;)
@@ -539,13 +539,13 @@ if (isNarrowString!R1 && isNarrowString!R2)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : filter;
-    import std.conv : to;
-    import std.exception : assertThrown;
-    import std.meta : AliasSeq;
-    import std.range;
-    import std.utf : UTFException;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.conv : to;
+    import ripstd.exception : assertThrown;
+    import ripstd.meta : AliasSeq;
+    import ripstd.range;
+    import ripstd.utf : UTFException;
 
     assert(commonPrefix([1, 2, 3], [1, 2, 3, 4, 5]) == [1, 2, 3]);
     assert(commonPrefix([1, 2, 3, 4, 5], [1, 2, 3]) == [1, 2, 3]);
@@ -645,7 +645,7 @@ if (isInputRange!Range && !isInfinite!Range &&
 ///
 @safe unittest
 {
-    import std.uni : toLower;
+    import ripstd.uni : toLower;
 
     // count elements in range
     int[] a = [ 1, 2, 4, 3, 2, 5, 3, 2, 4 ];
@@ -664,7 +664,7 @@ if (isInputRange!Range && !isInfinite!Range &&
 
 @safe unittest
 {
-    import std.conv : text;
+    import ripstd.conv : text;
 
     int[] a = [ 1, 2, 4, 3, 2, 5, 3, 2, 4 ];
     assert(count(a, 2) == 3, text(count(a, 2)));
@@ -788,7 +788,7 @@ if (isForwardRange!R
         }
         else
         {
-            import std.range : dropOne;
+            import ripstd.range : dropOne;
 
             if (needles[0].empty)
               return 0;
@@ -880,8 +880,8 @@ if (isInputRange!R &&
 
 @safe unittest
 {
-    import std.algorithm.iteration : filter;
-    import std.internal.test.dummyrange;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.internal.test.dummyrange;
 
     assert(countUntil("日本語", "") == 0);
     assert(countUntil("日本語"d, "") == 0);
@@ -962,8 +962,8 @@ if (isInputRange!R &&
 ///
 @safe unittest
 {
-    import std.ascii : isDigit;
-    import std.uni : isWhite;
+    import ripstd.ascii : isDigit;
+    import ripstd.uni : isWhite;
 
     assert(countUntil!(isWhite)("hello world") == 5);
     assert(countUntil!(isDigit)("hello world") == -1);
@@ -972,7 +972,7 @@ if (isInputRange!R &&
 
 @safe unittest
 {
-    import std.internal.test.dummyrange;
+    import ripstd.internal.test.dummyrange;
 
     // References
     {
@@ -1113,7 +1113,7 @@ if (isBidirectionalRange!R1 &&
     }
     else
     {
-        import std.range : retro;
+        import ripstd.range : retro;
         return startsWith!pred(retro(doesThisEnd), retro(withThis));
     }
 }
@@ -1165,7 +1165,7 @@ if (isInputRange!R &&
 ///
 @safe unittest
 {
-    import std.ascii : isAlpha;
+    import ripstd.ascii : isAlpha;
     assert("abc".endsWith!(a => a.isAlpha));
     assert("abc".endsWith!isAlpha);
 
@@ -1174,7 +1174,7 @@ if (isInputRange!R &&
     assert(!"ab1".endsWith!isAlpha);
     assert(!"".endsWith!(a => a.isAlpha));
 
-    import std.algorithm.comparison : among;
+    import ripstd.algorithm.comparison : among;
     assert("abc".endsWith!(a => a.among('c', 'd') != 0));
     assert(!"abc".endsWith!(a => a.among('a', 'b') != 0));
 
@@ -1192,9 +1192,9 @@ if (isInputRange!R &&
 
 @safe unittest
 {
-    import std.algorithm.iteration : filterBidirectional;
-    import std.conv : to;
-    import std.meta : AliasSeq;
+    import ripstd.algorithm.iteration : filterBidirectional;
+    import ripstd.conv : to;
+    import ripstd.meta : AliasSeq;
 
     static foreach (S; AliasSeq!(char[], wchar[], dchar[], string, wstring, dstring))
     (){ // workaround slow optimizations for large functions
@@ -1280,7 +1280,7 @@ private enum bool hasConstEmptyMember(T) = is(typeof(((const T* a) => (*a).empty
 // see: https://github.com/dlang/phobos/pull/6136
 private template RebindableOrUnqual(T)
 {
-    import std.typecons : Rebindable;
+    import ripstd.typecons : Rebindable;
     static if (is(T == class) || is(T == interface) || isDynamicArray!T || isAssociativeArray!T)
         alias RebindableOrUnqual = Rebindable!T;
     else
@@ -1422,12 +1422,12 @@ if (isInputRange!Range && !isInfinite!Range &&
     assert([[0, 4], [1, 2]].extremum!("a[1]", "a > b") == [0, 4]);
 
     // use a custom comparator
-    import std.math.operations : cmp;
+    import ripstd.math.operations : cmp;
     assert([-2., 0, 5].extremum!cmp == 5.0);
     assert([-2., 0, 2].extremum!`cmp(a, b) < 0` == -2.0);
 
     // combine with map
-    import std.range : enumerate;
+    import ripstd.range : enumerate;
     assert([-3., 0, 5].enumerate.extremum!(`a.value`, cmp) == tuple(2, 5.0));
     assert([-2., 0, 2].enumerate.extremum!(`a.value`, `cmp(a, b) < 0`) == tuple(0, -2.0));
 
@@ -1448,7 +1448,7 @@ if (isInputRange!Range && !isInfinite!Range &&
 
 @safe pure unittest
 {
-    import std.range : enumerate, iota;
+    import ripstd.range : enumerate, iota;
 
     // forward ranges
     assert(iota(1, 5).extremum() == 1);
@@ -1466,7 +1466,7 @@ if (isInputRange!Range && !isInfinite!Range &&
     assert(["b", "a", "c"].extremum == "a");
 
     // with all dummy ranges
-    import std.internal.test.dummyrange;
+    import ripstd.internal.test.dummyrange;
     foreach (DummyType; AllDummyRanges)
     {
         DummyType d;
@@ -1575,7 +1575,7 @@ if (isInputRange!InputRange &&
     // If the haystack is a SortedRange we can use binary search to find the needle.
     // Works only for the default find predicate and any SortedRange predicate.
     // https://issues.dlang.org/show_bug.cgi?id=8829
-    import std.range : SortedRange;
+    import ripstd.range : SortedRange;
     static if (is(InputRange : SortedRange!TT, TT) && isDefaultPred)
     {
         auto lb = haystack.lowerBound(needle);
@@ -1592,7 +1592,7 @@ if (isInputRange!InputRange &&
         //These are two special cases which can search without decoding the UTF stream.
         static if (isDefaultPred && isIntegralNeedle)
         {
-            import std.utf : canSearchInCodeUnits;
+            import ripstd.utf : canSearchInCodeUnits;
 
             //This special case deals with UTF8 search, when the needle
             //is represented by a single code point.
@@ -1632,7 +1632,7 @@ if (isInputRange!InputRange &&
         //unconditional implementations
         static if (isDefaultPred)
         {
-            import std.utf : encode;
+            import ripstd.utf : encode;
 
             //In case of default pred, it is faster to do string/string search.
             UEEType[is(UEEType == char) ? 4 : 2] buf;
@@ -1642,7 +1642,7 @@ if (isInputRange!InputRange &&
         }
         else
         {
-            import std.utf : decode;
+            import ripstd.utf : decode;
 
             //Explicit pred: we must test each character by the book.
             //We choose a manual decoding approach, because it is faster than
@@ -1663,7 +1663,7 @@ if (isInputRange!InputRange &&
         // https://issues.dlang.org/show_bug.cgi?id=10403 optimization
         static if (isDefaultPred && isIntegral!EType && EType.sizeof == 1 && isIntegralNeedle)
         {
-            import std.algorithm.comparison : max, min;
+            import ripstd.algorithm.comparison : max, min;
 
             R findHelper(ref R haystack, ref E needle) @trusted nothrow pure
             {
@@ -1708,7 +1708,7 @@ if (isInputRange!InputRange &&
 ///
 @safe unittest
 {
-    import std.range.primitives;
+    import ripstd.range.primitives;
 
     auto arr = [1, 2, 4, 4, 4, 4, 5, 6, 9];
     assert(arr.find(4) == [4, 4, 4, 4, 5, 6, 9]);
@@ -1726,8 +1726,8 @@ if (isInputRange!InputRange &&
 /// Case-insensitive find of a string
 @safe unittest
 {
-    import std.range.primitives;
-    import std.uni : toLower;
+    import ripstd.range.primitives;
+    import ripstd.uni : toLower;
 
     string[] s = ["Hello", "world", "!"];
     assert(s.find!((a, b) => toLower(a) == b)("hello") == s);
@@ -1735,8 +1735,8 @@ if (isInputRange!InputRange &&
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container : SList;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container : SList;
 
     auto lst = SList!int(1, 2, 5, 7, 3);
     assert(lst.front == 1);
@@ -1756,7 +1756,7 @@ if (isInputRange!InputRange &&
 
 @safe pure unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (R; AliasSeq!(string, wstring, dstring))
     {
         static foreach (E; AliasSeq!(char, wchar, dchar))
@@ -1791,8 +1791,8 @@ if (isInputRange!InputRange &&
 
 @safe unittest
 {
-    import std.exception : assertCTFEable;
-    import std.meta : AliasSeq;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.meta : AliasSeq;
 
     void dg() @safe pure nothrow
     {
@@ -1830,7 +1830,7 @@ if (isInputRange!InputRange)
     alias predFun = unaryFun!pred;
     static if (isNarrowString!R)
     {
-        import std.utf : decode;
+        import ripstd.utf : decode;
 
         immutable len = haystack.length;
         size_t i = 0, next = 0;
@@ -1936,7 +1936,7 @@ if (isForwardRange!R1 && isForwardRange!R2
                 // Extend matchLength as much as possible
                 for (;;)
                 {
-                    import std.range : takeNone;
+                    import ripstd.range : takeNone;
 
                     if (needle.empty || haystack.empty)
                         return haystack;
@@ -1981,8 +1981,8 @@ if (isForwardRange!R1 && isForwardRange!R2
         // of the first element of the needle in haystack.
         // When it is found O(walklength(needle)) steps are performed.
         // https://issues.dlang.org/show_bug.cgi?id=8829 enhancement
-        import std.algorithm.comparison : mismatch;
-        import std.range : SortedRange;
+        import ripstd.algorithm.comparison : mismatch;
+        import ripstd.range : SortedRange;
         static if (is(R1 == R2)
                 && is(R1 : SortedRange!TT, TT)
                 && pred == "a == b")
@@ -2081,9 +2081,9 @@ if (isForwardRange!R1 && isForwardRange!R2
 ///
 @safe unittest
 {
-    import std.container : SList;
-    import std.range.primitives : empty;
-    import std.typecons : Tuple;
+    import ripstd.container : SList;
+    import ripstd.range.primitives : empty;
+    import ripstd.typecons : Tuple;
 
     assert(find("hello, world", "World").empty);
     assert(find("hello, world", "wo") == "world");
@@ -2096,7 +2096,7 @@ if (isForwardRange!R1 && isForwardRange!R2
 
 @safe unittest
 {
-    import std.container : SList;
+    import ripstd.container : SList;
     alias C = Tuple!(int, "x", int, "y");
     assert([C(1,0), C(2,0), C(3,1), C(4,0)].find!"a.x == b"(SList!int(2, 3)[]) == [C(2,0), C(3,1), C(4,0)]);
 }
@@ -2104,7 +2104,7 @@ if (isForwardRange!R1 && isForwardRange!R2
 // https://issues.dlang.org/show_bug.cgi?id=12470
 @safe unittest
 {
-    import std.array : replace;
+    import ripstd.array : replace;
     inout(char)[] sanitize(inout(char)[] p)
     {
         return p.replace("\0", " ");
@@ -2114,8 +2114,8 @@ if (isForwardRange!R1 && isForwardRange!R2
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container : SList;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container : SList;
 
     auto lst = SList!int(1, 2, 5, 7, 3);
     static assert(isForwardRange!(int[]));
@@ -2126,7 +2126,7 @@ if (isForwardRange!R1 && isForwardRange!R2
 
 @safe unittest
 {
-    import std.range : assumeSorted;
+    import ripstd.range : assumeSorted;
 
     auto r1 = assumeSorted([1, 2, 3, 3, 3, 4, 5, 6, 7, 8, 8, 8, 10]);
     auto r2 = assumeSorted([3, 3, 4, 5, 6, 7, 8, 8]);
@@ -2146,7 +2146,7 @@ if (isForwardRange!R1 && isForwardRange!R2
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     // @@@BUG@@@ removing static below makes unittest fail
     static struct BiRange
     {
@@ -2164,7 +2164,7 @@ if (isForwardRange!R1 && isForwardRange!R2
 
 @safe unittest
 {
-    import std.container : SList;
+    import ripstd.container : SList;
 
     assert(find([ 1, 2, 3 ], SList!int(2, 3)[]) == [ 2, 3 ]);
     assert(find([ 1, 2, 1, 2, 3, 3 ], SList!int(2, 3)[]) == [ 2, 3, 3 ]);
@@ -2173,8 +2173,8 @@ if (isForwardRange!R1 && isForwardRange!R2
 // https://issues.dlang.org/show_bug.cgi?id=8334
 @safe unittest
 {
-    import std.algorithm.iteration : filter;
-    import std.range;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.range;
 
     auto haystack = [1, 2, 3, 4, 1, 9, 12, 42];
     auto needle = [12, 42, 27];
@@ -2353,7 +2353,7 @@ if (Ranges.length > 1 && is(typeof(startsWith!pred(haystack, needles))))
 ///
 @safe unittest
 {
-    import std.typecons : tuple;
+    import ripstd.typecons : tuple;
     int[] a = [ 1, 4, 2, 3 ];
     assert(find(a, 4) == [ 4, 2, 3 ]);
     assert(find(a, [ 1, 4 ]) == [ 1, 4, 2, 3 ]);
@@ -2373,9 +2373,9 @@ if (Ranges.length > 1 && is(typeof(startsWith!pred(haystack, needles))))
 
 @safe unittest
 {
-    import std.algorithm.internal : rndstuff;
-    import std.meta : AliasSeq;
-    import std.uni : toUpper;
+    import ripstd.algorithm.internal : rndstuff;
+    import ripstd.meta : AliasSeq;
+    import ripstd.uni : toUpper;
 
     int[] a = [ 1, 2, 3 ];
     assert(find(a, 5).empty);
@@ -2400,10 +2400,10 @@ if (Ranges.length > 1 && is(typeof(startsWith!pred(haystack, needles))))
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.internal : rndstuff;
-    import std.meta : AliasSeq;
-    import std.range : retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.internal : rndstuff;
+    import ripstd.meta : AliasSeq;
+    import ripstd.range : retro;
 
     int[] a = [ 1, 2, 3, 2, 6 ];
     assert(find(retro(a), 5).empty);
@@ -2422,8 +2422,8 @@ if (Ranges.length > 1 && is(typeof(startsWith!pred(haystack, needles))))
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange;
 
     int[] a = [ -1, 0, 1, 2, 3, 4, 5 ];
     int[] b = [ 1, 2, 3 ];
@@ -2473,7 +2473,7 @@ RandomAccessRange find(RandomAccessRange, alias pred, InputRange)(
 ///
 @safe unittest
 {
-    import std.range.primitives : empty;
+    import ripstd.range.primitives : empty;
     int[] a = [ -1, 0, 1, 2, 3, 4, 5 ];
     int[] b = [ 1, 2, 3 ];
 
@@ -2581,7 +2581,7 @@ template canFind(alias pred="a == b")
 
 @safe unittest
 {
-    import std.algorithm.internal : rndstuff;
+    import ripstd.algorithm.internal : rndstuff;
 
     auto a = rndstuff!(int)();
     if (a.length)
@@ -2593,7 +2593,7 @@ template canFind(alias pred="a == b")
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     assert(equal!(canFind!"a < b")([[1, 2, 3], [7, 8, 9]], [2, 8]));
 }
 
@@ -2644,9 +2644,9 @@ if (isForwardRange!(Range))
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange;
+    import ripstd.range;
 
     int[] a = [ 11, 10, 10, 9, 8, 8, 7, 8, 9 ];
     auto p = findAdjacent(a);
@@ -2722,7 +2722,7 @@ if (isInputRange!InputRange && isForwardRange!ForwardRange)
 // https://issues.dlang.org/show_bug.cgi?id=19765
 @system unittest
 {
-    import std.range.interfaces : inputRangeObject;
+    import ripstd.range.interfaces : inputRangeObject;
     auto choices = inputRangeObject("b");
     auto f = "foobar".findAmong(choices);
     assert(f == "bar");
@@ -2768,7 +2768,7 @@ if (isForwardRange!R1 && isForwardRange!R2
 ///
 @safe unittest
 {
-    import std.range.primitives : empty;
+    import ripstd.range.primitives : empty;
     // Needle is found; s is replaced by the substring following the first
     // occurrence of the needle.
     string s = "abcdef";
@@ -2815,7 +2815,7 @@ if (isForwardRange!R1 && ifTestable!(typeof(haystack.front), unaryFun!pred))
 ///
 @safe unittest
 {
-    import std.ascii : isWhite;
+    import ripstd.ascii : isWhite;
     string s = "    abc";
     assert(findSkip!isWhite(s) && s == "abc");
     assert(!findSkip!isWhite(s) && s == "abc");
@@ -2826,7 +2826,7 @@ if (isForwardRange!R1 && ifTestable!(typeof(haystack.front), unaryFun!pred))
 
 @safe unittest
 {
-    import std.ascii : isWhite;
+    import ripstd.ascii : isWhite;
 
     auto s = "  ";
     assert(findSkip!isWhite(s) == 2);
@@ -2921,7 +2921,7 @@ if (isForwardRange!R1 && isForwardRange!R2)
     }
     else
     {
-        import std.range : takeExactly;
+        import ripstd.range : takeExactly;
         auto original = haystack.save;
         auto h = haystack.save;
         auto n = needle.save;
@@ -2997,7 +2997,7 @@ if (isForwardRange!R1 && isForwardRange!R2)
     }
     else
     {
-        import std.range : takeExactly;
+        import ripstd.range : takeExactly;
         auto original = haystack.save;
         auto h = haystack.save;
         auto n = needle.save;
@@ -3073,7 +3073,7 @@ if (isForwardRange!R1 && isForwardRange!R2)
     }
     else
     {
-        import std.range : takeExactly;
+        import ripstd.range : takeExactly;
         auto original = haystack.save;
         auto h = haystack.save;
         auto n = needle.save;
@@ -3133,11 +3133,11 @@ if (isForwardRange!R1 && isForwardRange!R2)
 ///
 @safe pure nothrow unittest
 {
-    import std.range.primitives : empty;
+    import ripstd.range.primitives : empty;
 
     auto a = "Carl Sagan Memorial Station";
     auto r = findSplit(a, "Velikovsky");
-    import std.typecons : isTuple;
+    import ripstd.typecons : isTuple;
     static assert(isTuple!(typeof(r.asTuple)));
     static assert(isTuple!(typeof(r)));
     assert(!r);
@@ -3165,13 +3165,13 @@ if (isForwardRange!R1 && isForwardRange!R2)
 /// Use $(REF only, std,range) to find single elements:
 @safe pure nothrow unittest
 {
-    import std.range : only;
+    import ripstd.range : only;
     assert([1, 2, 3, 4].findSplitBefore(only(3))[0] == [1, 2]);
 }
 
 @safe pure nothrow unittest
 {
-    import std.range.primitives : empty;
+    import ripstd.range.primitives : empty;
 
     immutable a = [ 1, 2, 3, 4, 5, 6, 7, 8 ];
     auto r = findSplit(a, [9, 1]);
@@ -3218,8 +3218,8 @@ if (isForwardRange!R1 && isForwardRange!R2)
 
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : filter;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : filter;
 
     auto a = [ 1, 2, 3, 4, 5, 6, 7, 8 ];
     auto fwd = filter!"a > 0"(a);
@@ -3363,8 +3363,8 @@ minCount(alias pred = "a < b", Range)(Range range)
 if (isInputRange!Range && !isInfinite!Range &&
     is(typeof(binaryFun!pred(range.front, range.front))))
 {
-    import std.algorithm.internal : algoFormat;
-    import std.exception : enforce;
+    import ripstd.algorithm.internal : algoFormat;
+    import ripstd.exception : enforce;
 
     alias T  = ElementType!Range;
     alias UT = Unqual!T;
@@ -3422,7 +3422,7 @@ if (isInputRange!Range && !isInfinite!Range &&
     }
     else static if (hasLvalueElements!Range)
     {
-        import std.algorithm.internal : addressOf;
+        import ripstd.algorithm.internal : addressOf;
         T* p = addressOf(range.front);
         for (range.popFront(); !range.empty; range.popFront())
         {
@@ -3456,8 +3456,8 @@ if (isInputRange!Range && !isInfinite!Range &&
 ///
 @safe unittest
 {
-    import std.conv : text;
-    import std.typecons : tuple;
+    import ripstd.conv : text;
+    import ripstd.typecons : tuple;
 
     int[] a = [ 2, 3, 4, 1, 2, 4, 1, 1, 2 ];
     // Minimum is 1 and occurs 3 times
@@ -3468,9 +3468,9 @@ if (isInputRange!Range && !isInfinite!Range &&
 
 @system unittest
 {
-    import std.conv : text;
-    import std.exception : assertThrown;
-    import std.internal.test.dummyrange;
+    import ripstd.conv : text;
+    import ripstd.exception : assertThrown;
+    import ripstd.internal.test.dummyrange;
 
     int[][] b = [ [4], [2, 4], [4], [4] ];
     auto c = minCount!("a[0] < b[0]")(b);
@@ -3486,8 +3486,8 @@ if (isInputRange!Range && !isInfinite!Range &&
 
 @system unittest
 {
-    import std.conv : text;
-    import std.meta : AliasSeq;
+    import ripstd.conv : text;
+    import ripstd.meta : AliasSeq;
 
     static struct R(T) //input range
     {
@@ -3603,8 +3603,8 @@ if (isInputRange!Range && !isInfinite!Range &&
 ///
 @safe pure unittest
 {
-    import std.range : enumerate;
-    import std.typecons : tuple;
+    import ripstd.range : enumerate;
+    import ripstd.typecons : tuple;
 
     assert([2, 7, 1, 3].minElement == 1);
 
@@ -3621,7 +3621,7 @@ if (isInputRange!Range && !isInfinite!Range &&
 
 @safe pure unittest
 {
-    import std.range : enumerate, iota;
+    import ripstd.range : enumerate, iota;
     // supports mapping
     assert([3, 4, 5, 1, 2].enumerate.minElement!"a.value" == tuple(3, 1));
     assert([5, 2, 4].enumerate.minElement!"a.value" == tuple(1, 2));
@@ -3642,7 +3642,7 @@ if (isInputRange!Range && !isInfinite!Range &&
     assert(["b", "a", "c"].minElement == "a");
 
     // with all dummy ranges
-    import std.internal.test.dummyrange;
+    import ripstd.internal.test.dummyrange;
     foreach (DummyType; AllDummyRanges)
     {
         DummyType d;
@@ -3741,8 +3741,8 @@ if (isInputRange!Range && !isInfinite!Range &&
 ///
 @safe pure unittest
 {
-    import std.range : enumerate;
-    import std.typecons : tuple;
+    import ripstd.range : enumerate;
+    import ripstd.typecons : tuple;
     assert([2, 1, 4, 3].maxElement == 4);
 
     // allows to get the index of an element too
@@ -3758,7 +3758,7 @@ if (isInputRange!Range && !isInfinite!Range &&
 
 @safe pure unittest
 {
-    import std.range : enumerate, iota;
+    import ripstd.range : enumerate, iota;
 
     // supports mapping
     assert([3, 4, 5, 1, 2].enumerate.maxElement!"a.value" == tuple(2, 5));
@@ -3781,7 +3781,7 @@ if (isInputRange!Range && !isInfinite!Range &&
     assert(["a", "c", "b"].maxElement == "c");
 
     // with all dummy ranges
-    import std.internal.test.dummyrange;
+    import ripstd.internal.test.dummyrange;
     foreach (DummyType; AllDummyRanges)
     {
         DummyType d;
@@ -3913,8 +3913,8 @@ if (isForwardRange!Range && !isInfinite!Range &&
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange;
 
     int[] a = [ 2, 3, 4, 1, 2, 4, 1, 1, 2 ];
     //Test that an empty range works
@@ -3928,8 +3928,8 @@ if (isForwardRange!Range && !isInfinite!Range &&
 @system unittest
 {
     //Rvalue range
-    import std.algorithm.comparison : equal;
-    import std.container : Array;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container : Array;
 
     assert(Array!int(2, 3, 4, 1, 2, 4, 1, 1, 2)
                []
@@ -4046,11 +4046,11 @@ if (isInputRange!Range && !isInfinite!Range &&
     assert(["b", "a", "c"].minIndex == 1);
 
     // infinite range
-    import std.range : cycle;
+    import ripstd.range : cycle;
     static assert(!__traits(compiles, cycle([1]).minIndex));
 
     // with all dummy ranges
-    import std.internal.test.dummyrange : AllDummyRanges;
+    import ripstd.internal.test.dummyrange : AllDummyRanges;
     foreach (DummyType; AllDummyRanges)
     {
         static if (isForwardRange!DummyType && !isInfinite!DummyType)
@@ -4173,11 +4173,11 @@ if (isInputRange!Range && !isInfinite!Range &&
     assert(["b", "a", "c"].maxIndex == 2);
 
     // infinite range
-    import std.range : cycle;
+    import ripstd.range : cycle;
     static assert(!__traits(compiles, cycle([1]).maxIndex));
 
     // with all dummy ranges
-    import std.internal.test.dummyrange : AllDummyRanges;
+    import ripstd.internal.test.dummyrange : AllDummyRanges;
     foreach (DummyType; AllDummyRanges)
     {
         static if (isForwardRange!DummyType && !isInfinite!DummyType)
@@ -4262,14 +4262,14 @@ template skipOver(alias pred = (a, b) => a == b)
         }
         else
         {
-            import std.algorithm.comparison : min;
+            import ripstd.algorithm.comparison : min;
             auto r = haystack.save;
 
             static if (hasLength!Haystack && allSatisfy!(hasLength, Needles))
             {
-                import std.algorithm.iteration : map;
-                import std.algorithm.searching : minElement;
-                import std.range : only;
+                import ripstd.algorithm.iteration : map;
+                import ripstd.algorithm.searching : minElement;
+                import ripstd.range : only;
                 // Shortcut opportunity!
                 if (needles.only.map!(a => a.length).minElement > haystack.length)
                     return false;
@@ -4360,7 +4360,7 @@ template skipOver(alias pred = (a, b) => a == b)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto s1 = "Hello world";
     assert(!skipOver(s1, "Ha"));
@@ -4378,8 +4378,8 @@ template skipOver(alias pred = (a, b) => a == b)
 ///
 @safe unittest
 {
-    import std.ascii : isWhite;
-    import std.range.primitives : empty;
+    import ripstd.ascii : isWhite;
+    import ripstd.range.primitives : empty;
 
     auto s2 = "\t\tvalue";
     auto s3 = "";
@@ -4404,7 +4404,7 @@ template skipOver(alias pred = (a, b) => a == b)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto s1 = "Hello world";
     assert(!skipOver(s1, 'a'));
@@ -4425,8 +4425,8 @@ template skipOver(alias pred = (a, b) => a == b)
 /// Partial instantiation
 @safe unittest
 {
-    import std.ascii : isWhite;
-    import std.range.primitives : empty;
+    import ripstd.ascii : isWhite;
+    import ripstd.range.primitives : empty;
 
     alias whitespaceSkiper = skipOver!isWhite;
 
@@ -4460,7 +4460,7 @@ template skipOver(alias pred = (a, b) => a == b)
 // variadic with custom pred
 @safe unittest
 {
-    import std.ascii : toLower;
+    import ripstd.ascii : toLower;
 
     auto s = "DLang.rocks";
     assert(!s.skipOver("dlang", "DLF", "DLang "));
@@ -4488,7 +4488,7 @@ template skipOver(alias pred = (a, b) => a == b)
     assert(s.skipOver("dlang", "DLANG"w, "DLF", "D"d, "DL"w, "DLang."d));
     assert(s == "rocks");
 
-    import std.algorithm.iteration : filter;
+    import ripstd.algorithm.iteration : filter;
     s = "DLang.rocks";
     assert(s.skipOver("dlang", "DLang".filter!(a => true)));
     assert(s == ".rocks");
@@ -4553,8 +4553,8 @@ template skipOver(alias pred = (a, b) => a == b)
 // dxml regression
 @safe unittest
 {
-    import std.utf : byCodeUnit;
-    import std.algorithm.comparison : equal;
+    import ripstd.utf : byCodeUnit;
+    import ripstd.algorithm.comparison : equal;
 
     bool stripStartsWith(Text)(ref Text text, string needle)
     {
@@ -4613,7 +4613,7 @@ if (isInputRange!Range && Needles.length > 1 &&
     static if (__traits(isSame, binaryFun!pred, (a, b) => a == b) &&
         isNarrowString!Range && allSatisfy!(checkType, Needles))
     {
-        import std.utf : byCodeUnit;
+        import ripstd.utf : byCodeUnit;
         auto haystack = doesThisStart.byCodeUnit;
     }
     else
@@ -4803,14 +4803,14 @@ if (isInputRange!R &&
 ///
 @safe unittest
 {
-    import std.ascii : isAlpha;
+    import ripstd.ascii : isAlpha;
 
     assert("abc".startsWith!(a => a.isAlpha));
     assert("abc".startsWith!isAlpha);
     assert(!"1ab".startsWith!(a => a.isAlpha));
     assert(!"".startsWith!(a => a.isAlpha));
 
-    import std.algorithm.comparison : among;
+    import ripstd.algorithm.comparison : among;
     assert("abc".startsWith!(a => a.among('a', 'b') != 0));
     assert(!"abc".startsWith!(a => a.among('b', 'c') != 0));
 
@@ -4826,7 +4826,7 @@ if (isInputRange!R &&
     assert(startsWith("abc", "x", "aaa", "sab") == 0);
     assert(startsWith("abc", "x", "aaa", "a", "sab") == 3);
 
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
     alias C = Tuple!(int, "x", int, "y");
     assert(startsWith!"a.x == b"([ C(1,1), C(1,2), C(2,2) ], [1, 1]));
     assert(startsWith!"a.x == b"([ C(1,1), C(2,1), C(2,2) ], [1, 1], [1, 2], [1, 3]) == 2);
@@ -4834,10 +4834,10 @@ if (isInputRange!R &&
 
 @safe unittest
 {
-    import std.algorithm.iteration : filter;
-    import std.conv : to;
-    import std.meta : AliasSeq;
-    import std.range;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.conv : to;
+    import ripstd.meta : AliasSeq;
+    import ripstd.range;
 
     static foreach (S; AliasSeq!(char[], wchar[], dchar[], string, wstring, dstring))
     (){ // workaround slow optimizations for large functions
@@ -5109,8 +5109,8 @@ if (isInputRange!Range)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : No;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : No;
     int[] a = [ 1, 2, 4, 7, 7, 2, 4, 7, 3, 5];
     assert(equal(a.until(7), [1, 2, 4]));
     assert(equal(a.until(7, No.openRight), [1, 2, 4, 7]));
@@ -5118,7 +5118,7 @@ if (isInputRange!Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     int[] a = [ 1, 2, 4, 7, 7, 2, 4, 7, 3, 5];
 
     static assert(isForwardRange!(typeof(a.until(7))));
@@ -5133,8 +5133,8 @@ if (isInputRange!Range)
 // https://issues.dlang.org/show_bug.cgi?id=13171
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range;
     auto a = [1, 2, 3, 4];
     assert(equal(refRange(&a).until(3, No.openRight), [1, 2, 3]));
     assert(a == [4]);
@@ -5143,7 +5143,7 @@ if (isInputRange!Range)
 // https://issues.dlang.org/show_bug.cgi?id=10460
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = [1, 2, 3, 4];
     foreach (ref e; a.until(3))
         e = 0;
@@ -5153,7 +5153,7 @@ if (isInputRange!Range)
 // https://issues.dlang.org/show_bug.cgi?id=13124
 @safe unittest
 {
-    import std.algorithm.comparison : among, equal;
+    import ripstd.algorithm.comparison : among, equal;
     auto s = "hello how\nare you";
     assert(equal(s.until!(c => c.among!('\n', '\r')), "hello how"));
 }
@@ -5161,8 +5161,8 @@ if (isInputRange!Range)
 // https://issues.dlang.org/show_bug.cgi?id=18657
 pure @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : refRange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : refRange;
     {
         string s = "foobar";
         auto r = refRange(&s).until("bar");

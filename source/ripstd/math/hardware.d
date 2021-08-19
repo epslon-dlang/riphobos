@@ -238,7 +238,7 @@ public:
 ///
 @safe unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     static void func() {
         int a = 10 * 10;
@@ -268,7 +268,7 @@ public:
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static struct Test
     {
@@ -343,7 +343,7 @@ void resetIeeeFlags() @trusted nothrow @nogc
 ///
 @safe nothrow unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     pragma(inline, false) static void blockopt(ref real x) {}
     resetIeeeFlags();
@@ -763,7 +763,7 @@ private:
     }
 
     // Read from the control register
-    package(std.math) static ControlState getControlState() @trusted pure
+    package(ripstd.math) static ControlState getControlState() @trusted pure
     {
         version (D_InlineAsm_X86)
         {
@@ -801,7 +801,7 @@ private:
     }
 
     // Set the control register
-    package(std.math) static void setControlState(ControlState newState) @trusted
+    package(ripstd.math) static void setControlState(ControlState newState) @trusted
     {
         version (InlineAsm_X86_Any)
         {
@@ -847,7 +847,7 @@ private:
 ///
 @safe unittest
 {
-    import std.math.rounding : lrint;
+    import ripstd.math.rounding : lrint;
 
     FloatingPointControl fpctrl;
 
@@ -900,7 +900,7 @@ private:
 
 @safe unittest // rounding
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static foreach (T; AliasSeq!(float, double, real))
     {{

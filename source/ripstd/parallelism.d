@@ -52,16 +52,16 @@ else version (WatchOS)
 ///
 @system unittest
 {
-    import std.algorithm.iteration : map;
-    import std.math.operations : isClose;
-    import std.parallelism : taskPool;
-    import std.range : iota;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.math.operations : isClose;
+    import ripstd.parallelism : taskPool;
+    import ripstd.range : iota;
 
     // Parallel reduce can be combined with
-    // std.algorithm.iteration.map to interesting effect.
+    // ripstd.algorithm.iteration.map to interesting effect.
     // The following example (thanks to Russel Winder)
     // calculates pi by quadrature  using
-    // std.algorithm.map and TaskPool.reduce.
+    // ripstd.algorithm.map and TaskPool.reduce.
     // getTerm is evaluated in parallel as needed by
     // TaskPool.reduce.
     //
@@ -69,7 +69,7 @@ else version (WatchOS)
     // for n = 1_000_000_000:
     //
     // TaskPool.reduce:       1.067 s
-    // std.algorithm.reduce:  4.011 s
+    // ripstd.algorithm.reduce:  4.011 s
 
     enum n = 1_000_000;
     enum delta = 1.0 / n;
@@ -90,10 +90,10 @@ import core.memory;
 import core.sync.condition;
 import core.thread;
 
-import std.functional;
-import std.meta;
-import std.range.primitives;
-import std.traits;
+import ripstd.functional;
+import ripstd.meta;
+import ripstd.range.primitives;
+import ripstd.traits;
 
 /*
 (For now public undocumented with reserved name.)
@@ -142,7 +142,7 @@ if (is(Unqual!T : T)
         return local;
     }
 
-    import std.traits : SetFunctionAttributes;
+    import ripstd.traits : SetFunctionAttributes;
     alias Fun = SetFunctionAttributes!(typeof(&impl), "D",
         functionAttributes!(typeof(&impl)) | FunctionAttribute.pure_);
     auto purified = (() @trusted => cast(Fun) &impl)();
@@ -292,7 +292,7 @@ private template AliasReturn(alias fun, T...)
     alias AliasReturn = typeof({ T args; return fun(args); });
 }
 
-// Should be private, but std.algorithm.reduce is used in the zero-thread case
+// Should be private, but ripstd.algorithm.reduce is used in the zero-thread case
 // and won't work w/ private.
 template reduceAdjoin(functions...)
 {
@@ -428,7 +428,7 @@ struct Task(alias fun, Args...)
 
     private static void impl(void* myTask)
     {
-        import std.algorithm.internal : addressOf;
+        import ripstd.algorithm.internal : addressOf;
 
         Task* myCastedTask = cast(typeof(this)*) myTask;
         static if (is(ReturnType == void))
@@ -476,7 +476,7 @@ struct Task(alias fun, Args...)
         }
         else
         {
-            // BUG:  Should check this for delegates too, but std.traits
+            // BUG:  Should check this for delegates too, but ripstd.traits
             //       apparently doesn't allow this.  isPure is irrelevant
             //       for delegates, at least for now since shared delegates
             //       don't work.
@@ -524,7 +524,7 @@ struct Task(alias fun, Args...)
 
     private void enforcePool()
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         enforce(this.pool !is null, "Job not submitted yet.");
     }
 
@@ -765,7 +765,7 @@ Returns:  A pointer to the `Task`.
 Example:
 ---
 // Read two files into memory at the same time.
-import std.file;
+import ripstd.file;
 
 void main()
 {
@@ -797,7 +797,7 @@ void parallelSort(T)(T[] data)
     // Sort small subarrays serially.
     if (data.length < 100)
     {
-         std.algorithm.sort(data);
+         ripstd.algorithm.sort(data);
          return;
     }
 
@@ -833,8 +833,8 @@ Example:
 ---
 // Read two files in at the same time again,
 // but this time use a function pointer instead
-// of an alias to represent std.file.read.
-import std.file;
+// of an alias to represent ripstd.file.read.
+import ripstd.file;
 
 void main()
 {
@@ -948,7 +948,7 @@ uint totalCPUsImpl() @nogc nothrow @trusted
     {
         // BUGS:  Only works on Windows 2000 and above.
         import core.sys.windows.winbase : SYSTEM_INFO, GetSystemInfo;
-        import std.algorithm.comparison : max;
+        import ripstd.algorithm.comparison : max;
         SYSTEM_INFO si;
         GetSystemInfo(&si);
         return max(1, cast(uint) si.dwNumberOfProcessors);
@@ -1018,8 +1018,8 @@ uint totalCPUsImpl() @nogc nothrow @trusted
 /*
 This class serves two purposes:
 
-1.  It distinguishes std.parallelism threads from other threads so that
-    the std.parallelism daemon threads can be terminated.
+1.  It distinguishes ripstd.parallelism threads from other threads so that
+    the ripstd.parallelism daemon threads can be terminated.
 
 2.  It adds a reference to the pool that the thread is a member of,
     which is also necessary to allow the daemon threads to be properly
@@ -1253,7 +1253,7 @@ private:
     }
     out
     {
-        import std.conv : text;
+        import ripstd.conv : text;
 
         assert(tail.prev !is tail);
         assert(tail.next is null, text(tail.prev, '\t', tail.next));
@@ -1469,7 +1469,7 @@ public:
     // as public API.
     size_t defaultWorkUnitSize(size_t rangeLen) const @safe pure nothrow
     {
-        import std.algorithm.comparison : max;
+        import ripstd.algorithm.comparison : max;
 
         if (this.size == 0)
         {
@@ -1597,7 +1597,7 @@ public:
     */
     ParallelForeach!R parallel(R)(R range, size_t workUnitSize)
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         enforce(workUnitSize > 0, "workUnitSize must be > 0.");
         alias RetType = ParallelForeach!R;
         return RetType(this, range, workUnitSize);
@@ -1724,8 +1724,8 @@ public:
                 is(MapType!(Args[0], functions) : ElementType!(Args[$ - 1]))
                 )
             {
-                import std.conv : text;
-                import std.exception : enforce;
+                import ripstd.conv : text;
+                import ripstd.exception : enforce;
 
                 alias buf = args[$ - 1];
                 alias args2 = args[0..$ - 1];
@@ -1740,7 +1740,7 @@ public:
             }
             else
             {
-                import std.array : uninitializedArray;
+                import ripstd.array : uninitializedArray;
 
                 auto buf = uninitializedArray!(MapType!(Args[0], functions)[])(len);
                 alias args2 = args;
@@ -1784,7 +1784,7 @@ public:
 
             void doIt()
             {
-                import std.algorithm.comparison : min;
+                import ripstd.algorithm.comparison : min;
 
                 scope(failure)
                 {
@@ -1882,7 +1882,7 @@ public:
         // the sum of the logarithms.
 
         auto lineRange = File("numberList.txt").byLine();
-        auto dupedLines = std.algorithm.map!"a.idup"(lineRange);
+        auto dupedLines = ripstd.algorithm.map!"a.idup"(lineRange);
         auto nums = taskPool.map!(to!double)(dupedLines);
         auto logs = taskPool.map!log10(nums);
 
@@ -1905,7 +1905,7 @@ public:
         map(S)(S source, size_t bufSize = 100, size_t workUnitSize = size_t.max)
         if (isInputRange!S)
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
 
             enforce(workUnitSize == size_t.max || workUnitSize <= bufSize,
                     "Work unit size must be smaller than buffer size.");
@@ -1937,7 +1937,7 @@ public:
 
                 void popSource()
                 {
-                    import std.algorithm.comparison : min;
+                    import ripstd.algorithm.comparison : min;
 
                     static if (__traits(compiles, source[0 .. source.length]))
                     {
@@ -1975,7 +1975,7 @@ public:
                 // No need to copy element by element.
                 FromType dumpToFrom()
                 {
-                    import std.algorithm.mutation : swap;
+                    import ripstd.algorithm.mutation : swap;
 
                     assert(source.buf1.length <= from.length);
                     from.length = source.buf1.length;
@@ -2061,11 +2061,11 @@ public:
                 // case.
                 E[] fillBuf(E[] buf)
                 {
-                    import std.algorithm.comparison : min;
+                    import ripstd.algorithm.comparison : min;
 
                     static if (isRandomAccessRange!S)
                     {
-                        import std.range : take;
+                        import ripstd.range : take;
                         auto toMap = take(source, buf.length);
                         scope(success) popSource();
                     }
@@ -2188,7 +2188,7 @@ public:
 
     Example:
     ---
-    import std.conv, std.stdio;
+    import ripstd.conv, ripstd.stdio;
 
     void main()
     {
@@ -2197,7 +2197,7 @@ public:
         // dealing with byLine's buffer recycling by
         // eagerly duplicating every line.
         auto lines = File("foo.txt").byLine();
-        auto duped = std.algorithm.map!"a.idup"(lines);
+        auto duped = ripstd.algorithm.map!"a.idup"(lines);
 
         // Fetch more lines in the background while we
         // process the lines already read into memory
@@ -2476,10 +2476,10 @@ public:
         // Timings on an Athlon 64 X2 dual core machine:
         //
         // Parallel reduce:                     72 milliseconds
-        // Using std.algorithm.reduce instead:  181 milliseconds
+        // Using ripstd.algorithm.reduce instead:  181 milliseconds
         auto nums = iota(10_000_000.0f);
         auto sumSquares = taskPool.reduce!"a + b"(
-            0.0, std.algorithm.map!"a * a"(nums)
+            0.0, ripstd.algorithm.map!"a * a"(nums)
         );
         ---
 
@@ -2530,7 +2530,7 @@ public:
         {
             import core.exception : OutOfMemoryError;
             import core.internal.lifetime : emplaceRef;
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
 
             alias fun = reduceAdjoin!functions;
             alias finishFun = reduceFinish!functions;
@@ -2718,7 +2718,7 @@ public:
                 if (!ptr)
                 {
                     throw new OutOfMemoryError(
-                        "Out of memory in std.parallelism."
+                        "Out of memory in ripstd.parallelism."
                     );
                 }
 
@@ -2747,7 +2747,7 @@ public:
             size_t curPos = 0;
             void useTask(ref RTask task)
             {
-                import std.algorithm.comparison : min;
+                import ripstd.algorithm.comparison : min;
 
                 task.pool = this;
                 task._args[0] = scopedAddress(&reduceOnRange);
@@ -2903,7 +2903,7 @@ public:
                 {
                     auto seeds()
                     {
-                        import std.typecons : tuple;
+                        import ripstd.typecons : tuple;
                         return tuple(args[1 .. functions.length+1]);
                     }
                 }
@@ -2922,7 +2922,7 @@ public:
             }
             else
             {
-                import std.conv : text;
+                import ripstd.conv : text;
                 static assert(0, "Invalid number of arguments (" ~ Args.length.text ~ "): Should be an input range, "
                               ~ functions.length.text ~ " optional seed(s), and an optional work unit size.");
             }
@@ -2966,7 +2966,7 @@ public:
     // a set of files, one for each thread.  This allows
     // results to be written out without any synchronization.
 
-    import std.conv, std.range, std.numeric, std.stdio;
+    import ripstd.conv, ripstd.range, ripstd.numeric, ripstd.stdio;
 
     void main()
     {
@@ -3098,7 +3098,7 @@ public:
 
         ref opIndex(this Qualified)(size_t index)
         {
-            import std.conv : text;
+            import ripstd.conv : text;
             assert(index < size, text(index, '\t', uint.max));
             return *(cast(CopyTypeQualifiers!(Qualified, T)*) (data + elemSize * index));
         }
@@ -3364,7 +3364,7 @@ public:
 
     Example:
     ---
-    import std.file;
+    import ripstd.file;
 
     // Create a task.
     auto t = task!read("foo.txt");
@@ -3401,7 +3401,7 @@ public:
     void put(alias fun, Args...)(Task!(fun, Args)* task)
     if (!isSafeReturn!(typeof(*task)))
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         enforce(task !is null, "Cannot put a null Task on a TaskPool queue.");
         put(*task);
     }
@@ -3416,7 +3416,7 @@ public:
     @trusted void put(alias fun, Args...)(Task!(fun, Args)* task)
     if (isSafeReturn!(typeof(*task)))
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         enforce(task !is null, "Cannot put a null Task on a TaskPool queue.");
         put(*task);
     }
@@ -3485,9 +3485,9 @@ public:
 
 @system unittest
 {
-    import std.algorithm.iteration : sum;
-    import std.range : iota;
-    import std.typecons : tuple;
+    import ripstd.algorithm.iteration : sum;
+    import ripstd.range : iota;
+    import ripstd.typecons : tuple;
 
     enum N = 100;
     auto r = iota(1, N + 1);
@@ -3514,7 +3514,7 @@ terminating the main thread.
 */
 @property TaskPool taskPool() @trusted
 {
-    import std.concurrency : initOnce;
+    import ripstd.concurrency : initOnce;
     __gshared TaskPool pool;
     return initOnce!pool({
         auto p = new TaskPool(defaultPoolThreads);
@@ -3577,8 +3577,8 @@ ParallelForeach!R parallel(R)(R range, size_t workUnitSize)
 // https://issues.dlang.org/show_bug.cgi?id=17019
 @system unittest
 {
-    import std.algorithm.iteration : each, sum;
-    import std.range : iota;
+    import ripstd.algorithm.iteration : each, sum;
+    import ripstd.range : iota;
 
     // check behavior with parallel
     auto arr = new int[10];
@@ -3637,7 +3637,7 @@ private void submitAndExecute(
     else
     {
         auto ptr = cast(PTask*) malloc(nThreads * PTask.sizeof);
-        if (!ptr) throw new OutOfMemoryError("Out of memory in std.parallelism.");
+        if (!ptr) throw new OutOfMemoryError("Out of memory in ripstd.parallelism.");
         tasks = ptr[0 .. nThreads];
     }
 
@@ -3790,7 +3790,7 @@ private enum string parallelApplyMixinRandomAccess = q{
 
     void doIt()
     {
-        import std.algorithm.comparison : min;
+        import ripstd.algorithm.comparison : min;
 
         scope(failure)
         {
@@ -3888,8 +3888,8 @@ enum string parallelApplyMixinInputRange = q{
             // Returns:  The previous value of nPopped.
             size_t makeTemp()
             {
-                import std.algorithm.internal : addressOf;
-                import std.array : uninitializedArray;
+                import ripstd.algorithm.internal : addressOf;
+                import ripstd.array : uninitializedArray;
 
                 if (temp is null)
                 {
@@ -3921,7 +3921,7 @@ enum string parallelApplyMixinInputRange = q{
             // Returns:  The previous value of nPopped.
             static if (!bufferTrick) size_t makeTemp()
             {
-                import std.array : uninitializedArray;
+                import ripstd.array : uninitializedArray;
 
                 if (temp is null)
                 {
@@ -3945,7 +3945,7 @@ enum string parallelApplyMixinInputRange = q{
 
             static if (bufferTrick) size_t makeTemp()
             {
-                import std.algorithm.mutation : swap;
+                import ripstd.algorithm.mutation : swap;
                 rangeMutex.lock();
                 scope(exit) rangeMutex.unlock();
 
@@ -4135,7 +4135,7 @@ private struct RoundRobinBuffer(C1, C2)
     }
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     // This was the only way I could get nested maps to work.
     private __gshared TaskPool poolInstance;
@@ -4145,17 +4145,17 @@ version (StdUnittest)
 // These are the tests that should be run every time Phobos is compiled.
 @system unittest
 {
-    import std.algorithm.comparison : equal, min, max;
-    import std.algorithm.iteration : filter, map, reduce;
-    import std.array : split;
-    import std.conv : text;
-    import std.exception : assertThrown;
-    import std.math.operations : isClose;
-    import std.math.algebraic : sqrt, abs;
-    import std.math.exponential : log;
-    import std.range : indexed, iota, join;
-    import std.typecons : Tuple, tuple;
-    import std.stdio;
+    import ripstd.algorithm.comparison : equal, min, max;
+    import ripstd.algorithm.iteration : filter, map, reduce;
+    import ripstd.array : split;
+    import ripstd.conv : text;
+    import ripstd.exception : assertThrown;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.algebraic : sqrt, abs;
+    import ripstd.math.exponential : log;
+    import ripstd.range : indexed, iota, join;
+    import ripstd.typecons : Tuple, tuple;
+    import ripstd.stdio;
 
     poolInstance = new TaskPool(2);
     scope(exit) poolInstance.stop();
@@ -4411,15 +4411,15 @@ version (StdUnittest)
            ));
 
     {
-        import std.conv : to;
-        import std.file : deleteme;
+        import ripstd.conv : to;
+        import ripstd.file : deleteme;
 
         string temp_file = deleteme ~ "-tempDelMe.txt";
         auto file = File(temp_file, "wb");
         scope(exit)
         {
             file.close();
-            import std.file;
+            import ripstd.file;
             remove(temp_file);
         }
 
@@ -4434,7 +4434,7 @@ version (StdUnittest)
         void next(ref char[] buf)
         {
             file.readln(buf);
-            import std.string : chomp;
+            import ripstd.string : chomp;
             buf = chomp(buf);
         }
 
@@ -4560,9 +4560,9 @@ version (parallelismStressTest)
 {
     @system unittest
     {
-        import std.stdio : stderr, writeln, readln;
-        import std.range : iota;
-        import std.algorithm.iteration : filter, reduce;
+        import ripstd.stdio : stderr, writeln, readln;
+        import ripstd.range : iota;
+        import ripstd.algorithm.iteration : filter, reduce;
 
         size_t attempt;
         for (; attempt < 10; attempt++)
@@ -4647,13 +4647,13 @@ version (parallelismStressTest)
     // as examples.
     @system unittest
     {
-        import std.stdio : stderr;
-        import std.range : iota;
-        import std.algorithm.iteration : filter, reduce;
-        import std.math.algebraic : sqrt;
-        import std.math.operations : isClose;
-        import std.math.traits : isNaN;
-        import std.conv : text;
+        import ripstd.stdio : stderr;
+        import ripstd.range : iota;
+        import ripstd.algorithm.iteration : filter, reduce;
+        import ripstd.math.algebraic : sqrt;
+        import ripstd.math.operations : isClose;
+        import ripstd.math.traits : isNaN;
+        import ripstd.conv : text;
 
         foreach (attempt; 0 .. 10)
         foreach (poolSize; [0, 4])
@@ -4836,15 +4836,15 @@ version (parallelismStressTest)
 
 @safe unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
 
-    // this test was in std.range, but caused cycles.
+    // this test was in ripstd.range, but caused cycles.
     assert(__traits(compiles, { foreach (i; iota(0, 100UL).parallel) {} }));
 }
 
 @safe unittest
 {
-    import std.algorithm.iteration : each;
+    import ripstd.algorithm.iteration : each;
 
     long[] arr;
     static assert(is(typeof({
@@ -4855,7 +4855,7 @@ version (parallelismStressTest)
 // https://issues.dlang.org/show_bug.cgi?id=17539
 @system unittest
 {
-    import std.random : rndGen;
+    import ripstd.random : rndGen;
     // ensure compilation
     try foreach (rnd; rndGen.parallel) break;
     catch (ParallelForeachError e) {}

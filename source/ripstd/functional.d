@@ -63,10 +63,10 @@ Distributed under the Boost Software License, Version 1.0.
 */
 module ripstd.functional;
 
-import std.meta : AliasSeq, Reverse;
-import std.traits : isCallable, Parameters;
+import ripstd.meta : AliasSeq, Reverse;
+import ripstd.traits : isCallable, Parameters;
 
-import std.internal.attributes : betterC;
+import ripstd.internal.attributes : betterC;
 
 private template needOpCallAlias(alias fun)
 {
@@ -115,8 +115,8 @@ template unaryFun(alias fun, string parmName = "a")
     {
         static if (!fun._ctfeMatchUnary(parmName))
         {
-            import std.algorithm, std.conv, std.exception, std.math, std.range, std.string;
-            import std.meta, std.traits, std.typecons;
+            import ripstd.algorithm, ripstd.conv, ripstd.exception, ripstd.math, ripstd.range, ripstd.string;
+            import ripstd.meta, ripstd.traits, ripstd.typecons;
         }
         auto unaryFun(ElementType)(auto ref ElementType __a)
         {
@@ -207,8 +207,8 @@ template binaryFun(alias fun, string parm1Name = "a",
     {
         static if (!fun._ctfeMatchBinary(parm1Name, parm2Name))
         {
-            import std.algorithm, std.conv, std.exception, std.math, std.range, std.string;
-            import std.meta, std.traits, std.typecons;
+            import ripstd.algorithm, ripstd.conv, ripstd.exception, ripstd.math, ripstd.range, ripstd.string;
+            import ripstd.meta, ripstd.traits, ripstd.typecons;
         }
         auto binaryFun(ElementType1, ElementType2)
             (auto ref ElementType1 __a, auto ref ElementType2 __b)
@@ -276,7 +276,7 @@ template binaryFun(alias fun, string parm1Name = "a",
 private uint _ctfeSkipOp(ref string op)
 {
     if (!__ctfe) assert(false);
-    import std.ascii : isASCII, isAlphaNum;
+    import ripstd.ascii : isASCII, isAlphaNum;
     immutable oldLength = op.length;
     while (op.length)
     {
@@ -293,7 +293,7 @@ private uint _ctfeSkipOp(ref string op)
 private uint _ctfeSkipInteger(ref string op)
 {
     if (!__ctfe) assert(false);
-    import std.ascii : isDigit;
+    import ripstd.ascii : isDigit;
     immutable oldLength = op.length;
     while (op.length)
     {
@@ -437,18 +437,18 @@ private uint _ctfeMatchBinary(string fun, string name1, string name2)
 template safeOp(string S)
 if (S=="<"||S==">"||S=="<="||S==">="||S=="=="||S=="!=")
 {
-    import std.traits : isIntegral;
+    import ripstd.traits : isIntegral;
     private bool unsafeOp(ElementType1, ElementType2)(ElementType1 a, ElementType2 b) pure
         if (isIntegral!ElementType1 && isIntegral!ElementType2)
     {
-        import std.traits : CommonType;
+        import ripstd.traits : CommonType;
         alias T = CommonType!(ElementType1, ElementType2);
         return mixin("cast(T)a "~S~" cast(T) b");
     }
 
     bool safeOp(T0, T1)(auto ref T0 a, auto ref T1 b)
     {
-        import std.traits : mostNegative;
+        import ripstd.traits : mostNegative;
         static if (isIntegral!T0 && isIntegral!T1 &&
                    (mostNegative!T0 < 0) != (mostNegative!T1 < 0))
         {
@@ -480,7 +480,7 @@ if (S=="<"||S==">"||S=="<="||S==">="||S=="=="||S=="!=")
 
 @safe unittest //check user defined types
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     struct Foo
     {
         int a;
@@ -647,8 +647,8 @@ template not(alias pred)
 ///
 @safe unittest
 {
-    import std.algorithm.searching : find;
-    import std.uni : isWhite;
+    import ripstd.algorithm.searching : find;
+    import ripstd.uni : isWhite;
     string a = "   Hello, world!";
     assert(find!(not!isWhite)(a) == "Hello, world!");
 }
@@ -676,9 +676,9 @@ Returns:
  */
 template partial(alias fun, alias arg)
 {
-    import std.traits : isCallable;
+    import ripstd.traits : isCallable;
     // Check whether fun is a user defined type which implements opCall or a template.
-    // As opCall itself can be templated, std.traits.isCallable does not work here.
+    // As opCall itself can be templated, ripstd.traits.isCallable does not work here.
     enum isSomeFunctor = (is(typeof(fun) == struct) || is(typeof(fun) == class)) && __traits(hasMember, fun, "opCall");
     static if (isSomeFunctor || __traits(isTemplate, fun))
     {
@@ -726,7 +726,7 @@ template partial(alias fun, alias arg)
         }
         else
         {
-            import std.traits : ReturnType;
+            import ripstd.traits : ReturnType;
             ReturnType!fun partial(Parameters!fun[1..$] args2)
             {
                 return fun(arg, args2);
@@ -1066,8 +1066,8 @@ if (F.length > 1)
 {
     auto adjoin(V...)(auto ref V a)
     {
-        import std.typecons : tuple;
-        import std.meta : staticMap;
+        import ripstd.typecons : tuple;
+        import ripstd.meta : staticMap;
 
         auto resultElement(size_t i)()
         {
@@ -1081,7 +1081,7 @@ if (F.length > 1)
 ///
 @safe unittest
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
     static bool f1(int a) { return a != 0; }
     static int f2(int a) { return a / 2; }
     auto x = adjoin!(f1, f2)(5);
@@ -1091,7 +1091,7 @@ if (F.length > 1)
 
 @safe unittest
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
     static bool F1(int a) { return a != 0; }
     auto x1 = adjoin!(F1)(5);
     static int F2(int a) { return a / 2; }
@@ -1117,8 +1117,8 @@ if (F.length > 1)
 
 @safe unittest
 {
-    import std.meta : staticMap;
-    import std.typecons : Tuple, tuple;
+    import ripstd.meta : staticMap;
+    import ripstd.typecons : Tuple, tuple;
     alias funs = staticMap!(unaryFun, "a", "a * 2", "a * 3", "a * a", "-a");
     alias afun = adjoin!funs;
     assert(afun(5) == tuple(5, 10, 15, 25, -5));
@@ -1182,10 +1182,10 @@ if (fun.length > 0)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
-    import std.array : split;
-    import std.conv : to;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.array : split;
+    import ripstd.conv : to;
 
     // First split a string in whitespace-separated tokens and then
     // convert each token into an integer
@@ -1230,7 +1230,7 @@ alias pipe(fun...) = compose!(Reverse!(fun));
 ///
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     string foo(int a) { return to!(string)(a); }
     int bar(string a) { return to!(int)(a) + 1; }
     double baz(int a) { return a + 0.5; }
@@ -1280,15 +1280,15 @@ Note:
 */
 template memoize(alias fun)
 {
-    import std.traits : ReturnType;
+    import ripstd.traits : ReturnType;
      // https://issues.dlang.org/show_bug.cgi?id=13580
     // alias Args = Parameters!fun;
 
     ReturnType!fun memoize(Parameters!fun args)
     {
         alias Args = Parameters!fun;
-        import std.typecons : Tuple;
-        import std.traits : Unqual;
+        import ripstd.typecons : Tuple;
+        import ripstd.traits : Unqual;
 
         static Unqual!(ReturnType!fun)[Tuple!Args] memo;
         auto t = Tuple!Args(args);
@@ -1303,14 +1303,14 @@ template memoize(alias fun)
 /// ditto
 template memoize(alias fun, uint maxSize)
 {
-    import std.traits : ReturnType;
+    import ripstd.traits : ReturnType;
      // https://issues.dlang.org/show_bug.cgi?id=13580
     // alias Args = Parameters!fun;
     ReturnType!fun memoize(Parameters!fun args)
     {
-        import std.meta : staticMap;
-        import std.traits : hasIndirections, Unqual;
-        import std.typecons : tuple;
+        import ripstd.meta : staticMap;
+        import ripstd.traits : hasIndirections, Unqual;
+        import ripstd.typecons : tuple;
         static struct Value { staticMap!(Unqual, Parameters!fun) args; Unqual!(ReturnType!fun) res; }
         static Value[] memo;
         static size_t[] initialized;
@@ -1472,7 +1472,7 @@ unittest
 {
     int executed = 0;
     T median(T)(const T[] nums) {
-        import std.algorithm.sorting : sort;
+        import ripstd.algorithm.sorting : sort;
         executed++;
         auto arr = nums.dup;
         arr.sort();
@@ -1584,7 +1584,7 @@ unittest
 
 private struct DelegateFaker(F)
 {
-    import std.typecons : FuncInfo, MemberFunctionGenerator;
+    import ripstd.typecons : FuncInfo, MemberFunctionGenerator;
 
     // for @safe
     static F castToF(THIS)(THIS x) @trusted
@@ -1606,7 +1606,7 @@ private struct DelegateFaker(F)
      *--------------------
      */
 
-    // We will use MemberFunctionGenerator in std.typecons.  This is a policy
+    // We will use MemberFunctionGenerator in ripstd.typecons.  This is a policy
     // configuration for generating the doIt().
     template GeneratingPolicy()
     {

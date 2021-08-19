@@ -63,16 +63,16 @@ $(TR $(TDNW Implementation helpers) $(TD $(MYREF digestLength) $(MYREF WrapperDi
  */
 module ripstd.digest;
 
-public import std.ascii : LetterCase;
-import std.meta : allSatisfy;
-import std.range.primitives;
-import std.traits;
+public import ripstd.ascii : LetterCase;
+import ripstd.meta : allSatisfy;
+import ripstd.range.primitives;
+import ripstd.traits;
 
 
 ///
 @system unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
 
     //Simple example
     char[8] hexHash = hexDigest!CRC32("The quick brown fox jumps over the lazy dog");
@@ -89,8 +89,8 @@ import std.traits;
 @system unittest
 {
     //Generating the hashes of a file, idiomatic D way
-    import std.digest.crc, std.digest.md, std.digest.sha;
-    import std.stdio;
+    import ripstd.digest.crc, ripstd.digest.md, ripstd.digest.sha;
+    import ripstd.stdio;
 
     // Digests a file and prints the result.
     void digestFile(Hash)(string filename)
@@ -115,15 +115,15 @@ import std.traits;
 @system unittest
 {
     //Generating the hashes of a file using the template API
-    import std.digest.crc, std.digest.md, std.digest.sha;
-    import std.stdio;
+    import ripstd.digest.crc, ripstd.digest.md, ripstd.digest.sha;
+    import ripstd.stdio;
     // Digests a file and prints the result.
     void digestFile(Hash)(ref Hash hash, string filename)
     if (isDigest!Hash)
     {
         File file = File(filename);
 
-        //As digests imlement OutputRange, we could use std.algorithm.copy
+        //As digests imlement OutputRange, we could use ripstd.algorithm.copy
         //Let's do it manually for now
         foreach (buffer; file.byChunk(4096 * 1024))
             hash.put(buffer);
@@ -154,15 +154,15 @@ import std.traits;
 ///
 @system unittest
 {
-    import std.digest.crc, std.digest.md, std.digest.sha;
-    import std.stdio;
+    import ripstd.digest.crc, ripstd.digest.md, ripstd.digest.sha;
+    import ripstd.stdio;
 
     // Digests a file and prints the result.
     void digestFile(Digest hash, string filename)
     {
         File file = File(filename);
 
-        //As digests implement OutputRange, we could use std.algorithm.copy
+        //As digests implement OutputRange, we could use ripstd.algorithm.copy
         //Let's do it manually for now
         foreach (buffer; file.byChunk(4096 * 1024))
           hash.put(buffer);
@@ -259,9 +259,9 @@ version (ExampleDigest)
 @system unittest
 {
     //Using the OutputRange feature
-    import std.algorithm.mutation : copy;
-    import std.digest.md;
-    import std.range : repeat;
+    import ripstd.algorithm.mutation : copy;
+    import ripstd.digest.md;
+    import ripstd.range : repeat;
 
     auto oneMillionRange = repeat!ubyte(cast(ubyte)'a', 1000000);
     auto ctx = makeDigest!MD5();
@@ -284,7 +284,7 @@ version (ExampleDigest)
  */
 template isDigest(T)
 {
-    import std.range : isOutputRange;
+    import ripstd.range : isOutputRange;
     enum bool isDigest = isOutputRange!(T, const(ubyte)[]) && isOutputRange!(T, ubyte) &&
         is(T == struct) &&
         is(typeof(
@@ -299,13 +299,13 @@ template isDigest(T)
 ///
 @system unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
     static assert(isDigest!CRC32);
 }
 ///
 @system unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
     void myFunction(T)()
     if (isDigest!T)
     {
@@ -337,13 +337,13 @@ template DigestType(T)
 ///
 @system unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
     assert(is(DigestType!(CRC32) == ubyte[4]));
 }
 ///
 @system unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
     CRC32 dig;
     dig.start();
     DigestType!CRC32 result = dig.finish();
@@ -373,14 +373,14 @@ template hasPeek(T)
 ///
 @system unittest
 {
-    import std.digest.crc, std.digest.md;
+    import ripstd.digest.crc, ripstd.digest.md;
     assert(!hasPeek!(MD5));
     assert(hasPeek!CRC32);
 }
 ///
 @system unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
     void myFunction(T)()
     if (hasPeek!T)
     {
@@ -405,15 +405,15 @@ if (isDigest!T)
 ///
 @system unittest
 {
-    import std.digest.hmac, std.digest.md;
+    import ripstd.digest.hmac, ripstd.digest.md;
     static assert(hasBlockSize!MD5        && MD5.blockSize      == 512);
     static assert(hasBlockSize!(HMAC!MD5) && HMAC!MD5.blockSize == 512);
 }
 
 package template isDigestibleRange(Range)
 {
-    import std.digest.md;
-    import std.range : isInputRange, ElementType;
+    import ripstd.digest.md;
+    import ripstd.range : isInputRange, ElementType;
     enum bool isDigestibleRange = isInputRange!Range && is(typeof(
           {
           MD5 ha; //Could use any conformant hash
@@ -494,8 +494,8 @@ if (!isArray!Range
 ///
 @system unittest
 {
-    import std.digest.md;
-    import std.range : repeat;
+    import ripstd.digest.md;
+    import ripstd.range : repeat;
     auto testRange = repeat!ubyte(cast(ubyte)'a', 100);
     auto md5 = digest!MD5(testRange);
 }
@@ -519,7 +519,7 @@ if (allSatisfy!(isArray, typeof(data)))
 ///
 @system unittest
 {
-    import std.digest.crc, std.digest.md, std.digest.sha;
+    import ripstd.digest.crc, ripstd.digest.md, ripstd.digest.sha;
     auto md5   = digest!MD5(  "The quick brown fox jumps over the lazy dog");
     auto sha1  = digest!SHA1( "The quick brown fox jumps over the lazy dog");
     auto crc32 = digest!CRC32("The quick brown fox jumps over the lazy dog");
@@ -529,7 +529,7 @@ if (allSatisfy!(isArray, typeof(data)))
 ///
 @system unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
     auto crc32 = digest!CRC32("The quick ", "brown ", "fox jumps over the lazy dog");
     assert(toHexString(crc32) == "39A34F41");
 }
@@ -552,8 +552,8 @@ if (!isArray!Range && isDigestibleRange!Range)
 ///
 @system unittest
 {
-    import std.digest.md;
-    import std.range : repeat;
+    import ripstd.digest.md;
+    import ripstd.range : repeat;
     auto testRange = repeat!ubyte(cast(ubyte)'a', 100);
     assert(hexDigest!MD5(testRange) == "36A92CC94A9E0FA21F625F8BFB007ADF");
 }
@@ -574,13 +574,13 @@ if (allSatisfy!(isArray, typeof(data)))
 ///
 @system unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
     assert(hexDigest!(CRC32, Order.decreasing)("The quick brown fox jumps over the lazy dog") == "414FA339");
 }
 ///
 @system unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
     assert(hexDigest!(CRC32, Order.decreasing)("The quick ", "brown ", "fox jumps over the lazy dog") == "414FA339");
 }
 
@@ -598,7 +598,7 @@ Hash makeDigest(Hash)()
 ///
 @system unittest
 {
-    import std.digest.md;
+    import ripstd.digest.md;
     auto md5 = makeDigest!MD5();
     md5.put(0);
     assert(toHexString(md5.finish()) == "93B885ADFE0DA089CDF634904FD59F71");
@@ -679,9 +679,9 @@ interface Digest
 @system unittest
 {
     //Using the OutputRange feature
-    import std.algorithm.mutation : copy;
-    import std.digest.md;
-    import std.range : repeat;
+    import ripstd.algorithm.mutation : copy;
+    import ripstd.digest.md;
+    import ripstd.range : repeat;
 
     auto oneMillionRange = repeat!ubyte(cast(ubyte)'a', 1000000);
     auto ctx = new MD5Digest();
@@ -692,7 +692,7 @@ interface Digest
 ///
 @system unittest
 {
-    import std.digest.crc, std.digest.md, std.digest.sha;
+    import ripstd.digest.crc, ripstd.digest.md, ripstd.digest.sha;
     ubyte[] md5   = (new MD5Digest()).digest("The quick brown fox jumps over the lazy dog");
     ubyte[] sha1  = (new SHA1Digest()).digest("The quick brown fox jumps over the lazy dog");
     ubyte[] crc32 = (new CRC32Digest()).digest("The quick brown fox jumps over the lazy dog");
@@ -702,14 +702,14 @@ interface Digest
 ///
 @system unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
     ubyte[] crc32 = (new CRC32Digest()).digest("The quick ", "brown ", "fox jumps over the lazy dog");
     assert(crcHexString(crc32) == "414FA339");
 }
 
 @system unittest
 {
-    import std.range : isOutputRange;
+    import ripstd.range : isOutputRange;
     assert(!isDigest!(Digest));
     assert(isOutputRange!(Digest, ubyte));
 }
@@ -740,7 +740,7 @@ enum Order : bool
 ///
 @safe unittest
 {
-    import std.digest.crc : CRC32;
+    import ripstd.digest.crc : CRC32;
 
     auto crc32 = digest!CRC32("The quick ", "brown ", "fox jumps over the lazy dog");
     assert(crc32.toHexString!(Order.decreasing) == "414FA339");
@@ -787,7 +787,7 @@ string toHexString(Order order = Order.increasing, LetterCase letterCase = Lette
 {
     auto result = new char[digest.length*2];
     toHexStringImpl!(order, letterCase)(digest, result);
-    import std.exception : assumeUnique;
+    import ripstd.exception : assumeUnique;
     // memory was just created, so casting to immutable is safe
     return () @trusted { return assumeUnique(result); }();
 }
@@ -803,7 +803,7 @@ string toHexString(LetterCase letterCase, Order order = Order.increasing)(in uby
 ///
 @safe unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
     //Test with template API:
     auto crc32 = digest!CRC32("The quick ", "brown ", "fox jumps over the lazy dog");
     //Lower case variant:
@@ -816,7 +816,7 @@ string toHexString(LetterCase letterCase, Order order = Order.increasing)(in uby
 ///
 @safe unittest
 {
-    import std.digest.crc;
+    import ripstd.digest.crc;
     // With OOP API
     auto crc32 = (new CRC32Digest()).digest("The quick ", "brown ", "fox jumps over the lazy dog");
     //Usually CRCs are printed in this order, though:
@@ -855,11 +855,11 @@ private void toHexStringImpl(Order order, LetterCase letterCase, BB, HB)
 (scope const ref BB byteBuffer, ref HB hexBuffer){
     static if (letterCase == LetterCase.upper)
     {
-        import std.ascii : hexDigits = hexDigits;
+        import ripstd.ascii : hexDigits = hexDigits;
     }
     else
     {
-        import std.ascii : hexDigits = lowerHexDigits;
+        import ripstd.ascii : hexDigits = lowerHexDigits;
     }
 
     size_t i;
@@ -896,8 +896,8 @@ if (isDigest!T)
 @safe pure nothrow @nogc
 unittest
 {
-    import std.digest.md : MD5;
-    import std.digest.sha : SHA1, SHA256, SHA512;
+    import ripstd.digest.md : MD5;
+    import ripstd.digest.sha : SHA1, SHA256, SHA512;
     assert(digestLength!MD5 == 16);
     assert(digestLength!SHA1 == 20);
     assert(digestLength!SHA256 == 32);
@@ -961,7 +961,7 @@ if (isDigest!T) : Digest
          * Example:
          * --------
          *
-         * import std.digest.md;
+         * import ripstd.digest.md;
          * ubyte[16] buf;
          * auto hash = new WrapperDigest!MD5();
          * hash.put(cast(ubyte) 0);
@@ -1033,7 +1033,7 @@ if (isDigest!T) : Digest
 ///
 @system unittest
 {
-    import std.digest.md;
+    import ripstd.digest.md;
     //Simple example
     auto hash = new WrapperDigest!MD5();
     hash.put(cast(ubyte) 0);
@@ -1044,7 +1044,7 @@ if (isDigest!T) : Digest
 @system unittest
 {
     //using a supplied buffer
-    import std.digest.md;
+    import ripstd.digest.md;
     ubyte[16] buf;
     auto hash = new WrapperDigest!MD5();
     hash.put(cast(ubyte) 0);
@@ -1057,7 +1057,7 @@ if (isDigest!T) : Digest
 @safe unittest
 {
     // Test peek & length
-    import std.digest.crc;
+    import ripstd.digest.crc;
     auto hash = new WrapperDigest!CRC32();
     assert(hash.length == 4);
     hash.put(cast(const(ubyte[]))"The quick brown fox jumps over the lazy dog");
@@ -1158,9 +1158,9 @@ if (isInputRange!R1 && isInputRange!R2 && !isInfinite!R1 && !isInfinite!R2 &&
 ///
 @system pure unittest
 {
-    import std.digest.hmac : hmac;
-    import std.digest.sha : SHA1;
-    import std.string : representation;
+    import ripstd.digest.hmac : hmac;
+    import ripstd.digest.sha : SHA1;
+    import ripstd.string : representation;
 
     // a typical HMAC data integrity verification
     auto secret = "A7GZIP6TAQA6OHM7KZ42KB9303CEY0MOV5DD6NTV".representation;
@@ -1176,10 +1176,10 @@ if (isInputRange!R1 && isInputRange!R2 && !isInfinite!R1 && !isInfinite!R2 &&
 
 @system pure unittest
 {
-    import std.internal.test.dummyrange : ReferenceInputRange;
-    import std.range : takeExactly;
-    import std.string : representation;
-    import std.utf : byWchar, byDchar;
+    import ripstd.internal.test.dummyrange : ReferenceInputRange;
+    import ripstd.range : takeExactly;
+    import ripstd.string : representation;
+    import ripstd.utf : byWchar, byDchar;
 
     {
         auto hex1 = "02CA3484C375EDD3C0F08D3F50D119E61077".representation;

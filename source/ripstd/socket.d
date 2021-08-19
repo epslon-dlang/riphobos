@@ -1,7 +1,7 @@
 // Written in the D programming language
 
 // NOTE: When working on this module, be sure to run tests with -debug=std_socket
-// E.g.: dmd -version=StdUnittest -debug=std_socket -unittest -main -run socket
+// E.g.: dmd -version=RIPStdUnittest -debug=std_socket -unittest -main -run socket
 // This will enable some tests which are too slow or flaky to run as part of CI.
 
 /*
@@ -24,13 +24,13 @@
 
 module ripstd.socket;
 
-import core.stdc.stdint, core.stdc.stdlib, core.stdc.string, std.conv, std.string;
+import core.stdc.stdint, core.stdc.stdlib, core.stdc.string, ripstd.conv, ripstd.string;
 
 import core.stdc.config;
 import core.time : dur, Duration;
-import std.exception;
+import ripstd.exception;
 
-import std.internal.cstring;
+import ripstd.internal.cstring;
 
 version (iOS)
     version = iOSDerived;
@@ -46,7 +46,7 @@ version (Windows)
     pragma (lib, "ws2_32.lib");
     pragma (lib, "wsock32.lib");
 
-    import core.sys.windows.winbase, std.windows.syserror;
+    import core.sys.windows.winbase, ripstd.windows.syserror;
     public import core.sys.windows.winsock2;
     private alias _ctimeval = core.sys.windows.winsock2.timeval;
     private alias _clinger = core.sys.windows.winsock2.linger;
@@ -106,7 +106,7 @@ else
     static assert(0, "No socket support for this platform yet.");
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     // Print a message on exception instead of failing the unittest.
     private void softUnittest(void delegate() @safe test, int line = __LINE__) @trusted
@@ -115,11 +115,11 @@ version (StdUnittest)
             test();
         else
         {
-            import std.stdio : writefln;
+            import ripstd.stdio : writefln;
             try
                 test();
             catch (Throwable e)
-                writefln("Ignoring std.socket(%d) test failure (likely caused by flaky environment): %s", line, e.msg);
+                writefln("Ignoring ripstd.socket(%d) test failure (likely caused by flaky environment): %s", line, e.msg);
         }
     }
 }
@@ -135,7 +135,7 @@ version (CRuntime_UClibc) version = GNU_STRERROR;
 
 /*
  * Needs to be public so that SocketOSException can be thrown outside of
- * std.socket (since it uses it as a default argument), but it probably doesn't
+ * ripstd.socket (since it uses it as a default argument), but it probably doesn't
  * need to actually show up in the docs, since there's not really any public
  * need for it outside of being a default argument.
  */
@@ -450,7 +450,7 @@ class Protocol
 version (CRuntime_Bionic) {} else
 @safe unittest
 {
-    // import std.stdio : writefln;
+    // import ripstd.stdio : writefln;
     softUnittest({
         Protocol proto = new Protocol;
         assert(proto.getProtocolByType(ProtocolType.TCP));
@@ -552,7 +552,7 @@ class Service
 
 @safe unittest
 {
-    import std.stdio : writefln;
+    import ripstd.stdio : writefln;
     softUnittest({
         Service serv = new Service;
         if (serv.getServiceByName("epmap", "tcp"))
@@ -943,7 +943,7 @@ AddressInfo[] getAddressInfo(T...)(scope const(char)[] node, scope T options)
 
 private AddressInfo[] getAddressInfoImpl(scope const(char)[] node, scope const(char)[] service, addrinfo* hints) @system
 {
-        import std.array : appender;
+        import ripstd.array : appender;
 
     if (getaddrinfoPointer && freeaddrinfoPointer)
     {
@@ -1574,7 +1574,7 @@ public:
     /// Human readable string representing the IPv4 port.
     override string toPortString() const
     {
-        return std.conv.to!string(port);
+        return ripstd.conv.to!string(port);
     }
 
     /**
@@ -2037,16 +2037,16 @@ static if (is(sockaddr_un))
             // of paths can quickly become too long.
             static string deleteme()
             {
-                import std.conv : text;
-                import std.process : thisProcessID;
-                import std.file : tempDir;
+                import ripstd.conv : text;
+                import ripstd.process : thisProcessID;
+                import ripstd.file : tempDir;
 
                 return text(tempDir, thisProcessID);
             }
         }
 
         else
-            import std.file : deleteme;
+            import ripstd.file : deleteme;
 
         immutable ubyte[] data = [1, 2, 3, 4];
         Socket[2] pair;
@@ -2334,7 +2334,7 @@ public:
     {
         version (Windows)
         {
-            import std.algorithm.searching : countUntil;
+            import ripstd.algorithm.searching : countUntil;
             auto fds = fds;
             auto p = fds.countUntil(s);
             if (p >= 0)
@@ -2364,7 +2364,7 @@ public:
     {
         version (Windows)
         {
-            import std.algorithm.searching : canFind;
+            import ripstd.algorithm.searching : canFind;
             return fds.canFind(s) ? 1 : 0;
         }
         else
@@ -2479,7 +2479,7 @@ public:
             }
         }
 
-        import std.random;
+        import ripstd.random;
         auto rng = Xorshift(42);
         pairs[].randomShuffle(rng);
 
@@ -2640,8 +2640,8 @@ private:
     {
         debug (std_socket)
         softUnittest({
-            import std.datetime.stopwatch;
-            import std.typecons;
+            import ripstd.datetime.stopwatch;
+            import ripstd.typecons;
 
             enum msecs = 1000;
             auto pair = socketPair();
@@ -3273,8 +3273,8 @@ public:
      *
      * Example:
      * ---
-     * import std.datetime;
-     * import std.typecons;
+     * import ripstd.datetime;
+     * import ripstd.typecons;
      * auto pair = socketPair();
      * scope(exit) foreach (s; pair) s.close();
      *
@@ -3300,7 +3300,7 @@ public:
 
         version (Windows)
         {
-            import std.algorithm.comparison : max;
+            import ripstd.algorithm.comparison : max;
 
             auto msecs = to!int(value.total!"msecs");
             if (msecs != 0 && option == SocketOption.RCVTIMEO)

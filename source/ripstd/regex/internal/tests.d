@@ -3,14 +3,14 @@
 */
 module ripstd.regex.internal.tests;
 
-package(std.regex):
+package(ripstd.regex):
 
-import std.conv, std.exception, std.meta, std.range,
-    std.typecons, std.regex;
+import ripstd.conv, ripstd.exception, ripstd.meta, ripstd.range,
+    ripstd.typecons, ripstd.regex;
 
-import std.uni : Escapables; // characters that need escaping
+import ripstd.uni : Escapables; // characters that need escaping
 
-debug(std_regex_test) import std.stdio;
+debug(std_regex_test) import ripstd.stdio;
 
 @safe unittest
 {//sanity checks
@@ -404,7 +404,7 @@ debug(std_regex_test) import std.stdio;
 
     void ct_tests()
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         version (std_regex_ct1)
         {
             pragma(msg, "Testing 1st part of ctRegex");

@@ -77,8 +77,8 @@
 
 module ripstd.meta;
 
-import std.traits : isAggregateType, Unqual, isIterable;
-import std.range.primitives : isInfinite;
+import ripstd.traits : isAggregateType, Unqual, isIterable;
+import ripstd.range.primitives : isInfinite;
 
 /**
  * Creates a sequence of zero or more aliases. This is most commonly
@@ -91,7 +91,7 @@ alias AliasSeq(TList...) = TList;
 ///
 @safe unittest
 {
-    import std.meta;
+    import ripstd.meta;
     alias TL = AliasSeq!(int, double);
 
     int foo(TL td)  // same as int foo(int, double);
@@ -269,7 +269,7 @@ if (args.length >= 1)
 ///
 @safe unittest
 {
-    import std.stdio;
+    import ripstd.stdio;
 
     void foo()
     {
@@ -476,7 +476,7 @@ template NoDuplicates(TList...)
 
 @safe unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
 
     // https://issues.dlang.org/show_bug.cgi?id=14561: huge enums
     alias LongList = Repeat!(1500, int);
@@ -799,14 +799,14 @@ template staticMap(alias F, Args ...)
 ///
 @safe unittest
 {
-    import std.traits : Unqual;
+    import ripstd.traits : Unqual;
     alias TL = staticMap!(Unqual, int, const int, immutable int, uint, ubyte, byte, short, ushort);
     static assert(is(TL == AliasSeq!(int, int, int, uint, ubyte, byte, short, ushort)));
 }
 
 @safe unittest
 {
-    import std.traits : Unqual;
+    import ripstd.traits : Unqual;
 
     // empty
     alias Empty = staticMap!(Unqual);
@@ -845,7 +845,7 @@ template allSatisfy(alias F, T...)
 ///
 @safe unittest
 {
-    import std.traits : isIntegral;
+    import ripstd.traits : isIntegral;
 
     static assert(!allSatisfy!(isIntegral, int, double));
     static assert( allSatisfy!(isIntegral, int, long));
@@ -867,7 +867,7 @@ template anySatisfy(alias F, T...)
 ///
 @safe unittest
 {
-    import std.traits : isIntegral;
+    import ripstd.traits : isIntegral;
 
     static assert(!anySatisfy!(isIntegral, string, double));
     static assert( anySatisfy!(isIntegral, int, double));
@@ -1042,7 +1042,7 @@ template Filter(alias pred, TList ...)
 ///
 @safe unittest
 {
-    import std.traits : isNarrowString, isUnsigned;
+    import ripstd.traits : isNarrowString, isUnsigned;
 
     alias Types1 = AliasSeq!(string, wstring, dchar[], char[], dstring, int);
     alias TL1 = Filter!(isNarrowString, Types1);
@@ -1055,7 +1055,7 @@ template Filter(alias pred, TList ...)
 
 @safe unittest
 {
-    import std.traits : isPointer;
+    import ripstd.traits : isPointer;
 
     static assert(is(Filter!(isPointer, int, void*, char[], int*) == AliasSeq!(void*, int*)));
     static assert(is(Filter!isPointer == AliasSeq!()));
@@ -1069,7 +1069,7 @@ template Filter(alias pred, TList ...)
 }
 
 // Used in template predicate unit tests below.
-private version (StdUnittest)
+private version (RIPStdUnittest)
 {
     template testAlways(T...)
     {
@@ -1099,7 +1099,7 @@ template templateNot(alias pred)
 ///
 @safe unittest
 {
-    import std.traits : isPointer;
+    import ripstd.traits : isPointer;
 
     alias isNoPointer = templateNot!isPointer;
     static assert(!isNoPointer!(int*));
@@ -1146,7 +1146,7 @@ template templateAnd(Preds...)
 ///
 @safe unittest
 {
-    import std.traits : isNumeric, isUnsigned;
+    import ripstd.traits : isNumeric, isUnsigned;
 
     alias storesNegativeNumbers = templateAnd!(isNumeric, templateNot!isUnsigned);
     static assert(storesNegativeNumbers!int);
@@ -1204,7 +1204,7 @@ template templateOr(Preds...)
 ///
 @safe unittest
 {
-    import std.traits : isPointer, isUnsigned;
+    import ripstd.traits : isPointer, isUnsigned;
 
     alias isPtrOrUnsigned = templateOr!(isPointer, isUnsigned);
     static assert( isPtrOrUnsigned!uint &&  isPtrOrUnsigned!(short*));
@@ -1248,7 +1248,7 @@ template templateOr(Preds...)
 template aliasSeqOf(alias iter)
 if (isIterable!(typeof(iter)) && !isInfinite!(typeof(iter)))
 {
-    import std.array : array;
+    import ripstd.array : array;
 
     struct Impl
     {
@@ -1261,9 +1261,9 @@ if (isIterable!(typeof(iter)) && !isInfinite!(typeof(iter)))
 ///
 @safe unittest
 {
-    import std.algorithm.iteration : map;
-    import std.algorithm.sorting : sort;
-    import std.string : capitalize;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.string : capitalize;
 
     struct S
     {
@@ -1291,8 +1291,8 @@ if (isIterable!(typeof(iter)) && !isInfinite!(typeof(iter)))
 
 @safe unittest
 {
-    import std.conv : to, octal;
-    import std.range : iota;
+    import ripstd.conv : to, octal;
+    import ripstd.range : iota;
     //Testing compile time octal
     foreach (I2; aliasSeqOf!(iota(0, 8)))
         foreach (I1; aliasSeqOf!(iota(0, 8)))
@@ -1369,7 +1369,7 @@ template ApplyRight(alias Template, args...)
 @safe unittest
 {
     // enum bool isImplicitlyConvertible(From, To)
-    import std.traits : isImplicitlyConvertible;
+    import ripstd.traits : isImplicitlyConvertible;
 
     static assert(allSatisfy!(
         ApplyLeft!(isImplicitlyConvertible, ubyte),
@@ -1382,7 +1382,7 @@ template ApplyRight(alias Template, args...)
 ///
 @safe unittest
 {
-    import std.traits : hasMember, ifTestable;
+    import ripstd.traits : hasMember, ifTestable;
 
     struct T1
     {
@@ -1406,7 +1406,7 @@ template ApplyRight(alias Template, args...)
 ///
 @safe unittest
 {
-    import std.traits : Largest;
+    import ripstd.traits : Largest;
 
     alias Types = AliasSeq!(byte, short, int, long);
 
@@ -1419,7 +1419,7 @@ template ApplyRight(alias Template, args...)
 ///
 @safe unittest
 {
-    import std.traits : FunctionAttribute, SetFunctionAttributes;
+    import ripstd.traits : FunctionAttribute, SetFunctionAttributes;
 
     static void foo() @system;
     static int bar(int) @system;
@@ -1456,7 +1456,7 @@ private template SmartAlias(T...)
         alias T4 = T3!(short, 3, 3.3);
         static assert(Pack!T4.equals!(short, 3, 3.3, 3, "foo"));
 
-        import std.traits : isImplicitlyConvertible;
+        import ripstd.traits : isImplicitlyConvertible;
         alias U1 = ApplyLeft!(ApplyRight, isImplicitlyConvertible);
         alias U2 = U1!int;
         enum U3 = U2!short;
@@ -1752,7 +1752,7 @@ alias Instantiate(alias Template, Params...) = Template!Params;
 {
     // ApplyRight combined with Instantiate can be used to apply various
     // templates to the same parameters.
-    import std.string : leftJustify, center, rightJustify;
+    import ripstd.string : leftJustify, center, rightJustify;
     alias functions = staticMap!(ApplyRight!(Instantiate, string),
                                  leftJustify, center, rightJustify);
     string result = "";

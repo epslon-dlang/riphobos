@@ -77,11 +77,11 @@ T2=$(TR $(TDNW $(LREF $1)) $(TD $+))
  */
 module ripstd.algorithm.mutation;
 
-import std.range.primitives;
-import std.traits : isArray, isAssignable, isBlitAssignable, isNarrowString,
+import ripstd.range.primitives;
+import ripstd.traits : isArray, isAssignable, isBlitAssignable, isNarrowString,
        Unqual, isSomeChar, isMutable;
-import std.meta : allSatisfy;
-import std.typecons : tuple, Tuple;
+import ripstd.meta : allSatisfy;
+import ripstd.typecons : tuple, Tuple;
 
 // bringToFront
 /**
@@ -123,7 +123,7 @@ See_Also:
 size_t bringToFront(InputRange, ForwardRange)(InputRange front, ForwardRange back)
 if (isInputRange!InputRange && isForwardRange!ForwardRange)
 {
-    import std.string : representation;
+    import ripstd.string : representation;
 
     static if (isNarrowString!InputRange)
     {
@@ -165,9 +165,9 @@ the example below, `r2` is a right subrange of `r1`.
 */
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container : SList;
-    import std.range.primitives : popFrontN;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container : SList;
+    import ripstd.range.primitives : popFrontN;
 
     auto list = SList!(int)(4, 5, 6, 7, 1, 2, 3);
     auto r1 = list[];
@@ -182,8 +182,8 @@ Elements can be swapped across ranges of different types:
 */
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container : SList;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container : SList;
 
     auto list = SList!(int)(4, 5, 6, 7);
     auto vec = [ 1, 2, 3 ];
@@ -197,7 +197,7 @@ Unicode integrity is not preserved:
 */
 @safe unittest
 {
-    import std.string : representation;
+    import ripstd.string : representation;
     auto ar = representation("a".dup);
     auto br = representation("ç".dup);
 
@@ -215,8 +215,8 @@ Unicode integrity is not preserved:
 private size_t bringToFrontImpl(InputRange, ForwardRange)(InputRange front, ForwardRange back)
 if (isInputRange!InputRange && isForwardRange!ForwardRange)
 {
-    import std.array : sameHead;
-    import std.range : take, Take;
+    import ripstd.array : sameHead;
+    import ripstd.range : take, Take;
     enum bool sameHeadExists = is(typeof(front.sameHead(back)));
     size_t result;
 
@@ -277,9 +277,9 @@ if (isInputRange!InputRange && isForwardRange!ForwardRange)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : text;
-    import std.random : Random = Xorshift, uniform;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : text;
+    import ripstd.random : Random = Xorshift, uniform;
 
     // a more elaborate test
     {
@@ -455,7 +455,7 @@ $(REF take, std,range):
 */
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     int[] src = [ 1, 5, 8, 9, 10 ];
     auto dest = new int[](3);
     src.take(dest.length).copy(dest);
@@ -468,7 +468,7 @@ use $(LREF filter):
 */
 @safe unittest
 {
-    import std.algorithm.iteration : filter;
+    import ripstd.algorithm.iteration : filter;
     int[] src = [ 1, 5, 8, 9, 10, 1, 2, 0 ];
     auto dest = new int[src.length];
     auto rem = src
@@ -483,7 +483,7 @@ $(LINK2 http://en.cppreference.com/w/cpp/algorithm/copy_backward, STL's `copy_ba
 */
 @safe unittest
 {
-    import std.algorithm, std.range;
+    import ripstd.algorithm, ripstd.range;
     int[] src = [1, 2, 4];
     int[] dest = [0, 0, 0, 0, 0];
     src.retro.copy(dest.retro);
@@ -500,7 +500,7 @@ $(LINK2 http://en.cppreference.com/w/cpp/algorithm/copy_backward, STL's `copy_ba
 
 @safe unittest
 {
-    import std.algorithm.iteration : filter;
+    import ripstd.algorithm.iteration : filter;
 
     {
         int[] a = [ 1, 5 ];
@@ -526,7 +526,7 @@ $(LINK2 http://en.cppreference.com/w/cpp/algorithm/copy_backward, STL's `copy_ba
     {
         enum v =
         {
-            import std.algorithm;
+            import ripstd.algorithm;
             int[] arr1 = [10, 20, 30, 40, 50];
             int[] arr2 = arr1.dup;
             copy(arr1, arr2);
@@ -539,7 +539,7 @@ $(LINK2 http://en.cppreference.com/w/cpp/algorithm/copy_backward, STL's `copy_ba
 // https://issues.dlang.org/show_bug.cgi?id=13650
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (Char; AliasSeq!(char, wchar, dchar))
     {{
         Char[3] a1 = "123";
@@ -692,8 +692,8 @@ if ((isInputRange!Range && is(typeof(range.front = value)) ||
 
 @safe unittest
 {
-    import std.conv : text;
-    import std.internal.test.dummyrange;
+    import ripstd.conv : text;
+    import ripstd.internal.test.dummyrange;
 
     int[] a = [ 1, 2, 3 ];
     fill(a, 6);
@@ -780,7 +780,7 @@ if (isInputRange!InputRange
     }
     else
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(!filler.empty, "Cannot fill range with an empty filler");
 
@@ -835,8 +835,8 @@ if (isInputRange!InputRange
 
 @safe unittest
 {
-    import std.exception : assertThrown;
-    import std.internal.test.dummyrange;
+    import ripstd.exception : assertThrown;
+    import ripstd.internal.test.dummyrange;
 
     int[] a = [ 1, 2, 3, 4, 5 ];
     int[] b = [1, 2];
@@ -880,12 +880,12 @@ void initializeAll(Range)(Range range)
 if (isInputRange!Range && hasLvalueElements!Range && hasAssignableElements!Range)
 {
     import core.stdc.string : memset, memcpy;
-    import std.traits : hasElaborateAssign, isDynamicArray;
+    import ripstd.traits : hasElaborateAssign, isDynamicArray;
 
     alias T = ElementType!Range;
     static if (hasElaborateAssign!T)
     {
-        import std.algorithm.internal : addressOf;
+        import ripstd.algorithm.internal : addressOf;
         //Elaborate opAssign. Must go the memcpy road.
         //We avoid calling emplace here, because our goal is to initialize to
         //the static state of T.init,
@@ -951,9 +951,9 @@ if (is(Range == char[]) || is(Range == wchar[]))
 
 @system unittest
 {
-    import std.algorithm.iteration : filter;
-    import std.meta : AliasSeq;
-    import std.traits : hasElaborateAssign;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.meta : AliasSeq;
+    import ripstd.traits : hasElaborateAssign;
 
     //Test strings:
     //Must work on narrow strings.
@@ -1127,8 +1127,8 @@ pure nothrow @safe @nogc unittest
 
 @safe unittest
 {
-    import std.exception : assertCTFEable;
-    import std.traits;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.traits;
 
     assertCTFEable!((){
         Object obj1 = new Object;
@@ -1246,7 +1246,7 @@ pure nothrow @safe @nogc unittest
 
 private void moveImpl(T)(ref T source, ref T target)
 {
-    import std.traits : hasElaborateDestructor;
+    import ripstd.traits : hasElaborateDestructor;
 
     static if (is(T == struct))
     {
@@ -1278,8 +1278,8 @@ private T trustedMoveImpl(T)(ref T source) @trusted
 
 @safe unittest
 {
-    import std.exception : assertCTFEable;
-    import std.traits;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.traits;
 
     assertCTFEable!((){
         Object obj1 = new Object;
@@ -1352,7 +1352,7 @@ private T trustedMoveImpl(T)(ref T source) @trusted
 // https://issues.dlang.org/show_bug.cgi?id=6217
 @safe unittest
 {
-    import std.algorithm.iteration : map;
+    import ripstd.algorithm.iteration : map;
     auto x = map!"a"([1,2,3]);
     x = move(x);
 }
@@ -1418,14 +1418,14 @@ private T trustedMoveImpl(T)(ref T source) @trusted
 private void moveEmplaceImpl(T)(ref T source, ref T target)
 {
     import core.stdc.string : memcpy, memset;
-    import std.traits : hasAliasing, hasElaborateAssign,
+    import ripstd.traits : hasAliasing, hasElaborateAssign,
                         hasElaborateCopyConstructor, hasElaborateDestructor,
                         hasElaborateMove,
                         isAssignable, isStaticArray;
 
     static if (!is(T == class) && hasAliasing!T) if (!__ctfe)
     {
-        import std.exception : doesPointTo;
+        import ripstd.exception : doesPointTo;
         assert(!(doesPointTo(source, source) && !hasElaborateMove!T),
             "Cannot move object with internal pointer unless `opPostMove` is defined.");
     }
@@ -1597,7 +1597,7 @@ pure nothrow @nogc @system unittest
     assert(tail.length == 2); // returns remaining uninitialized values
     initializeAll(tail);
 
-    import std.algorithm.searching : all;
+    import ripstd.algorithm.searching : all;
     assert(src[].all!(e => e._ptr is null));
     assert(dst[0 .. 3].all!(e => e._ptr !is null));
 }
@@ -1621,7 +1621,7 @@ pure nothrow @nogc @system unittest
 private InputRange2 moveAllImpl(alias moveOp, InputRange1, InputRange2)(
     ref InputRange1 src, ref InputRange2 tgt)
 {
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
 
     static if (isRandomAccessRange!InputRange1 && hasLength!InputRange1 && hasLength!InputRange2
          && hasSlicing!InputRange2 && isRandomAccessRange!InputRange2)
@@ -1702,7 +1702,7 @@ pure nothrow @nogc @system unittest
     auto res = moveEmplaceSome(src[], dst[]);
     assert(res.length == 2);
 
-    import std.algorithm.searching : all;
+    import ripstd.algorithm.searching : all;
     assert(src[0 .. 3].all!(e => e._ptr is null));
     assert(src[3]._ptr !is null);
     assert(dst[].all!(e => e._ptr !is null));
@@ -1780,7 +1780,7 @@ enum SwapStrategy
 ///
 @safe unittest
 {
-    import std.algorithm.sorting : partition;
+    import ripstd.algorithm.sorting : partition;
 
     // Put stuff greater than 3 on the left
     auto arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -1798,8 +1798,8 @@ enum SwapStrategy
 
 private template isValidIntegralTuple(T)
 {
-    import std.traits : isIntegral;
-    import std.typecons : isTuple;
+    import ripstd.traits : isIntegral;
+    import ripstd.typecons : isTuple;
     static if (isTuple!T)
     {
         enum isValidIntegralTuple = T.length == 2 &&
@@ -1927,8 +1927,8 @@ Range remove
 if (Offset.length >= 1 && allSatisfy!(isValidIntegralTuple, Offset))
 {
     // Activate this check when the deprecation of non-integral tuples is over
-    //import std.traits : isIntegral;
-    //import std.typecons : isTuple;
+    //import ripstd.traits : isIntegral;
+    //import ripstd.typecons : isTuple;
     //static foreach (T; Offset)
     //{
         //static if (isTuple!T)
@@ -1960,7 +1960,7 @@ if (Offset.length >= 1 && !allSatisfy!(isValidIntegralTuple, Offset))
 ///
 @safe pure unittest
 {
-    import std.typecons : tuple;
+    import ripstd.typecons : tuple;
 
     auto a = [ 0, 1, 2, 3, 4, 5 ];
     assert(remove!(SwapStrategy.stable)(a, 1) == [ 0, 2, 3, 4, 5 ]);
@@ -1978,7 +1978,7 @@ if (Offset.length >= 1 && !allSatisfy!(isValidIntegralTuple, Offset))
 ///
 @safe pure unittest
 {
-    import std.typecons : tuple;
+    import ripstd.typecons : tuple;
 
     // Delete an index
     assert([4, 5, 6].remove(1) == [4, 6]);
@@ -2015,7 +2015,7 @@ private auto removeImpl(SwapStrategy s, Range, Offset...)(Range range, Offset of
         static assert(isBidirectionalRange!Range,
                 "Range must be bidirectional");
         static assert(hasLvalueElements!Range,
-                "Range must have Lvalue elements (see std.range.hasLvalueElements)");
+                "Range must have Lvalue elements (see ripstd.range.hasLvalueElements)");
 
         static if (s == SwapStrategy.unstable)
         {
@@ -2033,8 +2033,8 @@ private auto removeImpl(SwapStrategy s, Range, Offset...)(Range range, Offset of
 
 @safe unittest
 {
-    import std.exception : assertThrown;
-    import std.range;
+    import ripstd.exception : assertThrown;
+    import ripstd.range;
 
     // https://issues.dlang.org/show_bug.cgi?id=10173
     int[] test = iota(0, 10).array();
@@ -2046,7 +2046,7 @@ private auto removeImpl(SwapStrategy s, Range, Offset...)(Range range, Offset of
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     int[] a = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
     a = [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
     assert(remove!(SwapStrategy.stable)(a, 1) ==
@@ -2092,7 +2092,7 @@ private auto removeImpl(SwapStrategy s, Range, Offset...)(Range range, Offset of
 // https://issues.dlang.org/show_bug.cgi?id=12889
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     int[1][] arr = [[0], [1], [2], [3], [4], [5], [6]];
     auto orig = arr.dup;
     foreach (i; iota(arr.length))
@@ -2111,7 +2111,7 @@ private auto removeImpl(SwapStrategy s, Range, Offset...)(Range range, Offset of
     char[] bigChars = "∑œ∆¬é˚˙ƒé∂ß¡¡".dup;
     assert(remove(bigChars, tuple(4, 6), 8) == ("∑œ∆¬˙ƒ∂ß¡¡"));
 
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown(remove(bigChars.dup, 1, 0));
     assertThrown(remove(bigChars.dup, tuple(4, 3)));
 }
@@ -2134,7 +2134,7 @@ private Range removeUnstable(Range, Offset...)(Range range, Offset offset)
         }
         static if (i > 0)
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
 
             enforce(blackouts[i - 1].pos + blackouts[i - 1].len
                     <= blackouts[i].pos,
@@ -2214,7 +2214,7 @@ private Range removeStable(Range, Offset...)(Range range, Offset offset)
 
         static if (pass > 0)
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
             enforce(pos <= from,
                     "remove(): incorrect ordering of elements to remove");
 
@@ -2241,7 +2241,7 @@ private Range removeStable(Range, Offset...)(Range range, Offset offset)
 
 private Range removeStableString(Range, Offset...)(Range range, Offset offsets)
 {
-    import std.utf : stride;
+    import ripstd.utf : stride;
     size_t charIdx = 0;
     size_t dcharIdx = 0;
     size_t charShift = 0;
@@ -2274,7 +2274,7 @@ private Range removeStableString(Range, Offset...)(Range range, Offset offsets)
             enum delta = 1;
         }
 
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         enforce(dcharIdx <= from && delta >= 0,
                 "remove(): incorrect ordering of elements to remove");
 
@@ -2306,7 +2306,7 @@ private Range removeStableString(Range, Offset...)(Range range, Offset offsets)
     //static assert(!__traits(compiles, assert([0, 1, 2, 3, 4].remove([1, 3, 4]) == [0, 3, 4])));
     //static assert(!__traits(compiles, assert([0, 1, 2, 3, 4].remove(tuple(1, 3, 4)) == [0, 3, 4])));
 
-    import std.range : only;
+    import ripstd.range : only;
     //static assert(!__traits(compiles, assert([0, 1, 2, 3, 4].remove(only(1, 3)) == [0, 3, 4])));
     static assert(__traits(compiles, assert([0, 1, 2, 3, 4].remove(1, 3) == [0, 2, 4])));
 }
@@ -2330,7 +2330,7 @@ Returns:
 */
 Range remove(alias pred, SwapStrategy s = SwapStrategy.stable, Range)(Range range)
 {
-    import std.functional : unaryFun;
+    import ripstd.functional : unaryFun;
     alias pred_ = unaryFun!pred;
     static if (isNarrowString!Range)
     {
@@ -2345,7 +2345,7 @@ Range remove(alias pred, SwapStrategy s = SwapStrategy.stable, Range)(Range rang
         static assert(isBidirectionalRange!Range,
                 "Range must be bidirectional");
         static assert(hasLvalueElements!Range,
-                "Range must have Lvalue elements (see std.range.hasLvalueElements)");
+                "Range must have Lvalue elements (see ripstd.range.hasLvalueElements)");
         static if (s == SwapStrategy.unstable)
             return removePredUnstable!pred_(range);
         else static if (s == SwapStrategy.stable)
@@ -2399,13 +2399,13 @@ Range remove(alias pred, SwapStrategy s = SwapStrategy.stable, Range)(Range rang
 
 @safe unittest
 {
-    import std.algorithm.comparison : min;
-    import std.algorithm.searching : all, any;
-    import std.algorithm.sorting : isStrictlyMonotonic;
-    import std.array : array;
-    import std.meta : AliasSeq;
-    import std.range : iota, only;
-    import std.typecons : Tuple;
+    import ripstd.algorithm.comparison : min;
+    import ripstd.algorithm.searching : all, any;
+    import ripstd.algorithm.sorting : isStrictlyMonotonic;
+    import ripstd.array : array;
+    import ripstd.meta : AliasSeq;
+    import ripstd.range : iota, only;
+    import ripstd.typecons : Tuple;
     alias E = Tuple!(int, int);
     alias S = Tuple!(E);
     S[] soffsets;
@@ -2512,8 +2512,8 @@ private Range removePredStable(alias pred, Range)(Range range)
 private Range removePredString(alias pred, SwapStrategy s = SwapStrategy.stable, Range)
 (Range range)
 {
-    import std.utf : decode;
-    import std.functional : unaryFun;
+    import ripstd.utf : decode;
+    import ripstd.functional : unaryFun;
 
     alias pred_ = unaryFun!pred;
 
@@ -2582,8 +2582,8 @@ if (isBidirectionalRange!Range &&
     }
     else static if (isNarrowString!Range && isAssignable!(ElementType!Range))
     {
-        import std.string : representation;
-        import std.utf : stride;
+        import ripstd.string : representation;
+        import ripstd.utf : stride;
 
         auto raw = representation(r);
         for (size_t i = 0; i < r.length;)
@@ -2704,7 +2704,7 @@ if (isBidirectionalRange!Range && is(typeof(pred(range.back)) : bool))
 Range stripLeft(Range, E)(Range range, E element)
 if (isInputRange!Range && is(typeof(range.front == element) : bool))
 {
-    import std.algorithm.searching : find;
+    import ripstd.algorithm.searching : find;
     return find!((auto ref a) => a != element)(range);
 }
 
@@ -2712,8 +2712,8 @@ if (isInputRange!Range && is(typeof(range.front == element) : bool))
 Range stripLeft(alias pred, Range)(Range range)
 if (isInputRange!Range && is(typeof(pred(range.front)) : bool))
 {
-    import std.algorithm.searching : find;
-    import std.functional : not;
+    import ripstd.algorithm.searching : find;
+    import ripstd.functional : not;
 
     return find!(not!pred)(range);
 }
@@ -2820,11 +2820,11 @@ Params:
 void swap(T)(ref T lhs, ref T rhs) @trusted pure nothrow @nogc
 if (isBlitAssignable!T && !is(typeof(lhs.proxySwap(rhs))))
 {
-    import std.traits : hasAliasing, hasElaborateAssign, isAssignable,
+    import ripstd.traits : hasAliasing, hasElaborateAssign, isAssignable,
                         isStaticArray;
     static if (hasAliasing!T) if (!__ctfe)
     {
-        import std.exception : doesPointTo;
+        import ripstd.exception : doesPointTo;
         assert(!doesPointTo(lhs, lhs), "Swap: lhs internal pointer.");
         assert(!doesPointTo(rhs, rhs), "Swap: rhs internal pointer.");
         assert(!doesPointTo(lhs, rhs), "Swap: lhs points to rhs.");
@@ -2994,7 +2994,7 @@ if (isBlitAssignable!T && !is(typeof(lhs.proxySwap(rhs))))
 // https://issues.dlang.org/show_bug.cgi?id=11853
 @safe unittest
 {
-    import std.traits : isAssignable;
+    import ripstd.traits : isAssignable;
     alias T = Tuple!(int, double);
     static assert(isAssignable!T);
 }
@@ -3002,7 +3002,7 @@ if (isBlitAssignable!T && !is(typeof(lhs.proxySwap(rhs))))
 // https://issues.dlang.org/show_bug.cgi?id=12024
 @safe unittest
 {
-    import std.datetime;
+    import ripstd.datetime;
     SysTime a, b;
     swap(a, b);
 }
@@ -3010,7 +3010,7 @@ if (isBlitAssignable!T && !is(typeof(lhs.proxySwap(rhs))))
 // https://issues.dlang.org/show_bug.cgi?id=9975
 @system unittest
 {
-    import std.exception : doesPointTo, mayPointTo;
+    import ripstd.exception : doesPointTo, mayPointTo;
     static struct S2
     {
         union
@@ -3026,7 +3026,7 @@ if (isBlitAssignable!T && !is(typeof(lhs.proxySwap(rhs))))
     swap(a, b);
 
     //Note: we can catch an error here, because there is no RAII in this test
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     void* p, pp;
     p = &p;
     assertThrown!Error(move(p));
@@ -3061,7 +3061,7 @@ if (isBlitAssignable!T && !is(typeof(lhs.proxySwap(rhs))))
         int x;
         this(scope ref return const A other)
         {
-            import std.stdio;
+            import ripstd.stdio;
             x = other.x;
             // note, struct functions inside @safe functions infer ALL
             // attributes, so the following 3 lines are meant to prevent this.
@@ -3117,7 +3117,7 @@ void swapAt(R)(auto ref R r, size_t i1, size_t i2)
 ///
 pure @safe nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = [1, 2, 3];
     a.swapAt(1, 2);
     assert(a.equal([1, 3, 2]));
@@ -3125,7 +3125,7 @@ pure @safe nothrow unittest
 
 pure @safe nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = [4, 5, 6];
     a.swapAt(1, 1);
     assert(a.equal([4, 5, 6]));
@@ -3134,8 +3134,8 @@ pure @safe nothrow unittest
 pure @safe nothrow unittest
 {
     // test non random access ranges
-    import std.algorithm.comparison : equal;
-    import std.array : array;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.array : array;
 
     char[] b = ['a', 'b', 'c'];
     b.swapAt(1, 2);
@@ -3242,7 +3242,7 @@ if (hasSwappableElements!InputRange1 && hasSwappableElements!InputRange2
 ///
 @safe unittest
 {
-    import std.range : empty;
+    import ripstd.range : empty;
     int[] a = [ 100, 101, 102, 103 ];
     int[] b = [ 0, 1, 2, 3 ];
     auto c = swapRanges(a[1 .. 3], b[2 .. 4]);
@@ -3272,7 +3272,7 @@ See_Also:
 void uninitializedFill(Range, Value)(Range range, Value value)
 if (isInputRange!Range && hasLvalueElements!Range && is(typeof(range.front = value)))
 {
-    import std.traits : hasElaborateAssign;
+    import ripstd.traits : hasElaborateAssign;
 
     alias T = ElementType!Range;
     static if (hasElaborateAssign!T)

@@ -23,7 +23,7 @@
  *  SV  = $(TR $(TD $1) $(TD $2))
  */
 module ripstd.internal.math.errorfunction;
-import std.math;
+import ripstd.math;
 import core.math : fabs, sqrt;
 
 pure:

@@ -4,18 +4,18 @@ Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/bitmapped_block.d
 */
 module ripstd.experimental.allocator.building_blocks.bitmapped_block;
 
-import std.experimental.allocator.building_blocks.null_allocator;
-import std.experimental.allocator.common;
-import std.typecons : Flag, Yes, No;
+import ripstd.experimental.allocator.building_blocks.null_allocator;
+import ripstd.experimental.allocator.common;
+import ripstd.typecons : Flag, Yes, No;
 
 
 // Common implementation for shared and non-shared versions of the BitmappedBlock
 private mixin template BitmappedBlockImpl(bool isShared, bool multiBlock)
 {
-    import std.conv : text;
-    import std.traits : hasMember;
-    import std.typecons : Ternary;
-    import std.typecons : tuple, Tuple;
+    import ripstd.conv : text;
+    import ripstd.traits : hasMember;
+    import ripstd.typecons : Ternary;
+    import ripstd.typecons : tuple, Tuple;
 
     static if (isShared && multiBlock)
     import core.internal.spinlock : SpinLock;
@@ -97,7 +97,7 @@ private mixin template BitmappedBlockImpl(bool isShared, bool multiBlock)
     {
         auto blocks = capacity.divideRoundUp(blockSize);
         auto leadingUlongs = blocks.divideRoundUp(64);
-        import std.algorithm.comparison : min;
+        import ripstd.algorithm.comparison : min;
         immutable initialAlignment = min(parentAlignment,
             1U << min(31U, trailingZeros(leadingUlongs * 8)));
         auto maxSlack = alignment <= initialAlignment
@@ -248,7 +248,7 @@ private mixin template BitmappedBlockImpl(bool isShared, bool multiBlock)
         pure nothrow @safe @nogc
         private void adjustFreshBit(const ulong newBit)
         {
-            import std.algorithm.comparison : max;
+            import ripstd.algorithm.comparison : max;
             static if (isShared)
             {
                 auto localFreshBit = max(newBit, _freshBit);
@@ -392,7 +392,7 @@ private mixin template BitmappedBlockImpl(bool isShared, bool multiBlock)
         // If shared, this is protected by a lock inside 'alignedAllocate'
         private void[] alignedAllocateImpl(size_t n, uint a)
         {
-            import std.math.traits : isPowerOf2;
+            import ripstd.math.traits : isPowerOf2;
             assert(a.isPowerOf2);
             if (a <= alignment) return allocate(n);
 
@@ -943,7 +943,7 @@ private mixin template BitmappedBlockImpl(bool isShared, bool multiBlock)
         debug(StdBitmapped)
         private void dump()
         {
-            import std.stdio : writefln, writeln;
+            import ripstd.stdio : writefln, writeln;
 
             ulong controlLen = (cast(BitVector) _control).length;
             writefln("%s @ %s {", typeid(this), cast(void*) (cast(BitVector) _control)._rep.ptr);
@@ -999,9 +999,9 @@ private mixin template BitmappedBlockImpl(bool isShared, bool multiBlock)
         {
             import core.atomic : cas, atomicLoad, atomicOp;
             import core.bitop : bsr;
-            import std.range : iota;
-            import std.algorithm.iteration : map;
-            import std.array : array;
+            import ripstd.range : iota;
+            import ripstd.algorithm.iteration : map;
+            import ripstd.array : array;
 
             if (s.divideRoundUp(blockSize) != 1)
                 return null;
@@ -1055,9 +1055,9 @@ private mixin template BitmappedBlockImpl(bool isShared, bool multiBlock)
         void[] allocate(const size_t s)
         {
             import core.bitop : bsr;
-            import std.range : iota;
-            import std.algorithm.iteration : map;
-            import std.array : array;
+            import ripstd.range : iota;
+            import ripstd.algorithm.iteration : map;
+            import ripstd.array : array;
 
             if (s.divideRoundUp(blockSize) != 1)
                 return null;
@@ -1366,11 +1366,11 @@ struct BitmappedBlock(size_t theBlockSize, uint theAlignment = platformAlignment
     }
     else
     {
-        version (StdUnittest)
+        version (RIPStdUnittest)
         @system unittest
         {
-            import std.algorithm.comparison : max;
-            import std.experimental.allocator.mallocator : AlignedMallocator;
+            import ripstd.algorithm.comparison : max;
+            import ripstd.experimental.allocator.mallocator : AlignedMallocator;
             auto m = cast(ubyte[])(AlignedMallocator.instance.alignedAllocate(1024 * 64,
                                     max(theAlignment, cast(uint) size_t.sizeof)));
             scope(exit) () nothrow @nogc { AlignedMallocator.instance.deallocate(m); }();
@@ -1391,8 +1391,8 @@ struct BitmappedBlock(size_t theBlockSize, uint theAlignment = platformAlignment
 @system unittest
 {
     // Create a block allocator on top of a 10KB stack region.
-    import std.experimental.allocator.building_blocks.region : InSituRegion;
-    import std.traits : hasMember;
+    import ripstd.experimental.allocator.building_blocks.region : InSituRegion;
+    import ripstd.traits : hasMember;
     InSituRegion!(10_240, 64) r;
     auto a = BitmappedBlock!(64, 64)(cast(ubyte[])(r.allocateAll()));
     static assert(hasMember!(InSituRegion!(10_240, 64), "allocateAll"));
@@ -1403,8 +1403,8 @@ struct BitmappedBlock(size_t theBlockSize, uint theAlignment = platformAlignment
 ///
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.typecons : Flag, Yes;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.typecons : Flag, Yes;
 
     enum blockSize = 64;
     enum numBlocks = 10;
@@ -1434,8 +1434,8 @@ struct BitmappedBlock(size_t theBlockSize, uint theAlignment = platformAlignment
 ///
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.typecons : Flag, No;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.typecons : Flag, No;
 
     enum blockSize = 64;
     auto a = BitmappedBlock!(blockSize, 8, Mallocator, No.multiblock)(1024 * blockSize);
@@ -1464,8 +1464,8 @@ struct BitmappedBlock(size_t theBlockSize, uint theAlignment = platformAlignment
 // Test instantiation with stateful allocators
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
     auto r = Region!Mallocator(1024 * 96);
     auto a = BitmappedBlock!(chooseAtRuntime, 8, Region!Mallocator*, No.multiblock)(&r, 1024 * 64, 1024);
 }
@@ -1641,11 +1641,11 @@ shared struct SharedBitmappedBlock(size_t theBlockSize, uint theAlignment = plat
     }
     else
     {
-        version (StdUnittest)
+        version (RIPStdUnittest)
         @system unittest
         {
-            import std.algorithm.comparison : max;
-            import std.experimental.allocator.mallocator : AlignedMallocator;
+            import ripstd.algorithm.comparison : max;
+            import ripstd.experimental.allocator.mallocator : AlignedMallocator;
             auto m = cast(ubyte[])(AlignedMallocator.instance.alignedAllocate(1024 * 64,
                                     max(theAlignment, cast(uint) size_t.sizeof)));
             scope(exit) () nothrow @nogc { AlignedMallocator.instance.deallocate(m); }();
@@ -1665,15 +1665,15 @@ shared struct SharedBitmappedBlock(size_t theBlockSize, uint theAlignment = plat
 ///
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.experimental.allocator.common : platformAlignment;
-    import std.typecons : Flag, Yes, No;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.common : platformAlignment;
+    import ripstd.typecons : Flag, Yes, No;
 
     // Create 'numThreads' threads, each allocating in parallel a chunk of memory
     static void testAlloc(Allocator)(ref Allocator a, size_t allocSize)
     {
         import core.thread : ThreadGroup;
-        import std.algorithm.sorting : sort;
+        import ripstd.algorithm.sorting : sort;
         import core.internal.spinlock : SpinLock;
 
         SpinLock lock = SpinLock(SpinLock.Contention.brief);
@@ -1727,8 +1727,8 @@ shared struct SharedBitmappedBlock(size_t theBlockSize, uint theAlignment = plat
 {
     // Test chooseAtRuntime
     // Create a block allocator on top of a 10KB stack region.
-    import std.experimental.allocator.building_blocks.region : InSituRegion;
-    import std.traits : hasMember;
+    import ripstd.experimental.allocator.building_blocks.region : InSituRegion;
+    import ripstd.traits : hasMember;
     InSituRegion!(10_240, 64) r;
     uint blockSize = 64;
     auto a = BitmappedBlock!(chooseAtRuntime, 64)(cast(ubyte[])(r.allocateAll()), blockSize);
@@ -1739,7 +1739,7 @@ shared struct SharedBitmappedBlock(size_t theBlockSize, uint theAlignment = plat
 
 pure @safe unittest
 {
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
 
     auto a = (() @trusted => BitmappedBlock!(64, 64, NullAllocator, Yes.multiblock)(new ubyte[10_240]))();
     () nothrow @nogc {
@@ -1752,7 +1752,7 @@ pure @safe unittest
 
 @safe unittest
 {
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
 
     auto a = (() @trusted => SharedBitmappedBlock!(64, 64, NullAllocator, Yes.multiblock)(new ubyte[10_240]))();
     assert((() nothrow @safe @nogc => a.empty)() == Ternary.yes);
@@ -1760,36 +1760,36 @@ pure @safe unittest
     assert(b.length == 100);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     testAllocator!(() => BitmappedBlock!(64, 8, GCAllocator)(1024 * 64));
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
     // Test chooseAtRuntime
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     uint blockSize = 64;
     testAllocator!(() => BitmappedBlock!(chooseAtRuntime, 8, GCAllocator, Yes.multiblock)(1024 * 64, blockSize));
     testAllocator!(() => BitmappedBlock!(chooseAtRuntime, 8, GCAllocator, No.multiblock)(1024 * 64, blockSize));
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     testAllocator!(() => SharedBitmappedBlock!(64, 8, Mallocator, Yes.multiblock)(1024 * 64));
     testAllocator!(() => SharedBitmappedBlock!(64, 8, Mallocator, No.multiblock)(1024 * 64));
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
     // Test chooseAtRuntime
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
     uint blockSize = 64;
     testAllocator!(() => SharedBitmappedBlock!(chooseAtRuntime, 8, Mallocator, Yes.multiblock)(1024 * 64, blockSize));
     testAllocator!(() => SharedBitmappedBlock!(chooseAtRuntime, 8, Mallocator, No.multiblock)(1024 * 64, blockSize));
@@ -1812,9 +1812,9 @@ version (StdUnittest)
         }
 
         assert(bs);
-        import std.typecons : Ternary;
-        import std.algorithm.comparison : min;
-        import std.experimental.allocator.gc_allocator : GCAllocator;
+        import ripstd.typecons : Ternary;
+        import ripstd.algorithm.comparison : min;
+        import ripstd.experimental.allocator.gc_allocator : GCAllocator;
 
         static if (isShared)
         {
@@ -1827,7 +1827,7 @@ version (StdUnittest)
                 cast(ubyte[])(GCAllocator.instance.allocate((blocks * bs * 8 + blocks) / 8)));
         }
 
-        import std.conv : text;
+        import ripstd.conv : text;
         assert(blocks >= a._blocks, text(blocks, " < ", a._blocks));
         blocks = a._blocks;
 
@@ -1968,7 +1968,7 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     enum blocks = 10000;
     int count = 0;
@@ -2048,8 +2048,8 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.random;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.random;
 
     static void testAlloc(Allocator)()
     {
@@ -2142,8 +2142,8 @@ nothrow @safe @nogc unittest
 // Test owns
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.typecons : Ternary;
 
     auto a = BitmappedBlock!(64, 8, GCAllocator)(1024 * 64);
     const void[] buff = (() pure nothrow @safe @nogc => a.allocate(42))();
@@ -2168,14 +2168,14 @@ struct BitmappedBlockWithInternalPointers(
     size_t theBlockSize, uint theAlignment = platformAlignment,
     ParentAllocator = NullAllocator)
 {
-    import std.conv : text;
-    import std.typecons : Ternary;
+    import ripstd.conv : text;
+    import ripstd.typecons : Ternary;
 
     static if (!stateSize!ParentAllocator)
-    version (StdUnittest)
+    version (RIPStdUnittest)
     @system unittest
     {
-        import std.experimental.allocator.mallocator : AlignedMallocator;
+        import ripstd.experimental.allocator.mallocator : AlignedMallocator;
         auto m = cast(ubyte[])(AlignedMallocator.instance.alignedAllocate(1024 * 64,
             theAlignment));
         scope(exit) () nothrow @nogc { AlignedMallocator.instance.deallocate(m); }();
@@ -2396,7 +2396,7 @@ struct BitmappedBlockWithInternalPointers(
 
 @system unittest
 {
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
 
     auto h = BitmappedBlockWithInternalPointers!(4096)(new ubyte[4096 * 1024]);
     assert((() nothrow @safe @nogc => h.empty)() == Ternary.yes);
@@ -2443,8 +2443,8 @@ struct BitmappedBlockWithInternalPointers(
 // Test instantiation with stateful allocators
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
     auto r = Region!Mallocator(1024 * 1024);
     auto h = BitmappedBlockWithInternalPointers!(4096, 8, Region!Mallocator*)(&r, 4096 * 1024);
 }
@@ -2755,7 +2755,7 @@ private struct BitVector
     v[0] = 1;
     assert(v.find1Backward(0) == 0);
     assert(v.find1Backward(43) == 0);
-    import std.conv : text;
+    import ripstd.conv : text;
     assert(v.find1Backward(83) == 0, text(v.find1Backward(83)));
 
     v[0] = 0;

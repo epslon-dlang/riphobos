@@ -12,21 +12,21 @@
  */
 module ripstd.format.internal.read;
 
-import std.range.primitives : ElementEncodingType, ElementType, isInputRange;
+import ripstd.range.primitives : ElementEncodingType, ElementType, isInputRange;
 
-import std.traits : isAggregateType, isArray, isAssociativeArray,
+import ripstd.traits : isAggregateType, isArray, isAssociativeArray,
     isDynamicArray, isFloatingPoint, isIntegral, isSomeChar, isSomeString,
     isStaticArray, StringTypeOf;
 
-import std.format.spec : FormatSpec;
+import ripstd.format.spec : FormatSpec;
 
-package(std.format):
+package(ripstd.format):
 
 void skipData(Range, Char)(ref Range input, scope const ref FormatSpec!Char spec)
 {
-    import std.ascii : isDigit;
-    import std.conv : text;
-    import std.range.primitives : empty, front, popFront;
+    import ripstd.ascii : isDigit;
+    import ripstd.conv : text;
+    import ripstd.range.primitives : empty, front, popFront;
 
     switch (spec.spec)
     {
@@ -58,9 +58,9 @@ private template acceptedSpecs(T)
 T unformatValueImpl(T, Range, Char)(ref Range input, scope const ref FormatSpec!Char spec)
 if (isInputRange!Range && is(immutable T == immutable bool))
 {
-    import std.algorithm.searching : find;
-    import std.conv : parse, text;
-    import std.format : enforceFmt, unformatValue;
+    import ripstd.algorithm.searching : find;
+    import ripstd.conv : parse, text;
+    import ripstd.format : enforceFmt, unformatValue;
 
     if (spec.spec == 's') return parse!T(input);
 
@@ -73,8 +73,8 @@ if (isInputRange!Range && is(immutable T == immutable bool))
 T unformatValueImpl(T, Range, Char)(ref Range input, scope const ref FormatSpec!Char spec)
 if (isInputRange!Range && is(T == typeof(null)))
 {
-    import std.conv : parse, text;
-    import std.format : enforceFmt;
+    import ripstd.conv : parse, text;
+    import ripstd.format : enforceFmt;
 
     enforceFmt(spec.spec == 's',
                text("Wrong unformat specifier '%", spec.spec , "' for ", T.stringof));
@@ -85,9 +85,9 @@ if (isInputRange!Range && is(T == typeof(null)))
 T unformatValueImpl(T, Range, Char)(ref Range input, scope const ref FormatSpec!Char spec)
 if (isInputRange!Range && isIntegral!T && !is(T == enum) && isSomeChar!(ElementType!Range))
 {
-    import std.algorithm.searching : find;
-    import std.conv : parse, text;
-    import std.format : enforceFmt, FormatException;
+    import ripstd.algorithm.searching : find;
+    import ripstd.conv : parse, text;
+    import ripstd.format : enforceFmt, FormatException;
 
     if (spec.spec == 'r')
     {
@@ -121,9 +121,9 @@ T unformatValueImpl(T, Range, Char)(ref Range input, scope const ref FormatSpec!
 if (isFloatingPoint!T && !is(T == enum) && isInputRange!Range
     && isSomeChar!(ElementType!Range)&& !is(Range == enum))
 {
-    import std.algorithm.searching : find;
-    import std.conv : parse, text;
-    import std.format : enforceFmt, FormatException;
+    import ripstd.algorithm.searching : find;
+    import ripstd.conv : parse, text;
+    import ripstd.format : enforceFmt, FormatException;
 
     if (spec.spec == 'r')
     {
@@ -146,10 +146,10 @@ if (isFloatingPoint!T && !is(T == enum) && isInputRange!Range
 T unformatValueImpl(T, Range, Char)(ref Range input, scope const ref FormatSpec!Char spec)
 if (isInputRange!Range && isSomeChar!T && !is(T == enum) && isSomeChar!(ElementType!Range))
 {
-    import std.algorithm.searching : find;
-    import std.conv : to, text;
-    import std.range.primitives : empty, front, popFront;
-    import std.format : enforceFmt, unformatValue;
+    import ripstd.algorithm.searching : find;
+    import ripstd.conv : to, text;
+    import ripstd.range.primitives : empty, front, popFront;
+    import ripstd.format : enforceFmt, unformatValue;
 
     if (spec.spec == 's' || spec.spec == 'c')
     {
@@ -175,9 +175,9 @@ if (isInputRange!Range && isSomeChar!T && !is(T == enum) && isSomeChar!(ElementT
 T unformatValueImpl(T, Range, Char)(ref Range input, scope const ref FormatSpec!Char fmt)
 if (isInputRange!Range && is(StringTypeOf!T) && !isAggregateType!T && !is(T == enum))
 {
-    import std.conv : text;
-    import std.range.primitives : empty, front, popFront, put;
-    import std.format : enforceFmt;
+    import ripstd.conv : text;
+    import ripstd.range.primitives : empty, front, popFront, put;
+    import ripstd.format : enforceFmt;
 
     const spec = fmt.spec;
     if (spec == '(')
@@ -194,7 +194,7 @@ if (isInputRange!Range && is(StringTypeOf!T) && !isAggregateType!T && !is(T == e
     }
     else
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto app = appender!T();
     }
     if (fmt.trailing.empty)
@@ -231,8 +231,8 @@ T unformatValueImpl(T, Range, Char)(ref Range input, scope const ref FormatSpec!
 if (isInputRange!Range && isArray!T && !is(StringTypeOf!T) && !isAggregateType!T
     && !is(T == enum))
 {
-    import std.conv : parse, text;
-    import std.format : enforceFmt;
+    import ripstd.conv : parse, text;
+    import ripstd.format : enforceFmt;
 
     const spec = fmt.spec;
     if (spec == '(')
@@ -249,8 +249,8 @@ if (isInputRange!Range && isArray!T && !is(StringTypeOf!T) && !isAggregateType!T
 T unformatValueImpl(T, Range, Char)(ref Range input, scope const ref FormatSpec!Char fmt)
 if (isInputRange!Range && isAssociativeArray!T && !is(T == enum))
 {
-    import std.conv : parse, text;
-    import std.format : enforceFmt;
+    import ripstd.conv : parse, text;
+    import ripstd.format : enforceFmt;
 
     const spec = fmt.spec;
     if (spec == '(')
@@ -273,7 +273,7 @@ if (is(immutable ElementEncodingType!Range == immutable char)
     || is(immutable ElementEncodingType!Range == immutable byte)
     || is(immutable ElementEncodingType!Range == immutable ubyte))
 {
-    import std.range.primitives : popFront;
+    import ripstd.range.primitives : popFront;
 
     union X
     {
@@ -301,8 +301,8 @@ if (is(immutable ElementEncodingType!Range == immutable char)
 private T unformatRange(T, Range, Char)(ref Range input, scope const ref FormatSpec!Char spec)
 in (spec.spec == '(', "spec.spec must be '(' not " ~ spec.spec)
 {
-    import std.range.primitives : empty, front, popFront;
-    import std.format : enforceFmt, format;
+    import ripstd.range.primitives : empty, front, popFront;
+    import ripstd.format : enforceFmt, format;
 
     T result;
     static if (isStaticArray!T)
@@ -339,7 +339,7 @@ in (spec.spec == '(', "spec.spec must be '(' not " ~ spec.spec)
             }
             else static if (isDynamicArray!T)
             {
-                import std.conv : WideElementType;
+                import ripstd.conv : WideElementType;
                 result ~= unformatElement!(WideElementType!T)(input, fmt);
             }
             else static if (isAssociativeArray!T)
@@ -388,8 +388,8 @@ in (spec.spec == '(', "spec.spec must be '(' not " ~ spec.spec)
 T unformatElement(T, Range, Char)(ref Range input, scope const ref FormatSpec!Char spec)
 if (isInputRange!Range)
 {
-    import std.conv : parseElement;
-    import std.format.read : unformatValue;
+    import ripstd.conv : parseElement;
+    import ripstd.format.read : unformatValue;
 
     static if (isSomeString!T)
     {

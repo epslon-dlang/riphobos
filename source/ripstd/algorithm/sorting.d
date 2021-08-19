@@ -77,13 +77,13 @@ T2=$(TR $(TDNW $(LREF $1)) $(TD $+))
  */
 module ripstd.algorithm.sorting;
 
-import std.algorithm.mutation : SwapStrategy;
-import std.functional : unaryFun, binaryFun;
-import std.range.primitives;
-import std.typecons : Flag, No, Yes;
-import std.meta : allSatisfy;
-import std.range : SortedRange;
-import std.traits;
+import ripstd.algorithm.mutation : SwapStrategy;
+import ripstd.functional : unaryFun, binaryFun;
+import ripstd.range.primitives;
+import ripstd.typecons : Flag, No, Yes;
+import ripstd.meta : allSatisfy;
+import ripstd.range : SortedRange;
+import ripstd.traits;
 
 /**
 Specifies whether the output of certain algorithm is desired in sorted
@@ -119,8 +119,8 @@ void completeSort(alias less = "a < b", SwapStrategy ss = SwapStrategy.unstable,
 if (hasLength!(Rhs) && hasSlicing!(Rhs)
         && hasSwappableElements!Lhs && hasSwappableElements!Rhs)
 {
-    import std.algorithm.mutation : bringToFront;
-    import std.range : chain, assumeSorted;
+    import ripstd.algorithm.mutation : bringToFront;
+    import ripstd.range : chain, assumeSorted;
     // Probably this algorithm can be optimized by using in-place
     // merge
     auto lhsOriginal = lhs.release();
@@ -136,7 +136,7 @@ if (hasLength!(Rhs) && hasSlicing!(Rhs)
 ///
 @safe unittest
 {
-    import std.range : assumeSorted;
+    import ripstd.range : assumeSorted;
     int[] a = [ 1, 2, 3 ];
     int[] b = [ 4, 0, 6, 5 ];
     completeSort(assumeSorted(a), b);
@@ -224,7 +224,7 @@ if (isForwardRange!(Range))
 
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     // https://issues.dlang.org/show_bug.cgi?id=9457
     auto x = "abcd";
@@ -258,13 +258,13 @@ if (isForwardRange!(Range))
 bool isStrictlyMonotonic(alias less = "a < b", Range)(Range r)
 if (isForwardRange!Range)
 {
-    import std.algorithm.searching : findAdjacent;
+    import ripstd.algorithm.searching : findAdjacent;
     return findAdjacent!((a,b) => !binaryFun!less(a,b))(r).empty;
 }
 
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     assert("abcd".isStrictlyMonotonic);
     assert(!"aacd".isStrictlyMonotonic);
@@ -401,7 +401,7 @@ Range partition(alias predicate, SwapStrategy ss, Range)(Range r)
 if (ss == SwapStrategy.stable && isRandomAccessRange!(Range) && hasLength!Range &&
         hasSlicing!Range && hasSwappableElements!Range)
 {
-    import std.algorithm.mutation : bringToFront;
+    import ripstd.algorithm.mutation : bringToFront;
 
     alias pred = unaryFun!(predicate);
     if (r.empty) return r;
@@ -423,7 +423,7 @@ if (ss == SwapStrategy.stable && isRandomAccessRange!(Range) && hasLength!Range 
 Range partition(alias predicate, SwapStrategy ss = SwapStrategy.unstable, Range)(Range r)
 if (ss != SwapStrategy.stable && isInputRange!Range && hasSwappableElements!Range)
 {
-    import std.algorithm.mutation : swap;
+    import ripstd.algorithm.mutation : swap;
     alias pred = unaryFun!(predicate);
 
     static if (ss == SwapStrategy.semistable)
@@ -453,7 +453,7 @@ if (ss != SwapStrategy.stable && isInputRange!Range && hasSwappableElements!Rang
         // section "Bidirectional Partition Algorithm (Hoare)"
         static if (isDynamicArray!Range)
         {
-            import std.algorithm.mutation : swapAt;
+            import ripstd.algorithm.mutation : swapAt;
             // For dynamic arrays prefer index-based manipulation
             if (!r.length) return r;
             size_t lo = 0, hi = r.length - 1;
@@ -479,7 +479,7 @@ if (ss != SwapStrategy.stable && isInputRange!Range && hasSwappableElements!Rang
         }
         else
         {
-            import std.algorithm.mutation : swap;
+            import ripstd.algorithm.mutation : swap;
             auto result = r;
             for (;;)
             {
@@ -520,10 +520,10 @@ if (ss != SwapStrategy.stable && isInputRange!Range && hasSwappableElements!Rang
 ///
 @safe unittest
 {
-    import std.algorithm.mutation : SwapStrategy;
-    import std.algorithm.searching : count, find;
-    import std.conv : text;
-    import std.range.primitives : empty;
+    import ripstd.algorithm.mutation : SwapStrategy;
+    import ripstd.algorithm.searching : count, find;
+    import ripstd.conv : text;
+    import ripstd.range.primitives : empty;
 
     auto Arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     auto arr = Arr.dup;
@@ -560,7 +560,7 @@ if (ss != SwapStrategy.stable && isInputRange!Range && hasSwappableElements!Rang
 
 @safe unittest
 {
-    import std.algorithm.internal : rndstuff;
+    import ripstd.algorithm.internal : rndstuff;
     static bool even(int a) { return (a & 1) == 0; }
 
     // test with random data
@@ -623,7 +623,7 @@ if (isRandomAccessRange!Range && hasLength!Range && hasSlicing!Range && hasAssig
     assert(pivot < r.length || r.length == 0 && pivot == 0, "pivot must be"
         ~ " less than the length of r or r must be empty and pivot zero");
     if (r.length <= 1) return 0;
-    import std.algorithm.mutation : swapAt, move;
+    import ripstd.algorithm.mutation : swapAt, move;
     alias lt = binaryFun!less;
 
     // Pivot at the front
@@ -645,9 +645,9 @@ if (isRandomAccessRange!Range && hasLength!Range && hasSlicing!Range && hasAssig
         for (;;)
         {
             // Loop invariant
-            version (StdUnittest)
+            version (RIPStdUnittest)
             {
-                // this used to import std.algorithm.all, but we want to save
+                // this used to import ripstd.algorithm.all, but we want to save
                 // imports when unittests are enabled if possible.
                 foreach (x; r[0 .. lo])
                     assert(!lt(p, x), "p must not be less than x");
@@ -707,7 +707,7 @@ if (isRandomAccessRange!Range && hasLength!Range && hasSlicing!Range && hasAssig
 {
     int[] a = [5, 3, 2, 6, 4, 1, 3, 7];
     size_t pivot = pivotPartition(a, a.length / 2);
-    import std.algorithm.searching : all;
+    import ripstd.algorithm.searching : all;
     assert(a[0 .. pivot].all!(x => x <= a[pivot]));
     assert(a[pivot .. $].all!(x => x >= a[pivot]));
 }
@@ -721,7 +721,7 @@ if (isRandomAccessRange!Range && hasLength!Range && hasSlicing!Range && hasAssig
 
         a = [-9, -4, -2, -2, 9];
         pivot = pivotPartition!less(a, a.length / 2);
-        import std.algorithm.searching : all;
+        import ripstd.algorithm.searching : all;
         assert(a[0 .. pivot].all!(x => x <= a[pivot]));
         assert(a[pivot .. $].all!(x => x >= a[pivot]));
 
@@ -753,11 +753,11 @@ if (isRandomAccessRange!Range && hasLength!Range && hasSlicing!Range && hasAssig
         assert(pivot == 0 || pivot == 1);
         assert(a == [ 42, 42 ]);
 
-        import std.algorithm.iteration : map;
-        import std.array : array;
-        import std.format : format;
-        import std.random : Random, uniform, Xorshift;
-        import std.range : iota;
+        import ripstd.algorithm.iteration : map;
+        import ripstd.array : array;
+        import ripstd.format : format;
+        import ripstd.random : Random, uniform, Xorshift;
+        import ripstd.range : iota;
         auto s = 123_456_789;
         auto g = Xorshift(s);
         a = iota(0, uniform(1, 1000, g))
@@ -840,9 +840,9 @@ if (ss == SwapStrategy.unstable && isRandomAccessRange!Range
     // The algorithm is described in "Engineering a sort function" by
     // Jon Bentley et al, pp 1257.
 
-    import std.algorithm.comparison : min;
-    import std.algorithm.mutation : swap, swapAt, swapRanges;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : min;
+    import ripstd.algorithm.mutation : swap, swapAt, swapRanges;
+    import ripstd.typecons : tuple;
 
     alias lessFun = binaryFun!less;
     size_t i, j, k = r.length, l = k;
@@ -896,7 +896,7 @@ if (ss == SwapStrategy.unstable && isRandomAccessRange!Range
 
 @safe unittest
 {
-    import std.random : Random = Xorshift, uniform;
+    import ripstd.random : Random = Xorshift, uniform;
 
     immutable uint[] seeds = [3923355730, 1927035882];
     foreach (s; seeds)
@@ -974,8 +974,8 @@ makeIndex(
 if (isForwardRange!(Range) && isRandomAccessRange!(RangeIndex)
     && is(ElementType!(RangeIndex) : ElementType!(Range)*) && hasAssignableElements!RangeIndex)
 {
-    import std.algorithm.internal : addressOf;
-    import std.exception : enforce;
+    import ripstd.algorithm.internal : addressOf;
+    import ripstd.exception : enforce;
 
     // assume collection already ordered
     size_t i;
@@ -998,8 +998,8 @@ if (isRandomAccessRange!Range && !isInfinite!Range &&
     isRandomAccessRange!RangeIndex && !isInfinite!RangeIndex &&
     isIntegral!(ElementType!RangeIndex) && hasAssignableElements!RangeIndex)
 {
-    import std.conv : to;
-    import std.exception : enforce;
+    import ripstd.conv : to;
+    import ripstd.exception : enforce;
 
     alias IndexType = Unqual!(ElementType!RangeIndex);
     enforce(r.length == index.length,
@@ -1070,8 +1070,8 @@ if (isRandomAccessRange!Range && !isInfinite!Range &&
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
 
     ubyte[256] index = void;
     iota(256).makeIndex(index[]);
@@ -1097,9 +1097,9 @@ if (Rs.length >= 2 &&
         private size_t _lastBackIndex = size_t.max; // `size_t.max` means uninitialized,
     }
 
-    import std.functional : binaryFun;
-    import std.meta : anySatisfy;
-    import std.traits : isCopyable;
+    import ripstd.functional : binaryFun;
+    import ripstd.meta : anySatisfy;
+    import ripstd.traits : isCopyable;
 
     private alias comp = binaryFun!less;
     private alias ElementType = CommonType!(staticMap!(.ElementType, Rs));
@@ -1336,8 +1336,8 @@ if (Rs.length >= 2 &&
 ///
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : retro;
 
     int[] a = [1, 3, 5];
     int[] b = [2, 3, 4];
@@ -1348,7 +1348,7 @@ if (Rs.length >= 2 &&
 
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     int[] a = [ 1, 2, 4, 5, 7, 9 ];
     int[] b = [ 0, 1, 2, 4, 7, 8 ];
@@ -1366,7 +1366,7 @@ if (Rs.length >= 2 &&
 @safe pure nothrow unittest
 {
     // save
-    import std.range : dropOne;
+    import ripstd.range : dropOne;
     int[] a = [1, 2];
     int[] b = [0, 3];
     auto arr = a.merge(b);
@@ -1377,8 +1377,8 @@ if (Rs.length >= 2 &&
 
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange;
 
     auto dummyResult1 = [1, 1, 1.5, 2, 3, 4, 5, 5.5, 6, 7, 8, 9, 10];
     auto dummyResult2 = [1, 1, 2, 2, 3, 3, 4, 4, 5, 5,
@@ -1393,7 +1393,7 @@ if (Rs.length >= 2 &&
 
 @nogc @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     static immutable a = [1, 3, 5];
     static immutable b = [2, 3, 4];
@@ -1404,9 +1404,9 @@ if (Rs.length >= 2 &&
 /// test bi-directional access and common type
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : retro;
-    import std.traits : CommonType;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : retro;
+    import ripstd.traits : CommonType;
 
     alias S = short;
     alias I = int;
@@ -1446,8 +1446,8 @@ if (Rs.length >= 2 &&
 // Issue 21810: Check for sortedness must not use `==`
 @nogc @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : tuple;
 
     static immutable a = [
         tuple(1, 1),
@@ -1505,8 +1505,8 @@ template multiSort(less...) //if (less.length > 1)
     auto multiSort(Range)(Range r)
     if (validPredicates!(ElementType!Range, less) && hasSwappableElements!Range)
     {
-        import std.meta : AliasSeq;
-        import std.range : assumeSorted;
+        import ripstd.meta : AliasSeq;
+        import ripstd.range : assumeSorted;
         static if (is(typeof(less[$ - 1]) == SwapStrategy))
         {
             enum ss = less[$ - 1];
@@ -1534,7 +1534,7 @@ template multiSort(less...) //if (less.length > 1)
 ///
 @safe unittest
 {
-    import std.algorithm.mutation : SwapStrategy;
+    import ripstd.algorithm.mutation : SwapStrategy;
     static struct Point { int x, y; }
     auto pts1 = [ Point(0, 0), Point(5, 5), Point(0, 1), Point(0, 2) ];
     auto pts2 = [ Point(0, 0), Point(0, 1), Point(0, 2), Point(5, 5) ];
@@ -1585,8 +1585,8 @@ private void multiSortImpl(Range, SwapStrategy ss, funs...)(Range r)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range;
 
     static struct Point { int x, y; }
     auto pts1 = [ Point(5, 6), Point(1, 0), Point(5, 7), Point(1, 1), Point(1, 2), Point(0, 1) ];
@@ -1677,7 +1677,7 @@ it's slower.
 */
 private void shortSort(alias less, Range)(Range r)
 {
-    import std.algorithm.mutation : swapAt;
+    import ripstd.algorithm.mutation : swapAt;
     alias pred = binaryFun!(less);
 
     switch (r.length)
@@ -1786,7 +1786,7 @@ private void trustedMoveEmplace(T)(ref T source, ref T target) @trusted
 
 @safe unittest
 {
-    import std.random : Random = Xorshift, uniform;
+    import ripstd.random : Random = Xorshift, uniform;
 
     auto rnd = Random(1);
     auto a = new int[uniform(100, 200, rnd)];
@@ -1806,7 +1806,7 @@ private void sort5(alias lt, Range)(Range r)
 {
     assert(r.length >= 5, "r must have more than 4 elements");
 
-    import std.algorithm.mutation : swapAt;
+    import ripstd.algorithm.mutation : swapAt;
 
     // 1. Sort first two pairs
     if (lt(r[1], r[0])) r.swapAt(0, 1);
@@ -1857,9 +1857,9 @@ private void sort5(alias lt, Range)(Range r)
 
 @safe unittest
 {
-    import std.algorithm.iteration : permutations;
-    import std.algorithm.mutation : copy;
-    import std.range : iota;
+    import ripstd.algorithm.iteration : permutations;
+    import ripstd.algorithm.mutation : copy;
+    import ripstd.range : iota;
 
     int[5] buf;
     foreach (per; iota(5).permutations)
@@ -1936,7 +1936,7 @@ if (((ss == SwapStrategy.unstable && (hasSwappableElements!Range ||
        Stable sorting uses TimSort, which needs to copy elements into a buffer,
        requiring assignable elements. +/
 {
-    import std.range : assumeSorted;
+    import ripstd.range : assumeSorted;
     alias lessFun = binaryFun!(less);
     alias LessRet = typeof(lessFun(r.front, r.front));    // instantiate lessFun
     static if (is(LessRet == bool))
@@ -1977,7 +1977,7 @@ if (((ss == SwapStrategy.unstable && (hasSwappableElements!Range ||
 @safe unittest
 {
     // Showcase stable sorting
-    import std.algorithm.mutation : SwapStrategy;
+    import ripstd.algorithm.mutation : SwapStrategy;
     string[] words = [ "aBc", "a", "abc", "b", "ABC", "c" ];
     sort!("toUpper(a) < toUpper(b)", SwapStrategy.stable)(words);
     assert(words == [ "a", "aBc", "abc", "ABC", "b", "c" ]);
@@ -1989,9 +1989,9 @@ if (((ss == SwapStrategy.unstable && (hasSwappableElements!Range ||
     // Sorting floating-point numbers in presence of NaN
     double[] numbers = [-0.0, 3.0, -2.0, double.nan, 0.0, -double.nan];
 
-    import std.algorithm.comparison : equal;
-    import std.math.operations : cmp;
-    import std.math.traits : isIdentical;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.math.operations : cmp;
+    import ripstd.math.traits : isIdentical;
 
     sort!((a, b) => cmp(a, b) < 0)(numbers);
 
@@ -2002,10 +2002,10 @@ if (((ss == SwapStrategy.unstable && (hasSwappableElements!Range ||
 @safe unittest
 {
     // Simple regression benchmark
-    import std.algorithm.iteration, std.algorithm.mutation;
-    import std.array : array;
-    import std.random : Random, uniform;
-    import std.range : iota;
+    import ripstd.algorithm.iteration, ripstd.algorithm.mutation;
+    import ripstd.array : array;
+    import ripstd.random : Random, uniform;
+    import ripstd.range : iota;
     Random rng;
     int[] a = iota(20148).map!(_ => uniform(-1000, 1000, rng)).array;
     static uint comps;
@@ -2022,7 +2022,7 @@ if (((ss == SwapStrategy.unstable && (hasSwappableElements!Range ||
     debug enum uint watermark = 1676220;
     else enum uint watermark = 1676220;
 
-    import std.conv;
+    import ripstd.conv;
     assert(comps <= watermark, text("You seem to have pessimized sort! ",
         watermark, " < ", comps));
     assert(comps >= watermark, text("You seem to have improved sort!",
@@ -2031,10 +2031,10 @@ if (((ss == SwapStrategy.unstable && (hasSwappableElements!Range ||
 
 @safe unittest
 {
-    import std.algorithm.internal : rndstuff;
-    import std.algorithm.mutation : swapRanges;
-    import std.random : Random = Xorshift, uniform;
-    import std.uni : toUpper;
+    import ripstd.algorithm.internal : rndstuff;
+    import ripstd.algorithm.mutation : swapRanges;
+    import ripstd.random : Random = Xorshift, uniform;
+    import ripstd.uni : toUpper;
 
     // sort using delegate
     auto a = new int[100];
@@ -2110,7 +2110,7 @@ if (((ss == SwapStrategy.unstable && (hasSwappableElements!Range ||
     }
 
     {
-        import std.algorithm.mutation : swap;
+        import ripstd.algorithm.mutation : swap;
 
         bool proxySwapCalled;
         struct S
@@ -2143,9 +2143,9 @@ if (((ss == SwapStrategy.unstable && (hasSwappableElements!Range ||
 
 private void quickSortImpl(alias less, Range)(Range r, size_t depth)
 {
-    import std.algorithm.comparison : min, max;
-    import std.algorithm.mutation : swap, swapAt;
-    import std.conv : to;
+    import ripstd.algorithm.comparison : min, max;
+    import ripstd.algorithm.mutation : swap, swapAt;
+    import ripstd.conv : to;
 
     alias Elem = ElementType!(Range);
     enum size_t shortSortGetsBetter = max(32, 1024 / Elem.sizeof);
@@ -2201,9 +2201,9 @@ private void quickSortImpl(alias less, Range)(Range r, size_t depth)
 }
 
 // Heap operations for random-access ranges
-package(std) template HeapOps(alias less, Range)
+package(ripstd) template HeapOps(alias less, Range)
 {
-    import std.algorithm.mutation : swapAt;
+    import ripstd.algorithm.mutation : swapAt;
 
     static assert(isRandomAccessRange!Range, Range.stringof ~ " must be a"
         ~ " RandomAccessRange");
@@ -2323,7 +2323,7 @@ package(std) template HeapOps(alias less, Range)
 private template TimSortImpl(alias pred, R)
 {
     import core.bitop : bsr;
-    import std.array : uninitializedArray;
+    import ripstd.array : uninitializedArray;
 
     static assert(isRandomAccessRange!R, R.stringof ~ " must be a"
         ~ " RandomAccessRange");
@@ -2349,8 +2349,8 @@ private template TimSortImpl(alias pred, R)
     // Entry point for tim sort
     void sort()(R range, T[] temp)
     {
-        import std.algorithm.comparison : min;
-        import std.format : format;
+        import ripstd.algorithm.comparison : min;
+        import ripstd.format : format;
 
         // Do insertion sort on small range
         if (range.length <= minimalMerge)
@@ -2408,7 +2408,7 @@ private template TimSortImpl(alias pred, R)
             }
 
             // Assert that the code above established the invariant correctly
-            version (StdUnittest)
+            version (RIPStdUnittest)
             {
                 if (stackLen == 2)
                 {
@@ -2465,7 +2465,7 @@ private template TimSortImpl(alias pred, R)
     }
     do
     {
-        import std.algorithm.mutation : reverse;
+        import ripstd.algorithm.mutation : reverse;
 
         if (range.length < 2) return range.length;
 
@@ -2490,7 +2490,7 @@ private template TimSortImpl(alias pred, R)
     }
     do
     {
-        import std.algorithm.mutation : move;
+        import ripstd.algorithm.mutation : move;
 
         for (; sortedLen < range.length; ++sortedLen)
         {
@@ -2527,7 +2527,7 @@ private template TimSortImpl(alias pred, R)
     void mergeAt()(R range, Slice[] stack, immutable size_t at, ref size_t minGallop, ref T[] temp)
     in
     {
-        import std.format : format;
+        import ripstd.format : format;
         assert(stack.length >= 2, "stack be be greater than 1");
         assert(stack.length - at == 2 || stack.length - at == 3,
             format!"stack.length - at %s must be 2 or 3"(stack.length - at));
@@ -2614,7 +2614,7 @@ private template TimSortImpl(alias pred, R)
     }
     do
     {
-        import std.algorithm.mutation : copy;
+        import ripstd.algorithm.mutation : copy;
 
         assert(mid <= range.length, "mid must be less than the length of the"
             ~ " range");
@@ -2698,8 +2698,8 @@ private template TimSortImpl(alias pred, R)
     }
     do
     {
-        import std.algorithm.mutation : copy;
-        import std.format : format;
+        import ripstd.algorithm.mutation : copy;
+        import ripstd.format : format;
 
         assert(mid <= range.length, "mid must be less or equal to range.length");
         assert(temp.length >= range.length - mid, format!
@@ -2895,7 +2895,7 @@ private template TimSortImpl(alias pred, R)
 
 @safe unittest
 {
-    import std.random : Random, uniform, randomShuffle;
+    import ripstd.random : Random, uniform, randomShuffle;
 
     // Element type with two fields
     static struct E
@@ -2906,7 +2906,7 @@ private template TimSortImpl(alias pred, R)
     // Generates data especially for testing sorting with Timsort
     static E[] genSampleData(uint seed) @safe
     {
-        import std.algorithm.mutation : swap, swapRanges;
+        import ripstd.algorithm.mutation : swap, swapRanges;
 
         auto rnd = Random(seed);
 
@@ -2940,7 +2940,7 @@ private template TimSortImpl(alias pred, R)
     // Tests the Timsort function for correctness and stability
     static bool testSort(uint seed)
     {
-        import std.format : format;
+        import ripstd.format : format;
         auto arr = genSampleData(seed);
 
         // Now sort the array!
@@ -2986,7 +2986,7 @@ private template TimSortImpl(alias pred, R)
 @safe unittest
 {
     //test stable sort + zip
-    import std.range;
+    import ripstd.range;
     auto x = [10, 50, 60, 60, 20];
     dchar[] y = "abcde"d.dup;
 
@@ -2998,7 +2998,7 @@ private template TimSortImpl(alias pred, R)
 // https://issues.dlang.org/show_bug.cgi?id=14223
 @safe unittest
 {
-    import std.array, std.range;
+    import ripstd.array, ripstd.range;
     auto arr = chain(iota(0, 384), iota(0, 256), iota(0, 80), iota(0, 64), iota(0, 96)).array;
     sort!("a < b", SwapStrategy.stable)(arr);
 }
@@ -3096,8 +3096,8 @@ if (isRandomAccessRange!R && hasLength!R && hasSwappableElements!R &&
     !is(typeof(binaryFun!less) == SwapStrategy))
 {
     import core.lifetime : emplace;
-    import std.range : zip, SortedRange;
-    import std.string : representation;
+    import ripstd.range : zip, SortedRange;
+    import ripstd.string : representation;
 
     static if (is(typeof(unaryFun!transform(r.front))))
     {
@@ -3188,8 +3188,8 @@ if (isRandomAccessRange!R && hasLength!R && hasSwappableElements!R)
 ///
 @safe unittest
 {
-    import std.algorithm.iteration : map;
-    import std.numeric : entropy;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.numeric : entropy;
 
     auto lowEnt = [ 1.0, 0, 0 ],
          midEnt = [ 0.1, 0.1, 0.8 ],
@@ -3209,8 +3209,8 @@ if (isRandomAccessRange!R && hasLength!R && hasSwappableElements!R)
 
 @safe unittest
 {
-    import std.algorithm.iteration : map;
-    import std.numeric : entropy;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.numeric : entropy;
 
     auto lowEnt = [ 1.0, 0, 0 ],
         midEnt = [ 0.1, 0.1, 0.8 ],
@@ -3239,7 +3239,7 @@ if (isRandomAccessRange!R && hasLength!R && hasSwappableElements!R)
 // https://issues.dlang.org/show_bug.cgi?id=4909
 @safe unittest
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
     Tuple!(char)[] chars;
     schwartzSort!"a[0]"(chars);
 }
@@ -3247,7 +3247,7 @@ if (isRandomAccessRange!R && hasLength!R && hasSwappableElements!R)
 // https://issues.dlang.org/show_bug.cgi?id=5924
 @safe unittest
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
     Tuple!(char)[] chars;
     schwartzSort!((Tuple!(char) c){ return c[0]; })(chars);
 }
@@ -3255,7 +3255,7 @@ if (isRandomAccessRange!R && hasLength!R && hasSwappableElements!R)
 // https://issues.dlang.org/show_bug.cgi?id=13965
 @safe unittest
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
     Tuple!(char)[] chars;
     schwartzSort!("a[0]", SwapStrategy.stable)(chars);
 }
@@ -3263,8 +3263,8 @@ if (isRandomAccessRange!R && hasLength!R && hasSwappableElements!R)
 // https://issues.dlang.org/show_bug.cgi?id=13965
 @safe unittest
 {
-    import std.algorithm.iteration : map;
-    import std.numeric : entropy;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.numeric : entropy;
 
     auto lowEnt = [ 1.0, 0, 0 ],
         midEnt = [ 0.1, 0.1, 0.8 ],
@@ -3285,8 +3285,8 @@ if (isRandomAccessRange!R && hasLength!R && hasSwappableElements!R)
 // https://issues.dlang.org/show_bug.cgi?id=20799
 @safe unittest
 {
-    import std.range : iota, retro;
-    import std.array : array;
+    import ripstd.range : iota, retro;
+    import ripstd.array : array;
 
     auto arr = 1_000_000.iota.retro.array;
     arr.schwartzSort!(
@@ -3435,7 +3435,7 @@ if (isRandomAccessRange!(Range) && hasLength!Range &&
         // Safety checks: enumerate all potentially unsafe generic primitives
         // then use a @trusted implementation.
         cast(void) binaryFun!less(r[0], r[r.length - 1]);
-        import std.algorithm.mutation : swapAt;
+        import ripstd.algorithm.mutation : swapAt;
         r.swapAt(size_t(0), size_t(0));
         static assert(is(typeof(r.length) == size_t),
             typeof(r.length).stringof ~ " must be of type size_t");
@@ -3460,9 +3460,9 @@ if (isRandomAccessRange!(Range) && hasLength!Range &&
 // https://issues.dlang.org/show_bug.cgi?id=8341
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : zip;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : zip;
+    import ripstd.typecons : tuple;
     auto a = [10, 30, 20];
     auto b = ["c", "b", "a"];
     assert(topN!"a[0] > b[0]"(zip(a, b), 2).equal([tuple(20, "a"), tuple(30, "b")]));
@@ -3473,7 +3473,7 @@ void topNImpl(alias less, R)(R r, size_t n, ref bool useSampling)
 {
     for (;;)
     {
-        import std.algorithm.mutation : swapAt;
+        import ripstd.algorithm.mutation : swapAt;
         assert(n < r.length);
         size_t pivot = void;
 
@@ -3570,7 +3570,7 @@ void topNImpl(alias less, R)(R r, size_t n, ref bool useSampling)
 
 private size_t topNPartition(alias lp, R)(R r, size_t n, bool useSampling)
 {
-    import std.format : format;
+    import ripstd.format : format;
     assert(r.length >= 9 && n < r.length, "length must be longer than 9"
         ~ " and n must be less than r.length");
     immutable ninth = r.length / 9;
@@ -3601,7 +3601,7 @@ private size_t topNPartition(alias lp, R)(R r, size_t n, bool useSampling)
 
 private void p3(alias less, Range)(Range r, size_t lo, immutable size_t hi)
 {
-    import std.format : format;
+    import ripstd.format : format;
     assert(lo <= hi && hi < r.length,
         format!"lo %s <= hi %s && hi < r.length %s"(lo, hi, r.length));
     immutable ln = hi - lo;
@@ -3617,7 +3617,7 @@ private void p3(alias less, Range)(Range r, size_t lo, immutable size_t hi)
 private void p4(alias less, Flag!"leanRight" f, Range)
     (Range r, size_t lo, immutable size_t hi)
 {
-    import std.format : format;
+    import ripstd.format : format;
     assert(lo <= hi && hi < r.length, format!"lo %s <= hi %s && hi < r.length %s"(
         lo, hi, r.length));
     immutable ln = hi - lo, _2ln = ln * 2;
@@ -3673,7 +3673,7 @@ private
 size_t expandPartition(alias lp, R)(R r, size_t lo, size_t pivot, size_t hi)
 in
 {
-    import std.algorithm.searching : all;
+    import ripstd.algorithm.searching : all;
     assert(lo <= pivot, "lo must be less than or equal pivot");
     assert(pivot < hi, "pivot must be less than hi");
     assert(hi <= r.length, "hi must be less than or equal to the length of r");
@@ -3684,7 +3684,7 @@ in
     }
 out
 {
-    import std.algorithm.searching : all;
+    import ripstd.algorithm.searching : all;
     assert(r[0 .. pivot + 1].all!(x => !lp(r[pivot], x)),
         "r[0 .. pivot + 1] failed less than test");
     assert(r[pivot + 1 .. r.length].all!(x => !lp(x, r[pivot])),
@@ -3692,8 +3692,8 @@ out
 }
 do
 {
-    import std.algorithm.mutation : swapAt;
-    import std.algorithm.searching : all;
+    import ripstd.algorithm.mutation : swapAt;
+    import ripstd.algorithm.searching : all;
     // We work with closed intervals!
     --hi;
 
@@ -3787,10 +3787,10 @@ done:
     auto a = [ 10, 5, 3, 4, 8,  11,  13, 3, 9, 4, 10 ];
     assert(expandPartition!((a, b) => a < b)(a, 4, 5, 6) == 9);
 
-    import std.algorithm.iteration : map;
-    import std.array : array;
-    import std.random : uniform;
-    import std.range : iota;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.array : array;
+    import ripstd.random : uniform;
+    import ripstd.range : iota;
     auto size = uniform(1, 1000);
     a = iota(0, size).map!(_ => uniform(0, 1000)).array;
     if (a.length == 0) return;
@@ -3800,8 +3800,8 @@ done:
 
 @safe unittest
 {
-    import std.algorithm.comparison : max, min;
-    import std.algorithm.iteration : reduce;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.algorithm.iteration : reduce;
 
     int[] v = [ 7, 6, 5, 4, 3, 2, 1, 0 ];
     ptrdiff_t n = 3;
@@ -3847,9 +3847,9 @@ done:
 
 @safe unittest
 {
-    import std.algorithm.comparison : max, min;
-    import std.algorithm.iteration : reduce;
-    import std.random : Random = Xorshift, uniform;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.algorithm.iteration : reduce;
+    import ripstd.random : Random = Xorshift, uniform;
 
     immutable uint[] seeds = [90027751, 2709791795, 1374631933, 995751648, 3541495258, 984840953];
     foreach (s; seeds)
@@ -3900,7 +3900,7 @@ if (isRandomAccessRange!(Range1) && hasLength!Range1 &&
     isInputRange!Range2 && is(ElementType!Range1 == ElementType!Range2) &&
     hasLvalueElements!Range1 && hasLvalueElements!Range2)
 {
-    import std.container : BinaryHeap;
+    import ripstd.container : BinaryHeap;
 
     static assert(ss == SwapStrategy.unstable,
             "Stable topN not yet implemented");
@@ -3927,9 +3927,9 @@ if (isRandomAccessRange!(Range1) && hasLength!Range1 &&
 // https://issues.dlang.org/show_bug.cgi?id=15421
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange;
-    import std.meta : AliasSeq;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange;
+    import ripstd.meta : AliasSeq;
 
     alias RandomRanges = AliasSeq!(
         DummyRange!(ReturnBy.Reference, Length.Yes, RangeType.Random)
@@ -3946,7 +3946,7 @@ if (isRandomAccessRange!(Range1) && hasLength!Range1 &&
     {
         foreach (T2; ReferenceRanges)
         {
-            import std.array;
+            import ripstd.array;
 
             T1 A;
             T2 B;
@@ -4029,7 +4029,7 @@ TRange topNCopy(alias less = "a < b", SRange, TRange)
 if (isInputRange!(SRange) && isRandomAccessRange!(TRange)
     && hasLength!(TRange) && hasSlicing!(TRange))
 {
-    import std.container : BinaryHeap;
+    import ripstd.container : BinaryHeap;
 
     if (target.empty) return target;
     auto heap = BinaryHeap!(TRange, less)(target, 0);
@@ -4045,7 +4045,7 @@ if (isInputRange!(SRange) && isRandomAccessRange!(TRange)
 ///
 @system unittest
 {
-    import std.typecons : Yes;
+    import ripstd.typecons : Yes;
 
     int[] a = [ 10, 16, 2, 3, 1, 5, 0 ];
     int[] b = new int[3];
@@ -4055,8 +4055,8 @@ if (isInputRange!(SRange) && isRandomAccessRange!(TRange)
 
 @system unittest
 {
-    import std.random : Random = Xorshift, uniform, randomShuffle;
-    import std.typecons : Yes;
+    import ripstd.random : Random = Xorshift, uniform, randomShuffle;
+    import ripstd.typecons : Yes;
 
     auto r = Random(123_456_789);
     ptrdiff_t[] a = new ptrdiff_t[uniform(1, 1000, r)];
@@ -4110,12 +4110,12 @@ if (isRandomAccessRange!Range &&
     static assert(ss == SwapStrategy.unstable,
                   "Stable swap strategy not implemented yet.");
 
-    import std.container.binaryheap : BinaryHeap;
+    import ripstd.container.binaryheap : BinaryHeap;
     if (index.empty) return;
 
     static if (isIntegral!(ElementType!(RangeIndex)))
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(ElementType!(RangeIndex).max >= index.length,
                 "Index type too small");
@@ -4154,7 +4154,7 @@ if (isRandomAccessRange!Range &&
 ///
 @system unittest
 {
-    import std.typecons : Yes;
+    import ripstd.typecons : Yes;
 
     // Construct index to top 3 elements using numerical indices:
     int[] a = [ 10, 2, 7, 5, 8, 1 ];
@@ -4170,7 +4170,7 @@ if (isRandomAccessRange!Range &&
 
 @system unittest
 {
-    import std.conv : text;
+    import ripstd.conv : text;
 
     {
         int[] a = [ 10, 8, 9, 2, 4, 6, 7, 1, 3, 5 ];
@@ -4222,11 +4222,11 @@ if (isRandomAccessRange!Range && hasLength!Range &&
 {
     assert(r.length >= Indexes.length, "r.length must be greater equal to"
         ~ " Indexes.length");
-    import std.functional : binaryFun;
+    import ripstd.functional : binaryFun;
     alias lt = binaryFun!less;
     enum k = Indexes.length;
-    import std.algorithm.mutation : swapAt;
-    import std.format : format;
+    import ripstd.algorithm.mutation : swapAt;
+    import ripstd.format : format;
 
     alias a = i[0];
     static assert(is(typeof(a) == size_t), typeof(a).stringof ~ " must be"
@@ -4314,7 +4314,7 @@ if (isRandomAccessRange!Range && hasLength!Range &&
     else static if (k == 5)
     {
         // Credit: Teppo Niinimäki
-        version (StdUnittest) scope(success)
+        version (RIPStdUnittest) scope(success)
         {
             assert(!lt(r[c], r[a]), "less than check failed");
             assert(!lt(r[c], r[b]), "less than check failed");
@@ -4414,9 +4414,9 @@ bool nextPermutation(alias less="a < b", BidirectionalRange)
 if (isBidirectionalRange!BidirectionalRange &&
     hasSwappableElements!BidirectionalRange)
 {
-    import std.algorithm.mutation : reverse, swap;
-    import std.algorithm.searching : find;
-    import std.range : retro, takeExactly;
+    import ripstd.algorithm.mutation : reverse, swap;
+    import ripstd.algorithm.searching : find;
+    import ripstd.range : retro, takeExactly;
     // Ranges of 0 or 1 element have no distinct permutations.
     if (range.empty) return false;
 
@@ -4496,7 +4496,7 @@ if (isBidirectionalRange!BidirectionalRange &&
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto a1 = [1, 2, 3, 4];
 
@@ -4671,9 +4671,9 @@ bool nextEvenPermutation(alias less="a < b", BidirectionalRange)
 if (isBidirectionalRange!BidirectionalRange &&
     hasSwappableElements!BidirectionalRange)
 {
-    import std.algorithm.mutation : reverse, swap;
-    import std.algorithm.searching : find;
-    import std.range : retro, takeExactly;
+    import ripstd.algorithm.mutation : reverse, swap;
+    import ripstd.algorithm.searching : find;
+    import ripstd.range : retro, takeExactly;
     // Ranges of 0 or 1 element have no distinct permutations.
     if (range.empty) return false;
 
@@ -4780,7 +4780,7 @@ shapes. Here's a non-trivial example:
 */
 @safe unittest
 {
-    import std.math.algebraic : sqrt;
+    import ripstd.math.algebraic : sqrt;
 
     // Print the 60 vertices of a uniform truncated icosahedron (soccer ball)
     enum real Phi = (1.0 + sqrt(5.0)) / 2.0;    // Golden ratio
@@ -4899,8 +4899,8 @@ bool nthPermutationImpl(Range)
                        (auto ref Range range, ulong perm)
 if (isRandomAccessRange!Range && hasLength!Range)
 {
-    import std.range.primitives : ElementType;
-    import std.numeric : decimalToFactorial;
+    import ripstd.range.primitives : ElementType;
+    import ripstd.numeric : decimalToFactorial;
 
     // ulong.max has 21 digits in the factorial number system
     ubyte[21] fac;
@@ -4958,7 +4958,7 @@ pure @safe unittest
 
 pure @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto src = [0, 1, 2, 3];
 
@@ -4967,8 +4967,8 @@ pure @safe unittest
 
 pure @safe unittest
 {
-    import std.internal.test.dummyrange;
-    import std.meta : AliasSeq;
+    import ripstd.internal.test.dummyrange;
+    import ripstd.meta : AliasSeq;
 
     auto src = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
     auto rsl = [4, 0, 6, 2, 1, 3, 5, 7, 8, 9, 10];

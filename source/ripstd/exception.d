@@ -47,11 +47,11 @@ module ripstd.exception;
 @system unittest
 {
     import core.stdc.stdlib : malloc, free;
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map, splitter;
-    import std.algorithm.searching : endsWith;
-    import std.conv : ConvException, to;
-    import std.range : front, retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map, splitter;
+    import ripstd.algorithm.searching : endsWith;
+    import ripstd.conv : ConvException, to;
+    import ripstd.range : front, retro;
 
     // use enforce like assert
     int a = 3;
@@ -110,8 +110,8 @@ module ripstd.exception;
     assert(res == "immutable");
 }
 
-import std.range.primitives;
-import std.traits;
+import ripstd.range.primitives;
+import ripstd.traits;
 
 /++
     Asserts that the given expression does $(I not) throw the given type
@@ -160,7 +160,7 @@ auto assertNotThrown(T : Throwable = Exception, E)
 {
     import core.exception : AssertError;
 
-    import std.string;
+    import ripstd.string;
     assertNotThrown!StringException(enforce!StringException(true, "Error!"));
 
     //Exception is the default.
@@ -173,7 +173,7 @@ auto assertNotThrown(T : Throwable = Exception, E)
 @system unittest
 {
     import core.exception : AssertError;
-    import std.string;
+    import ripstd.string;
     assert(collectExceptionMsg!AssertError(assertNotThrown!StringException(
                enforce!StringException(false, ""), "Error!")) ==
            `assertNotThrown failed: StringException was thrown: Error!`);
@@ -302,7 +302,7 @@ void assertThrown(T : Throwable = Exception, E)
 @system unittest
 {
     import core.exception : AssertError;
-    import std.string;
+    import ripstd.string;
 
     assertThrown!StringException(enforce!StringException(false, "Error!"));
 
@@ -460,7 +460,7 @@ T enforce(T)(T value, lazy Throwable ex)
 @system unittest
 {
     import core.stdc.stdlib : malloc, free;
-    import std.conv : ConvException, to;
+    import ripstd.conv : ConvException, to;
 
     // use enforce like assert
     int a = 3;
@@ -503,7 +503,7 @@ T enforce(T)(T value, lazy Throwable ex)
 /// Alias your own enforce function
 @safe unittest
 {
-    import std.conv : ConvException;
+    import ripstd.conv : ConvException;
     alias convEnforce = enforce!ConvException;
     assertNotThrown(convEnforce(true));
     assertThrown!ConvException(convEnforce(false, "blah"));
@@ -629,8 +629,8 @@ alias errnoEnforce = enforce!ErrnoException;
 @system unittest
 {
     import core.stdc.stdio : fclose, fgets, fopen;
-    import std.file : thisExePath;
-    import std.string : toStringz;
+    import ripstd.file : thisExePath;
+    import ripstd.string : toStringz;
 
     auto f = fopen(thisExePath.toStringz, "r").errnoEnforce;
     scope(exit) fclose(f);
@@ -737,7 +737,7 @@ T collectException(T : Throwable = Exception, E)(lazy E expression)
 +/
 string collectExceptionMsg(T = Exception, E)(lazy E expression)
 {
-    import std.array : empty;
+    import ripstd.array : empty;
     try
     {
         expression();
@@ -946,7 +946,7 @@ T assumeWontThrow(T)(lazy T expr,
     }
     catch (Exception e)
     {
-        import std.range.primitives : empty;
+        import ripstd.range.primitives : empty;
         immutable tail = msg.empty ? "." : ": " ~ msg;
         throw new AssertError("assumeWontThrow failed: Expression did throw" ~
                               tail, file, line);
@@ -956,7 +956,7 @@ T assumeWontThrow(T)(lazy T expr,
 ///
 @safe unittest
 {
-    import std.math.algebraic : sqrt;
+    import ripstd.math.algebraic : sqrt;
 
     // This function may throw.
     int squareRoot(int x)
@@ -1065,7 +1065,7 @@ if (__traits(isRef, source) || isDynamicArray!S ||
     }
     else static if (isDynamicArray!S)
     {
-        import std.array : overlap;
+        import ripstd.array : overlap;
         return overlap(cast(void[]) source, cast(void[])(&target)[0 .. 1]).length != 0;
     }
     else
@@ -1107,7 +1107,7 @@ if (__traits(isRef, source) || isDynamicArray!S ||
             {
                 // could contain a slice, which could point at anything.
                 // But a void[N] that is all 0 cannot point anywhere
-                import std.algorithm.searching : any;
+                import ripstd.algorithm.searching : any;
                 if (__ctfe || any(cast(ubyte[]) source[]))
                     return true;
             }
@@ -1137,7 +1137,7 @@ if (__traits(isRef, source) || isDynamicArray!S ||
     }
     else static if (isDynamicArray!S)
     {
-        import std.array : overlap;
+        import ripstd.array : overlap;
         return overlap(cast(void[]) source, cast(void[])(&target)[0 .. 1]).length != 0;
     }
     else
@@ -1239,7 +1239,7 @@ bool mayPointTo(S, T)(auto ref const shared S source, ref const shared T target)
     //To check the class payload itself, iterate on its members:
     ()
     {
-        import std.traits : Fields;
+        import ripstd.traits : Fields;
 
         foreach (index, _; Fields!C)
             if (doesPointTo(a.tupleof[index], i))
@@ -1254,7 +1254,7 @@ bool mayPointTo(S, T)(auto ref const shared S source, ref const shared T target)
 }
 
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     // https://issues.dlang.org/show_bug.cgi?id=17084
     // the bug doesn't happen if these declarations are in the unittest block
@@ -1277,7 +1277,7 @@ version (StdUnittest)
 // https://issues.dlang.org/show_bug.cgi?id=17084
 @system unittest
 {
-    import std.algorithm.sorting : sort;
+    import ripstd.algorithm.sorting : sort;
     Page17084[] s;
     sort(s);
     shared(Page17084)[] p;
@@ -1729,7 +1729,7 @@ CommonType!(T1, T2) ifThrown(T1, T2)(lazy scope T1 expression, scope T2 delegate
 /// Revert to a default value upon an error:
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     assert("x".to!int.ifThrown(0) == 0);
 }
 
@@ -1739,7 +1739,7 @@ entire preceding expression.
 */
 @safe unittest
 {
-    import std.conv : ConvException, to;
+    import ripstd.conv : ConvException, to;
     string s = "true";
     assert(s.to!int.ifThrown(cast(int) s.to!double)
                    .ifThrown(cast(int) s.to!bool) == 1);
@@ -1775,15 +1775,15 @@ expression.
 /// Use a lambda to get the thrown object.
 @system unittest
 {
-    import std.format : format;
-    assert("%s".format.ifThrown!Exception(e => e.classinfo.name) == "std.format.FormatException");
+    import ripstd.format : format;
+    assert("%s".format.ifThrown!Exception(e => e.classinfo.name) == "ripstd.format.FormatException");
 }
 
 //Verify Examples
 @system unittest
 {
-    import std.conv;
-    import std.string;
+    import ripstd.conv;
+    import ripstd.string;
     //Revert to a default value upon an error:
     assert("x".to!int().ifThrown(0) == 0);
 
@@ -1809,14 +1809,14 @@ expression.
     static assert(!__traits(compiles, (new Object()).ifThrown(1)));
 
     //Use a lambda to get the thrown object.
-    assert("%s".format().ifThrown(e => e.classinfo.name) == "std.format.FormatException");
+    assert("%s".format().ifThrown(e => e.classinfo.name) == "ripstd.format.FormatException");
 }
 
 @system unittest
 {
     import core.exception;
-    import std.conv;
-    import std.string;
+    import ripstd.conv;
+    import ripstd.string;
     //Basic behaviour - all versions.
     assert("1".to!int().ifThrown(0) == 1);
     assert("x".to!int().ifThrown(0) == 0);
@@ -1849,7 +1849,7 @@ expression.
     static assert(!__traits(compiles, (new Object()).ifThrown(e=>1)));
 }
 
-version (StdUnittest) package
+version (RIPStdUnittest) package
 void assertCTFEable(alias dg)()
 {
     static assert({ cast(void) dg(); return true; }());
@@ -1885,9 +1885,9 @@ enum RangePrimitive
 ///
 pure @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map, splitter;
-    import std.conv : to, ConvException;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map, splitter;
+    import ripstd.conv : to, ConvException;
 
     auto s = "12,1337z32,54,2,7,9,1z,6,8";
 
@@ -1903,9 +1903,9 @@ pure @safe unittest
 ///
 pure @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : retro;
-    import std.utf : UTFException;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : retro;
+    import ripstd.utf : UTFException;
 
     auto str = "hello\xFFworld"; // 0xFF is an invalid UTF-8 code unit
 
@@ -2131,7 +2131,7 @@ if (isInputRange!Range)
             }
             else static if (is(typeof(Range.init[size_t.init .. $])))
             {
-                import std.range : Take, takeExactly;
+                import ripstd.range : Take, takeExactly;
                 static struct DollarToken {}
                 enum opDollar = DollarToken.init;
 
@@ -2178,9 +2178,9 @@ if (isInputRange!Range)
 ///
 pure @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map, splitter;
-    import std.conv : to, ConvException;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map, splitter;
+    import ripstd.conv : to, ConvException;
 
     auto s = "12,1337z32,54,2,7,9,1z,6,8";
 
@@ -2196,9 +2196,9 @@ pure @safe unittest
 ///
 pure @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : retro;
-    import std.utf : UTFException;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : retro;
+    import ripstd.utf : UTFException;
 
     auto str = "hello\xFFworld"; // 0xFF is an invalid UTF-8 code unit
 
@@ -2323,7 +2323,7 @@ pure nothrow @safe unittest
 
     static struct Infinite
     {
-        import std.range : Take;
+        import ripstd.range : Take;
         pure @safe:
         enum bool empty = false;
         int front() { assert(false); }

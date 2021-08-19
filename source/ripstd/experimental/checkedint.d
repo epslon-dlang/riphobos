@@ -22,7 +22,7 @@ checked) uses type deduction to convert a value `x` of integral type `T` to
 ---
 void main()
 {
-    import std.experimental.checkedint, std.stdio;
+    import ripstd.experimental.checkedint, ripstd.stdio;
     writeln((checked(5) + 7).get); // 12
     writeln((checked(10) * 1000 * 1000 * 1000).get); // Overflow
 }
@@ -196,7 +196,7 @@ in a `Hook`, otherwise the built-in hashing is used.)
 Source: $(PHOBOSSRC std/experimental/checkedint.d)
 */
 module ripstd.experimental.checkedint;
-import std.traits : isFloatingPoint, isIntegral, isNumeric, isUnsigned, Unqual;
+import ripstd.traits : isFloatingPoint, isIntegral, isNumeric, isUnsigned, Unqual;
 
 ///
 @safe unittest
@@ -246,7 +246,7 @@ import std.traits : isFloatingPoint, isIntegral, isNumeric, isUnsigned, Unqual;
 /// `Throw` fails every incorrect operation by throwing an exception
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     auto x = -1.checked!Throw;
     assertThrown(x / 0);
     assertThrown(x + int.min);
@@ -261,11 +261,11 @@ help of a `Hook` type. The type wrapped must be one of the predefined integrals
 struct Checked(T, Hook = Abort)
 if (isIntegral!T || is(T == Checked!(U, H), U, H))
 {
-    import std.algorithm.comparison : among;
-    import std.experimental.allocator.common : stateSize;
-    import std.format.spec : FormatSpec;
-    import std.range.primitives : isInputRange, ElementType;
-    import std.traits : hasMember, isSomeChar;
+    import ripstd.algorithm.comparison : among;
+    import ripstd.experimental.allocator.common : stateSize;
+    import ripstd.format.spec : FormatSpec;
+    import ripstd.range.primitives : isInputRange, ElementType;
+    import ripstd.traits : hasMember, isSomeChar;
 
     /**
     The type of the integral subject to checking.
@@ -391,7 +391,7 @@ if (isIntegral!T || is(T == Checked!(U, H), U, H))
     this(Range)(Range str)
     if (isInputRange!Range && isSomeChar!(ElementType!Range))
     {
-        import std.conv : to;
+        import ripstd.conv : to;
 
         this(to!T(str));
     }
@@ -401,7 +401,7 @@ if (isIntegral!T || is(T == Checked!(U, H), U, H))
     */
     @system unittest
     {
-        import std.conv : to;
+        import ripstd.conv : to;
 
         const a = to!long("1234");
         const b = to!(Checked!long)("1234");
@@ -520,7 +520,7 @@ if (isIntegral!T || is(T == Checked!(U, H), U, H))
     ///
     static if (is(T == int) && is(Hook == void)) @safe unittest
     {
-        import std.traits : isUnsigned;
+        import ripstd.traits : isUnsigned;
 
         static struct MyHook
         {
@@ -642,7 +642,7 @@ if (isIntegral!T || is(T == Checked!(U, H), U, H))
     */
     void toString(Writer, Char)(scope ref Writer sink, scope const ref FormatSpec!Char fmt) const
     {
-        import std.format.write : formatValue;
+        import ripstd.format.write : formatValue;
         if (fmt.spec == 's')
             return formatValue(sink, this, fmt);
         else
@@ -655,7 +655,7 @@ if (isIntegral!T || is(T == Checked!(U, H), U, H))
     */
     @system unittest
     {
-        import std.format;
+        import ripstd.format;
 
         assert(format("%04d", checked(15)) == "0015");
         assert(format("0x%02x", checked(15)) == "0x0f");
@@ -727,7 +727,7 @@ if (isIntegral!T || is(T == Checked!(U, H), U, H))
     ///
     static if (is(T == int) && is(Hook == void)) @safe unittest
     {
-        import std.traits : isUnsigned;
+        import ripstd.traits : isUnsigned;
 
         static struct MyHook
         {
@@ -1123,7 +1123,7 @@ if (isIntegral!T || is(T == Checked!(U, H), U, H))
         {
             alias R = typeof(get + rhs);
             auto r = opBinary!op(rhs).get;
-            import std.conv : unsigned;
+            import ripstd.conv : unsigned;
 
             static if (ProperCompare.hookOpCmp(R.min, min.get) < 0 &&
                 hasMember!(Hook, "onLowerBound"))
@@ -1406,7 +1406,7 @@ struct Throw
     {
         this(T...)(string f, T vals)
         {
-            import std.format : format;
+            import ripstd.format : format;
             super(format(f, vals));
         }
     }
@@ -1555,7 +1555,7 @@ struct Throw
         auto x1 = cast(T) x;
         assert(x1 == 42);
         x = T.max + 1;
-        import std.exception : assertThrown, assertNotThrown;
+        import ripstd.exception : assertThrown, assertNotThrown;
         assertThrown(cast(T) x);
         x = x.max;
         assertThrown(x += 42);
@@ -1582,7 +1582,7 @@ default behavior.
 */
 struct Warn
 {
-    import std.stdio : writefln;
+    import ripstd.stdio : writefln;
 static:
     /**
 
@@ -1744,7 +1744,7 @@ static:
     // safe in the general case.
     private @property auto ref trustedStderr() @trusted
     {
-        import std.stdio : stderr;
+        import ripstd.stdio : stderr;
 
         return stderr;
     }
@@ -1768,8 +1768,8 @@ static:
     auto y = checked!Abort(-1);
 
     // Temporarily redirect output to stderr to make sure we get the right output.
-    import std.process : uniqueTempPath;
-    import std.stdio : stderr;
+    import ripstd.process : uniqueTempPath;
+    import ripstd.stdio : stderr;
     auto tmpname = uniqueTempPath;
     auto t = stderr;
     stderr.open(tmpname, "w");
@@ -1777,12 +1777,12 @@ static:
     {
         scope(exit) stderr = t;
         assert(a / b == a * b);
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
         import core.exception : AssertError;
         assertThrown!AssertError(x / y);
     }
-    import std.file : readText;
-    import std.ascii : newline;
+    import ripstd.file : readText;
+    import ripstd.ascii : newline;
     auto witness = readText(tmpname);
     auto expected =
 "Overflow on binary operator: int(-2147483648) / const(int)(-1)" ~ newline ~
@@ -1928,7 +1928,7 @@ struct ProperCompare
     assert(opCmpProper(42, 42.0) == 0);
     assert(opCmpProper(41, 42.0) < 0);
     assert(opCmpProper(42, 41.0) > 0);
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
     assert(isNaN(opCmpProper(41, double.init)));
     assert(opCmpProper(42u, 42) == 0);
     assert(opCmpProper(42, 42u) == 0);
@@ -2541,7 +2541,7 @@ if (isIntegral!L && isIntegral!R)
         alias Result = typeof(mixin("L() " ~ x ~ " R()"));
 
     import core.checkedint : addu, adds, subs, muls, subu, mulu;
-    import std.algorithm.comparison : among;
+    import ripstd.algorithm.comparison : among;
     static if (x == "==")
     {
         alias C = typeof(lhs + rhs);
@@ -2595,7 +2595,7 @@ if (isIntegral!L && isIntegral!R)
     {
         // Handle shift separately from all others. The test below covers
         // negative rhs as well.
-        import std.conv : unsigned;
+        import ripstd.conv : unsigned;
         if (unsigned(rhs) > 8 * Result.sizeof) goto fail;
         return mixin("lhs" ~ x ~ "rhs");
     }
@@ -2878,7 +2878,7 @@ if (isIntegral!T && T.sizeof >= 4)
     testPow!ulong(3, 41);
 }
 
-version (StdUnittest) private struct CountOverflows
+version (RIPStdUnittest) private struct CountOverflows
 {
     uint calls;
     auto onOverflow(string op, Lhs)(Lhs lhs)

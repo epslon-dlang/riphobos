@@ -42,11 +42,11 @@ $(TR $(TD Other) $(TD
 module ripstd.datetime.date;
 
 import core.time : TimeException;
-import std.traits : isSomeString, Unqual;
-import std.typecons : Flag;
-import std.range.primitives : isOutputRange;
+import ripstd.traits : isSomeString, Unqual;
+import ripstd.typecons : Flag;
+import ripstd.range.primitives : isOutputRange;
 
-version (StdUnittest) import std.exception : assertThrown;
+version (RIPStdUnittest) import ripstd.exception : assertThrown;
 
 @safe unittest
 {
@@ -55,7 +55,7 @@ version (StdUnittest) import std.exception : assertThrown;
 
 
 /++
-    Exception type used by std.datetime. It's an alias to
+    Exception type used by ripstd.datetime. It's an alias to
     $(REF TimeException,core,time). Either can be caught without concern about
     which module it came from.
   +/
@@ -776,8 +776,8 @@ public:
 
     @safe unittest
     {
-        import std.format : format;
-        import std.range : chain;
+        import ripstd.format : format;
+        import ripstd.range : chain;
 
         static void test(DateTime dateTime, int expected)
         {
@@ -817,7 +817,7 @@ public:
 
     @safe unittest
     {
-        import std.exception : assertNotThrown;
+        import ripstd.exception : assertNotThrown;
 
         static void testDT(DateTime dt, int day)
         {
@@ -2236,7 +2236,7 @@ public:
         if (op == "+" || op == "-")
     {
         import core.time : convert;
-        import std.format : format;
+        import ripstd.format : format;
 
         DateTime retval = this;
         immutable hnsecs = duration.total!"hnsecs";
@@ -2876,7 +2876,7 @@ public:
       +/
     string toISOString() const @safe pure nothrow
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto w = appender!string();
         w.reserve(18);
         try
@@ -2890,7 +2890,7 @@ public:
     void toISOString(W)(ref W writer) const
     if (isOutputRange!(W, char))
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         _date.toISOString(writer);
         formattedWrite!("T%02d%02d%02d")(
             writer,
@@ -2953,7 +2953,7 @@ public:
       +/
     string toISOExtString() const @safe pure nothrow
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto w = appender!string();
         w.reserve(20);
         try
@@ -2967,7 +2967,7 @@ public:
     void toISOExtString(W)(ref W writer) const
     if (isOutputRange!(W, char))
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         _date.toISOExtString(writer);
         formattedWrite!("T%02d:%02d:%02d")(
             writer,
@@ -3029,7 +3029,7 @@ public:
       +/
     string toSimpleString() const @safe pure nothrow
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto w = appender!string();
         w.reserve(22);
         try
@@ -3043,7 +3043,7 @@ public:
     void toSimpleString(W)(ref W writer) const
     if (isOutputRange!(W, char))
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         _date.toSimpleString(writer);
         formattedWrite!(" %02d:%02d:%02d")(
             writer,
@@ -3153,11 +3153,11 @@ public:
     static DateTime fromISOString(S)(scope const S isoString) @safe pure
         if (isSomeString!S)
     {
-        import std.algorithm.searching : countUntil;
-        import std.exception : enforce;
-        import std.format : format;
-        import std.string : strip;
-        import std.utf : byCodeUnit;
+        import ripstd.algorithm.searching : countUntil;
+        import ripstd.exception : enforce;
+        import ripstd.format : format;
+        import ripstd.string : strip;
+        import ripstd.utf : byCodeUnit;
 
         auto str = strip(isoString);
 
@@ -3228,8 +3228,8 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=17801
     @safe unittest
     {
-        import std.conv : to;
-        import std.meta : AliasSeq;
+        import ripstd.conv : to;
+        import ripstd.meta : AliasSeq;
         static foreach (C; AliasSeq!(char, wchar, dchar))
         {
             static foreach (S; AliasSeq!(C[], const(C)[], immutable(C)[]))
@@ -3254,11 +3254,11 @@ public:
     static DateTime fromISOExtString(S)(scope const S isoExtString) @safe pure
         if (isSomeString!(S))
     {
-        import std.algorithm.searching : countUntil;
-        import std.exception : enforce;
-        import std.format : format;
-        import std.string : strip;
-        import std.utf : byCodeUnit;
+        import ripstd.algorithm.searching : countUntil;
+        import ripstd.exception : enforce;
+        import ripstd.format : format;
+        import ripstd.string : strip;
+        import ripstd.utf : byCodeUnit;
 
         auto str = strip(isoExtString);
 
@@ -3328,8 +3328,8 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=17801
     @safe unittest
     {
-        import std.conv : to;
-        import std.meta : AliasSeq;
+        import ripstd.conv : to;
+        import ripstd.meta : AliasSeq;
         static foreach (C; AliasSeq!(char, wchar, dchar))
         {
             static foreach (S; AliasSeq!(C[], const(C)[], immutable(C)[]))
@@ -3354,11 +3354,11 @@ public:
     static DateTime fromSimpleString(S)(scope const S simpleString) @safe pure
         if (isSomeString!(S))
     {
-        import std.algorithm.searching : countUntil;
-        import std.exception : enforce;
-        import std.format : format;
-        import std.string : strip;
-        import std.utf : byCodeUnit;
+        import ripstd.algorithm.searching : countUntil;
+        import ripstd.exception : enforce;
+        import ripstd.format : format;
+        import ripstd.string : strip;
+        import ripstd.utf : byCodeUnit;
 
         auto str = strip(simpleString);
 
@@ -3432,8 +3432,8 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=17801
     @safe unittest
     {
-        import std.conv : to;
-        import std.meta : AliasSeq;
+        import ripstd.conv : to;
+        import ripstd.meta : AliasSeq;
         static foreach (C; AliasSeq!(char, wchar, dchar))
         {
             static foreach (S; AliasSeq!(C[], const(C)[], immutable(C)[]))
@@ -3783,7 +3783,7 @@ public:
 
     @safe unittest
     {
-        import std.exception : assertNotThrown;
+        import ripstd.exception : assertNotThrown;
         assert(Date(1, 1, 1) == Date.init);
 
         static void testDate(Date date, int year, int month, int day)
@@ -3963,7 +3963,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         // Test A.D.
         foreach (gd; chain(testGregDaysBC, testGregDaysAD))
@@ -4173,7 +4173,7 @@ public:
      +/
     @property ushort yearBC() const @safe pure
     {
-        import std.format : format;
+        import ripstd.format : format;
 
         if (isAD)
             throw new DateTimeException(format("Year %s is A.D.", _year));
@@ -4331,8 +4331,8 @@ public:
 
     @safe unittest
     {
-        import std.format : format;
-        import std.range : chain;
+        import ripstd.format : format;
+        import ripstd.range : chain;
 
         static void test(Date date, int expected)
         {
@@ -4369,7 +4369,7 @@ public:
 
     @safe unittest
     {
-        import std.exception : assertNotThrown;
+        import ripstd.exception : assertNotThrown;
 
         static void testDate(Date date, int day)
         {
@@ -6662,8 +6662,8 @@ public:
 
     @safe unittest
     {
-        import std.algorithm.iteration : filter;
-        import std.range : chain;
+        import ripstd.algorithm.iteration : filter;
+        import ripstd.range : chain;
 
         foreach (year; filter!((a){return !yearIsLeapYear(a);})(chain(testYearsBC, testYearsAD)))
         {
@@ -6828,7 +6828,7 @@ public:
 
     @safe unittest
     {
-        import std.range : chain;
+        import ripstd.range : chain;
 
         foreach (gd; chain(testGregDaysBC, testGregDaysAD))
             assert(gd.date.dayOfGregorianCal == gd.day);
@@ -7319,7 +7319,7 @@ public:
       +/
     string toISOString() const @safe pure nothrow
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto w = appender!string();
         w.reserve(8);
         try
@@ -7365,7 +7365,7 @@ public:
     void toISOString(W)(ref W writer) const
     if (isOutputRange!(W, char))
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         if (_year >= 0)
         {
             if (_year < 10_000)
@@ -7381,7 +7381,7 @@ public:
 
     @safe pure unittest
     {
-        import std.array : appender;
+        import ripstd.array : appender;
 
         auto w = appender!(char[])();
         Date(2010, 7, 4).toISOString(w);
@@ -7403,7 +7403,7 @@ public:
       +/
     string toISOExtString() const @safe pure nothrow
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto w = appender!string();
         w.reserve(10);
         try
@@ -7449,7 +7449,7 @@ public:
     void toISOExtString(W)(ref W writer) const
     if (isOutputRange!(W, char))
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         if (_year >= 0)
         {
             if (_year < 10_000)
@@ -7465,7 +7465,7 @@ public:
 
     @safe pure unittest
     {
-        import std.array : appender;
+        import ripstd.array : appender;
 
         auto w = appender!(char[])();
         Date(2010, 7, 4).toISOExtString(w);
@@ -7487,7 +7487,7 @@ public:
       +/
     string toSimpleString() const @safe pure nothrow
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto w = appender!string();
         w.reserve(11);
         try
@@ -7533,7 +7533,7 @@ public:
     void toSimpleString(W)(ref W writer) const
     if (isOutputRange!(W, char))
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         if (_year >= 0)
         {
             if (_year < 10_000)
@@ -7549,7 +7549,7 @@ public:
 
     @safe pure unittest
     {
-        import std.array : appender;
+        import ripstd.array : appender;
 
         auto w = appender!(char[])();
         Date(9, 12, 4).toSimpleString(w);
@@ -7619,10 +7619,10 @@ public:
     static Date fromISOString(S)(scope const S isoString) @safe pure
         if (isSomeString!S)
     {
-        import std.algorithm.searching : startsWith;
-        import std.conv : to, text, ConvException;
-        import std.exception : enforce;
-        import std.string : strip;
+        import ripstd.algorithm.searching : startsWith;
+        import ripstd.conv : to, text, ConvException;
+        import ripstd.exception : enforce;
+        import ripstd.string : strip;
 
         auto str = isoString.strip;
 
@@ -7736,8 +7736,8 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=17801
     @safe unittest
     {
-        import std.conv : to;
-        import std.meta : AliasSeq;
+        import ripstd.conv : to;
+        import ripstd.meta : AliasSeq;
         static foreach (C; AliasSeq!(char, wchar, dchar))
         {
             static foreach (S; AliasSeq!(C[], const(C)[], immutable(C)[]))
@@ -7762,10 +7762,10 @@ public:
     static Date fromISOExtString(S)(scope const S isoExtString) @safe pure
         if (isSomeString!(S))
     {
-        import std.algorithm.searching : startsWith;
-        import std.conv : to, ConvException;
-        import std.format : format;
-        import std.string : strip;
+        import ripstd.algorithm.searching : startsWith;
+        import ripstd.conv : to, ConvException;
+        import ripstd.format : format;
+        import ripstd.string : strip;
 
         auto str = strip(isoExtString);
         short year;
@@ -7874,8 +7874,8 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=17801
     @safe unittest
     {
-        import std.conv : to;
-        import std.meta : AliasSeq;
+        import ripstd.conv : to;
+        import ripstd.meta : AliasSeq;
         static foreach (C; AliasSeq!(char, wchar, dchar))
         {
             static foreach (S; AliasSeq!(C[], const(C)[], immutable(C)[]))
@@ -7900,10 +7900,10 @@ public:
     static Date fromSimpleString(S)(scope const S simpleString) @safe pure
         if (isSomeString!(S))
     {
-        import std.algorithm.searching : startsWith;
-        import std.conv : to, ConvException;
-        import std.format : format;
-        import std.string : strip;
+        import ripstd.algorithm.searching : startsWith;
+        import ripstd.conv : to, ConvException;
+        import ripstd.format : format;
+        import ripstd.string : strip;
 
         auto str = strip(simpleString);
 
@@ -8012,8 +8012,8 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=17801
     @safe unittest
     {
-        import std.conv : to;
-        import std.meta : AliasSeq;
+        import ripstd.conv : to;
+        import ripstd.meta : AliasSeq;
         static foreach (C; AliasSeq!(char, wchar, dchar))
         {
             static foreach (S; AliasSeq!(C[], const(C)[], immutable(C)[]))
@@ -8267,7 +8267,7 @@ package:
 
     @safe pure invariant()
     {
-        import std.format : format;
+        import ripstd.format : format;
         assert(valid!"months"(_month),
                format("Invariant Failure: year [%s] month [%s] day [%s]", _year, _month, _day));
         assert(valid!"days"(_year, _month, _day),
@@ -8653,7 +8653,7 @@ public:
     ref TimeOfDay roll(string units)(long value) @safe pure nothrow @nogc
         if (units == "minutes" || units == "seconds")
     {
-        import std.format : format;
+        import ripstd.format : format;
 
         enum memberVarStr = units[0 .. $ - 1];
         value %= 60;
@@ -9050,7 +9050,7 @@ public:
       +/
     string toISOString() const @safe pure nothrow
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto w = appender!string();
         w.reserve(6);
         try
@@ -9064,7 +9064,7 @@ public:
     void toISOString(W)(ref W writer) const
     if (isOutputRange!(W, char))
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         formattedWrite(writer, "%02d%02d%02d", _hour, _minute, _second);
     }
 
@@ -9097,7 +9097,7 @@ public:
       +/
     string toISOExtString() const @safe pure nothrow
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto w = appender!string();
         w.reserve(8);
         try
@@ -9111,7 +9111,7 @@ public:
     void toISOExtString(W)(ref W writer) const
     if (isOutputRange!(W, char))
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
         formattedWrite(writer, "%02d:%02d:%02d", _hour, _minute, _second);
     }
 
@@ -9199,9 +9199,9 @@ public:
     static TimeOfDay fromISOString(S)(scope const S isoString) @safe pure
         if (isSomeString!S)
     {
-        import std.conv : to, text, ConvException;
-        import std.exception : enforce;
-        import std.string : strip;
+        import ripstd.conv : to, text, ConvException;
+        import ripstd.exception : enforce;
+        import ripstd.string : strip;
 
         int hours, minutes, seconds;
         auto str = strip(isoString);
@@ -9298,8 +9298,8 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=17801
     @safe unittest
     {
-        import std.conv : to;
-        import std.meta : AliasSeq;
+        import ripstd.conv : to;
+        import ripstd.meta : AliasSeq;
         static foreach (C; AliasSeq!(char, wchar, dchar))
         {
             static foreach (S; AliasSeq!(C[], const(C)[], immutable(C)[]))
@@ -9324,8 +9324,8 @@ public:
     static TimeOfDay fromISOExtString(S)(scope const S isoExtString) @safe pure
         if (isSomeString!S)
     {
-        import std.conv : ConvException, text, to;
-        import std.string : strip;
+        import ripstd.conv : ConvException, text, to;
+        import ripstd.string : strip;
 
         auto str = strip(isoExtString);
         int hours, minutes, seconds;
@@ -9423,8 +9423,8 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=17801
     @safe unittest
     {
-        import std.conv : to;
-        import std.meta : AliasSeq;
+        import ripstd.conv : to;
+        import ripstd.meta : AliasSeq;
         static foreach (C; AliasSeq!(char, wchar, dchar))
         {
             static foreach (S; AliasSeq!(C[], const(C)[], immutable(C)[]))
@@ -9596,7 +9596,7 @@ private:
 
     @safe pure invariant()
     {
-        import std.format : format;
+        import ripstd.format : format;
         assert(_valid(_hour, _minute, _second),
                format("Invariant Failure: hour [%s] minute [%s] second [%s]", _hour, _minute, _second));
     }
@@ -9707,7 +9707,7 @@ if (units == "months" ||
     units == "minutes" ||
     units == "seconds")
 {
-    import std.format : format;
+    import ripstd.format : format;
 
     static if (units == "months")
     {
@@ -9734,7 +9734,7 @@ if (units == "months" ||
 ///
 @safe pure unittest
 {
-    import std.exception : assertThrown, assertNotThrown;
+    import ripstd.exception : assertThrown, assertNotThrown;
 
     assertNotThrown(enforceValid!"months"(10));
     assertNotThrown(enforceValid!"seconds"(40));
@@ -9767,7 +9767,7 @@ void enforceValid(string units)
                  (int year, Month month, int day, string file = __FILE__, size_t line = __LINE__) @safe pure
 if (units == "days")
 {
-    import std.format : format;
+    import ripstd.format : format;
     if (!valid!"days"(year, month, day))
         throw new DateTimeException(format("%s is not a valid day in %s in %s", day, month, year), file, line);
 }
@@ -9775,7 +9775,7 @@ if (units == "days")
 ///
 @safe pure unittest
 {
-    import std.exception : assertThrown, assertNotThrown;
+    import ripstd.exception : assertThrown, assertNotThrown;
 
     assertNotThrown(enforceValid!"days"(2000, Month.jan, 1));
     // leap year
@@ -9989,7 +9989,7 @@ bool yearIsLeapYear(int year) @safe pure nothrow @nogc
 
 @safe unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
     foreach (year; [1, 2, 3, 5, 6, 7, 100, 200, 300, 500, 600, 700, 1998, 1999,
                     2001, 2002, 2003, 2005, 2006, 2007, 2009, 2010, 2011])
     {
@@ -10027,7 +10027,7 @@ bool yearIsLeapYear(int year) @safe pure nothrow @nogc
 template isTimePoint(T)
 {
     import core.time : Duration;
-    import std.traits : FunctionAttribute, functionAttributes, Unqual;
+    import ripstd.traits : FunctionAttribute, functionAttributes, Unqual;
 
     enum isTimePoint = hasMin &&
                        hasMax &&
@@ -10069,8 +10069,8 @@ private:
 @safe unittest
 {
     import core.time : Duration;
-    import std.datetime.interval : Interval;
-    import std.datetime.systime : SysTime;
+    import ripstd.datetime.interval : Interval;
+    import ripstd.datetime.systime : SysTime;
 
     static assert(isTimePoint!Date);
     static assert(isTimePoint!DateTime);
@@ -10085,9 +10085,9 @@ private:
 @safe unittest
 {
     import core.time;
-    import std.datetime.interval;
-    import std.datetime.systime;
-    import std.meta : AliasSeq;
+    import ripstd.datetime.interval;
+    import ripstd.datetime.systime;
+    import ripstd.meta : AliasSeq;
 
     static foreach (TP; AliasSeq!(Date, DateTime, SysTime, TimeOfDay))
     {
@@ -10103,13 +10103,13 @@ private:
 /++
     Whether all of the given strings are valid units of time.
 
-    `"nsecs"` is not considered a valid unit of time. Nothing in std.datetime
+    `"nsecs"` is not considered a valid unit of time. Nothing in ripstd.datetime
     can handle precision greater than hnsecs, and the few functions in core.time
     which deal with "nsecs" deal with it explicitly.
   +/
 bool validTimeUnits(string[] units...) @safe pure nothrow @nogc
 {
-    import std.algorithm.searching : canFind;
+    import ripstd.algorithm.searching : canFind;
     foreach (str; units)
     {
         if (!canFind(timeStrings[], str))
@@ -10144,9 +10144,9 @@ bool validTimeUnits(string[] units...) @safe pure nothrow @nogc
  +/
 int cmpTimeUnits(string lhs, string rhs) @safe pure
 {
-    import std.algorithm.searching : countUntil;
-    import std.exception : enforce;
-    import std.format : format;
+    import ripstd.algorithm.searching : countUntil;
+    import ripstd.exception : enforce;
+    import ripstd.format : format;
 
     immutable indexOfLHS = countUntil(timeStrings, lhs);
     immutable indexOfRHS = countUntil(timeStrings, rhs);
@@ -10165,7 +10165,7 @@ int cmpTimeUnits(string lhs, string rhs) @safe pure
 ///
 @safe pure unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     assert(cmpTimeUnits("hours", "hours") == 0);
     assert(cmpTimeUnits("hours", "weeks") < 0);
@@ -10226,7 +10226,7 @@ if (validTimeUnits(lhs, rhs))
 // Helper function for CmpTimeUnits.
 private int cmpTimeUnitsCTFE(string lhs, string rhs) @safe pure nothrow @nogc
 {
-    import std.algorithm.searching : countUntil;
+    import ripstd.algorithm.searching : countUntil;
     auto tstrings = timeStrings;
     immutable indexOfLHS = countUntil(tstrings, lhs);
     immutable indexOfRHS = countUntil(tstrings, rhs);
@@ -10417,7 +10417,7 @@ DayOfWeek getDayOfWeek(int day) @safe pure nothrow @nogc
 
 @safe unittest
 {
-    import std.datetime.systime : SysTime;
+    import ripstd.datetime.systime : SysTime;
 
     // Test A.D.
     assert(getDayOfWeek(SysTime(Date(1, 1, 1)).dayOfGregorianCal) == DayOfWeek.mon);
@@ -10480,7 +10480,7 @@ immutable int[13] lastDayLeap = [0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 30
   +/
 string monthToString(Month month) @safe pure
 {
-    import std.format : format;
+    import ripstd.format : format;
     assert(month >= Month.jan && month <= Month.dec, format("Invalid month: %s", month));
     return _monthNames[month - Month.jan];
 }
@@ -10515,7 +10515,7 @@ string monthToString(Month month) @safe pure
 Month monthFromString(T)(T monthStr) @safe pure
 if (isSomeString!T)
 {
-    import std.format : format;
+    import ripstd.format : format;
     switch (monthStr)
     {
         case "Jan":
@@ -10549,8 +10549,8 @@ if (isSomeString!T)
 
 @safe unittest
 {
-    import std.conv : to;
-    import std.traits : EnumMembers;
+    import ripstd.conv : to;
+    import ripstd.traits : EnumMembers;
     foreach (badStr; ["Ja", "Janu", "Januar", "Januarys", "JJanuary", "JANUARY",
                       "JAN", "january", "jaNuary", "jaN", "jaNuaRy", "jAn"])
     {
@@ -10567,7 +10567,7 @@ if (isSomeString!T)
 // NOTE: all the non-simple array literals are wrapped in functions, because
 // otherwise importing causes re-evaluation of the static initializers using
 // CTFE with unittests enabled
-version (StdUnittest)
+version (RIPStdUnittest)
 {
 private @safe:
     // All of these helper arrays are sorted in ascending order.

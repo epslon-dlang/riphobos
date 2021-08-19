@@ -191,11 +191,11 @@ Source: $(PHOBOSSRC std/algorithm/package.d)
  */
 module ripstd.algorithm;
 
-public import std.algorithm.comparison;
-public import std.algorithm.iteration;
-public import std.algorithm.mutation;
-public import std.algorithm.searching;
-public import std.algorithm.setops;
-public import std.algorithm.sorting;
+public import ripstd.algorithm.comparison;
+public import ripstd.algorithm.iteration;
+public import ripstd.algorithm.mutation;
+public import ripstd.algorithm.searching;
+public import ripstd.algorithm.setops;
+public import ripstd.algorithm.sorting;
 
-static import std.functional;
+static import ripstd.functional;

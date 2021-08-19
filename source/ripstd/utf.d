@@ -61,17 +61,17 @@ $(TR $(TD Miscellaneous) $(TD
    +/
 module ripstd.utf;
 
-import std.exception : basicExceptionCtors;
+import ripstd.exception : basicExceptionCtors;
 import core.exception : UnicodeException;
-import std.meta : AliasSeq;
-import std.range.primitives;
-import std.traits : isAutodecodableString, isPointer, isSomeChar,
+import ripstd.meta : AliasSeq;
+import ripstd.range.primitives;
+import ripstd.traits : isAutodecodableString, isPointer, isSomeChar,
     isSomeString, isStaticArray, Unqual, isConvertibleToString;
-import std.typecons : Flag, Yes, No;
+import ripstd.typecons : Flag, Yes, No;
 
 
 /++
-    Exception thrown on errors in std.utf functions.
+    Exception thrown on errors in ripstd.utf functions.
   +/
 class UTFException : UnicodeException
 {
@@ -91,7 +91,7 @@ class UTFException : UnicodeException
         return this;
     }
 
-    // FIXME: Use std.exception.basicExceptionCtors here once
+    // FIXME: Use ripstd.exception.basicExceptionCtors here once
     // https://issues.dlang.org/show_bug.cgi?id=11500 is fixed
 
     /**
@@ -153,7 +153,7 @@ class UTFException : UnicodeException
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     char[4] buf;
     assertThrown!UTFException(encode(buf, cast(dchar) 0xD800));
@@ -287,7 +287,7 @@ bool isValidDchar(dchar c) pure nothrow @safe @nogc
 
 pure nothrow @safe @nogc unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     assertCTFEable!(
     {
@@ -364,10 +364,10 @@ if (is(S : const char[]) ||
 @system unittest
 {
     import core.exception : AssertError;
-    import std.conv : to;
-    import std.exception;
-    import std.string : format;
-    import std.traits : FunctionAttribute, functionAttributes, isSafe;
+    import ripstd.conv : to;
+    import ripstd.exception;
+    import ripstd.string : format;
+    import ripstd.traits : FunctionAttribute, functionAttributes, isSafe;
     static void test(string s, dchar c, size_t i = 0, size_t line = __LINE__)
     {
         enforce(stride(s, i) == codeLength!char(c),
@@ -431,7 +431,7 @@ if (is(S : const char[]) ||
 
 @safe unittest // invalid start bytes
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     immutable char[] invalidStartBytes = [
         0b1111_1000, // indicating a sequence length of 5
         0b1111_1100, // 6
@@ -474,10 +474,10 @@ if (isInputRange!S && is(immutable ElementType!S == immutable wchar) &&
 @system unittest
 {
     import core.exception : AssertError;
-    import std.conv : to;
-    import std.exception;
-    import std.string : format;
-    import std.traits : FunctionAttribute, functionAttributes, isSafe;
+    import ripstd.conv : to;
+    import ripstd.exception;
+    import ripstd.string : format;
+    import ripstd.traits : FunctionAttribute, functionAttributes, isSafe;
     static void test(wstring s, dchar c, size_t i = 0, size_t line = __LINE__)
     {
         enforce(stride(s, i) == codeLength!wchar(c),
@@ -564,10 +564,10 @@ if (is(S : const dchar[]) ||
 @system unittest
 {
     import core.exception : AssertError;
-    import std.conv : to;
-    import std.exception;
-    import std.string : format;
-    import std.traits : FunctionAttribute, functionAttributes, isSafe;
+    import ripstd.conv : to;
+    import ripstd.exception;
+    import ripstd.string : format;
+    import ripstd.traits : FunctionAttribute, functionAttributes, isSafe;
     static void test(dstring s, dchar c, size_t i = 0, size_t line = __LINE__)
     {
         enforce(stride(s, i) == codeLength!dchar(c),
@@ -722,10 +722,10 @@ if (isBidirectionalRange!S && is(immutable ElementType!S == immutable char) && !
 @system unittest
 {
     import core.exception : AssertError;
-    import std.conv : to;
-    import std.exception;
-    import std.string : format;
-    import std.traits : FunctionAttribute, functionAttributes, isSafe;
+    import ripstd.conv : to;
+    import ripstd.exception;
+    import ripstd.string : format;
+    import ripstd.traits : FunctionAttribute, functionAttributes, isSafe;
     static void test(string s, dchar c, size_t i = size_t.max, size_t line = __LINE__)
     {
         enforce(strideBack(s, i == size_t.max ? s.length : i) == codeLength!char(c),
@@ -820,10 +820,10 @@ if (is(S : const wchar[]) ||
 @system unittest
 {
     import core.exception : AssertError;
-    import std.conv : to;
-    import std.exception;
-    import std.string : format;
-    import std.traits : FunctionAttribute, functionAttributes, isSafe;
+    import ripstd.conv : to;
+    import ripstd.exception;
+    import ripstd.string : format;
+    import ripstd.traits : FunctionAttribute, functionAttributes, isSafe;
     static void test(wstring s, dchar c, size_t i = size_t.max, size_t line = __LINE__)
     {
         enforce(strideBack(s, i == size_t.max ? s.length : i) == codeLength!wchar(c),
@@ -916,10 +916,10 @@ if (isBidirectionalRange!S && is(immutable ElementEncodingType!S == immutable dc
 @system unittest
 {
     import core.exception : AssertError;
-    import std.conv : to;
-    import std.exception;
-    import std.string : format;
-    import std.traits : FunctionAttribute, functionAttributes, isSafe;
+    import ripstd.conv : to;
+    import ripstd.exception;
+    import ripstd.string : format;
+    import ripstd.traits : FunctionAttribute, functionAttributes, isSafe;
     static void test(dstring s, dchar c, size_t i = size_t.max, size_t line = __LINE__)
     {
         enforce(strideBack(s, i == size_t.max ? s.length : i) == codeLength!dchar(c),
@@ -1263,7 +1263,7 @@ if (isInputRange!S && isSomeChar!(ElementType!S))
 ///
 @safe pure unittest
 {
-    import std.range.primitives;
+    import ripstd.range.primitives;
     string str = "Hello, World!";
 
     assert(str.decodeFront == 'H' && str == "ello, World!");
@@ -1399,7 +1399,7 @@ do
 ///
 @system pure unittest
 {
-    import std.range.primitives;
+    import ripstd.range.primitives;
     string str = "Hello, World!";
 
     assert(str.decodeBack == '!' && str == "Hello, World");
@@ -1855,16 +1855,16 @@ unittest
 }
 
 
-version (StdUnittest) private void testDecode(R)(R range,
+version (RIPStdUnittest) private void testDecode(R)(R range,
                                              size_t index,
                                              dchar expectedChar,
                                              size_t expectedIndex,
                                              size_t line = __LINE__)
 {
     import core.exception : AssertError;
-    import std.exception : enforce;
-    import std.string : format;
-    import std.traits : isNarrowString;
+    import ripstd.exception : enforce;
+    import ripstd.string : format;
+    import ripstd.traits : isNarrowString;
 
     static if (hasLength!R)
         immutable lenBefore = range.length;
@@ -1886,14 +1886,14 @@ version (StdUnittest) private void testDecode(R)(R range,
     }
 }
 
-version (StdUnittest) private void testDecodeFront(R)(ref R range,
+version (RIPStdUnittest) private void testDecodeFront(R)(ref R range,
                                                   dchar expectedChar,
                                                   size_t expectedNumCodeUnits,
                                                   size_t line = __LINE__)
 {
     import core.exception : AssertError;
-    import std.exception : enforce;
-    import std.string : format;
+    import ripstd.exception : enforce;
+    import ripstd.string : format;
 
     static if (hasLength!R)
         immutable lenBefore = range.length;
@@ -1912,7 +1912,7 @@ version (StdUnittest) private void testDecodeFront(R)(ref R range,
     }
 }
 
-version (StdUnittest) private void testDecodeBack(R)(ref R range,
+version (RIPStdUnittest) private void testDecodeBack(R)(ref R range,
                                                  dchar expectedChar,
                                                  size_t expectedNumCodeUnits,
                                                  size_t line = __LINE__)
@@ -1923,8 +1923,8 @@ version (StdUnittest) private void testDecodeBack(R)(ref R range,
     else
     {
         import core.exception : AssertError;
-        import std.exception : enforce;
-        import std.string : format;
+        import ripstd.exception : enforce;
+        import ripstd.string : format;
 
         static if (hasLength!R)
             immutable lenBefore = range.length;
@@ -1944,7 +1944,7 @@ version (StdUnittest) private void testDecodeBack(R)(ref R range,
     }
 }
 
-version (StdUnittest) private void testAllDecode(R)(R range,
+version (RIPStdUnittest) private void testAllDecode(R)(R range,
                                                 dchar expectedChar,
                                                 size_t expectedIndex,
                                                 size_t line = __LINE__)
@@ -1958,11 +1958,11 @@ version (StdUnittest) private void testAllDecode(R)(R range,
     testDecodeFront(range, expectedChar, expectedIndex, line);
 }
 
-version (StdUnittest) private void testBadDecode(R)(R range, size_t index, size_t line = __LINE__)
+version (RIPStdUnittest) private void testBadDecode(R)(R range, size_t index, size_t line = __LINE__)
 {
     import core.exception : AssertError;
-    import std.exception : assertThrown, enforce;
-    import std.string : format;
+    import ripstd.exception : assertThrown, enforce;
+    import ripstd.string : format;
 
     immutable initialIndex = index;
 
@@ -1985,7 +1985,7 @@ version (StdUnittest) private void testBadDecode(R)(R range, size_t index, size_
         assertThrown!UTFException(decodeFront(range, index), null, __FILE__, line);
 }
 
-version (StdUnittest) private void testBadDecodeBack(R)(R range, size_t line = __LINE__)
+version (RIPStdUnittest) private void testBadDecodeBack(R)(R range, size_t line = __LINE__)
 {
     // This condition is to allow unit testing all `decode` functions together
     static if (!isBidirectionalRange!R)
@@ -1993,8 +1993,8 @@ version (StdUnittest) private void testBadDecodeBack(R)(R range, size_t line = _
     else
     {
         import core.exception : AssertError;
-        import std.exception : assertThrown, enforce;
-        import std.string : format;
+        import ripstd.exception : assertThrown, enforce;
+        import ripstd.string : format;
 
         static if (hasLength!R)
             immutable lenBefore = range.length;
@@ -2013,8 +2013,8 @@ version (StdUnittest) private void testBadDecodeBack(R)(R range, size_t line = _
 
 @system unittest
 {
-    import std.conv : to;
-    import std.exception;
+    import ripstd.conv : to;
+    import ripstd.exception;
 
     assertCTFEable!(
     {
@@ -2097,7 +2097,7 @@ version (StdUnittest) private void testBadDecodeBack(R)(R range, size_t line = _
 
 @system unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!(
     {
     foreach (S; AliasSeq!((wstring s) => s, InputCU!wchar, RandomCU!wchar,
@@ -2152,7 +2152,7 @@ version (StdUnittest) private void testBadDecodeBack(R)(R range, size_t line = _
 
 @system unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!(
     {
     foreach (S; AliasSeq!((dstring s) => s, RandomCU!dchar, InputCU!dchar,
@@ -2207,8 +2207,8 @@ version (StdUnittest) private void testBadDecodeBack(R)(R range, size_t line = _
 
 @safe unittest
 {
-    import std.exception;
-    import std.traits : FunctionAttribute, functionAttributes, isSafe;
+    import ripstd.exception;
+    import ripstd.traits : FunctionAttribute, functionAttributes, isSafe;
     assertCTFEable!(
     {
     foreach (S; AliasSeq!( char[], const( char)[],  string,
@@ -2233,7 +2233,7 @@ version (StdUnittest) private void testBadDecodeBack(R)(R range, size_t line = _
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     char[4] val;
     val[0] = 0b1111_0111;
     val[1] = 0b1011_1111;
@@ -2307,8 +2307,8 @@ size_t encode(UseReplacementDchar useReplacementDchar = No.useReplacementDchar)(
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
-    import std.typecons : Yes;
+    import ripstd.exception : assertThrown;
+    import ripstd.typecons : Yes;
 
     char[4] buf;
 
@@ -2327,8 +2327,8 @@ size_t encode(UseReplacementDchar useReplacementDchar = No.useReplacementDchar)(
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
-    import std.typecons : Yes;
+    import ripstd.exception : assertThrown;
+    import ripstd.typecons : Yes;
 
     wchar[2] buf;
 
@@ -2347,8 +2347,8 @@ size_t encode(UseReplacementDchar useReplacementDchar = No.useReplacementDchar)(
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
-    import std.typecons : Yes;
+    import ripstd.exception : assertThrown;
+    import ripstd.typecons : Yes;
 
     dchar[1] buf;
 
@@ -2364,7 +2364,7 @@ size_t encode(UseReplacementDchar useReplacementDchar = No.useReplacementDchar)(
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!(
     {
     char[4] buf;
@@ -2422,7 +2422,7 @@ size_t encode(UseReplacementDchar useReplacementDchar = No.useReplacementDchar)(
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!(
     {
     wchar[2] buf;
@@ -2461,7 +2461,7 @@ size_t encode(UseReplacementDchar useReplacementDchar = No.useReplacementDchar)(
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!(
     {
     dchar[1] buf;
@@ -2562,7 +2562,7 @@ void encode(UseReplacementDchar useReplacementDchar = No.useReplacementDchar)(
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     assertCTFEable!(
     {
@@ -2584,7 +2584,7 @@ void encode(UseReplacementDchar useReplacementDchar = No.useReplacementDchar)(
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!(
     {
     char[] buf;
@@ -2651,7 +2651,7 @@ void encode(UseReplacementDchar useReplacementDchar = No.useReplacementDchar)(
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!(
     {
     wchar[] buf;
@@ -2689,7 +2689,7 @@ void encode(UseReplacementDchar useReplacementDchar = No.useReplacementDchar)(
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!(
     {
     dchar[] buf;
@@ -2808,9 +2808,9 @@ if (isInputRange!InputRange && !isInfinite!InputRange && isSomeChar!(ElementType
 
 @safe unittest
 {
-    import std.algorithm.iteration : filter;
-    import std.conv : to;
-    import std.exception;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.conv : to;
+    import ripstd.exception;
 
     assertCTFEable!(
     {
@@ -2892,7 +2892,7 @@ if (isSomeString!S)
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     char[] a = [167, 133, 175];
     assertThrown!UTFException(validate(a));
 }
@@ -2900,7 +2900,7 @@ if (isSomeString!S)
 // https://issues.dlang.org/show_bug.cgi?id=12923
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertThrown((){
         char[3]a=[167, 133, 175];
         validate(a[]);
@@ -2927,7 +2927,7 @@ if (isInputRange!S && !isInfinite!S && isSomeChar!(ElementEncodingType!S))
 ///
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // The ö is represented by two UTF-8 code units
     assert("Hellø"w.toUTF8.equal(['H', 'e', 'l', 'l', 0xC3, 0xB8]));
@@ -2938,8 +2938,8 @@ if (isInputRange!S && !isInfinite!S && isSomeChar!(ElementEncodingType!S))
 
 @system pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange : ReferenceInputRange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange : ReferenceInputRange;
 
     alias RT = ReferenceInputRange!(ElementType!(string));
     auto r1 = new RT("Hellø");
@@ -2969,7 +2969,7 @@ if (isInputRange!S && !isInfinite!S && isSomeChar!(ElementEncodingType!S))
 ///
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // these graphemes are two code units in UTF-16 and one in UTF-32
     assert("𤭢"d.length == 1);
@@ -2981,8 +2981,8 @@ if (isInputRange!S && !isInfinite!S && isSomeChar!(ElementEncodingType!S))
 
 @system pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange : ReferenceInputRange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange : ReferenceInputRange;
 
     alias RT = ReferenceInputRange!(ElementType!(string));
     auto r1 = new RT("𤭢");
@@ -3013,7 +3013,7 @@ if (isInputRange!S && !isInfinite!S && isSomeChar!(ElementEncodingType!S))
 ///
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // these graphemes are two code units in UTF-16 and one in UTF-32
     assert("𤭢"w.length == 2);
@@ -3031,7 +3031,7 @@ private T toUTFImpl(T, S)(S s)
     }
     else
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto app = appender!T();
 
         static if (is(S == C[], C) || hasLength!S)
@@ -3175,7 +3175,7 @@ if (is(typeof(str[0]) C) && is(immutable typeof(*P.init) == immutable C) && !is(
     //C[] -> immutable(C)*
     else
     {
-        import std.array : uninitializedArray;
+        import ripstd.array : uninitializedArray;
         auto copy = uninitializedArray!(Unqual!OutChar[])(str.length + 1);
         copy[0 .. $ - 1] = str[];
         copy[$ - 1] = '\0';
@@ -3189,7 +3189,7 @@ private P toUTFzImpl(P, S)(S str) @safe pure
 if (!is(immutable typeof(*P.init) == immutable typeof(str[0])))
 //C1[], const(C1)[], or immutable(C1)[] -> C2*, const(C2)*, or immutable(C2)*
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto retval = appender!(typeof(*P.init)[])();
 
     foreach (dchar c; str)
@@ -3202,10 +3202,10 @@ if (!is(immutable typeof(*P.init) == immutable typeof(str[0])))
 @safe pure unittest
 {
     import core.exception : AssertError;
-    import std.algorithm;
-    import std.conv : to;
-    import std.exception;
-    import std.string : format;
+    import ripstd.algorithm;
+    import ripstd.conv : to;
+    import ripstd.exception;
+    import ripstd.string : format;
 
     assertCTFEable!(
     {
@@ -3310,7 +3310,7 @@ if (isSomeChar!C)
 
 @safe pure unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     //toUTFz is already thoroughly tested, so this will just verify that
     //toUTF16z compiles properly for the various string types.
     foreach (S; AliasSeq!(string, wstring, dstring))
@@ -3322,7 +3322,7 @@ if (isSomeChar!C)
 
 @safe pure unittest
 {
-    import std.exception;
+    import ripstd.exception;
 
     assertCTFEable!(
     {
@@ -3377,7 +3377,7 @@ if (isSomeChar!C)
 
 @safe pure nothrow @nogc unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!(
     {
     assert(count("") == 0);
@@ -3389,12 +3389,12 @@ if (isSomeChar!C)
 
 
 // Ranges of code units for testing.
-version (StdUnittest)
+version (RIPStdUnittest)
 {
 private:
     struct InputCU(C)
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         @property bool empty() { return _str.empty; }
         @property C front() { return _str[0]; }
         void popFront() { _str = _str[1 .. $]; }
@@ -3409,7 +3409,7 @@ private:
 
     struct BidirCU(C)
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         @property bool empty() { return _str.empty; }
         @property C front() { return _str[0]; }
         void popFront() { _str = _str[1 .. $]; }
@@ -3428,7 +3428,7 @@ private:
 
     struct RandomCU(C)
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         @property bool empty() { return _str.empty; }
         @property C front() { return _str[0]; }
         void popFront() { _str = _str[1 .. $]; }
@@ -3449,7 +3449,7 @@ private:
 
     class RefBidirCU(C)
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         @property bool empty() { return _str.empty; }
         @property C front() { return _str[0]; }
         void popFront() { _str = _str[1 .. $]; }
@@ -3468,7 +3468,7 @@ private:
 
     class RefRandomCU(C)
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         @property bool empty() { return _str.empty; }
         @property C front() { return _str[0]; }
         void popFront() { _str = _str[1 .. $]; }
@@ -3547,7 +3547,7 @@ auto byCodeUnit(R)(R r)
 if ((isConvertibleToString!R && !isStaticArray!R) ||
     (isInputRange!R && isSomeChar!(ElementEncodingType!R)))
 {
-    import std.traits : StringTypeOf;
+    import ripstd.traits : StringTypeOf;
     static if (// This would be cleaner if we had a way to check whether a type
                // was a range without any implicit conversions.
                (isAutodecodableString!R && !__traits(hasMember, R, "empty") &&
@@ -3595,8 +3595,8 @@ if ((isConvertibleToString!R && !isStaticArray!R) ||
 ///
 @safe unittest
 {
-    import std.range.primitives;
-    import std.traits : isAutodecodableString;
+    import ripstd.range.primitives;
+    import ripstd.traits : isAutodecodableString;
 
     auto r = "Hello, World!".byCodeUnit();
     static assert(hasLength!(typeof(r)));
@@ -3643,9 +3643,9 @@ if ((isConvertibleToString!R && !isStaticArray!R) ||
 /// `byCodeUnit` exposes a `source` property when wrapping narrow strings.
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : popFrontN;
-    import std.traits : isAutodecodableString;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : popFrontN;
+    import ripstd.traits : isAutodecodableString;
     {
         auto range = byCodeUnit("hello world");
         range.popFrontN(3);
@@ -3665,7 +3665,7 @@ if ((isConvertibleToString!R && !isStaticArray!R) ||
 
 @safe pure nothrow @nogc unittest
 {
-    import std.range;
+    import ripstd.range;
     {
         enum testStr = "𐁄𐂌𐃯 hello ディラン";
         char[testStr.length] s;
@@ -4180,7 +4180,7 @@ pure @safe nothrow @nogc unittest
     foreach (c; s[].byDchar()) { }
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 private int impureVariable;
 
 @system unittest
@@ -4412,7 +4412,7 @@ if (isSomeChar!C)
 ///
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // hellö as a range of `char`s, which are UTF-8
     assert("hell\u00F6".byUTF!char().equal(['h', 'e', 'l', 'l', 0xC3, 0xB6]));
@@ -4429,8 +4429,8 @@ if (isSomeChar!C)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.exception : assertThrown;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.exception : assertThrown;
 
     assert("hello\xF0betty".byChar.byUTF!(dchar, UseReplacementDchar.yes).equal("hello\uFFFDetty"));
     assertThrown!UTFException("hello\xF0betty".byChar.byUTF!(dchar, UseReplacementDchar.no).equal("hello betty"));

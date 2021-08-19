@@ -35,21 +35,21 @@ module ripstd.internal.math.biguintcore;
 
 version (D_InlineAsm_X86)
 {
-    static import std.internal.math.biguintx86;
+    static import ripstd.internal.math.biguintx86;
 }
-static import std.internal.math.biguintnoasm;
+static import ripstd.internal.math.biguintnoasm;
 
-import std.internal.math.biguintnoasm : BigDigit, KARATSUBALIMIT,
+import ripstd.internal.math.biguintnoasm : BigDigit, KARATSUBALIMIT,
     KARATSUBASQUARELIMIT;
 
 alias multibyteAdd = multibyteAddSub!('+');
 alias multibyteSub = multibyteAddSub!('-');
 
-private import std.traits;
-private import std.range.primitives;
-public import std.ascii : LetterCase;
-import std.range.primitives;
-import std.traits;
+private import ripstd.traits;
+private import ripstd.range.primitives;
+public import ripstd.ascii : LetterCase;
+import ripstd.range.primitives;
+import ripstd.traits;
 
 private:
 
@@ -62,136 +62,136 @@ uint multibyteAddSub(char op)(uint[] dest, const(uint)[] src1, const (uint)[] sr
 {
     // must be checked before, otherwise D_InlineAsm_X86 is true.
     if (__ctfe)
-        return std.internal.math.biguintnoasm.multibyteAddSub!op(dest, src1, src2, carry);
+        return ripstd.internal.math.biguintnoasm.multibyteAddSub!op(dest, src1, src2, carry);
     // Runtime.
     else version (D_InlineAsm_X86)
-        return std.internal.math.biguintx86.multibyteAddSub!op(dest, src1, src2, carry);
+        return ripstd.internal.math.biguintx86.multibyteAddSub!op(dest, src1, src2, carry);
     // Runtime if no asm available.
     else
-        return std.internal.math.biguintnoasm.multibyteAddSub!op(dest, src1, src2, carry);
+        return ripstd.internal.math.biguintnoasm.multibyteAddSub!op(dest, src1, src2, carry);
 }
 // Any other architecture
-else alias multibyteAddSub = std.internal.math.biguintnoasm.multibyteAddSub;
+else alias multibyteAddSub = ripstd.internal.math.biguintnoasm.multibyteAddSub;
 
 version (X86)
 uint multibyteIncrementAssign(char op)(uint[] dest, uint carry)
 {
     if (__ctfe)
-        return std.internal.math.biguintnoasm.multibyteIncrementAssign!op(dest, carry);
+        return ripstd.internal.math.biguintnoasm.multibyteIncrementAssign!op(dest, carry);
     else version (D_InlineAsm_X86)
-        return std.internal.math.biguintx86.multibyteIncrementAssign!op(dest, carry);
+        return ripstd.internal.math.biguintx86.multibyteIncrementAssign!op(dest, carry);
     else
-        return std.internal.math.biguintnoasm.multibyteIncrementAssign!op(dest, carry);
+        return ripstd.internal.math.biguintnoasm.multibyteIncrementAssign!op(dest, carry);
 }
-else alias multibyteIncrementAssign = std.internal.math.biguintnoasm.multibyteIncrementAssign;
+else alias multibyteIncrementAssign = ripstd.internal.math.biguintnoasm.multibyteIncrementAssign;
 
 version (X86)
 uint multibyteShl()(uint[] dest, const(uint)[] src, uint numbits)
 {
     if (__ctfe)
-        return std.internal.math.biguintnoasm.multibyteShl(dest, src, numbits);
+        return ripstd.internal.math.biguintnoasm.multibyteShl(dest, src, numbits);
     else version (D_InlineAsm_X86)
-        return std.internal.math.biguintx86.multibyteShl(dest, src, numbits);
+        return ripstd.internal.math.biguintx86.multibyteShl(dest, src, numbits);
     else
-        return std.internal.math.biguintnoasm.multibyteShl(dest, src, numbits);
+        return ripstd.internal.math.biguintnoasm.multibyteShl(dest, src, numbits);
 }
-else alias multibyteShl = std.internal.math.biguintnoasm.multibyteShl;
+else alias multibyteShl = ripstd.internal.math.biguintnoasm.multibyteShl;
 
 version (X86)
 void multibyteShr()(uint[] dest, const(uint)[] src, uint numbits)
 {
     if (__ctfe)
-        std.internal.math.biguintnoasm.multibyteShr(dest, src, numbits);
+        ripstd.internal.math.biguintnoasm.multibyteShr(dest, src, numbits);
     else version (D_InlineAsm_X86)
-        std.internal.math.biguintx86.multibyteShr(dest, src, numbits);
+        ripstd.internal.math.biguintx86.multibyteShr(dest, src, numbits);
     else
-        std.internal.math.biguintnoasm.multibyteShr(dest, src, numbits);
+        ripstd.internal.math.biguintnoasm.multibyteShr(dest, src, numbits);
 }
-else alias multibyteShr = std.internal.math.biguintnoasm.multibyteShr;
+else alias multibyteShr = ripstd.internal.math.biguintnoasm.multibyteShr;
 
 version (X86)
 uint multibyteMul()(uint[] dest, const(uint)[] src, uint multiplier, uint carry)
 {
     if (__ctfe)
-        return std.internal.math.biguintnoasm.multibyteMul(dest, src, multiplier, carry);
+        return ripstd.internal.math.biguintnoasm.multibyteMul(dest, src, multiplier, carry);
     else version (D_InlineAsm_X86)
-        return std.internal.math.biguintx86.multibyteMul(dest, src, multiplier, carry);
+        return ripstd.internal.math.biguintx86.multibyteMul(dest, src, multiplier, carry);
     else
-        return std.internal.math.biguintnoasm.multibyteMul(dest, src, multiplier, carry);
+        return ripstd.internal.math.biguintnoasm.multibyteMul(dest, src, multiplier, carry);
 }
-else alias multibyteMul = std.internal.math.biguintnoasm.multibyteMul;
+else alias multibyteMul = ripstd.internal.math.biguintnoasm.multibyteMul;
 
 version (X86)
 uint multibyteMulAdd(char op)(uint[] dest, const(uint)[] src, uint multiplier, uint carry)
 {
     if (__ctfe)
-        return std.internal.math.biguintnoasm.multibyteMulAdd!op(dest, src, multiplier, carry);
+        return ripstd.internal.math.biguintnoasm.multibyteMulAdd!op(dest, src, multiplier, carry);
     else version (D_InlineAsm_X86)
-        return std.internal.math.biguintx86.multibyteMulAdd!op(dest, src, multiplier, carry);
+        return ripstd.internal.math.biguintx86.multibyteMulAdd!op(dest, src, multiplier, carry);
     else
-        return std.internal.math.biguintnoasm.multibyteMulAdd!op(dest, src, multiplier, carry);
+        return ripstd.internal.math.biguintnoasm.multibyteMulAdd!op(dest, src, multiplier, carry);
 }
-else alias multibyteMulAdd = std.internal.math.biguintnoasm.multibyteMulAdd;
+else alias multibyteMulAdd = ripstd.internal.math.biguintnoasm.multibyteMulAdd;
 
 version (X86)
 void multibyteMultiplyAccumulate()(uint[] dest, const(uint)[] left, const(uint)[] right)
 {
     if (__ctfe)
-        std.internal.math.biguintnoasm.multibyteMultiplyAccumulate(dest, left, right);
+        ripstd.internal.math.biguintnoasm.multibyteMultiplyAccumulate(dest, left, right);
     else version (D_InlineAsm_X86)
-        std.internal.math.biguintx86.multibyteMultiplyAccumulate(dest, left, right);
+        ripstd.internal.math.biguintx86.multibyteMultiplyAccumulate(dest, left, right);
     else
-        std.internal.math.biguintnoasm.multibyteMultiplyAccumulate(dest, left, right);
+        ripstd.internal.math.biguintnoasm.multibyteMultiplyAccumulate(dest, left, right);
 }
-else alias multibyteMultiplyAccumulate = std.internal.math.biguintnoasm.multibyteMultiplyAccumulate;
+else alias multibyteMultiplyAccumulate = ripstd.internal.math.biguintnoasm.multibyteMultiplyAccumulate;
 
 version (X86)
 uint multibyteDivAssign()(uint[] dest, uint divisor, uint overflow)
 {
     if (__ctfe)
-        return std.internal.math.biguintnoasm.multibyteDivAssign(dest, divisor, overflow);
+        return ripstd.internal.math.biguintnoasm.multibyteDivAssign(dest, divisor, overflow);
     else version (D_InlineAsm_X86)
-        return std.internal.math.biguintx86.multibyteDivAssign(dest, divisor, overflow);
+        return ripstd.internal.math.biguintx86.multibyteDivAssign(dest, divisor, overflow);
     else
-        return std.internal.math.biguintnoasm.multibyteDivAssign(dest, divisor, overflow);
+        return ripstd.internal.math.biguintnoasm.multibyteDivAssign(dest, divisor, overflow);
 }
-else alias multibyteDivAssign = std.internal.math.biguintnoasm.multibyteDivAssign;
+else alias multibyteDivAssign = ripstd.internal.math.biguintnoasm.multibyteDivAssign;
 
 version (X86)
 void multibyteAddDiagonalSquares()(uint[] dest, const(uint)[] src)
 {
     if (__ctfe)
-        std.internal.math.biguintnoasm.multibyteAddDiagonalSquares(dest, src);
+        ripstd.internal.math.biguintnoasm.multibyteAddDiagonalSquares(dest, src);
     else version (D_InlineAsm_X86)
-        std.internal.math.biguintx86.multibyteAddDiagonalSquares(dest, src);
+        ripstd.internal.math.biguintx86.multibyteAddDiagonalSquares(dest, src);
     else
-        std.internal.math.biguintnoasm.multibyteAddDiagonalSquares(dest, src);
+        ripstd.internal.math.biguintnoasm.multibyteAddDiagonalSquares(dest, src);
 }
-else alias multibyteAddDiagonalSquares = std.internal.math.biguintnoasm.multibyteAddDiagonalSquares;
+else alias multibyteAddDiagonalSquares = ripstd.internal.math.biguintnoasm.multibyteAddDiagonalSquares;
 
 version (X86)
 void multibyteTriangleAccumulate()(uint[] dest, const(uint)[] x)
 {
     if (__ctfe)
-        std.internal.math.biguintnoasm.multibyteTriangleAccumulate(dest, x);
+        ripstd.internal.math.biguintnoasm.multibyteTriangleAccumulate(dest, x);
     else version (D_InlineAsm_X86)
-        std.internal.math.biguintx86.multibyteTriangleAccumulate(dest, x);
+        ripstd.internal.math.biguintx86.multibyteTriangleAccumulate(dest, x);
     else
-        std.internal.math.biguintnoasm.multibyteTriangleAccumulate(dest, x);
+        ripstd.internal.math.biguintnoasm.multibyteTriangleAccumulate(dest, x);
 }
-else alias multibyteTriangleAccumulate = std.internal.math.biguintnoasm.multibyteTriangleAccumulate;
+else alias multibyteTriangleAccumulate = ripstd.internal.math.biguintnoasm.multibyteTriangleAccumulate;
 
 version (X86)
 void multibyteSquare()(BigDigit[] result, const(BigDigit)[] x)
 {
     if (__ctfe)
-        std.internal.math.biguintnoasm.multibyteSquare(result, x);
+        ripstd.internal.math.biguintnoasm.multibyteSquare(result, x);
     else version (D_InlineAsm_X86)
-        std.internal.math.biguintx86.multibyteSquare(result, x);
+        ripstd.internal.math.biguintx86.multibyteSquare(result, x);
     else
-        std.internal.math.biguintnoasm.multibyteSquare(result, x);
+        ripstd.internal.math.biguintnoasm.multibyteSquare(result, x);
 }
-else alias multibyteSquare = std.internal.math.biguintnoasm.multibyteSquare;
+else alias multibyteSquare = ripstd.internal.math.biguintnoasm.multibyteSquare;
 
 // Limits for when to switch between algorithms.
 // Half the size of the data cache.
@@ -216,8 +216,8 @@ else static if (BigDigit.sizeof == long.sizeof)
 }
 else static assert(0, "Unsupported BigDigit size");
 
-import std.exception : assumeUnique;
-import std.traits : isIntegral;
+import ripstd.exception : assumeUnique;
+import ripstd.traits : isIntegral;
 enum BigDigitBits = BigDigit.sizeof*8;
 template maxBigDigits(T)
 if (isIntegral!T)
@@ -249,7 +249,7 @@ private:
     {
        data = x;
     }
-  package(std)  // used from: std.bigint
+  package(ripstd)  // used from: ripstd.bigint
     this(T)(T x) pure nothrow @safe if (isIntegral!T)
     {
         opAssign(x);
@@ -504,7 +504,7 @@ public:
     bool fromHexString(Range)(Range s) if (
         isBidirectionalRange!Range && isSomeChar!(ElementType!Range))
     {
-        import std.range : walkLength;
+        import ripstd.range : walkLength;
 
         //Strip leading zeros
         while (!s.empty && s.front == '0')
@@ -573,7 +573,7 @@ public:
     bool fromDecimalString(Range)(Range s) if (
         isForwardRange!Range && isSomeChar!(ElementType!Range))
     {
-        import std.range : walkLength;
+        import ripstd.range : walkLength;
 
         while (!s.empty && s.front == '0')
         {
@@ -686,7 +686,7 @@ public:
         b.fromMagnitude(referenceMagnitude);
         assert(b.data == referenceData);
         // Test ubyte array.
-        import std.bitmanip : nativeToBigEndian;
+        import ripstd.bitmanip : nativeToBigEndian;
         ubyte[] ubyteMagnitude = nativeToBigEndian(referenceMagnitude[0]) ~
             nativeToBigEndian(referenceMagnitude[1]) ~
             nativeToBigEndian(referenceMagnitude[2]);
@@ -1466,7 +1466,7 @@ int highestPowerBelowUlongMax(uint x) pure nothrow @safe
      return 2;
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
 
 private int slowHighestPowerBelowUintMax(uint x) pure nothrow @safe
@@ -2058,7 +2058,7 @@ in
 }
 do
 {
-    import std.conv : ConvException;
+    import ripstd.conv : ConvException;
 
     // Convert to base 1e19 = 10_000_000_000_000_000_000.
     // (this is the largest power of 10 that will fit into a long).

@@ -17,15 +17,15 @@ Distributed under the Boost Software License, Version 1.0.
 */
 module ripstd.json;
 
-import std.array;
-import std.conv;
-import std.range.primitives;
-import std.traits;
+import ripstd.array;
+import ripstd.conv;
+import ripstd.range.primitives;
+import ripstd.traits;
 
 ///
 @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     // parse a file or string of json into a usable structure
     string s = `{ "language": "D", "rating": 3.5, "code": "42" }`;
@@ -117,7 +117,7 @@ JSON value node
 */
 struct JSONValue
 {
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
 
     union Store
     {
@@ -260,7 +260,7 @@ struct JSONValue
         assert(j.boolean == false);
 
         j.integer = 12;
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
         assertThrown!JSONException(j.boolean);
     }
 
@@ -424,8 +424,8 @@ struct JSONValue
     ///
     @safe unittest
     {
-        import std.exception;
-        import std.conv;
+        import ripstd.exception;
+        import ripstd.conv;
         string s =
         `{
             "a": 123,
@@ -477,9 +477,9 @@ struct JSONValue
         else static if (isSomeString!T)
         {
             type_tag = JSONType.string;
-            // FIXME: std.Array.Array(Range) is not deduced as 'pure'
+            // FIXME: ripstd.Array.Array(Range) is not deduced as 'pure'
             () @trusted {
-                import std.utf : byUTF;
+                import ripstd.utf : byUTF;
                 store.str = cast(immutable)(arg.byUTF!char.array);
             }();
         }
@@ -929,8 +929,8 @@ Params:
 JSONValue parseJSON(T)(T json, int maxDepth = -1, JSONOptions options = JSONOptions.none)
 if (isInputRange!T && !isInfinite!T && isSomeChar!(ElementEncodingType!T))
 {
-    import std.ascii : isDigit, isHexDigit, toUpper, toLower;
-    import std.typecons : Nullable, Yes;
+    import ripstd.ascii : isDigit, isHexDigit, toUpper, toLower;
+    import ripstd.typecons : Nullable, Yes;
     JSONValue root;
     root.type_tag = JSONType.null_;
 
@@ -967,7 +967,7 @@ if (isInputRange!T && !isInfinite!T && isSomeChar!(ElementEncodingType!T))
             // RFC 7159 has a stricter definition of whitespace than general ASCII.
             return c == ' ' || c == '\t' || c == '\n' || c == '\r';
         }
-        import std.ascii : isWhite;
+        import ripstd.ascii : isWhite;
         // Accept ASCII NUL as whitespace in non-strict mode.
         return c == 0 || isWhite(c);
     }
@@ -1083,8 +1083,8 @@ if (isInputRange!T && !isInfinite!T && isSomeChar!(ElementEncodingType!T))
 
     string parseString()
     {
-        import std.uni : isSurrogateHi, isSurrogateLo;
-        import std.utf : encode, decode;
+        import ripstd.uni : isSurrogateHi, isSurrogateLo;
+        import ripstd.utf : encode, decode;
 
         auto str = appender!string();
 
@@ -1143,7 +1143,7 @@ if (isInputRange!T && !isInfinite!T && isSomeChar!(ElementEncodingType!T))
             default:
                 // RFC 7159 states that control characters U+0000 through
                 // U+001F must not appear unescaped in a JSON string.
-                // Note: std.ascii.isControl can't be used for this test
+                // Note: ripstd.ascii.isControl can't be used for this test
                 // because it considers ASCII DEL (0x7f) to be a control
                 // character but RFC 7159 does not.
                 // Accept unescaped ASCII NULs in non-strict mode.
@@ -1488,8 +1488,8 @@ if (isOutputRange!(Out,char))
                 case '\t':      json.put("\\t");        break;
                 default:
                 {
-                    import std.ascii : isControl;
-                    import std.utf : encode;
+                    import ripstd.ascii : isControl;
+                    import ripstd.utf : encode;
 
                     // Make sure we do UTF decoding iff we want to
                     // escape Unicode characters.
@@ -1596,7 +1596,7 @@ if (isOutputRange!(Out,char))
                         }
                     }
 
-                    import std.algorithm.sorting : sort;
+                    import ripstd.algorithm.sorting : sort;
                     // https://issues.dlang.org/show_bug.cgi?id=14439
                     // auto names = obj.keys;  // aa.keys can't be called in @safe code
                     auto names = new string[obj.length];
@@ -1650,7 +1650,7 @@ if (isOutputRange!(Out,char))
                 break;
 
             case JSONType.float_:
-                import std.math.traits : isNaN, isInfinity;
+                import ripstd.math.traits : isNaN, isInfinity;
 
                 auto val = value.store.floating;
 
@@ -1680,8 +1680,8 @@ if (isOutputRange!(Out,char))
                 }
                 else
                 {
-                    import std.algorithm.searching : canFind;
-                    import std.format : sformat;
+                    import ripstd.algorithm.searching : canFind;
+                    import ripstd.format : sformat;
                     // The correct formula for the number of decimal digits needed for lossless round
                     // trips is actually:
                     //     ceil(log(pow(2.0, double.mant_dig - 1)) / log(10.0) + 1) == (double.dig + 2)
@@ -1731,8 +1731,8 @@ if (isOutputRange!(Out,char))
 // https://issues.dlang.org/show_bug.cgi?id=20511
 @system unittest
 {
-    import std.format.write : formattedWrite;
-    import std.range : nullSink, outputRangeObject;
+    import ripstd.format.write : formattedWrite;
+    import ripstd.range : nullSink, outputRangeObject;
 
     outputRangeObject!(const(char)[])(nullSink)
         .formattedWrite!"%s"(JSONValue.init);
@@ -1744,7 +1744,7 @@ if (isOutputRange!(Out,char))
     // Floating points numbers are rounded to the nearest integer and thus get
     // incorrectly parsed
 
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     string s = "{\"rating\": 3.0 }";
     JSONValue j = parseJSON(s);
@@ -1775,7 +1775,7 @@ if (isOutputRange!(Out,char))
     // Result from toString is not checked here, because this
     // might differ (%e-like or %f-like output) depending
     // on OS and compiler optimization.
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     // test positive extreme values
     JSONValue j;
@@ -1815,7 +1815,7 @@ class JSONException : Exception
 
 @system unittest
 {
-    import std.exception;
+    import ripstd.exception;
     JSONValue jv = "123";
     assert(jv.type == JSONType.string);
     assertNotThrown(jv.str);
@@ -1969,7 +1969,7 @@ class JSONException : Exception
 @system unittest
 {
     // @system because JSONValue.array is @system
-    import std.exception;
+    import ripstd.exception;
 
     // An overly simple test suite, if it can parse a serializated string and
     // then use the resulting values tree to generate an identical
@@ -2014,7 +2014,7 @@ class JSONException : Exception
         }
         catch (JSONException e)
         {
-            import std.stdio : writefln;
+            import ripstd.stdio : writefln;
             writefln(text(json, "\n", e.toString()));
         }
     }
@@ -2103,7 +2103,7 @@ class JSONException : Exception
 ]
 EOF";
 
-    import std.exception;
+    import ripstd.exception;
 
     auto e = collectException!JSONException(parseJSON(s));
     assert(e.msg == "Unexpected character 'p'. (Line 5:3)", e.msg);
@@ -2112,8 +2112,8 @@ EOF";
 // handling of special float values (NaN, Inf, -Inf)
 @safe unittest
 {
-    import std.exception : assertThrown;
-    import std.math.traits : isNaN, isInfinity;
+    import ripstd.exception : assertThrown;
+    import ripstd.math.traits : isNaN, isInfinity;
 
     // expected representations of NaN and Inf
     enum {
@@ -2167,7 +2167,7 @@ pure nothrow @safe @nogc unittest
 // https://issues.dlang.org/show_bug.cgi?id=15884
 pure nothrow @safe unittest
 {
-    import std.typecons;
+    import ripstd.typecons;
     void Test(C)() {
         C[] a = ['x'];
         JSONValue testVal = a;
@@ -2187,7 +2187,7 @@ pure nothrow @safe unittest
 
     static bool test(const double num0)
     {
-        import std.math.operations : feqrel;
+        import ripstd.math.operations : feqrel;
         const json0 = JSONValue(num0);
         const num1 = to!double(toJSON(json0));
         static if (realInDoublePrecision)
@@ -2218,7 +2218,7 @@ pure nothrow @safe unittest
 // https://issues.dlang.org/show_bug.cgi?id=17555
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     assertThrown!JSONException(parseJSON("\"a\nb\""));
 }
@@ -2255,7 +2255,7 @@ pure nothrow @safe unittest
 
 @safe unittest
 {
-    import std.utf;
+    import ripstd.utf;
     assert(parseJSON("\"\xFF\"".byChar).str == "\xFF");
     assert(parseJSON("\"\U0001D11E\"".byChar).str == "\U0001D11E");
 }
@@ -2272,7 +2272,7 @@ pure nothrow @safe unittest
 // JSONOptions.strictParsing (https://issues.dlang.org/show_bug.cgi?id=16639)
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     // Unescaped ASCII NULs
     assert(parseJSON("[\0]").type == JSONType.array);
@@ -2341,9 +2341,9 @@ pure nothrow @safe unittest
 
 @system unittest
 {
-    import std.algorithm.iteration : map;
-    import std.array : array;
-    import std.exception : assertThrown;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.array : array;
+    import ripstd.exception : assertThrown;
 
     string s = `{ "a" : [1,2,3,], }`;
     JSONValue j = parseJSON(s);
@@ -2354,9 +2354,9 @@ pure nothrow @safe unittest
 
 @system unittest
 {
-    import std.algorithm.iteration : map;
-    import std.array : array;
-    import std.exception : assertThrown;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.array : array;
+    import ripstd.exception : assertThrown;
 
     string s = `{ "a" : { }  , }`;
     JSONValue j = parseJSON(s);
@@ -2370,7 +2370,7 @@ pure nothrow @safe unittest
 // https://issues.dlang.org/show_bug.cgi?id=20330
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     string s = `{"a":[1,2,3]}`;
     JSONValue j = parseJSON(s);
@@ -2384,8 +2384,8 @@ pure nothrow @safe unittest
 // https://issues.dlang.org/show_bug.cgi?id=20330
 @safe unittest
 {
-    import std.array : appender;
-    import std.format.write : formattedWrite;
+    import ripstd.array : appender;
+    import ripstd.format.write : formattedWrite;
 
     string s =
 `{

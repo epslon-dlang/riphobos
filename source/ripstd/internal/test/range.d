@@ -9,8 +9,8 @@ module ripstd.internal.test.range;
 // isn't.
 @system /*@safe*/ unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : chunks;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : chunks;
 
     struct R
     {

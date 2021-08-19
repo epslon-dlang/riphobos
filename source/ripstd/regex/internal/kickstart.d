@@ -4,10 +4,10 @@
 */
 module ripstd.regex.internal.kickstart;
 
-package(std.regex):
+package(ripstd.regex):
 
-import std.range.primitives, std.utf;
-import std.regex.internal.ir;
+import ripstd.range.primitives, ripstd.utf;
+import ripstd.regex.internal.ir;
 
 //utility for shiftOr, returns a minimum number of bytes to test in a Char
 uint effectiveSize(Char)()
@@ -129,10 +129,10 @@ private:
 public:
     @trusted this(ref Regex!Char re, uint[] memory)
     {
-        static import std.algorithm.comparison;
-        import std.algorithm.searching : countUntil;
-        import std.conv : text;
-        import std.range : assumeSorted;
+        static import ripstd.algorithm.comparison;
+        import ripstd.algorithm.searching : countUntil;
+        import ripstd.conv : text;
+        import ripstd.range : assumeSorted;
         assert(memory.length == 256);
         fChar = uint.max;
         // FNV-1a flavored hash (uses 32bits at a time)
@@ -371,7 +371,7 @@ public:
                 L_StopThread:
                     assert(re.ir[t.pc].code >= 0x80, text(re.ir[t.pc].code));
                     debug (fred_search) writeln("ShiftOr stumbled on ",re.ir[t.pc].mnemonic);
-                    n_length = std.algorithm.comparison.min(t.idx, n_length);
+                    n_length = ripstd.algorithm.comparison.min(t.idx, n_length);
                     break L_Eval_Thread;
                 }
             }
@@ -396,7 +396,7 @@ public:
     @trusted size_t search(const(Char)[] haystack, size_t idx) const
     {//@BUG: apparently assumes little endian machines
         import core.stdc.string : memchr;
-        import std.conv : text;
+        import ripstd.conv : text;
         assert(!empty);
         auto p = cast(const(ubyte)*)(haystack.ptr+idx);
         uint state = uint.max;
@@ -504,7 +504,7 @@ public:
 
     @system debug static void dump(uint[] table)
     {//@@@BUG@@@ writef(ln) is @system
-        import std.stdio : writefln;
+        import ripstd.stdio : writefln;
         for (size_t i = 0; i < table.length; i += 4)
         {
             writefln("%32b %32b %32b %32b",table[i], table[i+1], table[i+2], table[i+3]);
@@ -514,7 +514,7 @@ public:
 
 @system unittest
 {
-    import std.conv, std.regex;
+    import ripstd.conv, ripstd.regex;
     @trusted void test_fixed(alias Kick)()
     {
         static foreach (i, v; AliasSeq!(char, wchar, dchar))

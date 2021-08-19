@@ -4,7 +4,7 @@ Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/quantizer.d)
 */
 module ripstd.experimental.allocator.building_blocks.quantizer;
 
-import std.experimental.allocator.common;
+import ripstd.experimental.allocator.common;
 
 /**
 This allocator sits on top of `ParentAllocator` and quantizes allocation sizes,
@@ -39,7 +39,7 @@ always return the same value for a given `n`.)
 */
 struct Quantizer(ParentAllocator, alias roundingFunction)
 {
-    import std.traits : hasMember;
+    import ripstd.traits : hasMember;
 
     /**
     The parent allocator. Depending on whether `ParentAllocator` holds state
@@ -83,7 +83,7 @@ struct Quantizer(ParentAllocator, alias roundingFunction)
     }
 
     static if (hasMember!(ParentAllocator, "allocateZeroed"))
-    package(std) void[] allocateZeroed()(size_t n)
+    package(ripstd) void[] allocateZeroed()(size_t n)
     {
         auto result = parent.allocateZeroed(goodAllocSize(n));
         return result.ptr ? result.ptr[0 .. n] : null;
@@ -221,8 +221,8 @@ struct Quantizer(ParentAllocator, alias roundingFunction)
 ///
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.free_tree : FreeTree;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.building_blocks.free_tree : FreeTree;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
 
     size_t roundUpToMultipleOf(size_t s, uint base)
     {
@@ -240,10 +240,10 @@ struct Quantizer(ParentAllocator, alias roundingFunction)
     assert(buf.ptr);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     alias MyAlloc = Quantizer!(GCAllocator,
         (size_t n) => n.roundUpToMultipleOf(64));
     testAllocator!(() => MyAlloc());
@@ -268,9 +268,9 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.typecons : Ternary;
 
     alias Alloc = Quantizer!(Region!(Mallocator),
             (size_t n) => n.roundUpToMultipleOf(64));
@@ -295,11 +295,11 @@ version (StdUnittest)
     assert(c.length == 100);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
-    import std.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
 
     alias MyAlloc = Quantizer!(Region!(Mallocator),
             (size_t n) => n.roundUpToMultipleOf(64));
@@ -312,11 +312,11 @@ version (StdUnittest)
     assert(alignedAt(&b[0], 16));
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.typecons : Ternary;
 
     alias MyAlloc = Quantizer!(Region!(),
         (size_t n) => n.roundUpToMultipleOf(64));

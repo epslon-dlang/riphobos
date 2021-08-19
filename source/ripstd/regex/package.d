@@ -44,8 +44,8 @@ $(TR $(TD Objects) $(TD
 
   $(SECTION Synopsis)
   ---
-  import std.regex;
-  import std.stdio;
+  import ripstd.regex;
+  import ripstd.stdio;
   void main()
   {
       // Print out all possible dd/mm/yy(yy) dates found in user input.
@@ -110,7 +110,7 @@ $(TR $(TD Objects) $(TD
   )
 
   $(REG_START Pattern syntax )
-  $(I std.regex operates on codepoint level,
+  $(I ripstd.regex operates on codepoint level,
     'character' in this table denotes a single Unicode codepoint.)
   $(REG_TABLE
     $(REG_TITLE Pattern element, Semantics )
@@ -298,9 +298,9 @@ Macros:
  +/
 module ripstd.regex;
 
-import std.range.primitives, std.traits;
-import std.regex.internal.ir;
-import std.typecons : Flag, Yes, No;
+import ripstd.range.primitives, ripstd.traits;
+import ripstd.regex.internal.ir;
+import ripstd.typecons : Flag, Yes, No;
 
 /++
     `Regex` object holds regular expression pattern in compiled form.
@@ -321,8 +321,8 @@ import std.typecons : Flag, Yes, No;
 
     Getting a range of all the named captures in the regex.
     ----
-    import std.range;
-    import std.algorithm;
+    import ripstd.range;
+    import ripstd.algorithm;
 
     auto re = regex(`(?P<name>\w+) = (?P<var>\d+)`);
     auto nc = re.namedCaptures;
@@ -334,7 +334,7 @@ import std.typecons : Flag, Yes, No;
     assert(nc[1..$].equal(["var"]));
     ----
 +/
-public alias Regex(Char) = std.regex.internal.ir.Regex!(Char);
+public alias Regex(Char) = ripstd.regex.internal.ir.Regex!(Char);
 
 /++
     A `StaticRegex` is `Regex` object that contains D code specially
@@ -361,8 +361,8 @@ public alias StaticRegex = Regex;
 @trusted public auto regex(S : C[], C)(const S[] patterns, const(char)[] flags="")
 if (isSomeString!(S))
 {
-    import std.array : appender;
-    import std.functional : memoize;
+    import ripstd.array : appender;
+    import ripstd.functional : memoize;
     enum cacheSize = 8; //TODO: invent nice interface to control regex caching
     const(C)[] pat;
     if (patterns.length > 1)
@@ -419,7 +419,7 @@ if (isSomeString!(S))
         assert(m.front[1] == "12");
     }
 
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (C; AliasSeq!(string, wstring, dstring))
         // Test with const array of patterns - see https://issues.dlang.org/show_bug.cgi?id=20301
         static foreach (S; AliasSeq!(C, const C, immutable C))
@@ -428,8 +428,8 @@ if (isSomeString!(S))
 
 @system unittest
 {
-    import std.conv : to;
-    import std.string : indexOf;
+    import ripstd.conv : to;
+    import ripstd.string : indexOf;
 
     immutable pattern = "s+";
     auto regexString = to!string(regex(pattern, "U"));
@@ -441,7 +441,7 @@ if (isSomeString!(S))
 public auto regexImpl(S)(const S pattern, const(char)[] flags="")
 if (isSomeString!(typeof(pattern)))
 {
-    import std.regex.internal.parser : Parser, CodeGen;
+    import ripstd.regex.internal.parser : Parser, CodeGen;
     auto parser = Parser!(Unqual!(typeof(pattern)), CodeGen)(pattern, flags);
     auto r = parser.program;
     return r;
@@ -460,7 +460,7 @@ private struct CTRegexWrapper(Char)
 
 template ctRegexImpl(alias pattern, string flags=[])
 {
-    import std.regex.internal.backtracking, std.regex.internal.parser;
+    import ripstd.regex.internal.backtracking, ripstd.regex.internal.parser;
     static immutable r = cast(immutable) regex(pattern, flags);
     alias Char = BasicElementOf!(typeof(pattern));
     enum source = ctGenRegExCode(r);
@@ -526,7 +526,7 @@ if (isSomeString!R)
     alias String = R;
     alias Store = SmallFixedArray!(Group!DataIndex, 3);
 private:
-    import std.conv : text;
+    import ripstd.conv : text;
     Store matches;
     const(NamedGroup)[] _names;
     R _input;
@@ -621,7 +621,7 @@ public:
         Useful as a shorthand for !(x.empty) in if and assert statements.
 
         ---
-        import std.regex;
+        import ripstd.regex;
 
         assert(!matchFirst("nothing", "something"));
         ---
@@ -639,7 +639,7 @@ public:
     ///
     @system unittest
     {
-        import std.regex;
+        import ripstd.regex;
         assert(matchFirst("abc", "[0-9]+", "[a-z]+").whichPattern == 2);
     }
 
@@ -647,8 +647,8 @@ public:
         Lookup named submatch.
 
         ---
-        import std.regex;
-        import std.range;
+        import ripstd.regex;
+        import ripstd.range;
 
         auto c = matchFirst("a = 42;", regex(`(?P<var>\w+)\s*=\s*(?P<value>\d+);`));
         assert(c["var"] == "a");
@@ -669,14 +669,14 @@ public:
     ///Number of matches in this object.
     @property size_t length() const { return _nMatch == 0 ? 0 : _b - _f;  }
 
-    ///A hook for compatibility with original std.regex.
+    ///A hook for compatibility with original ripstd.regex.
     @property ref captures(){ return this; }
 }
 
 ///
 @system unittest
 {
-    import std.range.primitives : popFrontN;
+    import ripstd.range.primitives : popFrontN;
 
     auto c = matchFirst("@abc#", regex(`(\w)(\w)(\w)`));
     assert(c.pre == "@"); // Part of input preceding match
@@ -727,7 +727,7 @@ public:
 @trusted public struct RegexMatch(R)
 if (isSomeString!R)
 {
-    import std.typecons : Rebindable;
+    import ripstd.typecons : Rebindable;
 private:
     alias Char = BasicElementOf!R;
     Matcher!Char _engine;
@@ -737,7 +737,7 @@ private:
 
     this(RegEx)(R input, RegEx prog)
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         _input = input;
         if (prog.factory is null) _factory = defaultFactory!Char(prog);
         else _factory = prog.factory;
@@ -779,7 +779,7 @@ public:
     /++
         Functionality for processing subsequent matches of global regexes via range interface:
         ---
-        import std.regex;
+        import ripstd.regex;
         auto m = matchAll("Hello, world!", regex(`\w+`));
         assert(m.front.hit == "Hello");
         m.popFront();
@@ -796,7 +796,7 @@ public:
     ///ditto
     void popFront()
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         // CoW - if refCount is not 1, we are aliased by somebody else
         if (_engine.refCount != 1)
         {
@@ -817,7 +817,7 @@ public:
     ///Same as !(x.empty), provided for its convenience  in conditional statements.
     T opCast(T:bool)(){ return !empty; }
 
-    /// Same as .front, provided for compatibility with original std.regex.
+    /// Same as .front, provided for compatibility with original ripstd.regex.
     @property inout(Captures!R) captures() inout { return _captures; }
 }
 
@@ -938,7 +938,7 @@ if (isOutputRange!(Sink, dchar) && isSomeString!R)
 private R replaceFirstWith(alias output, R, RegEx)(R input, RegEx re)
 if (isSomeString!R && isRegexFor!(RegEx, R))
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto data = matchFirst(input, re);
     if (data.empty)
         return input;
@@ -953,7 +953,7 @@ private R replaceAllWith(alias output,
         alias method=matchAll, R, RegEx)(R input, RegEx re)
 if (isSomeString!R && isRegexFor!(RegEx, R))
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto matches = method(input, re); //inout(C)[] fails
     if (matches.empty)
         return input;
@@ -1074,9 +1074,9 @@ if (isSomeString!R && isSomeString!String)
 // another set of tests just to cover the new API
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
-    import std.conv : to;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.conv : to;
 
     static foreach (String; AliasSeq!(string, wstring, const(dchar)[]))
     {{
@@ -1150,10 +1150,10 @@ package void replaceFmt(R, Capt, OutR)
 if (isOutputRange!(OutR, ElementEncodingType!R[]) &&
     isOutputRange!(OutR, ElementEncodingType!(Capt.String)[]))
 {
-    import std.algorithm.searching : find;
-    import std.ascii : isDigit, isAlpha;
-    import std.conv : text, parse;
-    import std.exception : enforce;
+    import ripstd.algorithm.searching : find;
+    import ripstd.ascii : isDigit, isAlpha;
+    import ripstd.conv : text, parse;
+    import ripstd.exception : enforce;
     enum State { Normal, Dollar }
     auto state = State.Normal;
     size_t offset;
@@ -1270,7 +1270,7 @@ if (isSomeString!R && isRegexFor!(RegEx, R))
 ///
 @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     string list = "#21 out of 46";
     string newList = replaceFirst!(cap => to!string(to!int(cap.hit)+1))
         (list, regex(`[0-9]+`));
@@ -1306,7 +1306,7 @@ if (isOutputRange!(Sink, dchar) && isSomeString!R && isRegexFor!(RegEx, R))
 ///
 @system unittest
 {
-    import std.array;
+    import ripstd.array;
     string m1 = "first message\n";
     string m2 = "second message\n";
     auto result = appender!string();
@@ -1319,12 +1319,12 @@ if (isOutputRange!(Sink, dchar) && isSomeString!R && isRegexFor!(RegEx, R))
 //examples for replaceFirst
 @system unittest
 {
-    import std.conv;
+    import ripstd.conv;
     string list = "#21 out of 46";
     string newList = replaceFirst!(cap => to!string(to!int(cap.hit)+1))
         (list, regex(`[0-9]+`));
     assert(newList == "#22 out of 46");
-    import std.array;
+    import ripstd.array;
     string m1 = "first message\n";
     string m2 = "second message\n";
     auto result = appender!string();
@@ -1397,7 +1397,7 @@ if (isSomeString!R && isRegexFor!(RegEx, R))
 {
     string baz(Captures!(string) m)
     {
-        import std.string : toUpper;
+        import ripstd.string : toUpper;
         return toUpper(m.hit);
     }
     // Capitalize the letters 'a' and 'r':
@@ -1435,7 +1435,7 @@ if (isOutputRange!(Sink, dchar) && isSomeString!R && isRegexFor!(RegEx, R))
 @system unittest
 {
     // insert comma as thousands delimiter in fifty randomly produced big numbers
-    import std.array, std.conv, std.random, std.range;
+    import ripstd.array, ripstd.conv, ripstd.random, ripstd.range;
     static re = regex(`(?<=\d)(?=(\d\d\d)+\b)`, "g");
     auto sink = appender!(char [])();
     enum ulong min = 10UL ^^ 10, max = 10UL ^^ 19;
@@ -1451,8 +1451,8 @@ if (isOutputRange!(Sink, dchar) && isSomeString!R && isRegexFor!(RegEx, R))
 // exercise all of the replace APIs
 @system unittest
 {
-    import std.array : appender;
-    import std.conv;
+    import ripstd.array : appender;
+    import ripstd.conv;
     // try and check first/all simple substitution
     static foreach (S; AliasSeq!(string, wstring, dstring, char[], wchar[], dchar[]))
     {{
@@ -1559,7 +1559,7 @@ public:
     ///Forward range primitives.
     @property Range front()
     {
-        import std.algorithm.comparison : min;
+        import ripstd.algorithm.comparison : min;
 
         assert(!empty && _offset <= _match.pre.length
                 && _match.pre.length <= _input.length);
@@ -1640,7 +1640,7 @@ if (
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto s1 = ", abc, de,  fg, hi, ";
     assert(equal(splitter(s1, regex(", *")),
         ["", "abc", "de", "fg", "hi", ""]));
@@ -1649,8 +1649,8 @@ if (
 /// Split on a pattern, but keep the matches in the resulting range
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : Yes;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : Yes;
 
     auto pattern = regex(`([\.,])`);
 
@@ -1667,7 +1667,7 @@ if (
 public @trusted String[] split(String, RegEx)(String input, RegEx rx)
 if (isSomeString!String  && isRegexFor!(RegEx, String))
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto a = appender!(String[])();
     foreach (e; splitter(input, rx))
         a.put(e);
@@ -1675,7 +1675,7 @@ if (isSomeString!String  && isRegexFor!(RegEx, String))
 }
 
 ///Exception object thrown in case of errors during regex compilation.
-public alias RegexException = std.regex.internal.ir.RegexException;
+public alias RegexException = ripstd.regex.internal.ir.RegexException;
 
 /++
   A range that lazily produces a string output escaped
@@ -1683,7 +1683,7 @@ public alias RegexException = std.regex.internal.ir.RegexException;
 +/
 auto escaper(Range)(Range r)
 {
-    import std.algorithm.searching : find;
+    import ripstd.algorithm.searching : find;
     static immutable escapables = [Escapables];
     static struct Escaper // template to deduce attributes
     {
@@ -1719,16 +1719,16 @@ auto escaper(Range)(Range r)
 ///
 @system unittest
 {
-    import std.algorithm.comparison;
-    import std.regex;
+    import ripstd.algorithm.comparison;
+    import ripstd.regex;
     string s = `This is {unfriendly} to *regex*`;
     assert(s.escaper.equal(`This is \{unfriendly\} to \*regex\*`));
 }
 
 @system unittest
 {
-    import std.algorithm.comparison;
-    import std.conv;
+    import ripstd.algorithm.comparison;
+    import ripstd.conv;
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {{
       auto s = "^".to!S;

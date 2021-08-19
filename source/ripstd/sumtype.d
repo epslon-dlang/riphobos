@@ -20,7 +20,7 @@ module ripstd.sumtype;
 version (D_BetterC) {} else
 @safe unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     struct Fahrenheit { double degrees; }
     struct Celsius { double degrees; }
@@ -87,10 +87,10 @@ version (D_BetterC) {} else
 version (D_BetterC) {} else
 @safe unittest
 {
-    import std.math.operations : isClose;
-    import std.math.trigonometry : cos;
-    import std.math.constants : PI;
-    import std.math.algebraic : sqrt;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.trigonometry : cos;
+    import ripstd.math.constants : PI;
+    import ripstd.math.algebraic : sqrt;
 
     struct Rectangular { double x, y; }
     struct Polar { double r, theta; }
@@ -131,9 +131,9 @@ version (D_BetterC) {} else
 version (D_BetterC) {} else
 @system unittest
 {
-    import std.functional : partial;
-    import std.traits : EnumMembers;
-    import std.typecons : Tuple;
+    import ripstd.functional : partial;
+    import ripstd.traits : EnumMembers;
+    import ripstd.typecons : Tuple;
 
     enum Op : string
     {
@@ -206,7 +206,7 @@ version (D_BetterC) {} else
     // Return a "pretty-printed" representation of expr
     string pprint(Expr expr)
     {
-        import std.format : format;
+        import ripstd.format : format;
 
         return expr.match!(
             (double num) => "%g".format(num),
@@ -226,16 +226,16 @@ version (D_BetterC) {} else
     assert(pprint(*myExpr) == "(a + (2 * b))");
 }
 
-import std.format.spec : FormatSpec, singleSpec;
-import std.meta : AliasSeq, Filter, IndexOf = staticIndexOf, Map = staticMap;
-import std.meta : NoDuplicates;
-import std.meta : anySatisfy, allSatisfy;
-import std.traits : hasElaborateCopyConstructor, hasElaborateDestructor;
-import std.traits : isAssignable, isCopyable, isStaticArray, isRvalueAssignable;
-import std.traits : ConstOf, ImmutableOf, InoutOf, TemplateArgsOf;
-import std.traits : CommonType;
-import std.typecons : ReplaceTypeUnless;
-import std.typecons : Flag;
+import ripstd.format.spec : FormatSpec, singleSpec;
+import ripstd.meta : AliasSeq, Filter, IndexOf = staticIndexOf, Map = staticMap;
+import ripstd.meta : NoDuplicates;
+import ripstd.meta : anySatisfy, allSatisfy;
+import ripstd.traits : hasElaborateCopyConstructor, hasElaborateDestructor;
+import ripstd.traits : isAssignable, isCopyable, isStaticArray, isRvalueAssignable;
+import ripstd.traits : ConstOf, ImmutableOf, InoutOf, TemplateArgsOf;
+import ripstd.traits : CommonType;
+import ripstd.typecons : ReplaceTypeUnless;
+import ripstd.typecons : Flag;
 
 /// Placeholder used to refer to the enclosing [SumType].
 struct This {}
@@ -582,8 +582,8 @@ public:
             ref SumType opAssign(T rhs)
             {
                 import core.lifetime : forward;
-                import std.traits : hasIndirections, hasNested;
-                import std.meta : Or = templateOr;
+                import ripstd.traits : hasIndirections, hasNested;
+                import ripstd.meta : Or = templateOr;
 
                 enum mayContainPointers =
                     anySatisfy!(Or!(hasIndirections, hasNested), Types);
@@ -742,7 +742,7 @@ public:
      */
     string toString(this This)()
     {
-        import std.conv : to;
+        import ripstd.conv : to;
 
         return this.match!(to!string);
     }
@@ -761,7 +761,7 @@ public:
      */
     void toString(this This, Sink, Char)(ref Sink sink, const ref FormatSpec!Char fmt)
     {
-        import std.format.write : formatValue;
+        import ripstd.format.write : formatValue;
 
         this.match!((ref value) {
             formatValue(sink, value, fmt);
@@ -855,7 +855,7 @@ version (D_BetterC) {} else
 // Imported types
 @safe unittest
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
 
     alias MySum = SumType!(Tuple!(int, int));
 }
@@ -876,7 +876,7 @@ version (D_BetterC) {} else
 // Allowed types
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     alias MySum = SumType!(int, float, This*);
 
@@ -1009,7 +1009,7 @@ version (D_BetterC) {} else
 // Compares reference types using value equality
 @safe unittest
 {
-    import std.array : staticArray;
+    import ripstd.array : staticArray;
 
     static struct Field {}
     static struct Struct { Field[] fields; }
@@ -1025,11 +1025,11 @@ version (D_BetterC) {} else
 }
 
 // toString
-// Disabled in BetterC due to use of std.conv.text
+// Disabled in BetterC due to use of ripstd.conv.text
 version (D_BetterC) {} else
 @safe unittest
 {
-    import std.conv : text;
+    import ripstd.conv : text;
 
     static struct Int { int i; }
     static struct Double { double d; }
@@ -1041,11 +1041,11 @@ version (D_BetterC) {} else
 }
 
 // string formatting
-// Disabled in BetterC due to use of std.format.format
+// Disabled in BetterC due to use of ripstd.format.format
 version (D_BetterC) {} else
 @safe unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
 
     SumType!int x = 123;
 
@@ -1054,11 +1054,11 @@ version (D_BetterC) {} else
 }
 
 // string formatting of qualified SumTypes
-// Disabled in BetterC due to use of std.format.format and dynamic arrays
+// Disabled in BetterC due to use of ripstd.format.format and dynamic arrays
 version (D_BetterC) {} else
 @safe unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
 
     int[] a = [1, 2, 3];
     const(SumType!(int[])) x = a;
@@ -1170,11 +1170,11 @@ version (D_BetterC) {} else
 }
 
 // Github issue #22
-// Disabled in BetterC due to use of std.typecons.Nullable
+// Disabled in BetterC due to use of ripstd.typecons.Nullable
 version (D_BetterC) {} else
 @safe unittest
 {
-    import std.typecons;
+    import ripstd.typecons;
 
     static struct A
     {
@@ -1207,7 +1207,7 @@ version (D_BetterC) {} else
 version (D_BetterC) {} else
 @safe unittest
 {
-    import std.typecons : Tuple, ReplaceTypeUnless;
+    import ripstd.typecons : Tuple, ReplaceTypeUnless;
     alias A = Tuple!(This*,SumType!(This*))[SumType!(This*,string)[This]];
     alias TR = ReplaceTypeUnless!(isSumTypeInstance, This, int, A);
     static assert(is(TR == Tuple!(int*,SumType!(This*))[SumType!(This*, string)[int]]));
@@ -1216,18 +1216,18 @@ version (D_BetterC) {} else
 // Supports nested self-referential SumTypes
 @safe unittest
 {
-    import std.typecons : Tuple, Flag;
+    import ripstd.typecons : Tuple, Flag;
     alias Nat = SumType!(Flag!"0", Tuple!(This*));
     alias Inner = SumType!Nat;
     alias Outer = SumType!(Nat*, Tuple!(This*, This*));
 }
 
 // Self-referential SumTypes inside Algebraic
-// Disabled in BetterC due to use of std.variant.Algebraic
+// Disabled in BetterC due to use of ripstd.variant.Algebraic
 version (D_BetterC) {} else
 @safe unittest
 {
-    import std.variant : Algebraic;
+    import ripstd.variant : Algebraic;
 
     alias T = Algebraic!(SumType!(This*));
 
@@ -1274,7 +1274,7 @@ version (D_BetterC) {} else
 version (D_BetterC) {} else
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     import core.exception : AssertError;
 
     struct S
@@ -1351,7 +1351,7 @@ version (D_BetterC) {} else
 }
 
 // toString with non-copyable types
-// Disabled in BetterC due to use of std.conv.to (in toString)
+// Disabled in BetterC due to use of ripstd.conv.to (in toString)
 version (D_BetterC) {} else
 @safe unittest
 {
@@ -1540,7 +1540,7 @@ enum bool isSumType(T) = is(T : SumType!Args, Args...);
  */
 template match(handlers...)
 {
-    import std.typecons : Yes;
+    import ripstd.typecons : Yes;
 
     /**
      * The actual `match` function.
@@ -1683,7 +1683,7 @@ template match(handlers...)
 version (D_Exceptions)
 template tryMatch(handlers...)
 {
-    import std.typecons : No;
+    import ripstd.typecons : No;
 
     /**
      * The actual `tryMatch` function.
@@ -1954,7 +1954,7 @@ private template matchImpl(Flag!"exhaustive" exhaustive, handlers...)
             return matches;
         }();
 
-        import std.algorithm.searching : canFind;
+        import ripstd.algorithm.searching : canFind;
 
         // Check for unreachable handlers
         static foreach (hid, handler; handlers)
@@ -2087,7 +2087,7 @@ version (unittest)
 {
     version (D_BetterC)
     {
-        // std.math.isClose depends on core.runtime.math, so use a
+        // ripstd.math.isClose depends on core.runtime.math, so use a
         // libc-based version for testing with -betterC
         @safe pure @nogc nothrow
         private bool isClose(double lhs, double rhs)
@@ -2099,7 +2099,7 @@ version (unittest)
     }
     else
     {
-        import std.math.operations : isClose;
+        import ripstd.math.operations : isClose;
     }
 }
 
@@ -2116,11 +2116,11 @@ version (unittest)
 }
 
 // Fallback to generic handler
-// Disabled in BetterC due to use of std.conv.to
+// Disabled in BetterC due to use of ripstd.conv.to
 version (D_BetterC) {} else
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     alias MySum = SumType!(int, float, string);
 
@@ -2134,7 +2134,7 @@ version (D_BetterC) {} else
 // Multiple non-overlapping generic handlers
 @safe unittest
 {
-    import std.array : staticArray;
+    import ripstd.array : staticArray;
 
     alias MySum = SumType!(int, float, int[], char[]);
 
@@ -2233,7 +2233,7 @@ version (D_BetterC) {} else
 version (D_Exceptions)
 @system unittest
 {
-    import std.exception : assertThrown, assertNotThrown;
+    import ripstd.exception : assertThrown, assertNotThrown;
 
     alias MySum = SumType!(int, float);
 
@@ -2377,7 +2377,7 @@ version (D_Exceptions)
 // Overload sets with templates
 @safe unittest
 {
-    import std.traits : isNumeric;
+    import ripstd.traits : isNumeric;
 
     static struct OverloadSet
     {
@@ -2443,7 +2443,7 @@ version (D_Exceptions)
 
     static int fun(MySum x, MySum y)
     {
-        import std.meta : Args = AliasSeq;
+        import ripstd.meta : Args = AliasSeq;
 
         return Args!(x, y).match!(
             (int    xv, int    yv) => 0,

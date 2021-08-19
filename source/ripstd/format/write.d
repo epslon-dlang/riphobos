@@ -97,8 +97,8 @@ module ripstd.format.write;
  */
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto w1 = appender!string();
     auto spec1 = singleSpec("%s");
@@ -116,8 +116,8 @@ module ripstd.format.write;
 /// The `null` literal is formatted as `"null"`.
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto w = appender!string();
     auto spec = singleSpec("%s");
@@ -133,8 +133,8 @@ with `%b` (binary), `%u` (decimal), `%o` (octal), and `%x` (hexadecimal).
  */
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto w1 = appender!string();
     auto spec1 = singleSpec("%d");
@@ -158,8 +158,8 @@ they are rounded to the nearest value, ties to even.
  */
 @safe unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto w1 = appender!string();
     auto spec1 = singleSpec("%.3f");
@@ -195,8 +195,8 @@ treated differently.
  */
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto w1 = appender!string();
     auto spec1 = singleSpec("%c");
@@ -219,8 +219,8 @@ compound specifiers, std,format) strings are treated differently.
  */
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto w1 = appender!string();
     auto spec1 = singleSpec("%s");
@@ -238,8 +238,8 @@ compound specifiers, std,format) strings are treated differently.
 /// Static arrays are formatted as dynamic arrays.
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto w = appender!string();
     auto spec = singleSpec("%s");
@@ -254,8 +254,8 @@ Dynamic arrays are formatted as input ranges.
  */
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto w1 = appender!string();
     auto spec1 = singleSpec("%s");
@@ -290,8 +290,8 @@ the result of this function might differ.
  */
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto aa = [10:17.5, 20:9.99];
 
@@ -314,8 +314,8 @@ their base value else.
  */
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     enum A { first, second, third }
 
@@ -349,13 +349,13 @@ formatting, however, it applies to other aggregates as well.
  */
 @safe unittest
 {
-    import std.array : appender;
-    import std.format.spec : FormatSpec, singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : FormatSpec, singleSpec;
 
     // Using a `toString` with a writer
     static struct Point1
     {
-        import std.range.primitives : isOutputRange, put;
+        import ripstd.range.primitives : isOutputRange, put;
 
         int x, y;
 
@@ -407,7 +407,7 @@ formatting, however, it applies to other aggregates as well.
 
         string toString()
         {
-            import std.conv : to;
+            import ripstd.conv : to;
 
             return "(" ~ to!string(x) ~ "," ~ to!string(y) ~ ")";
         }
@@ -437,8 +437,8 @@ formatting, however, it applies to other aggregates as well.
 /// Pointers are formatted as hexadecimal integers.
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto w1 = appender!string();
     auto spec1 = singleSpec("%s");
@@ -466,8 +466,8 @@ formatting, however, it applies to other aggregates as well.
 @safe unittest
 {
     import core.simd; // cannot be selective, because float4 might not be defined
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto w = appender!string();
     auto spec = singleSpec("%s");
@@ -489,10 +489,10 @@ formatting, however, it applies to other aggregates as well.
     }
 }
 
-import std.format.internal.write;
+import ripstd.format.internal.write;
 
-import std.format.spec : FormatSpec;
-import std.traits : isSomeString;
+import ripstd.format.spec : FormatSpec;
+import ripstd.traits : isSomeString;
 
 /**
 Converts its arguments according to a format string and writes
@@ -526,9 +526,9 @@ Note:
  */
 uint formattedWrite(Writer, Char, Args...)(auto ref Writer w, const scope Char[] fmt, Args args)
 {
-    import std.conv : text;
-    import std.format : enforceFmt, FormatException;
-    import std.traits : isSomeChar;
+    import ripstd.conv : text;
+    import ripstd.format : enforceFmt, FormatException;
+    import ripstd.traits : isSomeChar;
 
     auto spec = FormatSpec!Char(fmt);
 
@@ -659,7 +659,7 @@ uint formattedWrite(Writer, Char, Args...)(auto ref Writer w, const scope Char[]
 ///
 @safe pure unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     auto writer1 = appender!string();
     formattedWrite(writer1, "%s is the ultimate %s.", 42, "answer");
@@ -674,7 +674,7 @@ uint formattedWrite(Writer, Char, Args...)(auto ref Writer w, const scope Char[]
 uint formattedWrite(alias fmt, Writer, Args...)(auto ref Writer w, Args args)
 if (isSomeString!(typeof(fmt)))
 {
-    import std.format : checkFormatException;
+    import ripstd.format : checkFormatException;
 
     alias e = checkFormatException!(fmt, Args);
     static assert(!e, e.msg);
@@ -684,7 +684,7 @@ if (isSomeString!(typeof(fmt)))
 /// The format string can be checked at compile-time:
 @safe pure unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     auto writer = appender!string();
     writer.formattedWrite!"%d is the ultimate %s."(42, "answer");
@@ -696,7 +696,7 @@ if (isSomeString!(typeof(fmt)))
 
 @safe pure unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     auto stream = appender!string();
     formattedWrite(stream, "%s", 1.1);
@@ -705,7 +705,7 @@ if (isSomeString!(typeof(fmt)))
 
 @safe pure unittest
 {
-    import std.array;
+    import ripstd.array;
 
     auto w = appender!string();
     formattedWrite(w, "%s %d", "@safe/pure", 42);
@@ -722,8 +722,8 @@ if (isSomeString!(typeof(fmt)))
 
 @safe pure unittest
 {
-    import std.algorithm.iteration : map;
-    import std.array : appender;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.array : appender;
 
     auto stream = appender!string();
     formattedWrite(stream, "%s", map!"a*a"([2, 3, 5]));
@@ -739,9 +739,9 @@ if (isSomeString!(typeof(fmt)))
 @safe pure unittest
 {
     // testing positional parameters
-    import std.array : appender;
-    import std.exception : collectExceptionMsg;
-    import std.format : FormatException;
+    import ripstd.array : appender;
+    import ripstd.exception : collectExceptionMsg;
+    import ripstd.format : FormatException;
 
     auto w = appender!(char[])();
     formattedWrite(w,
@@ -763,7 +763,7 @@ if (isSomeString!(typeof(fmt)))
 // https://issues.dlang.org/show_bug.cgi?id=3479
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     auto stream = appender!(char[])();
     formattedWrite(stream, "%2$.*1$d", 12, 10);
@@ -773,7 +773,7 @@ if (isSomeString!(typeof(fmt)))
 // https://issues.dlang.org/show_bug.cgi?id=6893
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     enum E : ulong { A, B, C }
     auto stream = appender!(char[])();
@@ -783,7 +783,7 @@ if (isSomeString!(typeof(fmt)))
 
 @safe pure unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     auto stream = appender!string();
     formattedWrite(stream, "%u", 42);
@@ -793,7 +793,7 @@ if (isSomeString!(typeof(fmt)))
 @safe pure unittest
 {
     // testing raw writes
-    import std.array : appender;
+    import ripstd.array : appender;
 
     auto w = appender!(char[])();
     uint a = 0x02030405;
@@ -809,8 +809,8 @@ if (isSomeString!(typeof(fmt)))
 
 @safe unittest
 {
-    import std.array : appender;
-    import std.conv : text, octal;
+    import ripstd.array : appender;
+    import ripstd.conv : text, octal;
 
     auto stream = appender!(char[])();
 
@@ -1176,8 +1176,8 @@ if (isSomeString!(typeof(fmt)))
 
 @safe unittest
 {
-    import std.array : appender;
-    import std.meta : AliasSeq;
+    import ripstd.array : appender;
+    import ripstd.meta : AliasSeq;
 
     immutable(char[5])[int] aa = ([3:"hello", 4:"betty"]);
     assert(aa[3] == "hello");
@@ -1230,7 +1230,7 @@ See_Also:
  */
 void formatValue(Writer, T, Char)(auto ref Writer w, auto ref T val, scope const ref FormatSpec!Char f)
 {
-    import std.format : enforceFmt;
+    import ripstd.format : enforceFmt;
 
     enforceFmt(f.width != f.DYNAMIC && f.precision != f.DYNAMIC
                && f.separators != f.DYNAMIC && !f.dynamicSeparatorChar,
@@ -1242,8 +1242,8 @@ void formatValue(Writer, T, Char)(auto ref Writer w, auto ref T val, scope const
 ///
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto writer = appender!string();
     auto spec = singleSpec("%08b");
@@ -1262,10 +1262,10 @@ void formatValue(Writer, T, Char)(auto ref Writer w, auto ref T val, scope const
 // https://issues.dlang.org/show_bug.cgi?id=15386
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.spec : FormatSpec;
-    import std.format : FormatException;
-    import std.exception : assertThrown;
+    import ripstd.array : appender;
+    import ripstd.format.spec : FormatSpec;
+    import ripstd.format : FormatException;
+    import ripstd.exception : assertThrown;
 
     auto w = appender!(char[])();
     auto dor = appender!(char[])();

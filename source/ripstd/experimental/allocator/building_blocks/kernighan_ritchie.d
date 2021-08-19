@@ -3,11 +3,11 @@
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/kernighan_ritchie.d)
 */
 module ripstd.experimental.allocator.building_blocks.kernighan_ritchie;
-import std.experimental.allocator.building_blocks.null_allocator :
+import ripstd.experimental.allocator.building_blocks.null_allocator :
     NullAllocator;
 
 //debug = KRRegion;
-debug(KRRegion) import std.stdio;
+debug(KRRegion) import ripstd.stdio;
 
 // KRRegion
 /**
@@ -98,13 +98,13 @@ information is available in client code at deallocation time.)
 */
 struct KRRegion(ParentAllocator = NullAllocator)
 {
-    import std.experimental.allocator.common : stateSize, alignedAt;
-    import std.traits : hasMember;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.common : stateSize, alignedAt;
+    import ripstd.traits : hasMember;
+    import ripstd.typecons : Ternary;
 
     private static struct Node
     {
-        import std.typecons : tuple, Tuple;
+        import ripstd.typecons : tuple, Tuple;
 
         Node* next;
         size_t size;
@@ -193,14 +193,14 @@ struct KRRegion(ParentAllocator = NullAllocator)
             }
             @property Range save() { return this; }
         }
-        import std.range : isForwardRange;
+        import ripstd.range : isForwardRange;
         static assert(isForwardRange!Range);
         return Range(root, root);
     }
 
     string toString()
     {
-        import std.format : format;
+        import ripstd.format : format;
         string s = "KRRegion@";
         s ~= format("%s-%s(0x%s[%s] %s", &this, &this + 1,
             payload.ptr, payload.length,
@@ -565,7 +565,7 @@ struct KRRegion(ParentAllocator = NullAllocator)
     ///
     @system unittest
     {
-        import std.experimental.allocator.gc_allocator : GCAllocator;
+        import ripstd.experimental.allocator.gc_allocator : GCAllocator;
         auto alloc = KRRegion!GCAllocator(1024 * 64);
         const b1 = alloc.allocate(2048);
         assert(b1.length == 2048);
@@ -615,7 +615,7 @@ struct KRRegion(ParentAllocator = NullAllocator)
     pure nothrow @safe @nogc
     static size_t goodAllocSize(size_t n)
     {
-        import std.experimental.allocator.common : roundUpToMultipleOf;
+        import ripstd.experimental.allocator.common : roundUpToMultipleOf;
         return n <= Node.sizeof
             ? Node.sizeof : n.roundUpToMultipleOf(alignment);
     }
@@ -642,10 +642,10 @@ fronting the GC allocator.
 */
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.fallback_allocator
+    import ripstd.experimental.allocator.building_blocks.fallback_allocator
         : fallbackAllocator;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.typecons : Ternary;
     // KRRegion fronting a general-purpose allocator
     ubyte[1024 * 128] buf;
     auto alloc = fallbackAllocator(KRRegion!()(buf), GCAllocator.instance);
@@ -666,20 +666,20 @@ it actually returns memory to the operating system when possible.
 */
 @system unittest
 {
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.allocator_list
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.allocator_list
         : AllocatorList;
-    import std.experimental.allocator.mmap_allocator : MmapAllocator;
+    import ripstd.experimental.allocator.mmap_allocator : MmapAllocator;
     AllocatorList!(n => KRRegion!MmapAllocator(max(n * 16, 1024 * 1024))) alloc;
 }
 
 @system unittest
 {
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.allocator_list
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.allocator_list
         : AllocatorList;
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.typecons : Ternary;
     /*
     Create a scalable allocator consisting of 1 MB (or larger) blocks fetched
     from the garbage-collected heap. Each block is organized as a KR-style
@@ -695,7 +695,7 @@ it actually returns memory to the operating system when possible.
         assert(array[i].ptr);
         assert(array[i].length == length);
     }
-    import std.random : randomShuffle;
+    import ripstd.random : randomShuffle;
     randomShuffle(array[]);
     foreach (i; 0 .. array.length)
     {
@@ -707,11 +707,11 @@ it actually returns memory to the operating system when possible.
 
 @system unittest
 {
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.allocator_list
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.allocator_list
         : AllocatorList;
-    import std.experimental.allocator.mmap_allocator : MmapAllocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.mmap_allocator : MmapAllocator;
+    import ripstd.typecons : Ternary;
     /*
     Create a scalable allocator consisting of 1 MB (or larger) blocks fetched
     from the garbage-collected heap. Each block is organized as a KR-style
@@ -733,7 +733,7 @@ it actually returns memory to the operating system when possible.
         }
         assert(array[i].length == length);
     }
-    import std.random : randomShuffle;
+    import ripstd.random : randomShuffle;
     randomShuffle(array[]);
     foreach (i; 0 .. array.length)
     {
@@ -742,21 +742,21 @@ it actually returns memory to the operating system when possible.
     }
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.allocator_list
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.allocator_list
         : AllocatorList;
-    import std.experimental.allocator.common : testAllocator;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.common : testAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     testAllocator!(() => AllocatorList!(
         n => KRRegion!GCAllocator(max(n * 16, 1024 * 1024)))());
 }
 
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
 
     auto alloc = KRRegion!GCAllocator(1024 * 1024);
 
@@ -774,15 +774,15 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.typecons : Ternary;
     auto alloc = KRRegion!()(
                     cast(ubyte[])(GCAllocator.instance.allocate(1024 * 1024)));
     const store = alloc.allocate(KRRegion!().sizeof);
     auto p = cast(KRRegion!()* ) store.ptr;
     import core.lifetime : emplace;
     import core.stdc.string : memcpy;
-    import std.conv : text;
+    import ripstd.conv : text;
 
     memcpy(p, &alloc, alloc.sizeof);
     emplace(&alloc);
@@ -795,7 +795,7 @@ version (StdUnittest)
         assert(array[i].length == length, text(array[i].length));
         assert((() pure nothrow @safe @nogc => p.owns(array[i]))() == Ternary.yes);
     }
-    import std.random : randomShuffle;
+    import ripstd.random : randomShuffle;
     randomShuffle(array[]);
     foreach (i; 0 .. array.length)
     {
@@ -808,8 +808,8 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.typecons : Ternary;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.typecons : Ternary;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     auto alloc = KRRegion!()(
                     cast(ubyte[])(GCAllocator.instance.allocate(1024 * 1024)));
     auto p = alloc.allocateAll();
@@ -822,8 +822,8 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.random : randomCover;
-    import std.typecons : Ternary;
+    import ripstd.random : randomCover;
+    import ripstd.typecons : Ternary;
 
     // Both sequences must work on either system
 
@@ -863,7 +863,7 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
 
     // For 64 bits, we allocate in multiples of 8, but the minimum alloc size is 16.
     // This can create gaps.
@@ -907,14 +907,14 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
 
     auto a = KRRegion!GCAllocator(1024 * 1024);
     assert((() pure nothrow @safe @nogc => a.goodAllocSize(1))() == typeof(*a.root).sizeof);
 }
 
 @system unittest
-{   import std.typecons : Ternary;
+{   import ripstd.typecons : Ternary;
 
     ubyte[1024] b;
     auto alloc = KRRegion!()(b);

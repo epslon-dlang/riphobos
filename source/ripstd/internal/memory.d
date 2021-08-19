@@ -1,6 +1,6 @@
 module ripstd.internal.memory;
 
-package(std):
+package(ripstd):
 
 version (D_Exceptions)
 {

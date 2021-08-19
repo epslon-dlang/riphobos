@@ -19,7 +19,7 @@ Macros:
 
 module ripstd.math.traits;
 
-import std.traits : isFloatingPoint, isIntegral, isNumeric, isSigned;
+import ripstd.traits : isFloatingPoint, isIntegral, isNumeric, isSigned;
 
 /*********************************
  * Determines if $(D_PARAM x) is NaN.
@@ -97,7 +97,7 @@ if (isFloatingPoint!(X))
 
 @safe pure nothrow @nogc unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static foreach (T; AliasSeq!(float, double, real))
     {{
@@ -137,7 +137,7 @@ if (isFloatingPoint!(X))
  */
 bool isFinite(X)(X x) @trusted pure nothrow @nogc
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     static if (__traits(isFloating, X))
         if (__ctfe)
@@ -202,7 +202,7 @@ bool isFinite(X)(X x) @trusted pure nothrow @nogc
  */
 bool isNormal(X)(X x) @trusted pure nothrow @nogc
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     static if (__traits(isFloating, X))
         if (__ctfe)
@@ -264,7 +264,7 @@ bool isNormal(X)(X x) @trusted pure nothrow @nogc
  */
 bool isSubnormal(X)(X x) @trusted pure nothrow @nogc
 {
-    import std.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
+    import ripstd.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
 
     static if (__traits(isFloating, X))
         if (__ctfe)
@@ -309,7 +309,7 @@ bool isSubnormal(X)(X x) @trusted pure nothrow @nogc
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static foreach (T; AliasSeq!(float, double, real))
     {{
@@ -344,7 +344,14 @@ bool isSubnormal(X)(X x) @trusted pure nothrow @nogc
 bool isInfinity(X)(X x) @nogc @trusted pure nothrow
 if (isFloatingPoint!(X))
 {
-    import std.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
+    // because CTFE builtins are hardcoded in the compiler
+    if(__ctfe)
+    {
+        static import std.math.traits;
+        return std.math.traits.isInfinity(x);
+    }
+
+    import ripstd.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
 
     alias F = floatTraits!(X);
     static if (F.realFormat == RealFormat.ieeeSingle)
@@ -452,7 +459,7 @@ if (isFloatingPoint!(X))
 
 @nogc @safe pure nothrow unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static bool foo(T)(inout T x) { return isInfinity(x); }
     foreach (T; AliasSeq!(float, double, real))
     {
@@ -466,7 +473,7 @@ if (isFloatingPoint!(X))
  */
 bool isIdentical(real x, real y) @trusted pure nothrow @nogc
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     // We're doing a bitwise comparison so the endianness is irrelevant.
     long*   pxs = cast(long *)&x;
@@ -510,7 +517,7 @@ bool isIdentical(real x, real y) @trusted pure nothrow @nogc
  */
 int signbit(X)(X x) @nogc @trusted pure nothrow
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     if (__ctfe)
     {
@@ -594,7 +601,7 @@ Returns:
 R copysign(R, X)(R to, X from) @trusted pure nothrow @nogc
 if (isFloatingPoint!(R) && isFloatingPoint!(X))
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     if (__ctfe)
     {
@@ -633,7 +640,7 @@ if (isIntegral!(X) && isFloatingPoint!(R))
 
 @safe pure nothrow @nogc unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static foreach (X; AliasSeq!(float, double, real, int, long))
     {
@@ -722,7 +729,7 @@ Returns:
 bool isPowerOf2(X)(const X x) pure @safe nothrow @nogc
 if (isNumeric!X)
 {
-    import std.math.exponential : frexp;
+    import ripstd.math.exponential : frexp;
 
     static if (isFloatingPoint!X)
     {
@@ -748,7 +755,7 @@ if (isNumeric!X)
 ///
 @safe unittest
 {
-    import std.math.exponential : pow;
+    import ripstd.math.exponential : pow;
 
     assert( isPowerOf2(1.0L));
     assert( isPowerOf2(2.0L));
@@ -779,8 +786,8 @@ if (isNumeric!X)
 
 @safe unittest
 {
-    import std.math.exponential : pow;
-    import std.meta : AliasSeq;
+    import ripstd.math.exponential : pow;
+    import ripstd.meta : AliasSeq;
 
     enum smallP2 = pow(2.0L, -62);
     enum bigP2 = pow(2.0L, 50);

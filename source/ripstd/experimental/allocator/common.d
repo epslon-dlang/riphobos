@@ -9,7 +9,7 @@ Authors: $(HTTP erdani.com, Andrei Alexandrescu), Timon Gehr (`Ternary`)
 Source: $(PHOBOSSRC std/experimental/allocator/common.d)
 */
 module ripstd.experimental.allocator.common;
-import std.algorithm.comparison, std.traits;
+import ripstd.algorithm.comparison, ripstd.traits;
 
 /**
 Returns the size in bytes of the state that needs to be allocated to hold an
@@ -80,7 +80,7 @@ enum unbounded = size_t.max;
 The alignment that is guaranteed to accommodate any D object allocation on the
 current platform.
 */
-enum uint platformAlignment = std.algorithm.comparison.max(double.alignof, real.alignof);
+enum uint platformAlignment = ripstd.algorithm.comparison.max(double.alignof, real.alignof);
 
 /**
 The default good size allocation is deduced as `n` rounded up to the
@@ -117,7 +117,7 @@ Returns `n` rounded up to a multiple of alignment, which must be a power of 2.
 @safe @nogc nothrow pure
 package size_t roundUpToAlignment(size_t n, uint alignment)
 {
-    import std.math.traits : isPowerOf2;
+    import ripstd.math.traits : isPowerOf2;
     assert(alignment.isPowerOf2);
     immutable uint slack = cast(uint) n & (alignment - 1);
     const result = slack
@@ -142,7 +142,7 @@ Returns `n` rounded down to a multiple of alignment, which must be a power of 2.
 @safe @nogc nothrow pure
 package size_t roundDownToAlignment(size_t n, uint alignment)
 {
-    import std.math.traits : isPowerOf2;
+    import ripstd.math.traits : isPowerOf2;
     assert(alignment.isPowerOf2);
     return n & ~size_t(alignment - 1);
 }
@@ -218,7 +218,7 @@ Returns `s` rounded up to the nearest power of 2.
 @safe @nogc nothrow pure
 package size_t roundUpToPowerOf2(size_t s)
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     assert(s <= (size_t.max >> 1) + 1);
     --s;
     static if (size_t.sizeof == 4)
@@ -305,7 +305,7 @@ than or equal to the given pointer.
 @nogc nothrow pure
 package void* alignDownTo(void* ptr, uint alignment)
 {
-    import std.math.traits : isPowerOf2;
+    import ripstd.math.traits : isPowerOf2;
     assert(alignment.isPowerOf2);
     return cast(void*) (cast(size_t) ptr & ~(alignment - 1UL));
 }
@@ -317,7 +317,7 @@ than or equal to the given pointer.
 @nogc nothrow pure
 package void* alignUpTo(void* ptr, uint alignment)
 {
-    import std.math.traits : isPowerOf2;
+    import ripstd.math.traits : isPowerOf2;
     assert(alignment.isPowerOf2);
     immutable uint slack = cast(size_t) ptr & (alignment - 1U);
     return slack ? ptr + alignment - slack : ptr;
@@ -326,14 +326,14 @@ package void* alignUpTo(void* ptr, uint alignment)
 @safe @nogc nothrow pure
 package bool isGoodStaticAlignment(uint x)
 {
-    import std.math.traits : isPowerOf2;
+    import ripstd.math.traits : isPowerOf2;
     return x.isPowerOf2;
 }
 
 @safe @nogc nothrow pure
 package bool isGoodDynamicAlignment(uint x)
 {
-    import std.math.traits : isPowerOf2;
+    import ripstd.math.traits : isPowerOf2;
     return x.isPowerOf2 && x >= (void*).sizeof;
 }
 
@@ -465,7 +465,7 @@ Forwards each of the methods in `funs` (if defined) to `member`.
 */
 /*package*/ string forwardToMember(string member, string[] funs...)
 {
-    string result = "    import std.traits : hasMember, Parameters;\n";
+    string result = "    import ripstd.traits : hasMember, Parameters;\n";
     foreach (fun; funs)
     {
         result ~= "
@@ -478,15 +478,15 @@ Forwards each of the methods in `funs` (if defined) to `member`.
     return result;
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
 
     package void testAllocator(alias make)()
     {
-        import std.conv : text;
-        import std.math.traits : isPowerOf2;
-        import std.stdio : writeln, stderr;
-        import std.typecons : Ternary;
+        import ripstd.conv : text;
+        import ripstd.math.traits : isPowerOf2;
+        import ripstd.stdio : writeln, stderr;
+        import ripstd.typecons : Ternary;
         alias A = typeof(make());
         scope(failure) stderr.writeln("testAllocator failed for ", A.stringof);
 
@@ -620,15 +620,15 @@ version (StdUnittest)
     package void testAllocatorObject(RCAllocInterface)(RCAllocInterface a)
     {
         // this used to be a template constraint, but moving it inside prevents
-        // unnecessary import of std.experimental.allocator
-        import std.experimental.allocator : RCIAllocator, RCISharedAllocator;
+        // unnecessary import of ripstd.experimental.allocator
+        import ripstd.experimental.allocator : RCIAllocator, RCISharedAllocator;
         static assert(is(RCAllocInterface == RCIAllocator)
             || is (RCAllocInterface == RCISharedAllocator));
 
-        import std.conv : text;
-        import std.math.traits : isPowerOf2;
-        import std.stdio : writeln, stderr;
-        import std.typecons : Ternary;
+        import ripstd.conv : text;
+        import ripstd.math.traits : isPowerOf2;
+        import ripstd.stdio : writeln, stderr;
+        import ripstd.typecons : Ternary;
         scope(failure) stderr.writeln("testAllocatorObject failed for ",
                 RCAllocInterface.stringof);
 

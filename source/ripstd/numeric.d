@@ -20,12 +20,12 @@ Distributed under the Boost Software License, Version 1.0.
 */
 module ripstd.numeric;
 
-import std.complex;
-import std.math;
+import ripstd.complex;
+import ripstd.math;
 import core.math : fabs, ldexp, sin, sqrt;
-import std.range.primitives;
-import std.traits;
-import std.typecons;
+import ripstd.range.primitives;
+import ripstd.traits;
+import ripstd.typecons;
 
 /// Format flags for CustomFloat.
 public enum CustomFloatFlags
@@ -92,7 +92,7 @@ private template CustomFloatParams(uint bits)
 
 private template CustomFloatParams(uint precision, uint exponentWidth, CustomFloatFlags flags)
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     alias CustomFloatParams =
         AliasSeq!(
             precision,
@@ -125,7 +125,7 @@ if (((flags & flags.signed) + precision + exponentWidth) % 8 == 0 && precision +
 ///
 @safe unittest
 {
-    import std.math.trigonometry : sin, cos;
+    import ripstd.math.trigonometry : sin, cos;
 
     // Define a 16-bit floating point values
     CustomFloat!16                                x;     // Using the number of bits
@@ -154,7 +154,7 @@ if (is(typeof(CustomFloatParams!(F.sizeof*8))) || is(F == real))
 
     // If on Linux or Mac, where 80-bit reals are padded, ignore the
     // padding.
-    import std.algorithm.comparison : min;
+    import ripstd.algorithm.comparison : min;
     CustomFloat!(CustomFloatParams!(min(F.sizeof*8, 80))) get;
 
     // Convert F to the correct binary type.
@@ -174,8 +174,8 @@ struct CustomFloat(uint             precision,  // fraction bits (23 for float)
                    uint             bias)
 if (isCorrectCustomFloat(precision, exponentWidth, flags))
 {
-    import std.bitmanip : bitfields;
-    import std.meta : staticIndexOf;
+    import ripstd.bitmanip : bitfields;
+    import ripstd.meta : staticIndexOf;
 private:
     // get the correct unsigned bitfield type to support > 32 bits
     template uType(uint bits)
@@ -487,7 +487,7 @@ public:
     void opAssign(F)(F input)
         if (__traits(compiles, cast(real) input))
     {
-        import std.conv : text;
+        import ripstd.conv : text;
 
         static if (staticIndexOf!(immutable F, immutable float, immutable double, immutable real) >= 0)
             auto value = ToBinary!(Unqual!F)(input);
@@ -521,7 +521,7 @@ public:
     @property F get(F)()
         if (staticIndexOf!(immutable F, immutable float, immutable double, immutable real) >= 0)
     {
-        import std.conv : text;
+        import ripstd.conv : text;
 
         ToBinary!F result;
 
@@ -605,8 +605,8 @@ public:
     /// ditto
     template toString()
     {
-        import std.format.spec : FormatSpec;
-        import std.format.write : formatValue;
+        import ripstd.format.spec : FormatSpec;
+        import ripstd.format.write : formatValue;
         // Needs to be a template because of https://issues.dlang.org/show_bug.cgi?id=13737.
         void toString()(scope void delegate(const(char)[]) sink, scope const ref FormatSpec!char fmt)
         {
@@ -617,7 +617,7 @@ public:
 
 @safe unittest
 {
-    import std.meta;
+    import ripstd.meta;
     alias FPTypes =
         AliasSeq!(
             CustomFloat!(5, 10),
@@ -654,7 +654,7 @@ public:
 @system unittest
 {
     // @system due to to!string(CustomFloat)
-    import std.conv;
+    import ripstd.conv;
     CustomFloat!(5, 10) y = CustomFloat!(5, 10)(0.125);
     assert(y.to!string == "0.125");
 }
@@ -703,7 +703,7 @@ public:
 // check whether CustomFloats identical to float/double behave like float/double
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     alias myFloat = CustomFloat!(23, 8);
 
@@ -863,7 +863,7 @@ public:
 
 @safe unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     alias cf = CustomFloat!(5, 2);
 
@@ -885,7 +885,7 @@ public:
 
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     import core.exception : AssertError;
 
     alias cf = CustomFloat!(3, 5, CustomFloatFlags.none);
@@ -896,7 +896,7 @@ public:
 
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     import core.exception : AssertError;
 
     alias cf = CustomFloat!(3, 5, CustomFloatFlags.nan);
@@ -907,7 +907,7 @@ public:
 
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     import core.exception : AssertError;
 
     alias cf = CustomFloat!(24, 8, CustomFloatFlags.none);
@@ -988,7 +988,7 @@ if (isFloatingPoint!F)
 ///
 @safe unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     // Average numbers in an array
     double avg(in double[] a)
@@ -1011,7 +1011,7 @@ or `real`.
 */
 template secantMethod(alias fun)
 {
-    import std.functional : unaryFun;
+    import ripstd.functional : unaryFun;
     Num secantMethod(Num)(Num xn_1, Num xn)
     {
         auto fxn = unaryFun!(fun)(xn_1), d = xn_1 - xn;
@@ -1033,8 +1033,8 @@ template secantMethod(alias fun)
 ///
 @safe unittest
 {
-    import std.math.operations : isClose;
-    import std.math.trigonometry : cos;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.trigonometry : cos;
 
     float f(float x)
     {
@@ -1047,7 +1047,7 @@ template secantMethod(alias fun)
 @system unittest
 {
     // @system because of __gshared stderr
-    import std.stdio;
+    import ripstd.stdio;
     scope(failure) stderr.writeln("Failure testing secantMethod");
     float f(float x)
     {
@@ -1877,7 +1877,7 @@ do
 ///
 @safe unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     auto ret = findLocalMin((double x) => (x-4)^^2, -1e7, 1e7);
     assert(ret.x.isClose(4.0));
@@ -1886,7 +1886,7 @@ do
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(double, float, real))
     {
         {
@@ -1975,7 +1975,7 @@ if (isInputRange!(Range1) && isInputRange!(Range2))
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(double, const double, immutable double))
     {{
         T[] a = [ 1.0, 2.0, ];
@@ -2086,8 +2086,8 @@ if (N <= 16)
 @system unittest
 {
     // @system due to dotProduct and assertCTFEable
-    import std.exception : assertCTFEable;
-    import std.meta : AliasSeq;
+    import ripstd.exception : assertCTFEable;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(double, const double, immutable double))
     {{
         T[] a = [ 1.0, 2.0, ];
@@ -2139,7 +2139,7 @@ if (isInputRange!(Range1) && isInputRange!(Range2))
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(double, const double, immutable double))
     {{
         T[] a = [ 1.0, 2.0, ];
@@ -2242,7 +2242,7 @@ if (isInputRange!Range && isFloatingPoint!(ElementType!Range))
 ///
 @safe unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     assert(sumOfLog2s(new double[0]) == 0);
     assert(sumOfLog2s([0.0L]) == -real.infinity);
@@ -2294,7 +2294,7 @@ if (isInputRange!Range &&
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(double, const double, immutable double))
     {{
         T[] p = [ 0.0, 0, 0, 1 ];
@@ -2341,7 +2341,7 @@ if (isInputRange!(Range1) && isInputRange!(Range2))
 ///
 @safe unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     double[] p = [ 0.0, 0, 0, 1 ];
     assert(kullbackLeiblerDivergence(p, p) == 0);
@@ -2425,7 +2425,7 @@ if (isInputRange!Range1 && isInputRange!Range2 &&
 ///
 @safe unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     double[] p = [ 0.0, 0, 0, 1 ];
     assert(jensenShannonDivergence(p, p) == 0);
@@ -2515,8 +2515,8 @@ if (isRandomAccessRange!(R1) && hasLength!(R1) &&
 {
     import core.exception : onOutOfMemoryError;
     import core.stdc.stdlib : malloc, free;
-    import std.algorithm.mutation : swap;
-    import std.functional : binaryFun;
+    import ripstd.algorithm.mutation : swap;
+    import ripstd.functional : binaryFun;
 
     if (s.length < t.length) return gapWeightedSimilarity(t, s, lambda);
     if (!t.length) return 0;
@@ -2615,8 +2615,8 @@ if (isRandomAccessRange!(R1) && hasLength!(R1) &&
 ///
 @system unittest
 {
-    import std.math.operations : isClose;
-    import std.math.algebraic : sqrt;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.algebraic : sqrt;
 
     string[] s = ["Hello", "brave", "new", "world"];
     string[] t = ["Hello", "new", "world"];
@@ -2731,7 +2731,7 @@ time and computes all matches of length 1.
      */
     void popFront()
     {
-        import std.algorithm.mutation : swap;
+        import ripstd.algorithm.mutation : swap;
 
         // This is a large source of optimization: if similarity at
         // the gram-1 level was 0, then we can safely assume
@@ -2856,7 +2856,7 @@ GapWeightedSimilarityIncremental!(R, F) gapWeightedSimilarityIncremental(R, F)
 
 @system unittest
 {
-    import std.conv : text;
+    import ripstd.conv : text;
     string[] s = ["Hello", "brave", "new", "world"];
     string[] t = ["Hello", "new", "world"];
     auto simIter = gapWeightedSimilarityIncremental(s, t, 1.0);
@@ -2969,7 +2969,7 @@ if (isIntegral!T)
 {
     pragma(inline, true);
     import core.bitop : bsf;
-    import std.algorithm.mutation : swap;
+    import ripstd.algorithm.mutation : swap;
 
     immutable uint shift = bsf(a | b);
     a >>= a.bsf;
@@ -2994,7 +2994,7 @@ if (isIntegral!T)
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(byte, ubyte, short, ushort, int, uint, long, ulong,
                                  const byte, const short, const int, const long,
                                  immutable ubyte, immutable ushort, immutable uint, immutable ulong))
@@ -3099,7 +3099,7 @@ private auto gcdImpl(T)(T a, T b)
 if (!isIntegral!T)
 {
     pragma(inline, true);
-    import std.algorithm.mutation : swap;
+    import ripstd.algorithm.mutation : swap;
     enum canUseBinaryGcd = is(typeof(() {
         T t, u;
         t <<= 1;
@@ -3149,7 +3149,7 @@ if (!isIntegral!T)
 // https://issues.dlang.org/show_bug.cgi?id=7102
 @system pure unittest
 {
-    import std.bigint : BigInt;
+    import ripstd.bigint : BigInt;
     assert(gcd(BigInt("71_000_000_000_000_000_000"),
                BigInt("31_000_000_000_000_000_000")) ==
            BigInt("1_000_000_000_000_000_000"));
@@ -3185,14 +3185,14 @@ if (!isIntegral!T)
 // https://issues.dlang.org/show_bug.cgi?id=19514
 @system pure unittest
 {
-    import std.bigint : BigInt;
+    import ripstd.bigint : BigInt;
     assert(gcd(BigInt(2), BigInt(1)) == BigInt(1));
 }
 
 // Issue 20924
 @safe unittest
 {
-    import std.bigint : BigInt;
+    import ripstd.bigint : BigInt;
     const a = BigInt("123143238472389492934020");
     const b = BigInt("902380489324729338420924");
     assert(__traits(compiles, gcd(a, b)));
@@ -3201,7 +3201,7 @@ if (!isIntegral!T)
 // https://issues.dlang.org/show_bug.cgi?id=21834
 @safe unittest
 {
-    import std.bigint : BigInt;
+    import ripstd.bigint : BigInt;
     assert(gcd(BigInt(-120), BigInt(10U)) == BigInt(10));
     assert(gcd(BigInt(120U), BigInt(-10)) == BigInt(10));
     assert(gcd(BigInt(int.min), BigInt(0L)) == BigInt(1L + int.max));
@@ -3255,7 +3255,7 @@ if (isIntegral!T && isIntegral!U)
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(byte, ubyte, short, ushort, int, uint, long, ulong,
                                  const byte, const short, const int, const long,
                                  immutable ubyte, immutable ushort, immutable uint, immutable ulong))
@@ -3298,7 +3298,7 @@ if (!isIntegral!T &&
 
 @safe unittest
 {
-    import std.bigint : BigInt;
+    import ripstd.bigint : BigInt;
     assert(lcm(BigInt(21),  BigInt(6))   == BigInt(42));
     assert(lcm(BigInt(41),  BigInt(0))   == BigInt(0));
     assert(lcm(BigInt(0),   BigInt(7))   == BigInt(0));
@@ -3329,15 +3329,15 @@ private alias lookup_t = float;
 final class Fft
 {
     import core.bitop : bsf;
-    import std.algorithm.iteration : map;
-    import std.array : uninitializedArray;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.array : uninitializedArray;
 
 private:
     immutable lookup_t[][] negSinLookup;
 
     void enforceSize(R)(R range) const
     {
-        import std.conv : text;
+        import ripstd.conv : text;
         assert(range.length <= size, text(
             "FFT size mismatch.  Expected ", size, ", got ", range.length));
     }
@@ -3718,7 +3718,7 @@ public:
      * Computes the inverse Fourier transform of a range.  The range must be a
      * random access range with slicing, have a length equal to the size
      * provided at construction of this object, and contain elements that are
-     * either of type std.complex.Complex or have essentially
+     * either of type ripstd.complex.Complex or have essentially
      * the same compile-time interface.
      *
      * Returns:  The time-domain signal.
@@ -3819,9 +3819,9 @@ void inverseFft(Ret, R)(R range, Ret buf)
 
 @system unittest
 {
-    import std.algorithm;
-    import std.conv;
-    import std.range;
+    import ripstd.algorithm;
+    import ripstd.conv;
+    import ripstd.range;
     // Test values from R and Octave.
     auto arr = [1,2,3,4,5,6,7,8];
     auto fft1 = fft(arr);
@@ -3911,7 +3911,7 @@ Returns:
 size_t decimalToFactorial(ulong decimal, ref ubyte[21] fac)
         @safe pure nothrow @nogc
 {
-    import std.algorithm.mutation : reverse;
+    import ripstd.algorithm.mutation : reverse;
     size_t idx;
 
     for (ulong i = 1; decimal != 0; ++i)
@@ -3978,7 +3978,7 @@ size_t decimalToFactorial(ulong decimal, ref ubyte[21] fac)
 }
 
 private:
-// The reasons I couldn't use std.algorithm were b/c its stride length isn't
+// The reasons I couldn't use ripstd.algorithm were b/c its stride length isn't
 // modifiable on the fly and because range has grown some performance hacks
 // for powers of 2.
 struct Stride(R)

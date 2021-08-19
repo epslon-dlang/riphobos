@@ -36,7 +36,7 @@ Source:    $(PHOBOSSRC std/variant.d)
 */
 module ripstd.variant;
 
-import std.meta, std.traits, std.typecons;
+import ripstd.meta, ripstd.traits, ripstd.typecons;
 
 ///
 @system unittest
@@ -116,7 +116,7 @@ template maxSize(Ts...)
     static assert(maxSize!(char) == 1);
     static assert(maxSize!(char, short, ubyte) == 2);
     static assert(maxSize!(char, long, ubyte) == 8);
-    import std.algorithm.comparison : max;
+    import ripstd.algorithm.comparison : max;
     static assert(maxSize!(long, S) == max(long.sizeof, S.sizeof));
     static assert(maxSize!(S, T) == max(S.sizeof, T.sizeof));
     static assert(maxSize!(int, ubyte[7]) == 7);
@@ -137,7 +137,7 @@ if (isTypeTuple!U)
 {
     static if (U.length == 0)
     {
-        import std.algorithm.comparison : max;
+        import ripstd.algorithm.comparison : max;
         enum maxVariantAlignment = max(real.alignof, size_t.alignof);
     }
     else
@@ -260,7 +260,7 @@ private:
     // Handler for all of a type's operations
     static ptrdiff_t handler(A)(OpID selector, ubyte[size]* pStore, void* parm)
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         static A* getPtr(void* untyped)
         {
             if (untyped)
@@ -571,15 +571,15 @@ private:
         case OpID.apply:
             static if (!isFunctionPointer!A && !isDelegate!A)
             {
-                import std.conv : text;
-                import std.exception : enforce;
+                import ripstd.conv : text;
+                import ripstd.exception : enforce;
                 enforce(0, text("Cannot apply `()' to a value of type `",
                                 A.stringof, "'."));
             }
             else
             {
-                import std.conv : text;
-                import std.exception : enforce;
+                import ripstd.conv : text;
+                import ripstd.exception : enforce;
                 alias ParamTypes = Parameters!A;
                 auto p = cast(Variant*) parm;
                 auto argCount = p.get!size_t;
@@ -873,7 +873,7 @@ public:
 
     @property T coerce(T)()
     {
-        import std.conv : to, text;
+        import ripstd.conv : to, text;
         static if (isNumeric!T || isBoolean!T)
         {
             if (convertsTo!real)
@@ -896,7 +896,7 @@ public:
             }
             else
             {
-                import std.exception : enforce;
+                import ripstd.exception : enforce;
                 enforce(false, text("Type ", type, " does not convert to ",
                                 typeid(T)));
                 assert(0);
@@ -988,7 +988,7 @@ public:
         {
             string tryUseType(string tp)
             {
-                import std.format : format;
+                import ripstd.format : format;
                 return q{
                     static if (allowed!%1$s && T.allowed!%1$s)
                         if (convertsTo!%1$s && other.convertsTo!%1$s)
@@ -1202,8 +1202,8 @@ public:
         }
         else
         {
-            import std.conv : text;
-            import std.exception : enforce;
+            import ripstd.conv : text;
+            import ripstd.exception : enforce;
             enforce(false, text("Variant type ", type,
                             " not iterable with values of type ",
                             A.stringof));
@@ -1271,7 +1271,7 @@ public:
 
 @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     Variant v;
     int foo() { return 42; }
     v = &foo;
@@ -1306,7 +1306,7 @@ public:
 
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     Algebraic!(int[]) v = [2, 2];
 
     assert(v == [2, 2]);
@@ -1651,7 +1651,7 @@ be arbitrarily complex.
 */
 @system unittest
 {
-    import std.typecons : Tuple, tuple;
+    import ripstd.typecons : Tuple, tuple;
 
     // A tree is either a leaf or a branch of two other trees
     alias Tree(Leaf) = Algebraic!(Leaf, Tuple!(This*, This*));
@@ -1790,7 +1790,7 @@ static class VariantException : Exception
 ///
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     Variant v;
 
@@ -1832,8 +1832,8 @@ static class VariantException : Exception
 
 @system unittest
 {
-    import std.conv : ConvException;
-    import std.exception : assertThrown, collectException;
+    import ripstd.conv : ConvException;
+    import ripstd.exception : assertThrown, collectException;
     // try it with an oddly small size
     VariantN!(1) test;
     assert(test.size > 1);
@@ -2178,7 +2178,7 @@ static class VariantException : Exception
     }
 
     static char[] t3(int p) {
-        import std.conv : text;
+        import ripstd.conv : text;
         return p.text.dup;
     }
 
@@ -2218,7 +2218,7 @@ static class VariantException : Exception
 // e.g. https://issues.dlang.org/show_bug.cgi?id=7990
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!VariantException(Variant(3) < "a");
     assertThrown!VariantException("a" < Variant(3));
     assertThrown!VariantException(Variant(3) < Variant("a"));
@@ -2231,7 +2231,7 @@ static class VariantException : Exception
 // https://issues.dlang.org/show_bug.cgi?id=9043
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     static struct A { int a; }
 
     assert(Variant(A(3)) != A(4));
@@ -2528,7 +2528,7 @@ if (Handlers.length > 0)
 
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     Algebraic!(int, string) variant;
 
     variant = 10;
@@ -2774,7 +2774,7 @@ if (isAlgebraic!VariantType && Handler.length > 0)
 // https://issues.dlang.org/show_bug.cgi?id=7069
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     Variant v;
 
     int i = 10;
@@ -3012,7 +3012,7 @@ if (isAlgebraic!VariantType && Handler.length > 0)
     static assert( hasElaborateDestructor!(Algebraic!S));
     static assert( hasElaborateDestructor!(Algebraic!(bool, S)));
 
-    import std.array;
+    import ripstd.array;
     alias Value = Algebraic!bool;
 
     static struct T
@@ -3028,7 +3028,7 @@ if (isAlgebraic!VariantType && Handler.length > 0)
 {
     alias A = Algebraic!(int, typeof(null));
     static struct B { A value; }
-    alias C = std.variant.Algebraic!B;
+    alias C = ripstd.variant.Algebraic!B;
 
     C var;
     var = C(B());
@@ -3036,7 +3036,7 @@ if (isAlgebraic!VariantType && Handler.length > 0)
 
 @system unittest
 {
-    import std.exception : assertThrown, assertNotThrown;
+    import ripstd.exception : assertThrown, assertNotThrown;
     // Make sure Variant can handle types with opDispatch but no length field.
     struct SWithNoLength
     {
@@ -3075,8 +3075,8 @@ if (isAlgebraic!VariantType && Handler.length > 0)
 // https://issues.dlang.org/show_bug.cgi?id=15039
 @system unittest
 {
-    import std.typecons;
-    import std.variant;
+    import ripstd.typecons;
+    import ripstd.variant;
 
     alias IntTypedef = Typedef!int;
     alias Obj = Algebraic!(int, IntTypedef, This[]);

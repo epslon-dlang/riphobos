@@ -1,7 +1,7 @@
 module ripstd.internal.unicode_grapheme;
-import std.internal.unicode_tables;
+import ripstd.internal.unicode_tables;
 
-package(std):
+package(ripstd):
 
 static if (size_t.sizeof == 8)
 {

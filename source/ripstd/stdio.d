@@ -35,7 +35,7 @@ $(TR $(TD Misc) $(TD
 ))
 
 Standard I/O functions that extend $(B core.stdc.stdio).  $(B core.stdc.stdio)
-is $(D_PARAM public)ally imported when importing $(B std.stdio).
+is $(D_PARAM public)ally imported when importing $(B ripstd.stdio).
 
 Source: $(PHOBOSSRC std/stdio.d)
 Copyright: Copyright The D Language Foundation 2007-.
@@ -48,12 +48,12 @@ module ripstd.stdio;
 
 import core.stdc.stddef : wchar_t;
 public import core.stdc.stdio;
-import std.algorithm.mutation : copy;
-import std.meta : allSatisfy;
-import std.range.primitives : ElementEncodingType, empty, front,
+import ripstd.algorithm.mutation : copy;
+import ripstd.meta : allSatisfy;
+import ripstd.range.primitives : ElementEncodingType, empty, front,
     isBidirectionalRange, isInputRange, put;
-import std.traits : isSomeChar, isSomeString, Unqual, isPointer;
-import std.typecons : Flag, No, Yes;
+import ripstd.traits : isSomeChar, isSomeString, Unqual, isPointer;
+import ripstd.typecons : Flag, No, Yes;
 
 /++
 If flag `KeepTerminator` is set to `KeepTerminator.yes`, then the delimiter
@@ -173,35 +173,35 @@ version (DIGITAL_MARS_STDIO)
 
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FPUTC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FPUTC = _fputc_nlock;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FPUTWC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FPUTWC = _fputwc_nlock;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FGETC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FGETC = _fgetc_nlock;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FGETWC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FGETWC = _fgetwc_nlock;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FLOCK was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FLOCK = __fp_lock;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FUNLOCK was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FUNLOCK = __fp_unlock;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias _setmode was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias _setmode = setmode;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal function _fileno was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     int _fileno(FILE* f) { return f._file; }
 }
 else version (MICROSOFT_STDIO)
@@ -219,27 +219,27 @@ else version (MICROSOFT_STDIO)
 
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FPUTC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FPUTC = _fputc_nolock;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FPUTWC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FPUTWC = _fputwc_nolock;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FGETC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FGETC = _fgetc_nolock;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FGETWC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FGETWC = _fgetwc_nolock;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FLOCK was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FLOCK = _lock_file;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FUNLOCK was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FUNLOCK = _unlock_file;
 }
 else version (GCC_IO)
@@ -253,27 +253,27 @@ else version (GCC_IO)
 
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FPUTC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FPUTC = fputc_unlocked;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FPUTWC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FPUTWC = fputwc_unlocked;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FGETC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FGETC = fgetc_unlocked;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FGETWC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FGETWC = fgetwc_unlocked;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FLOCK was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FLOCK = core.sys.posix.stdio.flockfile;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FUNLOCK was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FUNLOCK = core.sys.posix.stdio.funlockfile;
 }
 else version (GENERIC_IO)
@@ -306,11 +306,11 @@ else version (GENERIC_IO)
 
     // @@@DEPRECATED_2.107@@@
     deprecated("internal function fputc_unlocked was unintentionally available "
-               ~ "from std.stdio and will be removed afer 2.107")
+               ~ "from ripstd.stdio and will be removed afer 2.107")
     int fputc_unlocked(int c, _iobuf* fp) { return fputc(c, cast(shared) fp); }
     // @@@DEPRECATED_2.107@@@
     deprecated("internal function fputwc_unlocked was unintentionally available "
-               ~ "from std.stdio and will be removed afer 2.107")
+               ~ "from ripstd.stdio and will be removed afer 2.107")
     int fputwc_unlocked(wchar_t c, _iobuf* fp)
     {
         import core.stdc.wchar_ : fputwc;
@@ -318,11 +318,11 @@ else version (GENERIC_IO)
     }
     // @@@DEPRECATED_2.107@@@
     deprecated("internal function fgetc_unlocked was unintentionally available "
-               ~ "from std.stdio and will be removed afer 2.107")
+               ~ "from ripstd.stdio and will be removed afer 2.107")
     int fgetc_unlocked(_iobuf* fp) { return fgetc(cast(shared) fp); }
     // @@@DEPRECATED_2.107@@@
     deprecated("internal function fgetwc_unlocked was unintentionally available "
-               ~ "from std.stdio and will be removed afer 2.107")
+               ~ "from ripstd.stdio and will be removed afer 2.107")
     int fgetwc_unlocked(_iobuf* fp)
     {
         import core.stdc.wchar_ : fgetwc;
@@ -331,30 +331,30 @@ else version (GENERIC_IO)
 
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FPUTC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FPUTC = fputc_unlocked;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FPUTWC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FPUTWC = fputwc_unlocked;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FGETC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FGETC = fgetc_unlocked;
     // @@@DEPRECATED_2.107@@@
     deprecated("internal alias FGETWC was unintentionally available from "
-               ~ "std.stdio and will be removed afer 2.107")
+               ~ "ripstd.stdio and will be removed afer 2.107")
     alias FGETWC = fgetwc_unlocked;
 
     version (Posix)
     {
         // @@@DEPRECATED_2.107@@@
         deprecated("internal alias FLOCK was unintentionally available from "
-                   ~ "std.stdio and will be removed afer 2.107")
+                   ~ "ripstd.stdio and will be removed afer 2.107")
         alias FLOCK = core.sys.posix.stdio.flockfile;
         // @@@DEPRECATED_2.107@@@
         deprecated("internal alias FUNLOCK was unintentionally available from "
-                   ~ "std.stdio and will be removed afer 2.107")
+                   ~ "ripstd.stdio and will be removed afer 2.107")
         alias FUNLOCK = core.sys.posix.stdio.funlockfile;
     }
 }
@@ -382,7 +382,7 @@ static if (__traits(compiles, core.sys.posix.stdio.getdelim))
 private struct ByRecordImpl(Fields...)
 {
 private:
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
 
     File file;
     char[] line;
@@ -413,10 +413,10 @@ public:
     /// Ditto
     void popFront()
     {
-        import std.conv : text;
-        import std.exception : enforce;
-        import std.format.read : formattedRead;
-        import std.string : chomp;
+        import ripstd.conv : text;
+        import ripstd.exception : enforce;
+        import ripstd.format.read : formattedRead;
+        import ripstd.string : chomp;
 
         enforce(file.isOpen, "ByRecord: File must be open");
         file.readln(line);
@@ -457,7 +457,7 @@ automatically closed.
 Example:
 ----
 // test.d
-import std.stdio;
+import ripstd.stdio;
 
 void main(string[] args)
 {
@@ -485,8 +485,8 @@ Hello, Jimmy!
 struct File
 {
     import core.atomic : atomicOp, atomicStore, atomicLoad;
-    import std.range.primitives : ElementEncodingType;
-    import std.traits : isScalarType, isArray;
+    import ripstd.range.primitives : ElementEncodingType;
+    import ripstd.traits : isScalarType, isArray;
     enum Orientation { unknown, narrow, wide }
 
     private struct Impl
@@ -502,7 +502,7 @@ struct File
     package this(FILE* handle, string name, uint refs = 1, bool isPopened = false) @trusted
     {
         import core.stdc.stdlib : malloc;
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         assert(!_p);
         _p = cast(Impl*) enforce(malloc(Impl.sizeof), "Out of memory");
@@ -539,8 +539,8 @@ Throws: `ErrnoException` if the file could not be opened.
  */
     this(string name, scope const(char)[] stdioOpenmode = "rb") @safe
     {
-        import std.conv : text;
-        import std.exception : errnoEnforce;
+        import ripstd.conv : text;
+        import ripstd.exception : errnoEnforce;
 
         this(errnoEnforce(_fopen(name, stdioOpenmode),
                         text("Cannot open file `", name, "' in mode `",
@@ -558,7 +558,7 @@ Throws: `ErrnoException` if the file could not be opened.
     this(R1, R2)(R1 name)
         if (isInputRange!R1 && isSomeChar!(ElementEncodingType!R1))
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         this(name.to!string, "rb");
     }
 
@@ -567,18 +567,18 @@ Throws: `ErrnoException` if the file could not be opened.
         if (isInputRange!R1 && isSomeChar!(ElementEncodingType!R1) &&
             isInputRange!R2 && isSomeChar!(ElementEncodingType!R2))
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         this(name.to!string, mode.to!string);
     }
 
     @safe unittest
     {
-        static import std.file;
-        import std.utf : byChar;
+        static import ripstd.file;
+        import ripstd.utf : byChar;
         auto deleteme = testFilename();
         auto f = File(deleteme.byChar, "w".byChar);
         f.close();
-        std.file.remove(deleteme);
+        ripstd.file.remove(deleteme);
     }
 
     ~this() @safe
@@ -600,7 +600,7 @@ file.
  */
     ref File opAssign(File rhs) @safe return
     {
-        import std.algorithm.mutation : swap;
+        import ripstd.algorithm.mutation : swap;
 
         swap(this, rhs);
         return this;
@@ -644,9 +644,9 @@ Throws: `ErrnoException` in case of error.
     private void resetFile(string name, scope const(char)[] stdioOpenmode, bool isPopened) @trusted
     {
         import core.stdc.stdlib : malloc;
-        import std.exception : enforce;
-        import std.conv : text;
-        import std.exception : errnoEnforce;
+        import ripstd.exception : enforce;
+        import ripstd.conv : text;
+        import ripstd.exception : errnoEnforce;
 
         if (_p !is null)
         {
@@ -686,12 +686,12 @@ Throws: `ErrnoException` in case of error.
     private void closeHandles() @trusted
     {
         assert(_p);
-        import std.exception : errnoEnforce;
+        import ripstd.exception : errnoEnforce;
 
         version (Posix)
         {
             import core.sys.posix.stdio : pclose;
-            import std.format : format;
+            import ripstd.format : format;
 
             if (_p.isPopened)
             {
@@ -743,9 +743,9 @@ Throws: `ErrnoException` in case of error.
  */
     void reopen(string name, scope const(char)[] stdioOpenmode = "rb") @trusted
     {
-        import std.conv : text;
-        import std.exception : enforce, errnoEnforce;
-        import std.internal.cstring : tempCString;
+        import ripstd.conv : text;
+        import ripstd.exception : enforce, errnoEnforce;
+        import ripstd.internal.cstring : tempCString;
 
         enforce(isOpen, "Attempting to reopen() an unopened file");
 
@@ -768,18 +768,18 @@ Throws: `ErrnoException` in case of error.
 
     @system unittest // Test changing filename
     {
-        import std.exception : assertThrown, assertNotThrown;
-        static import std.file;
+        import ripstd.exception : assertThrown, assertNotThrown;
+        static import ripstd.file;
 
         auto deleteme = testFilename();
-        std.file.write(deleteme, "foo");
-        scope(exit) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "foo");
+        scope(exit) ripstd.file.remove(deleteme);
         auto f = File(deleteme);
         assert(f.readln() == "foo");
 
         auto deleteme2 = testFilename();
-        std.file.write(deleteme2, "bar");
-        scope(exit) std.file.remove(deleteme2);
+        ripstd.file.write(deleteme2, "bar");
+        scope(exit) ripstd.file.remove(deleteme2);
         f.reopen(deleteme2);
         assert(f.name == deleteme2);
         assert(f.readln() == "bar");
@@ -790,12 +790,12 @@ Throws: `ErrnoException` in case of error.
     version (CRuntime_Microsoft) {} else // Not implemented
     @system unittest // Test changing mode
     {
-        import std.exception : assertThrown, assertNotThrown;
-        static import std.file;
+        import ripstd.exception : assertThrown, assertNotThrown;
+        static import ripstd.file;
 
         auto deleteme = testFilename();
-        std.file.write(deleteme, "foo");
-        scope(exit) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "foo");
+        scope(exit) ripstd.file.remove(deleteme);
         auto f = File(deleteme, "r+");
         assert(f.readln() == "foo");
         f.reopen(null, "w");
@@ -805,7 +805,7 @@ Throws: `ErrnoException` in case of error.
         f.write("baz");
         assert(f.name == deleteme);
         f.close();
-        assert(std.file.readText(deleteme) == "barbaz");
+        assert(ripstd.file.readText(deleteme) == "barbaz");
     }
 
 /**
@@ -840,8 +840,8 @@ Params:
 
     package void fdopen(int fd, scope const(char)[] stdioOpenmode, string name) @trusted
     {
-        import std.exception : errnoEnforce;
-        import std.internal.cstring : tempCString;
+        import ripstd.exception : errnoEnforce;
+        import ripstd.internal.cstring : tempCString;
 
         auto modez = stdioOpenmode.tempCString();
         detach();
@@ -893,8 +893,8 @@ Throws: `ErrnoException` in case of error.
     void windowsHandleOpen(HANDLE handle, scope const(char)[] stdioOpenmode)
     {
         import core.stdc.stdint : intptr_t;
-        import std.exception : errnoEnforce;
-        import std.format : format;
+        import ripstd.exception : errnoEnforce;
+        import ripstd.format : format;
 
         // Create file descriptors from the handles
         version (DIGITAL_MARS_STDIO)
@@ -937,7 +937,7 @@ Throws: `Exception` if the file is not opened.
  */
     @property bool eof() const @trusted pure
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(_p && _p.handle, "Calling eof() against an unopened file.");
         return .feof(cast(FILE*) _p.handle) != 0;
@@ -970,10 +970,10 @@ the file handle.
     @safe unittest
     {
         // https://issues.dlang.org/show_bug.cgi?id=12349
-        static import std.file;
+        static import ripstd.file;
         auto deleteme = testFilename();
         auto f = File(deleteme, "w");
-        scope(exit) std.file.remove(deleteme);
+        scope(exit) ripstd.file.remove(deleteme);
 
         f.close();
         assert(f.error);
@@ -1000,10 +1000,10 @@ Throws: `ErrnoException` on failure if closing the file.
 
     @safe unittest
     {
-        static import std.file;
+        static import ripstd.file;
 
         auto deleteme = testFilename();
-        scope(exit) std.file.remove(deleteme);
+        scope(exit) ripstd.file.remove(deleteme);
         auto f = File(deleteme, "w");
         {
             auto f2 = f;
@@ -1027,7 +1027,7 @@ Throws: `ErrnoException` on error.
     void close() @trusted
     {
         import core.stdc.stdlib : free;
-        import std.exception : errnoEnforce;
+        import ripstd.exception : errnoEnforce;
 
         if (!_p) return; // succeed vacuously
         scope(exit)
@@ -1063,7 +1063,7 @@ Throws: `Exception` if the file is not opened or if the call to `fflush` fails.
  */
     void flush() @trusted
     {
-        import std.exception : enforce, errnoEnforce;
+        import ripstd.exception : enforce, errnoEnforce;
 
         enforce(isOpen, "Attempting to flush() in an unopened file");
         errnoEnforce(.fflush(_p.handle) == 0);
@@ -1072,12 +1072,12 @@ Throws: `Exception` if the file is not opened or if the call to `fflush` fails.
     @safe unittest
     {
         // https://issues.dlang.org/show_bug.cgi?id=12349
-        import std.exception : assertThrown;
-        static import std.file;
+        import ripstd.exception : assertThrown;
+        static import ripstd.file;
 
         auto deleteme = testFilename();
         auto f = File(deleteme, "w");
-        scope(exit) std.file.remove(deleteme);
+        scope(exit) ripstd.file.remove(deleteme);
 
         f.close();
         assertThrown(f.flush());
@@ -1099,7 +1099,7 @@ Throws: `Exception` if the file is not opened or if the OS call fails.
  */
     void sync() @trusted
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(isOpen, "Attempting to sync() an unopened file");
 
@@ -1111,13 +1111,13 @@ Throws: `Exception` if the file is not opened or if the OS call fails.
         else version (Darwin)
         {
             import core.sys.darwin.fcntl : fcntl, F_FULLFSYNC;
-            import std.exception : errnoEnforce;
+            import ripstd.exception : errnoEnforce;
             errnoEnforce(fcntl(fileno, F_FULLFSYNC, 0) != -1, "fcntl failed");
         }
         else
         {
             import core.sys.posix.unistd : fsync;
-            import std.exception : errnoEnforce;
+            import ripstd.exception : errnoEnforce;
             errnoEnforce(fsync(fileno) == 0, "fsync failed");
         }
     }
@@ -1138,7 +1138,7 @@ Throws: `Exception` if `buffer` is empty.
  */
     T[] rawRead(T)(T[] buffer)
     {
-        import std.exception : enforce, errnoEnforce;
+        import ripstd.exception : enforce, errnoEnforce;
 
         if (!buffer.length)
             throw new Exception("rawRead must take a non-empty buffer");
@@ -1171,11 +1171,11 @@ Throws: `Exception` if `buffer` is empty.
     ///
     @system unittest
     {
-        static import std.file;
+        static import ripstd.file;
 
-        auto testFile = std.file.deleteme();
-        std.file.write(testFile, "\r\n\n\r\n");
-        scope(exit) std.file.remove(testFile);
+        auto testFile = ripstd.file.deleteme();
+        ripstd.file.write(testFile, "\r\n\n\r\n");
+        scope(exit) ripstd.file.remove(testFile);
 
         auto f = File(testFile, "r");
         auto buf = f.rawRead(new char[5]);
@@ -1186,7 +1186,7 @@ Throws: `Exception` if `buffer` is empty.
     // https://issues.dlang.org/show_bug.cgi?id=21729
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         File f;
         ubyte[1] u;
@@ -1196,10 +1196,10 @@ Throws: `Exception` if `buffer` is empty.
     // https://issues.dlang.org/show_bug.cgi?id=21728
     @system unittest
     {
-        static if (__traits(compiles, { import std.process : pipe; })) // not available for iOS
+        static if (__traits(compiles, { import ripstd.process : pipe; })) // not available for iOS
         {
-            import std.process : pipe;
-            import std.exception : assertThrown;
+            import ripstd.process : pipe;
+            import ripstd.exception : assertThrown;
 
             auto p = pipe();
             p.readEnd.close;
@@ -1220,8 +1220,8 @@ Throws: `ErrnoException` if the file is not opened or if the call to `fwrite` fa
  */
     void rawWrite(T)(in T[] buffer)
     {
-        import std.conv : text;
-        import std.exception : errnoEnforce;
+        import ripstd.conv : text;
+        import ripstd.exception : errnoEnforce;
 
         version (Windows)
         {
@@ -1267,15 +1267,15 @@ Throws: `ErrnoException` if the file is not opened or if the call to `fwrite` fa
     ///
     @system unittest
     {
-        static import std.file;
+        static import ripstd.file;
 
-        auto testFile = std.file.deleteme();
+        auto testFile = ripstd.file.deleteme();
         auto f = File(testFile, "w");
-        scope(exit) std.file.remove(testFile);
+        scope(exit) ripstd.file.remove(testFile);
 
         f.rawWrite("\r\n\n\r\n");
         f.close();
-        assert(std.file.read(testFile) == "\r\n\n\r\n");
+        assert(ripstd.file.read(testFile) == "\r\n\n\r\n");
     }
 
 /**
@@ -1297,8 +1297,8 @@ Throws: `Exception` if the file is not opened.
  */
     void seek(long offset, int origin = SEEK_SET) @trusted
     {
-        import std.conv : to, text;
-        import std.exception : enforce, errnoEnforce;
+        import ripstd.conv : to, text;
+        import ripstd.exception : enforce, errnoEnforce;
 
         // Some libc sanitize the whence input (e.g. glibc), but some don't,
         // e.g. Microsoft runtime crashes on an invalid origin,
@@ -1333,13 +1333,13 @@ Throws: `Exception` if the file is not opened.
 
     @system unittest
     {
-        import std.conv : text;
-        static import std.file;
-        import std.exception;
+        import ripstd.conv : text;
+        static import ripstd.file;
+        import ripstd.exception;
 
         auto deleteme = testFilename();
         auto f = File(deleteme, "w+");
-        scope(exit) { f.close(); std.file.remove(deleteme); }
+        scope(exit) { f.close(); ripstd.file.remove(deleteme); }
         f.rawWrite("abcdefghijklmnopqrstuvwxyz");
         f.seek(7);
         assert(f.readln() == "hijklmnopqrstuvwxyz");
@@ -1371,7 +1371,7 @@ Throws: `Exception` if the file is not opened.
  */
     @property ulong tell() const @trusted
     {
-        import std.exception : enforce, errnoEnforce;
+        import ripstd.exception : enforce, errnoEnforce;
 
         enforce(isOpen, "Attempting to tell() in an unopened file");
         version (Windows)
@@ -1394,12 +1394,12 @@ Throws: `Exception` if the file is not opened.
     ///
     @system unittest
     {
-        import std.conv : text;
-        static import std.file;
+        import ripstd.conv : text;
+        static import ripstd.file;
 
-        auto testFile = std.file.deleteme();
-        std.file.write(testFile, "abcdefghijklmnopqrstuvwqxyz");
-        scope(exit) { std.file.remove(testFile); }
+        auto testFile = ripstd.file.deleteme();
+        ripstd.file.write(testFile, "abcdefghijklmnopqrstuvwqxyz");
+        scope(exit) { ripstd.file.remove(testFile); }
 
         auto f = File(testFile);
         auto a = new ubyte[4];
@@ -1415,7 +1415,7 @@ Throws: `Exception` if the file is not opened.
  */
     void rewind() @safe
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(isOpen, "Attempting to rewind() an unopened file");
         .rewind(_p.handle);
@@ -1430,7 +1430,7 @@ Throws: `Exception` if the file is not opened.
  */
     void setvbuf(size_t size, int mode = _IOFBF) @trusted
     {
-        import std.exception : enforce, errnoEnforce;
+        import ripstd.exception : enforce, errnoEnforce;
 
         enforce(isOpen, "Attempting to call setvbuf() on an unopened file");
         errnoEnforce(.setvbuf(_p.handle, null, mode, size) == 0,
@@ -1446,7 +1446,7 @@ Throws: `Exception` if the file is not opened.
 */
     void setvbuf(void[] buf, int mode = _IOFBF) @trusted
     {
-        import std.exception : enforce, errnoEnforce;
+        import ripstd.exception : enforce, errnoEnforce;
 
         enforce(isOpen, "Attempting to call setvbuf() on an unopened file");
         errnoEnforce(.setvbuf(_p.handle,
@@ -1479,7 +1479,7 @@ Throws: `Exception` if the file is not opened.
         private static T wenforce(T)(T cond, lazy string str)
         {
             import core.sys.windows.winbase : GetLastError;
-            import std.windows.syserror : sysErrorString;
+            import ripstd.windows.syserror : sysErrorString;
 
             if (cond) return cond;
             throw new Exception(str ~ ": " ~ sysErrorString(GetLastError()));
@@ -1492,7 +1492,7 @@ Throws: `Exception` if the file is not opened.
         {
             import core.sys.posix.fcntl : fcntl, flock, off_t;
             import core.sys.posix.unistd : getpid;
-            import std.conv : to;
+            import ripstd.conv : to;
 
             flock fl = void;
             fl.l_type   = l_type;
@@ -1521,13 +1521,13 @@ $(UL
     void lock(LockType lockType = LockType.readWrite,
         ulong start = 0, ulong length = 0)
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(isOpen, "Attempting to call lock() on an unopened file");
         version (Posix)
         {
             import core.sys.posix.fcntl : F_RDLCK, F_SETLKW, F_WRLCK;
-            import std.exception : errnoEnforce;
+            import ripstd.exception : errnoEnforce;
             immutable short type = lockType == LockType.readWrite
                 ? F_WRLCK : F_RDLCK;
             errnoEnforce(lockImpl(F_SETLKW, type, start, length) != -1,
@@ -1555,14 +1555,14 @@ specified file segment was already locked.
     bool tryLock(LockType lockType = LockType.readWrite,
         ulong start = 0, ulong length = 0)
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(isOpen, "Attempting to call tryLock() on an unopened file");
         version (Posix)
         {
             import core.stdc.errno : EACCES, EAGAIN, errno;
             import core.sys.posix.fcntl : F_RDLCK, F_SETLK, F_WRLCK;
-            import std.exception : errnoEnforce;
+            import ripstd.exception : errnoEnforce;
             immutable short type = lockType == LockType.readWrite
                 ? F_WRLCK : F_RDLCK;
             immutable res = lockImpl(F_SETLK, type, start, length);
@@ -1596,13 +1596,13 @@ Removes the lock over the specified file segment.
  */
     void unlock(ulong start = 0, ulong length = 0)
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(isOpen, "Attempting to call unlock() on an unopened file");
         version (Posix)
         {
             import core.sys.posix.fcntl : F_SETLK, F_UNLCK;
-            import std.exception : errnoEnforce;
+            import ripstd.exception : errnoEnforce;
             errnoEnforce(lockImpl(F_SETLK, F_UNLCK, start, length) != -1,
                     "Could not remove lock for file `"~_name~"'");
         }
@@ -1620,9 +1620,9 @@ Removes the lock over the specified file segment.
     version (Windows)
     @system unittest
     {
-        static import std.file;
+        static import ripstd.file;
         auto deleteme = testFilename();
-        scope(exit) std.file.remove(deleteme);
+        scope(exit) ripstd.file.remove(deleteme);
         auto f = File(deleteme, "wb");
         assert(f.tryLock());
         auto g = File(deleteme, "wb");
@@ -1639,11 +1639,11 @@ Removes the lock over the specified file segment.
     version (Posix)
     @system unittest
     {
-    static if (__traits(compiles, { import std.process : spawnProcess; }))
+    static if (__traits(compiles, { import ripstd.process : spawnProcess; }))
     {
-        static import std.file;
+        static import ripstd.file;
         auto deleteme = testFilename();
-        scope(exit) std.file.remove(deleteme);
+        scope(exit) ripstd.file.remove(deleteme);
 
         // Since locks are per-process, we cannot test lock failures within
         // the same process. fork() is used to create a second process.
@@ -1705,8 +1705,8 @@ Throws: `Exception` if the file is not opened.
 */
     void write(S...)(S args)
     {
-        import std.traits : isBoolean, isIntegral, isAggregateType;
-        import std.utf : UTFException;
+        import ripstd.traits : isBoolean, isIntegral, isAggregateType;
+        import ripstd.utf : UTFException;
         auto w = lockingTextWriter();
         foreach (arg; args)
         {
@@ -1715,7 +1715,7 @@ Throws: `Exception` if the file is not opened.
                 alias A = typeof(arg);
                 static if (isAggregateType!A || is(A == enum))
                 {
-                    import std.format.write : formattedWrite;
+                    import ripstd.format.write : formattedWrite;
 
                     formattedWrite(w, "%s", arg);
                 }
@@ -1725,7 +1725,7 @@ Throws: `Exception` if the file is not opened.
                 }
                 else static if (isIntegral!A)
                 {
-                    import std.conv : toTextRange;
+                    import ripstd.conv : toTextRange;
 
                     toTextRange(arg, w);
                 }
@@ -1739,7 +1739,7 @@ Throws: `Exception` if the file is not opened.
                 }
                 else
                 {
-                    import std.format.write : formattedWrite;
+                    import ripstd.format.write : formattedWrite;
 
                     // Most general case
                     formattedWrite(w, "%s", arg);
@@ -1782,7 +1782,7 @@ Throws: `Exception` if the file is not opened.
     void writef(alias fmt, A...)(A args)
     if (isSomeString!(typeof(fmt)))
     {
-        import std.format : checkFormatException;
+        import ripstd.format : checkFormatException;
 
         alias e = checkFormatException!(fmt, A);
         static assert(!e, e.msg);
@@ -1792,7 +1792,7 @@ Throws: `Exception` if the file is not opened.
     /// ditto
     void writef(Char, A...)(in Char[] fmt, A args)
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
 
         formattedWrite(lockingTextWriter(), fmt, args);
     }
@@ -1801,7 +1801,7 @@ Throws: `Exception` if the file is not opened.
     void writefln(alias fmt, A...)(A args)
     if (isSomeString!(typeof(fmt)))
     {
-        import std.format : checkFormatException;
+        import ripstd.format : checkFormatException;
 
         alias e = checkFormatException!(fmt, A);
         static assert(!e, e.msg);
@@ -1811,7 +1811,7 @@ Throws: `Exception` if the file is not opened.
     /// ditto
     void writefln(Char, A...)(in Char[] fmt, A args)
     {
-        import std.format.write : formattedWrite;
+        import ripstd.format.write : formattedWrite;
 
         auto w = lockingTextWriter();
         formattedWrite(w, fmt, args);
@@ -1841,7 +1841,7 @@ Throws:
 Example:
 ---
 // Reads `stdin` and writes it to `stdout`.
-import std.stdio;
+import ripstd.stdio;
 
 void main()
 {
@@ -1861,13 +1861,13 @@ void main()
 
     @system unittest
     {
-        import std.algorithm.comparison : equal;
-        static import std.file;
-        import std.meta : AliasSeq;
+        import ripstd.algorithm.comparison : equal;
+        static import ripstd.file;
+        import ripstd.meta : AliasSeq;
 
         auto deleteme = testFilename();
-        std.file.write(deleteme, "hello\nworld\n");
-        scope(exit) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "hello\nworld\n");
+        scope(exit) ripstd.file.remove(deleteme);
         static foreach (String; AliasSeq!(string, char[], wstring, wchar[], dstring, dchar[]))
         {{
             auto witness = [ "hello\n", "world\n" ];
@@ -1885,12 +1885,12 @@ void main()
 
     @system unittest
     {
-        static import std.file;
-        import std.typecons : Tuple;
+        static import ripstd.file;
+        import ripstd.typecons : Tuple;
 
         auto deleteme = testFilename();
-        std.file.write(deleteme, "cześć \U0002000D");
-        scope(exit) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "cześć \U0002000D");
+        scope(exit) ripstd.file.remove(deleteme);
         uint[] lengths = [12,8,7];
         static foreach (uint i, C; Tuple!(char, wchar, dchar).Types)
         {{
@@ -1928,7 +1928,7 @@ Example:
 // Read lines from `stdin` into a string
 // Ignore lines starting with '#'
 // Write the string to `stdout`
-import std.stdio;
+import ripstd.stdio;
 
 void main()
 {
@@ -1959,7 +1959,7 @@ largest buffer returned by `readln`:
 Example:
 ---
 // Read lines from `stdin` and count words
-import std.array, std.stdio;
+import ripstd.array, ripstd.stdio;
 
 void main()
 {
@@ -1985,7 +1985,7 @@ is recommended if you want to process a complete file.
     size_t readln(C)(ref C[] buf, dchar terminator = '\n')
     if (isSomeChar!C && is(Unqual!C == C) && !is(C == enum))
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         static if (is(C == char))
         {
@@ -2008,7 +2008,7 @@ is recommended if you want to process a complete file.
                 return 0;
             }
 
-            import std.utf : codeLength;
+            import ripstd.utf : codeLength;
             buf.length = codeLength!C(s);
             size_t idx;
             foreach (C c; s)
@@ -2021,10 +2021,10 @@ is recommended if you want to process a complete file.
     @system unittest
     {
         // @system due to readln
-        static import std.file;
+        static import ripstd.file;
         auto deleteme = testFilename();
-        std.file.write(deleteme, "123\n456789");
-        scope(exit) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "123\n456789");
+        scope(exit) ripstd.file.remove(deleteme);
 
         auto file = File(deleteme);
         char[] buffer = new char[10];
@@ -2040,10 +2040,10 @@ is recommended if you want to process a complete file.
     @system unittest
     {
         // @system due to readln
-        static import std.file;
+        static import ripstd.file;
         auto deleteme = testFilename();
-        std.file.write(deleteme, "a\n\naa");
-        scope(exit) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "a\n\naa");
+        scope(exit) ripstd.file.remove(deleteme);
 
         auto file = File(deleteme);
         char[] buffer;
@@ -2065,9 +2065,9 @@ is recommended if you want to process a complete file.
     if (isSomeChar!C && is(Unqual!C == C) && !is(C == enum) &&
         isBidirectionalRange!R && is(typeof(terminator.front == dchar.init)))
     {
-        import std.algorithm.mutation : swap;
-        import std.algorithm.searching : endsWith;
-        import std.range.primitives : back;
+        import ripstd.algorithm.mutation : swap;
+        import ripstd.algorithm.searching : endsWith;
+        import ripstd.range.primitives : back;
 
         auto last = terminator.back;
         C[] buf2;
@@ -2093,12 +2093,12 @@ is recommended if you want to process a complete file.
 
     @system unittest
     {
-        static import std.file;
-        import std.typecons : Tuple;
+        static import ripstd.file;
+        import ripstd.typecons : Tuple;
 
         auto deleteme = testFilename();
-        std.file.write(deleteme, "hello\n\rworld\nhow\n\rare ya");
-        scope(exit) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "hello\n\rworld\nhow\n\rare ya");
+        scope(exit) ripstd.file.remove(deleteme);
         foreach (C; Tuple!(char, wchar, dchar).Types)
         {
             immutable(C)[][] witness = [ "hello\n\r", "world\nhow\n\r", "are ya" ];
@@ -2126,7 +2126,7 @@ is recommended if you want to process a complete file.
 // test.d
 void main()
 {
-    import std.stdio;
+    import ripstd.stdio;
     auto f = File("input");
     foreach (_; 0 .. 3)
     {
@@ -2147,7 +2147,7 @@ $(CONSOLE
     uint readf(alias format, Data...)(auto ref Data data)
     if (isSomeString!(typeof(format)))
     {
-        import std.format : checkFormatException;
+        import ripstd.format : checkFormatException;
 
         alias e = checkFormatException!(format, Data);
         static assert(!e, e.msg);
@@ -2157,7 +2157,7 @@ $(CONSOLE
     /// ditto
     uint readf(Data...)(scope const(char)[] format, auto ref Data data)
     {
-        import std.format.read : formattedRead;
+        import ripstd.format.read : formattedRead;
 
         assert(isOpen);
         auto input = LockingTextReader(this);
@@ -2167,11 +2167,11 @@ $(CONSOLE
     ///
     @system unittest
     {
-        static import std.file;
+        static import ripstd.file;
 
-        auto deleteme = std.file.deleteme();
-        std.file.write(deleteme, "hello\nworld\ntrue\nfalse\n");
-        scope(exit) std.file.remove(deleteme);
+        auto deleteme = ripstd.file.deleteme();
+        ripstd.file.write(deleteme, "hello\nworld\ntrue\nfalse\n");
+        scope(exit) ripstd.file.remove(deleteme);
         string s;
         auto f = File(deleteme);
         f.readf!"%s\n"(s);
@@ -2188,11 +2188,11 @@ $(CONSOLE
     @system unittest
     {
         // @system due to readf
-        static import std.file;
+        static import ripstd.file;
 
         auto deleteme = testFilename();
-        std.file.write(deleteme, "hello\nworld\ntrue\nfalse\n");
-        scope(exit) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "hello\nworld\ntrue\nfalse\n");
+        scope(exit) ripstd.file.remove(deleteme);
         string s;
         auto f = File(deleteme);
         f.readf("%s\n", &s);
@@ -2210,11 +2210,11 @@ $(CONSOLE
     @system unittest
     {
         // @system due to readf
-        static import std.file;
+        static import ripstd.file;
 
         auto deleteme = testFilename();
-        std.file.write(deleteme, "hello\nworld\ntrue\nfalse\n");
-        scope(exit) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "hello\nworld\ntrue\nfalse\n");
+        scope(exit) ripstd.file.remove(deleteme);
         string s1, s2;
         auto f = File(deleteme);
         f.readf("%s\n%s\n", s1, &s2);
@@ -2227,21 +2227,21 @@ $(CONSOLE
         assert(b1 == true && b2 == false);
     }
 
-    // Nice error of std.stdio.readf with newlines
+    // Nice error of ripstd.stdio.readf with newlines
     // https://issues.dlang.org/show_bug.cgi?id=12260
     @system unittest
     {
-        static import std.file;
+        static import ripstd.file;
 
         auto deleteme = testFilename();
-        std.file.write(deleteme, "1\n2");
-        scope(exit) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "1\n2");
+        scope(exit) ripstd.file.remove(deleteme);
         int input;
         auto f = File(deleteme);
         f.readf("%s", &input);
 
-        import std.conv : ConvException;
-        import std.exception : collectException;
+        import ripstd.conv : ConvException;
+        import ripstd.exception : collectException;
         assert(collectException!ConvException(f.readf("%s", &input)).msg ==
             "Unexpected '\\n' when converting from type LockingTextReader to type int");
     }
@@ -2252,7 +2252,7 @@ $(CONSOLE
  Note that the created file has no $(LREF name).*/
     static File tmpfile() @safe
     {
-        import std.exception : errnoEnforce;
+        import ripstd.exception : errnoEnforce;
 
         return File(errnoEnforce(.tmpfile(),
                 "Could not create temporary file with tmpfile()"),
@@ -2265,7 +2265,7 @@ File) never takes the initiative in closing the file.
 Note that the created file has no $(LREF name)*/
     /*private*/ static File wrapFile(FILE* f) @safe
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         return File(enforce(f, "Could not wrap null FILE*"),
             null, /*uint.max / 2*/ 9999);
@@ -2276,7 +2276,7 @@ Returns the `FILE*` corresponding to this object.
  */
     FILE* getFP() @safe pure
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(_p && _p.handle,
                 "Attempting to call getFP() on an unopened file");
@@ -2294,7 +2294,7 @@ Returns the file number corresponding to this object.
  */
     @property int fileno() const @trusted
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(isOpen, "Attempting to call fileno() on an unopened file");
         return .fileno(cast(FILE*) _p.handle);
@@ -2325,11 +2325,11 @@ Allows to directly use range operations on lines of a file.
     private struct ByLineImpl(Char, Terminator)
     {
     private:
-        import std.typecons : RefCounted, RefCountedAutoInitialize;
+        import ripstd.typecons : RefCounted, RefCountedAutoInitialize;
 
         /* Ref-counting stops the source range's Impl
          * from getting out of sync after the range is copied, e.g.
-         * when accessing range.front, then using std.range.take,
+         * when accessing range.front, then using ripstd.range.take,
          * then accessing range.front again. */
         alias PImpl = RefCounted!(Impl, RefCountedAutoInitialize.no);
         PImpl impl;
@@ -2404,7 +2404,7 @@ Allows to directly use range operations on lines of a file.
             {
                 if (haveLine)
                     return;
-                import std.algorithm.searching : endsWith;
+                import ripstd.algorithm.searching : endsWith;
                 assert(file.isOpen);
                 line = buffer;
                 file.readln(line, terminator);
@@ -2461,7 +2461,7 @@ text mode).
 
 Example:
 ----
-import std.algorithm, std.stdio, std.string;
+import ripstd.algorithm, ripstd.stdio, ripstd.string;
 // Count words in a file using ranges.
 void main()
 {
@@ -2476,7 +2476,7 @@ void main()
 
 Example:
 ----
-import std.range, std.stdio;
+import ripstd.range, ripstd.stdio;
 // Read lines using foreach.
 void main()
 {
@@ -2515,12 +2515,12 @@ the contents may well have changed).
 
     @system unittest
     {
-        static import std.file;
+        static import ripstd.file;
         auto deleteme = testFilename();
-        std.file.write(deleteme, "hi");
-        scope(success) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "hi");
+        scope(success) ripstd.file.remove(deleteme);
 
-        import std.meta : AliasSeq;
+        import ripstd.meta : AliasSeq;
         static foreach (T; AliasSeq!(char, wchar, dchar))
         {{
             auto blc = File(deleteme).byLine!(T, T);
@@ -2533,10 +2533,10 @@ the contents may well have changed).
     // https://issues.dlang.org/show_bug.cgi?id=19980
     @system unittest
     {
-        static import std.file;
+        static import ripstd.file;
         auto deleteme = testFilename();
-        std.file.write(deleteme, "Line 1\nLine 2\nLine 3\n");
-        scope(success) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "Line 1\nLine 2\nLine 3\n");
+        scope(success) ripstd.file.remove(deleteme);
 
         auto f = File(deleteme);
         f.byLine();
@@ -2547,11 +2547,11 @@ the contents may well have changed).
     private struct ByLineCopy(Char, Terminator)
     {
     private:
-        import std.typecons : RefCounted, RefCountedAutoInitialize;
+        import ripstd.typecons : RefCounted, RefCountedAutoInitialize;
 
         /* Ref-counting stops the source range's ByLineCopyImpl
          * from getting out of sync after the range is copied, e.g.
-         * when accessing range.front, then using std.range.take,
+         * when accessing range.front, then using ripstd.range.take,
          * then accessing range.front again. */
         alias Impl = RefCounted!(ByLineCopyImpl!(Char, Terminator),
             RefCountedAutoInitialize.no);
@@ -2635,7 +2635,7 @@ text mode).
 
 Example:
 ----
-import std.algorithm, std.array, std.stdio;
+import ripstd.algorithm, ripstd.array, ripstd.stdio;
 // Print sorted lines of a file.
 void main()
 {
@@ -2676,13 +2676,13 @@ $(REF readText, std,file)
 
     @system unittest
     {
-        import std.algorithm.comparison : equal;
-        static import std.file;
+        import ripstd.algorithm.comparison : equal;
+        static import ripstd.file;
 
         scope(failure) printf("Failed test at line %d\n", __LINE__);
         auto deleteme = testFilename();
-        std.file.write(deleteme, "");
-        scope(success) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "");
+        scope(success) ripstd.file.remove(deleteme);
 
         // Test empty file
         auto f = File(deleteme);
@@ -2696,13 +2696,13 @@ $(REF readText, std,file)
         void test(Terminator)(string txt, in string[] witness,
                 KeepTerminator kt, Terminator term, bool popFirstLine = false)
         {
-            import std.algorithm.sorting : sort;
-            import std.array : array;
-            import std.conv : text;
-            import std.range.primitives : walkLength;
+            import ripstd.algorithm.sorting : sort;
+            import ripstd.array : array;
+            import ripstd.conv : text;
+            import ripstd.range.primitives : walkLength;
 
             uint i;
-            std.file.write(deleteme, txt);
+            ripstd.file.write(deleteme, txt);
             auto f = File(deleteme);
             scope(exit)
             {
@@ -2755,28 +2755,28 @@ $(REF readText, std,file)
 
     @system unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.range : drop, take;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.range : drop, take;
 
         version (Win64)
         {
-            static import std.file;
+            static import ripstd.file;
 
             /* the C function tmpfile doesn't seem to work, even when called from C */
             auto deleteme = testFilename();
             auto file = File(deleteme, "w+");
-            scope(success) std.file.remove(deleteme);
+            scope(success) ripstd.file.remove(deleteme);
         }
         else version (CRuntime_Bionic)
         {
-            static import std.file;
+            static import ripstd.file;
 
             /* the C function tmpfile doesn't work when called from a shared
                library apk:
                https://code.google.com/p/android/issues/detail?id=66815 */
             auto deleteme = testFilename();
             auto file = File(deleteme, "w+");
-            scope(success) std.file.remove(deleteme);
+            scope(success) ripstd.file.remove(deleteme);
         }
         else
             auto file = File.tmpfile();
@@ -2806,10 +2806,10 @@ $(REF readText, std,file)
 
     @system unittest
     {
-        static import std.file;
+        static import ripstd.file;
         auto deleteme = testFilename();
-        std.file.write(deleteme, "hi");
-        scope(success) std.file.remove(deleteme);
+        ripstd.file.write(deleteme, "hi");
+        scope(success) ripstd.file.remove(deleteme);
 
         auto blc = File(deleteme).byLineCopy;
         assert(!blc.empty);
@@ -2845,14 +2845,14 @@ $(REF readText, std,file)
     ///
     @system unittest
     {
-         static import std.file;
-         import std.typecons : tuple;
+         static import ripstd.file;
+         import ripstd.typecons : tuple;
 
          // prepare test file
-         auto testFile = std.file.deleteme();
+         auto testFile = ripstd.file.deleteme();
          scope(failure) printf("Failed test at line %d\n", __LINE__);
-         std.file.write(testFile, "1 2\n4 1\n5 100");
-         scope(exit) std.file.remove(testFile);
+         ripstd.file.write(testFile, "1 2\n4 1\n5 100");
+         scope(exit) ripstd.file.remove(testFile);
 
          File f = File(testFile);
          scope(exit) f.close();
@@ -2890,7 +2890,7 @@ $(REF readText, std,file)
 
         this(File file, ubyte[] buffer)
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
             enforce(buffer.length, "size must be larger than 0");
             file_ = file;
             chunk_ = buffer;
@@ -2979,7 +2979,7 @@ compatible with input ranges.
 Example:
 ---
 // Efficient file copy, 1MB at a time.
-import std.algorithm, std.stdio;
+import ripstd.algorithm, ripstd.stdio;
 void main()
 {
     stdin.byChunk(1024 * 1024).copy(stdout.lockingTextWriter());
@@ -2990,7 +2990,7 @@ $(REF joiner, std,algorithm,iteration) can be used to join chunks together into
 a single range lazily.
 Example:
 ---
-import std.algorithm, std.stdio;
+import ripstd.algorithm, ripstd.stdio;
 void main()
 {
     //Range of ranges
@@ -3019,12 +3019,12 @@ is empty, throws an `Exception`. In case of an I/O error throws
 
     @system unittest
     {
-        static import std.file;
+        static import ripstd.file;
 
         scope(failure) printf("Failed test at line %d\n", __LINE__);
 
         auto deleteme = testFilename();
-        std.file.write(deleteme, "asd\ndef\nasdf");
+        ripstd.file.write(deleteme, "asd\ndef\nasdf");
 
         auto witness = ["asd\n", "def\n", "asdf" ];
         auto f = File(deleteme);
@@ -3032,7 +3032,7 @@ is empty, throws an `Exception`. In case of an I/O error throws
         {
             f.close();
             assert(!f.isOpen);
-            std.file.remove(deleteme);
+            ripstd.file.remove(deleteme);
         }
 
         uint i;
@@ -3044,12 +3044,12 @@ is empty, throws an `Exception`. In case of an I/O error throws
 
     @system unittest
     {
-        static import std.file;
+        static import ripstd.file;
 
         scope(failure) printf("Failed test at line %d\n", __LINE__);
 
         auto deleteme = testFilename();
-        std.file.write(deleteme, "asd\ndef\nasdf");
+        ripstd.file.write(deleteme, "asd\ndef\nasdf");
 
         auto witness = ["asd\n", "def\n", "asdf" ];
         auto f = File(deleteme);
@@ -3057,7 +3057,7 @@ is empty, throws an `Exception`. In case of an I/O error throws
         {
             f.close();
             assert(!f.isOpen);
-            std.file.remove(deleteme);
+            ripstd.file.remove(deleteme);
         }
 
         uint i;
@@ -3074,7 +3074,7 @@ is empty, throws an `Exception`. In case of an I/O error throws
     struct LockingTextWriter
     {
     private:
-        import std.range.primitives : ElementType, isInfinite, isInputRange;
+        import ripstd.range.primitives : ElementType, isInfinite, isInputRange;
         // Access the FILE* handle through the 'file_' member
         // to keep the object alive through refcounting
         File file_;
@@ -3089,7 +3089,7 @@ is empty, throws an `Exception`. In case of an I/O error throws
         wchar highSurrogate = '\0'; // '\0' indicates empty
         void highSurrogateShouldBeEmpty() @safe
         {
-            import std.utf : UTFException;
+            import ripstd.utf : UTFException;
             if (highSurrogate != '\0')
                 throw new UTFException("unpaired surrogate UTF-16 value");
         }
@@ -3099,7 +3099,7 @@ is empty, throws an `Exception`. In case of an I/O error throws
 
         this(ref File f) @trusted
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
 
             enforce(f._p && f._p.handle, "Attempting to write to closed File");
             file_ = f;
@@ -3155,7 +3155,7 @@ is empty, throws an `Exception`. In case of an I/O error throws
                 isInputRange!A &&
                 !isInfinite!A)
         {
-            import std.exception : errnoEnforce;
+            import ripstd.exception : errnoEnforce;
 
             alias C = ElementEncodingType!A;
             static assert(!is(C == void));
@@ -3181,8 +3181,8 @@ is empty, throws an `Exception`. In case of an I/O error throws
         /// ditto
         void put(C)(scope C c) @safe if (isSomeChar!C || is(C : const(ubyte)))
         {
-            import std.traits : Parameters;
-            import std.utf : decodeFront, encode, stride;
+            import ripstd.traits : Parameters;
+            import ripstd.utf : decodeFront, encode, stride;
             static auto trustedFPUTC(int ch, _iobuf* h) @trusted
             {
                 return _FPUTC(ch, h);
@@ -3220,7 +3220,7 @@ is empty, throws an `Exception`. In case of an I/O error throws
             }
             else static if (c.sizeof == 2)
             {
-                import std.utf : decode;
+                import ripstd.utf : decode;
 
                 if (c <= 0x7F)
                 {
@@ -3262,7 +3262,7 @@ is empty, throws an `Exception`. In case of an I/O error throws
             }
             else // 32-bit characters
             {
-                import std.utf : encode;
+                import ripstd.utf : encode;
 
                 highSurrogateShouldBeEmpty();
                 if (orientation_ <= 0)
@@ -3283,7 +3283,7 @@ is empty, throws an `Exception`. In case of an I/O error throws
                 {
                     version (Windows)
                     {
-                        import std.utf : isValidDchar;
+                        import ripstd.utf : isValidDchar;
 
                         assert(isValidDchar(c));
                         if (c <= 0xFFFF)
@@ -3341,7 +3341,7 @@ is empty, throws an `Exception`. In case of an I/O error throws
     // the file mode on destruction, it is RefCounted on Windows.
     struct BinaryWriterImpl(bool locking)
     {
-        import std.traits : hasIndirections;
+        import ripstd.traits : hasIndirections;
     private:
         // Access the FILE* handle through the 'file_' member
         // to keep the object alive through refcounting
@@ -3360,7 +3360,7 @@ is empty, throws an `Exception`. In case of an I/O error throws
         // Must be public for RefCounted and emplace() in druntime.
         this(scope ref File f)
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
             file_ = f;
             enforce(f._p && f._p.handle);
             name = f._name;
@@ -3407,8 +3407,8 @@ is empty, throws an `Exception`. In case of an I/O error throws
 
         void rawWrite(T)(in T[] buffer)
         {
-            import std.conv : text;
-            import std.exception : errnoEnforce;
+            import ripstd.conv : text;
+            import ripstd.exception : errnoEnforce;
 
             auto result = trustedFwrite(file_._p.handle, buffer);
             if (result == result.max) result = 0;
@@ -3454,7 +3454,7 @@ Example:
 Produce a grayscale image of the $(LINK2 https://en.wikipedia.org/wiki/Mandelbrot_set, Mandelbrot set)
 in binary $(LINK2 https://en.wikipedia.org/wiki/Netpbm_format, Netpbm format) to standard output.
 ---
-import std.algorithm, std.complex, std.range, std.stdio;
+import ripstd.algorithm, ripstd.complex, ripstd.range, ripstd.stdio;
 
 void main()
 {
@@ -3479,7 +3479,7 @@ void main()
 
         version (Windows)
         {
-            import std.typecons : RefCounted;
+            import ripstd.typecons : RefCounted;
             alias LockingBinaryWriter = RefCounted!LockingBinaryWriterImpl;
         }
         else
@@ -3490,14 +3490,14 @@ void main()
 
     @system unittest
     {
-        import std.algorithm.mutation : reverse;
-        import std.exception : collectException;
-        static import std.file;
-        import std.range : only, retro;
-        import std.string : format;
+        import ripstd.algorithm.mutation : reverse;
+        import ripstd.exception : collectException;
+        static import ripstd.file;
+        import ripstd.range : only, retro;
+        import ripstd.string : format;
 
         auto deleteme = testFilename();
-        scope(exit) collectException(std.file.remove(deleteme));
+        scope(exit) collectException(ripstd.file.remove(deleteme));
 
         {
             auto writer = File(deleteme, "wb").lockingBinaryWriter();
@@ -3563,7 +3563,7 @@ void main()
 /** Returns the size of the file in bytes, ulong.max if file is not searchable or throws if the operation fails.
 Example:
 ---
-import std.stdio, std.file;
+import ripstd.stdio, ripstd.file;
 
 void main()
 {
@@ -3578,7 +3578,7 @@ void main()
 */
     @property ulong size() @safe
     {
-        import std.exception : collectException;
+        import ripstd.exception : collectException;
 
         ulong pos = void;
         if (collectException(pos = tell)) return ulong.max;
@@ -3728,12 +3728,12 @@ void main()
 
 @safe unittest
 {
-    import std.exception : collectException;
-    static import std.file;
+    import ripstd.exception : collectException;
+    static import ripstd.file;
 
     auto deleteme = testFilename();
-    scope(exit) collectException(std.file.remove(deleteme));
-    std.file.write(deleteme, "1 2 3");
+    scope(exit) collectException(ripstd.file.remove(deleteme));
+    ripstd.file.write(deleteme, "1 2 3");
     auto f = File(deleteme);
     assert(f.size == 5);
     assert(f.tell == 0);
@@ -3742,12 +3742,12 @@ void main()
 @system unittest
 {
     // @system due to readln
-    static import std.file;
-    import std.range : chain, only, repeat;
-    import std.range.primitives : isOutputRange;
+    static import ripstd.file;
+    import ripstd.range : chain, only, repeat;
+    import ripstd.range.primitives : isOutputRange;
 
     auto deleteme = testFilename();
-    scope(exit) std.file.remove(deleteme);
+    scope(exit) ripstd.file.remove(deleteme);
 
     {
         auto writer = File(deleteme, "w").lockingTextWriter();
@@ -3767,18 +3767,18 @@ void main()
 
 @safe unittest // wchar -> char
 {
-    static import std.file;
-    import std.exception : assertThrown;
-    import std.utf : UTFException;
+    static import ripstd.file;
+    import ripstd.exception : assertThrown;
+    import ripstd.utf : UTFException;
 
     auto deleteme = testFilename();
-    scope(exit) std.file.remove(deleteme);
+    scope(exit) ripstd.file.remove(deleteme);
 
     {
         auto writer = File(deleteme, "w").lockingTextWriter();
         writer.put("\U0001F608"w);
     }
-    assert(std.file.readText!string(deleteme) == "\U0001F608");
+    assert(ripstd.file.readText!string(deleteme) == "\U0001F608");
 
     // Test invalid input: unpaired high surrogate
     {
@@ -3797,7 +3797,7 @@ void main()
             // the unpaired surrogate.
         } ());
     }
-    assert(std.file.readText!string(deleteme) == "x");
+    assert(ripstd.file.readText!string(deleteme) == "x");
 
     // Test invalid input: unpaired low surrogate
     {
@@ -3807,41 +3807,41 @@ void main()
         writer.put('y');
         assertThrown!UTFException(writer.put(surr));
     }
-    assert(std.file.readText!string(deleteme) == "y");
+    assert(ripstd.file.readText!string(deleteme) == "y");
 }
 
 @safe unittest // issue 18801
 {
-    static import std.file;
-    import std.string : stripLeft;
+    static import ripstd.file;
+    import ripstd.string : stripLeft;
 
     auto deleteme = testFilename();
-    scope(exit) std.file.remove(deleteme);
+    scope(exit) ripstd.file.remove(deleteme);
 
     {
         auto writer = File(deleteme, "w,ccs=UTF-8").lockingTextWriter();
         writer.put("foo");
     }
-    assert(std.file.readText!string(deleteme).stripLeft("\uFEFF") == "foo");
+    assert(ripstd.file.readText!string(deleteme).stripLeft("\uFEFF") == "foo");
 
     {
         auto writer = File(deleteme, "a,ccs=UTF-8").lockingTextWriter();
         writer.put("bar");
     }
-    assert(std.file.readText!string(deleteme).stripLeft("\uFEFF") == "foobar");
+    assert(ripstd.file.readText!string(deleteme).stripLeft("\uFEFF") == "foobar");
 }
 @safe unittest // char/wchar -> wchar_t
 {
     import core.stdc.locale : LC_CTYPE, setlocale;
     import core.stdc.wchar_ : fwide;
     import core.stdc.string : strlen;
-    import std.algorithm.searching : any, endsWith;
-    import std.conv : text;
-    import std.meta : AliasSeq;
-    import std.string : fromStringz, stripLeft;
-    static import std.file;
+    import ripstd.algorithm.searching : any, endsWith;
+    import ripstd.conv : text;
+    import ripstd.meta : AliasSeq;
+    import ripstd.string : fromStringz, stripLeft;
+    static import ripstd.file;
     auto deleteme = testFilename();
-    scope(exit) std.file.remove(deleteme);
+    scope(exit) ripstd.file.remove(deleteme);
     const char* oldCt = () @trusted {
         const(char)* p = setlocale(LC_CTYPE, null);
         // Subsequent calls to `setlocale` might invalidate this return value,
@@ -3875,14 +3875,14 @@ void main()
         assert(writer.orientation_ == 1);
         static foreach (s; strs) writer.put(s);
     }
-    assert(std.file.readText!string(deleteme).stripLeft("\uFEFF") ==
+    assert(ripstd.file.readText!string(deleteme).stripLeft("\uFEFF") ==
         text(strs));
 }
 @safe unittest // https://issues.dlang.org/show_bug.cgi?id=18789
 {
-    static import std.file;
+    static import ripstd.file;
     auto deleteme = testFilename();
-    scope(exit) std.file.remove(deleteme);
+    scope(exit) ripstd.file.remove(deleteme);
     // converting to char
     {
         auto f = File(deleteme, "w");
@@ -3901,18 +3901,18 @@ void main()
 
 @safe unittest
 {
-    import std.exception : collectException;
+    import ripstd.exception : collectException;
     auto e = collectException({ File f; f.writeln("Hello!"); }());
     assert(e && e.msg == "Attempting to write to closed File");
 }
 
 @safe unittest // https://issues.dlang.org/show_bug.cgi?id=21592
 {
-    import std.exception : collectException;
-    import std.utf : UTFException;
-    static import std.file;
+    import ripstd.exception : collectException;
+    import ripstd.utf : UTFException;
+    static import ripstd.file;
     auto deleteme = testFilename();
-    scope(exit) std.file.remove(deleteme);
+    scope(exit) ripstd.file.remove(deleteme);
     auto f = File(deleteme, "w");
     auto e = collectException!UTFException(f.writeln(wchar(0xD801)));
     assert(e.next is null);
@@ -3923,8 +3923,8 @@ version (StdStressTest)
     // https://issues.dlang.org/show_bug.cgi?id=15768
     @system unittest
     {
-        import std.parallelism : parallel;
-        import std.range : iota;
+        import ripstd.parallelism : parallel;
+        import ripstd.range : iota;
 
         auto deleteme = testFilename();
         stderr = File(deleteme, "w");
@@ -3965,7 +3965,7 @@ struct LockingTextReader
 
     this(File f)
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         enforce(f.isOpen, "LockingTextReader: File must be open");
         _f = f;
         _FLOCK(_f._p.handle);
@@ -3987,7 +3987,7 @@ struct LockingTextReader
 
     void opAssign(LockingTextReader r)
     {
-        import std.algorithm.mutation : swap;
+        import ripstd.algorithm.mutation : swap;
         swap(this, r);
     }
 
@@ -4038,13 +4038,13 @@ struct LockingTextReader
 @system unittest
 {
     // @system due to readf
-    static import std.file;
-    import std.range.primitives : isInputRange;
+    static import ripstd.file;
+    import ripstd.range.primitives : isInputRange;
 
     static assert(isInputRange!LockingTextReader);
     auto deleteme = testFilename();
-    std.file.write(deleteme, "1 2 3");
-    scope(exit) std.file.remove(deleteme);
+    ripstd.file.write(deleteme, "1 2 3");
+    scope(exit) ripstd.file.remove(deleteme);
     int x;
     auto f = File(deleteme);
     f.readf("%s ", &x);
@@ -4058,13 +4058,13 @@ struct LockingTextReader
 // https://issues.dlang.org/show_bug.cgi?id=13686
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    static import std.file;
-    import std.utf : byDchar;
+    import ripstd.algorithm.comparison : equal;
+    static import ripstd.file;
+    import ripstd.utf : byDchar;
 
     auto deleteme = testFilename();
-    std.file.write(deleteme, "Тест");
-    scope(exit) std.file.remove(deleteme);
+    ripstd.file.write(deleteme, "Тест");
+    scope(exit) ripstd.file.remove(deleteme);
 
     string s;
     File(deleteme).readf("%s", &s);
@@ -4077,10 +4077,10 @@ struct LockingTextReader
 // https://issues.dlang.org/show_bug.cgi?id=12320
 @system unittest
 {
-    static import std.file;
+    static import ripstd.file;
     auto deleteme = testFilename();
-    std.file.write(deleteme, "ab");
-    scope(exit) std.file.remove(deleteme);
+    ripstd.file.write(deleteme, "ab");
+    scope(exit) ripstd.file.remove(deleteme);
     auto ltr = LockingTextReader(File(deleteme));
     assert(ltr.front == 'a');
     ltr.popFront();
@@ -4093,13 +4093,13 @@ struct LockingTextReader
 @system unittest
 {
     // @system due to readf
-    static import std.file;
+    static import ripstd.file;
     auto deleteme = testFilename();
     File fw = File(deleteme, "w");
     for (int i; i != 5000; i++)
         fw.writeln(i, ";", "Иванов;Пётр;Петрович");
     fw.close();
-    scope(exit) std.file.remove(deleteme);
+    scope(exit) ripstd.file.remove(deleteme);
     // Test read
     File fr = File(deleteme, "r");
     scope (exit) fr.close();
@@ -4150,7 +4150,7 @@ Example:
     Reads `stdin` and writes it to `stdout` with an argument
     counter.
 ---
-import std.stdio;
+import ripstd.stdio;
 
 void main()
 {
@@ -4171,7 +4171,7 @@ if (!is(T[0] : File))
 
 @system unittest
 {
-    static import std.file;
+    static import ripstd.file;
 
     scope(failure) printf("Failed test at line %d\n", __LINE__);
     void[] buf;
@@ -4181,8 +4181,8 @@ if (!is(T[0] : File))
     auto f = File(deleteme, "w");
     f.write("Hello, ",  "world number ", 42, "!");
     f.close();
-    scope(exit) { std.file.remove(deleteme); }
-    assert(cast(char[]) std.file.read(deleteme) == "Hello, world number 42!");
+    scope(exit) { ripstd.file.remove(deleteme); }
+    assert(cast(char[]) ripstd.file.read(deleteme) == "Hello, world number 42!");
 }
 
 /***********************************
@@ -4199,7 +4199,7 @@ if (!is(T[0] : File))
  *        Reads `stdin` and writes it to `stdout` with an argument
  *        counter.
 ---
-import std.stdio;
+import ripstd.stdio;
 
 void main()
 {
@@ -4216,7 +4216,7 @@ void writeln(T...)(T args)
 {
     static if (T.length == 0)
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(fputc('\n', .trustedStdout._p.handle) != EOF, "fputc failed");
     }
@@ -4269,21 +4269,21 @@ void writeln(T...)(T args)
 
 @system unittest
 {
-    static import std.file;
+    static import ripstd.file;
 
     scope(failure) printf("Failed test at line %d\n", __LINE__);
 
     // test writeln
     auto deleteme = testFilename();
     auto f = File(deleteme, "w");
-    scope(exit) { std.file.remove(deleteme); }
+    scope(exit) { ripstd.file.remove(deleteme); }
     f.writeln("Hello, ",  "world number ", 42, "!");
     f.close();
     version (Windows)
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
                 "Hello, world number 42!\r\n");
     else
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
                 "Hello, world number 42!\n");
 
     // test writeln on stdout
@@ -4293,10 +4293,10 @@ void writeln(T...)(T args)
     writeln("Hello, ",  "world number ", 42, "!");
     stdout.close();
     version (Windows)
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
                 "Hello, world number 42!\r\n");
     else
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
                 "Hello, world number 42!\n");
 
     stdout.open(deleteme, "w");
@@ -4306,20 +4306,20 @@ void writeln(T...)(T args)
     writeln("embedded\0null"c); // https://issues.dlang.org/show_bug.cgi?id=8730
     stdout.close();
     version (Windows)
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
             "Hello!\r\nHello!\r\nHello!\r\nembedded\0null\r\n");
     else
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
             "Hello!\nHello!\nHello!\nembedded\0null\n");
 }
 
 @system unittest
 {
-    static import std.file;
+    static import ripstd.file;
 
     auto deleteme = testFilename();
     auto f = File(deleteme, "w");
-    scope(exit) { std.file.remove(deleteme); }
+    scope(exit) { ripstd.file.remove(deleteme); }
 
     enum EI : int    { A, B }
     enum ED : double { A = 0, B } // NOTE: explicit initialization to 0 required during Enum init deprecation cycle
@@ -4340,10 +4340,10 @@ void writeln(T...)(T args)
 
     f.close();
     version (Windows)
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
                 "A\r\nB\r\nA\r\nB\r\nA\r\nB\r\nA\r\nB\r\n");
     else
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
                 "A\nB\nA\nB\nA\nB\nA\nB\n");
 }
 
@@ -4386,7 +4386,7 @@ stderr.writef("%s", "message");
 void writef(alias fmt, A...)(A args)
 if (isSomeString!(typeof(fmt)))
 {
-    import std.format : checkFormatException;
+    import ripstd.format : checkFormatException;
 
     alias e = checkFormatException!(fmt, A);
     static assert(!e, e.msg);
@@ -4401,24 +4401,24 @@ void writef(Char, A...)(in Char[] fmt, A args)
 
 @system unittest
 {
-    static import std.file;
+    static import ripstd.file;
 
     scope(failure) printf("Failed test at line %d\n", __LINE__);
 
     // test writef
     auto deleteme = testFilename();
     auto f = File(deleteme, "w");
-    scope(exit) { std.file.remove(deleteme); }
+    scope(exit) { ripstd.file.remove(deleteme); }
     f.writef!"Hello, %s world number %s!"("nice", 42);
     f.close();
-    assert(cast(char[]) std.file.read(deleteme) ==  "Hello, nice world number 42!");
+    assert(cast(char[]) ripstd.file.read(deleteme) ==  "Hello, nice world number 42!");
     // test write on stdout
     auto saveStdout = stdout;
     scope(exit) stdout = saveStdout;
     stdout.open(deleteme, "w");
     writef!"Hello, %s world number %s!"("nice", 42);
     stdout.close();
-    assert(cast(char[]) std.file.read(deleteme) == "Hello, nice world number 42!");
+    assert(cast(char[]) ripstd.file.read(deleteme) == "Hello, nice world number 42!");
 }
 
 /***********************************
@@ -4427,7 +4427,7 @@ void writef(Char, A...)(in Char[] fmt, A args)
 void writefln(alias fmt, A...)(A args)
 if (isSomeString!(typeof(fmt)))
 {
-    import std.format : checkFormatException;
+    import ripstd.format : checkFormatException;
 
     alias e = checkFormatException!(fmt, A);
     static assert(!e, e.msg);
@@ -4442,23 +4442,23 @@ void writefln(Char, A...)(in Char[] fmt, A args)
 
 @system unittest
 {
-    static import std.file;
+    static import ripstd.file;
 
     scope(failure) printf("Failed test at line %d\n", __LINE__);
 
     // test File.writefln
     auto deleteme = testFilename();
     auto f = File(deleteme, "w");
-    scope(exit) { std.file.remove(deleteme); }
+    scope(exit) { ripstd.file.remove(deleteme); }
     f.writefln!"Hello, %s world number %s!"("nice", 42);
     f.close();
     version (Windows)
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
                 "Hello, nice world number 42!\r\n");
     else
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
                 "Hello, nice world number 42!\n",
-                cast(char[]) std.file.read(deleteme));
+                cast(char[]) ripstd.file.read(deleteme));
 
     // test writefln
     auto saveStdout = stdout;
@@ -4467,10 +4467,10 @@ void writefln(Char, A...)(in Char[] fmt, A args)
     writefln!"Hello, %s world number %s!"("nice", 42);
     stdout.close();
     version (Windows)
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
                 "Hello, nice world number 42!\r\n");
     else
-        assert(cast(char[]) std.file.read(deleteme) ==
+        assert(cast(char[]) ripstd.file.read(deleteme) ==
                 "Hello, nice world number 42!\n");
 }
 
@@ -4486,7 +4486,7 @@ void writefln(Char, A...)(in Char[] fmt, A args)
 // test.d
 void main()
 {
-    import std.stdio;
+    import ripstd.stdio;
     foreach (_; 0 .. 3)
     {
         int a;
@@ -4505,7 +4505,7 @@ $(CONSOLE
 uint readf(alias format, A...)(auto ref A args)
 if (isSomeString!(typeof(format)))
 {
-    import std.format : checkFormatException;
+    import ripstd.format : checkFormatException;
 
     alias e = checkFormatException!(format, A);
     static assert(!e, e.msg);
@@ -4551,7 +4551,7 @@ uint readf(A...)(scope const(char)[] format, auto ref A args)
  * Example:
  *        Reads `stdin` and writes it to `stdout`.
 ---
-import std.stdio;
+import ripstd.stdio;
 
 void main()
 {
@@ -4585,7 +4585,7 @@ if (isSomeString!S)
  * Example:
  *        Reads `stdin` and writes it to `stdout`.
 ---
-import std.stdio;
+import ripstd.stdio;
 
 void main()
 {
@@ -4611,7 +4611,7 @@ if (isSomeChar!C && is(Unqual!C == C) && !is(C == enum) &&
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     //we can't actually test readln, so at the very least,
     //we test compilability
@@ -4643,7 +4643,7 @@ private FILE* _fopen(R1, R2)(R1 name, R2 mode = "r")
 if ((isInputRange!R1 && isSomeChar!(ElementEncodingType!R1) || isSomeString!R1) &&
     (isInputRange!R2 && isSomeChar!(ElementEncodingType!R2) || isSomeString!R2))
 {
-    import std.internal.cstring : tempCString;
+    import ripstd.internal.cstring : tempCString;
 
     auto namez = name.tempCString!FSChar();
     auto modez = mode.tempCString!FSChar();
@@ -4685,7 +4685,7 @@ version (Posix)
     if ((isInputRange!R1 && isSomeChar!(ElementEncodingType!R1) || isSomeString!R1) &&
         (isInputRange!R2 && isSomeChar!(ElementEncodingType!R2) || isSomeString!R2))
     {
-        import std.internal.cstring : tempCString;
+        import ripstd.internal.cstring : tempCString;
 
         auto namez = name.tempCString!FSChar();
         auto modez = mode.tempCString!FSChar();
@@ -4782,7 +4782,7 @@ struct lines
 
     int opApply(D)(scope D dg)
     {
-        import std.traits : Parameters;
+        import ripstd.traits : Parameters;
         alias Parms = Parameters!(dg);
         static if (isSomeString!(Parms[$ - 1]))
         {
@@ -4798,7 +4798,7 @@ struct lines
                 Parms[0] i = 0;
             for (;;)
             {
-                import std.conv : to;
+                import ripstd.conv : to;
 
                 if (!f.readln(line, terminator)) break;
                 auto copy = to!(Parms[$ - 1])(line);
@@ -4824,9 +4824,9 @@ struct lines
     // no UTF checking
     int opApplyRaw(D)(scope D dg)
     {
-        import std.conv : to;
-        import std.exception : assumeUnique;
-        import std.traits : Parameters;
+        import ripstd.conv : to;
+        import ripstd.exception : assumeUnique;
+        import ripstd.traits : Parameters;
 
         alias Parms = Parameters!(dg);
         enum duplicate = is(Parms[$ - 1] : immutable(ubyte)[]);
@@ -4871,13 +4871,13 @@ struct lines
 
 @system unittest
 {
-    static import std.file;
-    import std.meta : AliasSeq;
+    static import ripstd.file;
+    import ripstd.meta : AliasSeq;
 
     scope(failure) printf("Failed test at line %d\n", __LINE__);
 
     auto deleteme = testFilename();
-    scope(exit) { std.file.remove(deleteme); }
+    scope(exit) { ripstd.file.remove(deleteme); }
 
     alias TestedWith =
           AliasSeq!(string, wstring, dstring,
@@ -4885,7 +4885,7 @@ struct lines
     foreach (T; TestedWith)
     {
         // test looping with an empty file
-        std.file.write(deleteme, "");
+        ripstd.file.write(deleteme, "");
         auto f = File(deleteme, "r");
         foreach (T line; lines(f))
         {
@@ -4894,7 +4894,7 @@ struct lines
         f.close();
 
         // test looping with a file with three lines
-        std.file.write(deleteme, "Line one\nline two\nline three\n");
+        ripstd.file.write(deleteme, "Line one\nline two\nline three\n");
         f.open(deleteme, "r");
         uint i = 0;
         foreach (T line; lines(f))
@@ -4908,7 +4908,7 @@ struct lines
         f.close();
 
         // test looping with a file with three lines, last without a newline
-        std.file.write(deleteme, "Line one\nline two\nline three");
+        ripstd.file.write(deleteme, "Line one\nline two\nline three");
         f.open(deleteme, "r");
         i = 0;
         foreach (T line; lines(f))
@@ -4927,7 +4927,7 @@ struct lines
     foreach (T; TestedWith2)
     {
         // test looping with an empty file
-        std.file.write(deleteme, "");
+        ripstd.file.write(deleteme, "");
         auto f = File(deleteme, "r");
         foreach (T line; lines(f))
         {
@@ -4936,7 +4936,7 @@ struct lines
         f.close();
 
         // test looping with a file with three lines
-        std.file.write(deleteme, "Line one\nline two\nline three\n");
+        ripstd.file.write(deleteme, "Line one\nline two\nline three\n");
         f.open(deleteme, "r");
         uint i = 0;
         foreach (T line; lines(f))
@@ -4951,7 +4951,7 @@ struct lines
         f.close();
 
         // test looping with a file with three lines, last without a newline
-        std.file.write(deleteme, "Line one\nline two\nline three");
+        ripstd.file.write(deleteme, "Line one\nline two\nline three");
         f.open(deleteme, "r");
         i = 0;
         foreach (T line; lines(f))
@@ -4970,7 +4970,7 @@ struct lines
     {
         // test looping with a file with three lines, last without a newline
         // using a counter too this time
-        std.file.write(deleteme, "Line one\nline two\nline three");
+        ripstd.file.write(deleteme, "Line one\nline two\nline three");
         auto f = File(deleteme, "r");
         uint i = 0;
         foreach (ulong j, T line; lines(f))
@@ -5031,7 +5031,7 @@ private struct ChunksImpl
     int opApply(D)(scope D dg)
     {
         import core.stdc.stdlib : alloca;
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
 
         enforce(f.isOpen, "Attempting to read from an unopened file");
         enum maxStackSize = 1024 * 16;
@@ -5068,15 +5068,15 @@ private struct ChunksImpl
 
 @system unittest
 {
-    static import std.file;
+    static import ripstd.file;
 
     scope(failure) printf("Failed test at line %d\n", __LINE__);
 
     auto deleteme = testFilename();
-    scope(exit) { std.file.remove(deleteme); }
+    scope(exit) { ripstd.file.remove(deleteme); }
 
     // test looping with an empty file
-    std.file.write(deleteme, "");
+    ripstd.file.write(deleteme, "");
     auto f = File(deleteme, "r");
     foreach (ubyte[] line; chunks(f, 4))
     {
@@ -5085,7 +5085,7 @@ private struct ChunksImpl
     f.close();
 
     // test looping with a file with three lines
-    std.file.write(deleteme, "Line one\nline two\nline three\n");
+    ripstd.file.write(deleteme, "Line one\nline two\nline three\n");
     f = File(deleteme, "r");
     uint i = 0;
     foreach (ubyte[] line; chunks(f, 3))
@@ -5102,15 +5102,15 @@ private struct ChunksImpl
 // Issue 21730 - null ptr dereferenced in ChunksImpl.opApply (SIGSEGV)
 @system unittest
 {
-    import std.exception : assertThrown;
-    static import std.file;
+    import ripstd.exception : assertThrown;
+    static import ripstd.file;
 
     auto deleteme = testFilename();
-    scope(exit) { if (std.file.exists(deleteme)) std.file.remove(deleteme); }
+    scope(exit) { if (ripstd.file.exists(deleteme)) ripstd.file.remove(deleteme); }
 
     auto err1 = File(deleteme, "w+x");
     err1.close;
-    std.file.remove(deleteme);
+    ripstd.file.remove(deleteme);
     assertThrown(() {foreach (ubyte[] buf; chunks(err1, 4096)) {}}());
 }
 
@@ -5130,13 +5130,13 @@ if (is(typeof(copy(data, stdout.lockingBinaryWriter))))
 
 @system unittest
 {
-    static import std.file;
+    static import ripstd.file;
 
     auto deleteme = testFilename();
-    scope(exit) { std.file.remove(deleteme); }
+    scope(exit) { ripstd.file.remove(deleteme); }
 
     "Test".toFile(deleteme);
-    assert(std.file.readText(deleteme) == "Test");
+    assert(ripstd.file.readText(deleteme) == "Test");
 }
 
 /*********************
@@ -5153,7 +5153,7 @@ Initialize with a message and an error code.
 */
     this(string message, uint e = core.stdc.errno.errno) @trusted
     {
-        import std.exception : errnoString;
+        import ripstd.exception : errnoString;
         errno = e;
         auto sysmsg = errnoString(errno);
         // If e is 0, we don't use the system error message.  (The message
@@ -5236,10 +5236,10 @@ alias stdin = makeGlobal!(StdFileHandle.stdin);
 @safe unittest
 {
     // Read stdin, sort lines, write to stdout
-    import std.algorithm.mutation : copy;
-    import std.algorithm.sorting : sort;
-    import std.array : array;
-    import std.typecons : Yes;
+    import ripstd.algorithm.mutation : copy;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.array : array;
+    import ripstd.typecons : Yes;
 
     void main()
     {
@@ -5284,9 +5284,9 @@ alias stdout = makeGlobal!(StdFileHandle.stdout);
 {
     void main()
     {
-        import std.algorithm.iteration : filter, map, sum;
-        import std.format : format;
-        import std.range : iota, tee;
+        import ripstd.algorithm.iteration : filter, map, sum;
+        import ripstd.format : format;
+        import ripstd.range : iota, tee;
 
         int len;
         const r = 6.iota
@@ -5304,10 +5304,10 @@ alias stdout = makeGlobal!(StdFileHandle.stdout);
 {
     void main()
     {
-        import std.algorithm.mutation : copy;
-        import std.algorithm.iteration : map;
-        import std.format : format;
-        import std.range : iota;
+        import ripstd.algorithm.mutation : copy;
+        import ripstd.algorithm.iteration : map;
+        import ripstd.format : format;
+        import ripstd.range : iota;
 
         10.iota
         .map!(e => "N: %d".format(e))
@@ -5344,14 +5344,14 @@ alias stderr = makeGlobal!(StdFileHandle.stderr);
 
 @system unittest
 {
-    static import std.file;
-    import std.typecons : tuple;
+    static import ripstd.file;
+    import ripstd.typecons : tuple;
 
     scope(failure) printf("Failed test at line %d\n", __LINE__);
     auto deleteme = testFilename();
 
-    std.file.write(deleteme, "1 2\n4 1\n5 100");
-    scope(exit) std.file.remove(deleteme);
+    ripstd.file.write(deleteme, "1 2\n4 1\n5 100");
+    scope(exit) ripstd.file.remove(deleteme);
     {
         File f = File(deleteme);
         scope(exit) f.close();
@@ -5431,7 +5431,7 @@ private struct ReadlnAppender
     }
     void putdchar(dchar dc) @trusted
     {
-        import std.utf : encode, UseReplacementDchar;
+        import ripstd.utf : encode, UseReplacementDchar;
 
         char[4] ubuf;
         immutable size = encode!(UseReplacementDchar.yes)(ubuf, dc);
@@ -5640,7 +5640,7 @@ private size_t readlnImpl(FILE* fps, ref char[] buf, dchar terminator, File.Orie
                             }
                             c = ((c - 0xD7C0) << 10) + (c2 - 0xDC00);
                         }
-                        import std.utf : encode;
+                        import ripstd.utf : encode;
                         encode(buf, c);
                     }
                 }
@@ -5653,7 +5653,7 @@ private size_t readlnImpl(FILE* fps, ref char[] buf, dchar terminator, File.Orie
                 buf.length = 0;
                 for (int c; (c = _FGETWC(fp)) != -1; )
                 {
-                    import std.utf : encode;
+                    import ripstd.utf : encode;
 
                     if ((c & ~0x7F) == 0)
                         buf ~= cast(char) c;
@@ -5739,7 +5739,7 @@ private size_t readlnImpl(FILE* fps, ref char[] buf, dchar terminator, File.Orie
                             }
                             c = ((c - 0xD7C0) << 10) + (c2 - 0xDC00);
                         }
-                        import std.utf : encode;
+                        import ripstd.utf : encode;
                         encode(buf, c);
                     }
                 }
@@ -5749,7 +5749,7 @@ private size_t readlnImpl(FILE* fps, ref char[] buf, dchar terminator, File.Orie
             }
             else version (Posix)
             {
-                import std.utf : encode;
+                import ripstd.utf : encode;
                 buf.length = 0;
                 for (int c; (c = _FGETWC(fp)) != -1; )
                 {
@@ -5808,11 +5808,11 @@ private size_t readlnImpl(FILE* fps, ref char[] buf, dchar terminator, File.Orie
 
 @system unittest
 {
-    static import std.file;
+    static import ripstd.file;
     auto deleteme = testFilename();
-    scope(exit) std.file.remove(deleteme);
+    scope(exit) ripstd.file.remove(deleteme);
 
-    std.file.write(deleteme, "abcd\n0123456789abcde\n1234\n");
+    ripstd.file.write(deleteme, "abcd\n0123456789abcde\n1234\n");
     File f = File(deleteme, "rb");
 
     char[] ln = new char[2];
@@ -5859,9 +5859,9 @@ version (linux)
         import core.sys.posix.netinet.in_ : sockaddr_in;
         static import core.sys.posix.unistd;
         static import sock = core.sys.posix.sys.socket;
-        import std.conv : to;
-        import std.exception : enforce;
-        import std.internal.cstring : tempCString;
+        import ripstd.conv : to;
+        import ripstd.exception : enforce;
+        import ripstd.internal.cstring : tempCString;
 
         auto h = enforce( gethostbyname(host.tempCString()),
             new StdioException("gethostbyname"));
@@ -5892,11 +5892,11 @@ version (linux)
     }
 }
 
-version (StdUnittest) private string testFilename(string file = __FILE__, size_t line = __LINE__) @safe
+version (RIPStdUnittest) private string testFilename(string file = __FILE__, size_t line = __LINE__) @safe
 {
-    import std.conv : text;
-    import std.file : deleteme;
-    import std.path : baseName;
+    import ripstd.conv : text;
+    import ripstd.file : deleteme;
+    import ripstd.path : baseName;
 
     // filename intentionally contains non-ASCII (Russian) characters for
     // https://issues.dlang.org/show_bug.cgi?id=7648

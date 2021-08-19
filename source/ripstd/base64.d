@@ -57,10 +57,10 @@
  */
 module ripstd.base64;
 
-import std.exception : enforce;
-import std.range.primitives : empty, front, isInputRange, isOutputRange,
+import ripstd.exception : enforce;
+import ripstd.range.primitives : empty, front, isInputRange, isOutputRange,
     isForwardRange, ElementType, hasLength, popFront, put, save;
-import std.traits : isArray;
+import ripstd.traits : isArray;
 
 // Make sure module header code examples work correctly.
 @safe unittest
@@ -363,7 +363,7 @@ template Base64Impl(char Map62th, char Map63th, char Padding = '=')
         }
 
         // @@@BUG@@@ Workaround for DbC problem. See comment on 'out'.
-        version (StdUnittest)
+        version (RIPStdUnittest)
             assert(
                 bufptr - buffer.ptr == encodeLength(srcLen),
                 "The length of result is different from Base64"
@@ -455,7 +455,7 @@ template Base64Impl(char Map62th, char Map63th, char Padding = '=')
     ///
     @safe pure nothrow unittest
     {
-        import std.array : appender;
+        import ripstd.array : appender;
 
         auto output = appender!string();
         ubyte[] data = [0x1a, 0x2b, 0x3c, 0x4d, 0x5d, 0x6e];
@@ -535,7 +535,7 @@ template Base64Impl(char Map62th, char Map63th, char Padding = '=')
         }
 
         // @@@BUG@@@ Workaround for DbC problem.
-        version (StdUnittest)
+        version (RIPStdUnittest)
             assert(
                 pcount == encodeLength(srcLen),
                 "The number of put is different from the length of Base64"
@@ -1125,7 +1125,7 @@ template Base64Impl(char Map62th, char Map63th, char Padding = '=')
         }
 
         // We need to do the check here because we have consumed the length
-        version (StdUnittest)
+        version (RIPStdUnittest)
             assert(
                 (bufptr - buffer.ptr) >= (decodeLength(srcLen) - 2),
                 "The length of result is smaller than expected length"
@@ -1310,7 +1310,7 @@ template Base64Impl(char Map62th, char Map63th, char Padding = '=')
         }
 
         // @@@BUG@@@ Workaround for DbC problem.
-        version (StdUnittest)
+        version (RIPStdUnittest)
             assert(
                 pcount >= (decodeLength(srcLen) - 2),
                 "The length of result is smaller than expected length"
@@ -1691,14 +1691,14 @@ template Base64Impl(char Map62th, char Map63th, char Padding = '=')
     /// ditto
     Decoder!(const(ubyte)[]) decoder()(const(char)[] range)
     {
-        import std.string : representation;
+        import ripstd.string : representation;
         return typeof(return)(range.representation);
     }
 
     ///
     @safe pure unittest
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         string encoded =
             "VGhvdSBzaGFsdCBuZXZlciBjb250aW51ZSBhZnRlciBhc3NlcnRpbmcgbnVsbA==";
 
@@ -1735,7 +1735,7 @@ template Base64Impl(char Map62th, char Map63th, char Padding = '=')
 ///
 @safe unittest
 {
-    import std.string : representation;
+    import ripstd.string : representation;
 
     // pre-defined: alias Base64 = Base64Impl!('+', '/');
     ubyte[] emptyArr;
@@ -1763,18 +1763,18 @@ class Base64Exception : Exception
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!Base64Exception(Base64.decode("ab|c"));
 }
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.sorting : sort;
-    import std.conv;
-    import std.exception : assertThrown;
-    import std.file;
-    import std.stdio;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.conv;
+    import ripstd.exception : assertThrown;
+    import ripstd.file;
+    import ripstd.stdio;
 
     alias Base64Re = Base64Impl!('!', '=', Base64.NoPadding);
 
@@ -1881,7 +1881,7 @@ class Base64Exception : Exception
     }
 
     { // with OutputRange
-        import std.array;
+        import ripstd.array;
 
         auto a = Appender!(char[])([]);
         auto b = Appender!(ubyte[])([]);
@@ -1936,8 +1936,8 @@ class Base64Exception : Exception
 
     { // Encoder and Decoder
         {
-            string encode_file = std.file.deleteme ~ "-testingEncoder";
-            std.file.write(encode_file, "\nf\nfo\nfoo\nfoob\nfooba\nfoobar");
+            string encode_file = ripstd.file.deleteme ~ "-testingEncoder";
+            ripstd.file.write(encode_file, "\nf\nfo\nfoo\nfoob\nfooba\nfoobar");
 
             auto witness = ["", "Zg==", "Zm8=", "Zm9v", "Zm9vYg==", "Zm9vYmE=", "Zm9vYmFy"];
             auto f = File(encode_file);
@@ -1945,7 +1945,7 @@ class Base64Exception : Exception
             {
                 f.close();
                 assert(!f.isOpen);
-                std.file.remove(encode_file);
+                ripstd.file.remove(encode_file);
             }
 
             size_t i;
@@ -1956,8 +1956,8 @@ class Base64Exception : Exception
         }
 
         {
-            string decode_file = std.file.deleteme ~ "-testingDecoder";
-            std.file.write(decode_file, "\nZg==\nZm8=\nZm9v\nZm9vYg==\nZm9vYmE=\nZm9vYmFy");
+            string decode_file = ripstd.file.deleteme ~ "-testingDecoder";
+            ripstd.file.write(decode_file, "\nZg==\nZm8=\nZm9v\nZm9vYg==\nZm9vYmE=\nZm9vYmFy");
 
             auto witness = sort(tv.keys);
             auto f = File(decode_file);
@@ -1965,7 +1965,7 @@ class Base64Exception : Exception
             {
                 f.close();
                 assert(!f.isOpen);
-                std.file.remove(decode_file);
+                ripstd.file.remove(decode_file);
             }
 
             size_t i;
@@ -2164,13 +2164,13 @@ class Base64Exception : Exception
     // checking invalid dchar
     dchar[] c = cast(dchar[]) "ääää";
 
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!Base64Exception(Base64.decode(c));
 }
 
 @safe unittest
 {
-    import std.array : array;
+    import ripstd.array : array;
 
     char[][] input = [['e', 'y'], ['0', '=']];
     assert(Base64.decoder(input).array == [[123, 45]]);
@@ -2179,7 +2179,7 @@ class Base64Exception : Exception
 // https://issues.dlang.org/show_bug.cgi?id=21707
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     char[][] t1 = [[ 'Z', 'g', '=' ]];
     assertThrown!Base64Exception(Base64.decoder(t1));

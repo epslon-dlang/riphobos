@@ -23,7 +23,7 @@ module ripstd.math.rounding;
 static import core.math;
 static import core.stdc.math;
 
-import std.traits : isFloatingPoint, isIntegral, Unqual;
+import ripstd.traits : isFloatingPoint, isIntegral, Unqual;
 
 version (D_InlineAsm_X86)    version = InlineAsm_X86_Any;
 version (D_InlineAsm_X86_64) version = InlineAsm_X86_Any;
@@ -83,7 +83,7 @@ real ceil(real x) @trusted pure nothrow @nogc
     }
     else
     {
-        import std.math.traits : isInfinity, isNaN;
+        import ripstd.math.traits : isInfinity, isNaN;
 
         // Special cases.
         if (isNaN(x) || isInfinity(x))
@@ -100,7 +100,7 @@ real ceil(real x) @trusted pure nothrow @nogc
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     assert(ceil(+123.456L) == +124);
     assert(ceil(-123.456L) == -123);
@@ -117,7 +117,7 @@ real ceil(real x) @trusted pure nothrow @nogc
 /// ditto
 double ceil(double x) @trusted pure nothrow @nogc
 {
-    import std.math.traits : isInfinity, isNaN;
+    import ripstd.math.traits : isInfinity, isNaN;
 
     // Special cases.
     if (isNaN(x) || isInfinity(x))
@@ -132,7 +132,7 @@ double ceil(double x) @trusted pure nothrow @nogc
 
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     assert(ceil(+123.456) == +124);
     assert(ceil(-123.456) == -123);
@@ -149,7 +149,7 @@ double ceil(double x) @trusted pure nothrow @nogc
 /// ditto
 float ceil(float x) @trusted pure nothrow @nogc
 {
-    import std.math.traits : isInfinity, isNaN;
+    import ripstd.math.traits : isInfinity, isNaN;
 
     // Special cases.
     if (isNaN(x) || isInfinity(x))
@@ -164,7 +164,7 @@ float ceil(float x) @trusted pure nothrow @nogc
 
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     assert(ceil(+123.456f) == +124);
     assert(ceil(-123.456f) == -123);
@@ -184,6 +184,13 @@ float ceil(float x) @trusted pure nothrow @nogc
  */
 real floor(real x) @trusted pure nothrow @nogc
 {
+    // because CTFE builtins are hardcoded in the compiler
+    if(__ctfe)
+    {
+        static import std.math.rounding;
+        return std.math.rounding.floor(x);
+    }
+
     version (InlineAsm_X87_MSVC)
     {
         version (X86_64)
@@ -226,7 +233,7 @@ real floor(real x) @trusted pure nothrow @nogc
     }
     else
     {
-        import std.math.traits : isInfinity, isNaN;
+        import ripstd.math.traits : isInfinity, isNaN;
 
         // Special cases.
         if (isNaN(x) || isInfinity(x) || x == 0.0)
@@ -239,7 +246,7 @@ real floor(real x) @trusted pure nothrow @nogc
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     assert(floor(+123.456L) == +123);
     assert(floor(-123.456L) == -124);
@@ -258,7 +265,14 @@ real floor(real x) @trusted pure nothrow @nogc
 /// ditto
 double floor(double x) @trusted pure nothrow @nogc
 {
-    import std.math.traits : isInfinity, isNaN;
+    // because CTFE builtins are hardcoded in the compiler
+    if(__ctfe)
+    {
+        static import std.math.rounding;
+        return std.math.rounding.floor(x);
+    }
+
+    import ripstd.math.traits : isInfinity, isNaN;
 
     // Special cases.
     if (isNaN(x) || isInfinity(x) || x == 0.0)
@@ -269,7 +283,7 @@ double floor(double x) @trusted pure nothrow @nogc
 
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     assert(floor(+123.456) == +123);
     assert(floor(-123.456) == -124);
@@ -288,7 +302,14 @@ double floor(double x) @trusted pure nothrow @nogc
 /// ditto
 float floor(float x) @trusted pure nothrow @nogc
 {
-    import std.math.traits : isInfinity, isNaN;
+    // because CTFE builtins are hardcoded in the compiler
+    if(__ctfe)
+    {
+        static import std.math.rounding;
+        return std.math.rounding.floor(x);
+    }
+
+    import ripstd.math.traits : isInfinity, isNaN;
 
     // Special cases.
     if (isNaN(x) || isInfinity(x) || x == 0.0)
@@ -299,7 +320,7 @@ float floor(float x) @trusted pure nothrow @nogc
 
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     assert(floor(+123.456f) == +123);
     assert(floor(-123.456f) == -124);
@@ -331,7 +352,7 @@ float floor(float x) @trusted pure nothrow @nogc
 Unqual!F quantize(alias rfunc = rint, F)(const F val, const F unit)
 if (is(typeof(rfunc(F.init)) : F) && isFloatingPoint!F)
 {
-    import std.math.traits : isInfinity;
+    import ripstd.math.traits : isInfinity;
 
     typeof(return) ret = val;
     if (unit != 0)
@@ -346,7 +367,7 @@ if (is(typeof(rfunc(F.init)) : F) && isFloatingPoint!F)
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     assert(isClose(12345.6789L.quantize(0.01L), 12345.68L));
     assert(isClose(12345.6789L.quantize!floor(0.01L), 12345.67L));
@@ -356,8 +377,8 @@ if (is(typeof(rfunc(F.init)) : F) && isFloatingPoint!F)
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.operations : isClose;
-    import std.math.traits : isNaN;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.traits : isNaN;
 
     assert(isClose(12345.6789L.quantize(0), 12345.6789L));
     assert(12345.6789L.quantize(real.infinity).isNaN);
@@ -377,7 +398,7 @@ if (is(typeof(rfunc(F.init)) : F) && isFloatingPoint!F)
 Unqual!F quantize(real base, alias rfunc = rint, F, E)(const F val, const E exp)
 if (is(typeof(rfunc(F.init)) : F) && isFloatingPoint!F && isIntegral!E)
 {
-    import std.math.exponential : pow;
+    import ripstd.math.exponential : pow;
 
     // TODO: Compile-time optimization for power-of-two bases?
     return quantize!rfunc(val, pow(cast(F) base, exp));
@@ -387,7 +408,7 @@ if (is(typeof(rfunc(F.init)) : F) && isFloatingPoint!F && isIntegral!E)
 Unqual!F quantize(real base, long exp = 1, alias rfunc = rint, F)(const F val)
 if (is(typeof(rfunc(F.init)) : F) && isFloatingPoint!F)
 {
-    import std.math.exponential : pow;
+    import ripstd.math.exponential : pow;
 
     enum unit = cast(F) pow(base, exp);
     return quantize!rfunc(val, unit);
@@ -396,7 +417,7 @@ if (is(typeof(rfunc(F.init)) : F) && isFloatingPoint!F)
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     assert(isClose(12345.6789L.quantize!10(-2), 12345.68L));
     assert(isClose(12345.6789L.quantize!(10, -2), 12345.68L));
@@ -409,9 +430,9 @@ if (is(typeof(rfunc(F.init)) : F) && isFloatingPoint!F)
 
 @safe pure nothrow @nogc unittest
 {
-    import std.math.exponential : log10, pow;
-    import std.math.operations : isClose;
-    import std.meta : AliasSeq;
+    import ripstd.math.exponential : log10, pow;
+    import ripstd.math.operations : isClose;
+    import ripstd.meta : AliasSeq;
 
     static foreach (F; AliasSeq!(real, double, float))
     {{
@@ -445,7 +466,7 @@ real nearbyint(real x) @safe pure nothrow @nogc
 ///
 @safe pure unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     assert(nearbyint(0.4) == 0);
     assert(nearbyint(0.5) == 0);
@@ -488,7 +509,7 @@ float rint(float x) @safe pure nothrow @nogc
 ///
 @safe unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     version (IeeeFlagsSupport) resetIeeeFlags();
     assert(rint(0.4) == 0);
@@ -547,7 +568,7 @@ long lrint(real x) @trusted pure nothrow @nogc
     }
     else
     {
-        import std.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
+        import ripstd.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
 
         alias F = floatTraits!(real);
         static if (F.realFormat == RealFormat.ieeeDouble)
@@ -733,7 +754,7 @@ auto round(real x) @trusted nothrow @nogc
 {
     version (CRuntime_Microsoft)
     {
-        import std.math.hardware : FloatingPointControl;
+        import ripstd.math.hardware : FloatingPointControl;
 
         auto old = FloatingPointControl.getControlState();
         FloatingPointControl.setControlState(
@@ -892,7 +913,7 @@ long rndtol(float x) @safe pure nothrow @nogc { return rndtol(cast(real) x); }
 // Helper for floor/ceil
 T floorImpl(T)(const T x) @trusted pure nothrow @nogc
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     alias F = floatTraits!(T);
     // Take care not to trigger library calls from the compiler,

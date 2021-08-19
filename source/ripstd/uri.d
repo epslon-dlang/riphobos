@@ -24,22 +24,22 @@
 module ripstd.uri;
 
 //debug=uri;        // uncomment to turn on debugging writefln's
-debug(uri) import std.stdio;
-import std.traits : isSomeChar;
+debug(uri) import ripstd.stdio;
+import ripstd.traits : isSomeChar;
 
 /** This Exception is thrown if something goes wrong when encoding or
 decoding a URI.
 */
 class URIException : Exception
 {
-    import std.exception : basicExceptionCtors;
+    import ripstd.exception : basicExceptionCtors;
     mixin basicExceptionCtors;
 }
 
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!URIException("%ab".decode);
 }
 
@@ -174,7 +174,7 @@ private string URI_Encode(dstring str, uint unescapedSet) @safe pure
 
 @safe pure unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     assert(URI_Encode("", 0) == "");
     assert(URI_Encode(URI_Decode("%F0%BF%BF%BF", 0), 0) == "%F0%BF%BF%BF");
@@ -194,7 +194,7 @@ private uint ascii2hex(dchar c) @nogc @safe pure nothrow
 private dstring URI_Decode(Char)(scope const(Char)[] uri, uint reservedSet)
 if (isSomeChar!Char)
 {
-    import std.ascii : isHexDigit;
+    import ripstd.ascii : isHexDigit;
 
     uint j;
     uint k;
@@ -292,7 +292,7 @@ if (isSomeChar!Char)
 
 @safe pure unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     assert(URI_Decode("", 0) == "");
     assertThrown!URIException(URI_Decode("%", 0));
@@ -314,8 +314,8 @@ if (isSomeChar!Char)
 string decode(Char)(scope const(Char)[] encodedURI)
 if (isSomeChar!Char)
 {
-    import std.algorithm.iteration : each;
-    import std.utf : encode;
+    import ripstd.algorithm.iteration : each;
+    import ripstd.utf : encode;
     auto s = URI_Decode(encodedURI, URI_Reserved | URI_Hash);
     char[] r;
     s.each!(c => encode(r, c));
@@ -338,8 +338,8 @@ if (isSomeChar!Char)
 string decodeComponent(Char)(scope const(Char)[] encodedURIComponent)
 if (isSomeChar!Char)
 {
-    import std.algorithm.iteration : each;
-    import std.utf : encode;
+    import ripstd.algorithm.iteration : each;
+    import ripstd.utf : encode;
     auto s = URI_Decode(encodedURIComponent, 0);
     char[] r;
     s.each!(c => encode(r, c));
@@ -361,7 +361,7 @@ if (isSomeChar!Char)
 string encode(Char)(scope const(Char)[] uri)
 if (isSomeChar!Char)
 {
-    import std.utf : toUTF32;
+    import ripstd.utf : toUTF32;
     auto s = toUTF32(uri);
     return URI_Encode(s, URI_Reserved | URI_Hash | URI_Alpha | URI_Digit | URI_Mark);
 }
@@ -383,7 +383,7 @@ if (isSomeChar!Char)
 string encodeComponent(Char)(scope const(Char)[] uriComponent)
 if (isSomeChar!Char)
 {
-    import std.utf : toUTF32;
+    import ripstd.utf : toUTF32;
     auto s = toUTF32(uriComponent);
     return URI_Encode(s, URI_Alpha | URI_Digit | URI_Mark);
 }
@@ -411,8 +411,8 @@ package string urlEncode(scope string[string] values) @safe pure
     if (values.length == 0)
         return "";
 
-    import std.array : Appender;
-    import std.format.write : formattedWrite;
+    import ripstd.array : Appender;
+    import ripstd.format.write : formattedWrite;
 
     Appender!string enc;
     enc.reserve(values.length * 128);
@@ -454,8 +454,8 @@ if (isSomeChar!Char)
      *  https://
      *  www.
      */
-    import std.ascii : isAlphaNum;
-    import std.uni : icmp;
+    import ripstd.ascii : isAlphaNum;
+    import ripstd.uni : icmp;
 
     ptrdiff_t i;
 
@@ -525,7 +525,7 @@ if (isSomeChar!Char)
 ptrdiff_t emailLength(Char)(scope const(Char)[] s)
 if (isSomeChar!Char)
 {
-    import std.ascii : isAlpha, isAlphaNum;
+    import ripstd.ascii : isAlpha, isAlphaNum;
 
     ptrdiff_t i;
 
@@ -613,10 +613,10 @@ if (isSomeChar!Char)
     result = decode("%41%42%43");
     debug(uri) writeln(result);
 
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (StringType; AliasSeq!(char[], wchar[], dchar[], string, wstring, dstring))
     {{
-        import std.conv : to;
+        import ripstd.conv : to;
         StringType decoded1 = source.to!StringType;
         string encoded1 = encode(decoded1);
         assert(decoded1 == source.to!StringType); // check that `decoded1` wasn't changed

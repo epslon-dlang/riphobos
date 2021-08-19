@@ -96,10 +96,10 @@ $(TR $(TD Other) $(TD
 module ripstd.path;
 
 
-import std.file : getcwd;
-static import std.meta;
-import std.range.primitives;
-import std.traits;
+import ripstd.file : getcwd;
+static import ripstd.meta;
+import ripstd.range.primitives;
+import ripstd.traits;
 
 version (OSX)
     version = Darwin;
@@ -110,7 +110,7 @@ else version (TVOS)
 else version (WatchOS)
     version = Darwin;
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
 private:
     struct TestAliasedString
@@ -282,8 +282,8 @@ if (isInputRange!R && !isInfinite!R && isSomeChar!(ElementType!R) ||
 
 @safe unittest
 {
-    import std.array;
-    import std.utf : byDchar;
+    import ripstd.array;
+    import ripstd.utf : byDchar;
 
     assert(ltrimDirSeparators("//abc//").array == "abc//");
     assert(ltrimDirSeparators("//abc//"d).array == "abc//"d);
@@ -311,8 +311,8 @@ if (isBidirectionalRange!R && isSomeChar!(ElementType!R) ||
 
 @safe unittest
 {
-    import std.array;
-    import std.utf : byDchar;
+    import ripstd.array;
+    import ripstd.utf : byDchar;
 
     assert(rtrimDirSeparators("//abc//").array == "//abc");
     assert(rtrimDirSeparators("//abc//"d).array == "//abc"d);
@@ -329,8 +329,8 @@ if (isBidirectionalRange!R && isSomeChar!(ElementType!R) ||
 
 @safe unittest
 {
-    import std.array;
-    import std.utf : byDchar;
+    import ripstd.array;
+    import ripstd.utf : byDchar;
 
     assert(trimDirSeparators("//abc//").array == "abc");
     assert(trimDirSeparators("//abc//"d).array == "abc"d);
@@ -624,8 +624,8 @@ if (isSomeChar!C)
 {
     static assert(dirName("dir/file") == "dir");
 
-    import std.array;
-    import std.utf : byChar, byWchar, byDchar;
+    import ripstd.array;
+    import ripstd.utf : byChar, byWchar, byDchar;
 
     assert(dirName("".byChar).array == ".");
     assert(dirName("file"w.byWchar).array == "."w);
@@ -670,7 +670,7 @@ private auto _dirName(R)(R path)
             return dot ? "." : p;
         else
         {
-            import std.range : choose, only;
+            import ripstd.range : choose, only;
             return choose(dot, only(cast(ElementEncodingType!R)'.'), p);
         }
     }
@@ -760,8 +760,8 @@ if (isSomeChar!C)
 
 @safe unittest
 {
-    import std.array;
-    import std.utf : byChar;
+    import ripstd.array;
+    import ripstd.utf : byChar;
 
     assert(rootName("".byChar).array == "");
     assert(rootName("foo".byChar).array == "");
@@ -838,7 +838,7 @@ if (isSomeChar!C)
 ///
 @safe unittest
 {
-    import std.range : empty;
+    import ripstd.range : empty;
     version (Posix)  assert(driveName("c:/foo").empty);
     version (Windows)
     {
@@ -872,8 +872,8 @@ if (isSomeChar!C)
 
 @safe unittest
 {
-    import std.array;
-    import std.utf : byChar;
+    import ripstd.array;
+    import ripstd.utf : byChar;
 
     version (Posix)  assert(driveName("c:/foo".byChar).empty);
     version (Windows)
@@ -1068,7 +1068,7 @@ if (isRandomAccessRange!R && hasSlicing!R && isSomeChar!(ElementType!R) ||
 ///
 @safe unittest
 {
-    import std.range : empty;
+    import ripstd.range : empty;
     assert(extension("file").empty);
     assert(extension("file.") == ".");
     assert(extension("file.ext"w) == ".ext");
@@ -1143,8 +1143,8 @@ if (isSomeChar!C)
     assert(stripExtension("file.ext"w) == "file");
     assert(stripExtension("file.ext1.ext2"d) == "file.ext1");
 
-    import std.array;
-    import std.utf : byChar, byWchar, byDchar;
+    import ripstd.array;
+    import ripstd.utf : byChar, byWchar, byDchar;
 
     assert(stripExtension("file".byChar).array == "file");
     assert(stripExtension("file.ext"w.byWchar).array == "file");
@@ -1185,7 +1185,7 @@ if (isSomeChar!C1 && !is(C1 == immutable) && is(immutable C1 == immutable C2))
 {
     try
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         return withExtension(path, ext).to!(typeof(return));
     }
     catch (Exception e)
@@ -1203,7 +1203,7 @@ if (isSomeChar!C1 && is(immutable C1 == immutable C2))
 
     try
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         return withExtension(path, ext).to!(typeof(return));
     }
     catch (Exception e)
@@ -1272,12 +1272,12 @@ if (isSomeChar!C1 && isSomeChar!C2)
 ///
 @safe unittest
 {
-    import std.array;
+    import ripstd.array;
     assert(withExtension("file", "ext").array == "file.ext");
     assert(withExtension("file"w, ".ext"w).array == "file.ext");
     assert(withExtension("file.ext"w, ".").array == "file.");
 
-    import std.utf : byChar, byWchar;
+    import ripstd.utf : byChar, byWchar;
     assert(withExtension("file".byChar, "ext").array == "file.ext");
     assert(withExtension("file"w.byWchar, ".ext"w).array == "file.ext"w);
     assert(withExtension("file.ext"w.byWchar, ".").array == "file."w);
@@ -1285,7 +1285,7 @@ if (isSomeChar!C1 && isSomeChar!C2)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert(testAliasedString!withExtension("file", "ext"));
 
@@ -1298,8 +1298,8 @@ if (isSomeChar!C1 && isSomeChar!C2)
 
 private auto _withExtension(R, C)(R path, C[] ext)
 {
-    import std.range : only, chain;
-    import std.utf : byUTF;
+    import ripstd.range : only, chain;
+    import ripstd.utf : byUTF;
 
     alias CR = Unqual!(ElementEncodingType!R);
     auto dot = only(CR('.'));
@@ -1323,7 +1323,7 @@ private auto _withExtension(R, C)(R path, C[] ext)
 immutable(C1)[] defaultExtension(C1, C2)(in C1[] path, in C2[] ext)
 if (isSomeChar!C1 && is(immutable C1 == immutable C2))
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     return withDefaultExtension(path, ext).to!(typeof(return));
 }
 
@@ -1376,13 +1376,13 @@ if (isSomeChar!C1 && isSomeChar!C2)
 ///
 @safe unittest
 {
-    import std.array;
+    import ripstd.array;
     assert(withDefaultExtension("file", "ext").array == "file.ext");
     assert(withDefaultExtension("file"w, ".ext").array == "file.ext"w);
     assert(withDefaultExtension("file.", "ext").array == "file.");
     assert(withDefaultExtension("file", "").array == "file.");
 
-    import std.utf : byChar, byWchar;
+    import ripstd.utf : byChar, byWchar;
     assert(withDefaultExtension("file".byChar, "ext").array == "file.ext");
     assert(withDefaultExtension("file"w.byWchar, ".ext").array == "file.ext"w);
     assert(withDefaultExtension("file.".byChar, "ext"d).array == "file.");
@@ -1391,7 +1391,7 @@ if (isSomeChar!C1 && isSomeChar!C2)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert(testAliasedString!withDefaultExtension("file", "ext"));
 
@@ -1404,8 +1404,8 @@ if (isSomeChar!C1 && isSomeChar!C2)
 
 private auto _withDefaultExtension(R, C)(R path, C[] ext)
 {
-    import std.range : only, chain;
-    import std.utf : byUTF;
+    import ripstd.range : only, chain;
+    import ripstd.utf : byUTF;
 
     alias CR = Unqual!(ElementEncodingType!R);
     auto dot = only(CR('.'));
@@ -1517,7 +1517,7 @@ if (isSomeChar!C)
 
 @system unittest // non-documented
 {
-    import std.range;
+    import ripstd.range;
     // ir() wraps an array in a plain (i.e. non-forward) input range, so that
     // we can test both code paths
     InputRange!(C[]) ir(C)(C[][] p...) { return inputRangeObject(p); }
@@ -1638,8 +1638,8 @@ if ((isRandomAccessRange!R1 && hasSlicing!R1 && hasLength!R1 && isSomeChar!(Elem
     }
     else
     {
-        import std.range : only, chain;
-        import std.utf : byUTF;
+        import ripstd.range : only, chain;
+        import ripstd.utf : byUTF;
 
         alias CR = Unqual!(ElementEncodingType!R1);
         auto sep = only(CR(dirSeparator[0]));
@@ -1682,7 +1682,7 @@ if ((isRandomAccessRange!R1 && hasSlicing!R1 && hasLength!R1 && isSomeChar!(Elem
 ///
 @safe unittest
 {
-    import std.array;
+    import ripstd.array;
     version (Posix)
     {
         assert(chainPath("foo", "bar", "baz").array == "foo/bar/baz");
@@ -1699,7 +1699,7 @@ if ((isRandomAccessRange!R1 && hasSlicing!R1 && hasLength!R1 && isSomeChar!(Elem
         assert(chainPath(`c:\foo`, `\bar`).array    == `c:\bar`);
     }
 
-    import std.utf : byChar;
+    import ripstd.utf : byChar;
     version (Posix)
     {
         assert(chainPath("foo", "bar", "baz").array == "foo/bar/baz");
@@ -1719,9 +1719,9 @@ if ((isRandomAccessRange!R1 && hasSlicing!R1 && hasLength!R1 && isSomeChar!(Elem
 
 auto chainPath(Ranges...)(auto ref Ranges ranges)
 if (Ranges.length >= 2 &&
-    std.meta.anySatisfy!(isConvertibleToString, Ranges))
+    ripstd.meta.anySatisfy!(isConvertibleToString, Ranges))
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
     alias Types = staticMap!(convertToString, Ranges);
     return chainPath!Types(ranges);
 }
@@ -1758,8 +1758,8 @@ immutable(C)[] buildNormalizedPath(C)(const(C[])[] paths...)
     @safe pure nothrow
 if (isSomeChar!C)
 {
-    import std.array : array;
-    import std.exception : assumeUnique;
+    import ripstd.array : array;
+    import ripstd.exception : assumeUnique;
 
     const(C)[] chained;
     foreach (path; paths)
@@ -2055,7 +2055,7 @@ if (isSomeChar!(ElementEncodingType!R) &&
 ///
 @safe unittest
 {
-    import std.array;
+    import ripstd.array;
     assert(asNormalizedPath("foo/..").array == ".");
 
     version (Posix)
@@ -2090,8 +2090,8 @@ if (isConvertibleToString!R)
 
 @safe unittest
 {
-    import std.array;
-    import std.utf : byChar;
+    import ripstd.array;
+    import ripstd.utf : byChar;
 
     assert(asNormalizedPath("").array is null);
     assert(asNormalizedPath("foo").array == "foo");
@@ -2178,7 +2178,7 @@ if (isConvertibleToString!R)
 
 @safe unittest
 {
-    import std.array;
+    import ripstd.array;
 
     version (Posix)
     {
@@ -2459,8 +2459,8 @@ if ((isRandomAccessRange!R && hasSlicing!R ||
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : to;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : to;
 
     assert(equal(pathSplitter("/"), ["/"]));
     assert(equal(pathSplitter("/foo/bar"), ["/", "foo", "bar"]));
@@ -2488,7 +2488,7 @@ if (isConvertibleToString!R)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     assert(testAliasedString!pathSplitter("/"));
 }
 
@@ -2496,8 +2496,8 @@ if (isConvertibleToString!R)
 {
     // equal2 verifies that the range is the same both ways, i.e.
     // through front/popFront and back/popBack.
-    import std.algorithm;
-    import std.range;
+    import ripstd.algorithm;
+    import ripstd.range;
     bool equal2(R1, R2)(R1 r1, R2 r2)
     {
         static assert(isBidirectionalRange!R1);
@@ -2544,7 +2544,7 @@ if (isConvertibleToString!R)
         assert(equal2(pathSplitter(`\\foo\bar\baz`), [`\\foo\bar`, "baz"]));
     }
 
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!(
     {
         assert(equal(pathSplitter("/foo/bar".dup), ["/", "foo", "bar"]));
@@ -2552,7 +2552,7 @@ if (isConvertibleToString!R)
 
     static assert(is(typeof(pathSplitter!(const(char)[])(null).front) == const(char)[]));
 
-    import std.utf : byDchar;
+    import ripstd.utf : byDchar;
     assert(equal2(pathSplitter("foo/bar"d.byDchar), ["foo"d, "bar"d]));
 }
 
@@ -2750,7 +2750,7 @@ else version (Posix)
 string absolutePath(string path, lazy string base = getcwd())
     @safe pure
 {
-    import std.array : array;
+    import ripstd.array : array;
     if (path.empty)  return null;
     if (isAbsolute(path))  return path;
     auto baseVar = base;
@@ -2790,7 +2790,7 @@ string absolutePath(string path, lazy string base = getcwd())
         static assert(absolutePath(`some\file`, `c:\foo\bar`) == `c:\foo\bar\some\file`);
     }
 
-    import std.exception;
+    import ripstd.exception;
     assertThrown(absolutePath("bar", "foo"));
 }
 
@@ -2818,7 +2818,7 @@ if ((isRandomAccessRange!R && isSomeChar!(ElementType!R) ||
     isNarrowString!R) &&
     !isConvertibleToString!R)
 {
-    import std.file : getcwd;
+    import ripstd.file : getcwd;
     string base = null;
     if (!path.empty && !isAbsolute(path))
         base = getcwd();
@@ -2828,7 +2828,7 @@ if ((isRandomAccessRange!R && isSomeChar!(ElementType!R) ||
 ///
 @system unittest
 {
-    import std.array;
+    import ripstd.array;
     assert(asAbsolutePath(cast(string) null).array == "");
     version (Posix)
     {
@@ -2901,7 +2901,7 @@ string relativePath(CaseSensitive cs = CaseSensitive.osDefault)
     if (!isAbsolute(baseVar))
         throw new Exception("Base directory must be absolute");
 
-    import std.conv : to;
+    import ripstd.conv : to;
     return asRelativePath!cs(path, baseVar).to!string;
 }
 
@@ -2931,7 +2931,7 @@ string relativePath(CaseSensitive cs = CaseSensitive.osDefault)
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assert(relativePath("foo") == "foo");
     version (Posix)
     {
@@ -3004,12 +3004,12 @@ if ((isNarrowString!R1 ||
     basePS.popFront();
     pathPS.popFront();
 
-    import std.algorithm.comparison : mismatch;
-    import std.algorithm.iteration : joiner;
-    import std.array : array;
-    import std.range.primitives : walkLength;
-    import std.range : repeat, chain, choose;
-    import std.utf : byCodeUnit, byChar;
+    import ripstd.algorithm.comparison : mismatch;
+    import ripstd.algorithm.iteration : joiner;
+    import ripstd.array : array;
+    import ripstd.range.primitives : walkLength;
+    import ripstd.range : repeat, chain, choose;
+    import ripstd.utf : byCodeUnit, byChar;
 
     // Remove matching prefix from basePS and pathPS
     auto tup = mismatch!((a, b) => filenameCmp!cs(a, b) == 0)(basePS, pathPS);
@@ -3039,7 +3039,7 @@ if ((isNarrowString!R1 ||
 ///
 @safe unittest
 {
-    import std.array;
+    import ripstd.array;
     version (Posix)
     {
         assert(asRelativePath("foo", "/bar").array == "foo");
@@ -3067,14 +3067,14 @@ auto asRelativePath(CaseSensitive cs = CaseSensitive.osDefault, R1, R2)
     (auto ref R1 path, auto ref R2 base)
 if (isConvertibleToString!R1 || isConvertibleToString!R2)
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
     alias Types = staticMap!(convertToString, R1, R2);
     return asRelativePath!(cs, Types)(path, base);
 }
 
 @safe unittest
 {
-    import std.array;
+    import ripstd.array;
     version (Posix)
         assert(asRelativePath(TestAliasedString("foo"), TestAliasedString("/bar")).array == "foo");
     else version (Windows)
@@ -3082,13 +3082,13 @@ if (isConvertibleToString!R1 || isConvertibleToString!R2)
     assert(asRelativePath(TestAliasedString("foo"), "bar").array == "foo");
     assert(asRelativePath("foo", TestAliasedString("bar")).array == "foo");
     assert(asRelativePath(TestAliasedString("foo"), TestAliasedString("bar")).array == "foo");
-    import std.utf : byDchar;
+    import ripstd.utf : byDchar;
     assert(asRelativePath("foo"d.byDchar, TestAliasedString("bar")).array == "foo");
 }
 
 @safe unittest
 {
-    import std.array, std.utf : bCU=byCodeUnit;
+    import ripstd.array, ripstd.utf : bCU=byCodeUnit;
     version (Posix)
     {
         assert(asRelativePath("/foo/bar/baz".bCU, "/foo/bar".bCU).array == "baz");
@@ -3128,7 +3128,7 @@ int filenameCharCmp(CaseSensitive cs = CaseSensitive.osDefault)(dchar a, dchar b
     if (isDirSeparator(a) && isDirSeparator(b)) return 0;
     static if (!cs)
     {
-        import std.uni : toLower;
+        import ripstd.uni : toLower;
         a = toLower(a);
         b = toLower(b);
     }
@@ -3215,14 +3215,14 @@ if (isInputRange!Range1 && !isInfinite!Range1 &&
     {
         // Case insensitive - decode so case is checkable
         // Different char sizes - decode to bring to common type
-        import std.utf : byDchar;
+        import ripstd.utf : byDchar;
         return filenameCmp!cs(filename1.byDchar, filename2.byDchar);
     }
     else static if (isSomeString!Range1 && C1.sizeof < 4 ||
                     isSomeString!Range2 && C2.sizeof < 4)
     {
         // Avoid autodecoding
-        import std.utf : byCodeUnit;
+        import ripstd.utf : byCodeUnit;
         return filenameCmp!cs(filename1.byCodeUnit, filename2.byCodeUnit);
     }
     else
@@ -3268,7 +3268,7 @@ int filenameCmp(CaseSensitive cs = CaseSensitive.osDefault, Range1, Range2)
     (auto ref Range1 filename1, auto ref Range2 filename2)
 if (isConvertibleToString!Range1 || isConvertibleToString!Range2)
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
     alias Types = staticMap!(convertToString, Range1, Range2);
     return filenameCmp!(cs, Types)(filename1, filename2);
 }
@@ -3348,7 +3348,7 @@ if (isForwardRange!Range && !isInfinite!Range &&
 in
 {
     // Verify that pattern[] is valid
-    import std.algorithm.searching : balancedParens;
+    import ripstd.algorithm.searching : balancedParens;
     assert(balancedParens(pattern, '[', ']', 0));
     assert(balancedParens(pattern, '{', '}', 0));
 }
@@ -3358,12 +3358,12 @@ do
 
     static if (RC.sizeof == 1 && isSomeString!Range)
     {
-        import std.utf : byChar;
+        import ripstd.utf : byChar;
         return globMatch!cs(path.byChar, pattern);
     }
     else static if (RC.sizeof == 2 && isSomeString!Range)
     {
-        import std.utf : byWchar;
+        import ripstd.utf : byWchar;
         return globMatch!cs(path.byWchar, pattern);
     }
     else
@@ -3663,7 +3663,7 @@ if ((isRandomAccessRange!Range && hasLength!Range && hasSlicing!Range && isSomeC
 @safe pure @nogc nothrow
 unittest
 {
-    import std.utf : byCodeUnit;
+    import ripstd.utf : byCodeUnit;
 
     assert(isValidFilename("hello.exe".byCodeUnit));
 }
@@ -3682,7 +3682,7 @@ if (isConvertibleToString!Range)
 @safe pure
 unittest
 {
-    import std.conv;
+    import ripstd.conv;
     auto valid = ["foo"];
     auto invalid = ["", "foo\0bar", "foo/bar"];
     auto pfdep = [`foo\bar`, "*.txt"];
@@ -3690,7 +3690,7 @@ unittest
     else version (Posix) valid ~= pfdep;
     else static assert(0);
 
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(char[], const(char)[], string, wchar[],
         const(wchar)[], wstring, dchar[], const(dchar)[], dstring))
     {
@@ -3822,7 +3822,7 @@ if ((isRandomAccessRange!Range && hasLength!Range && hasSlicing!Range && isSomeC
         }
         else if (isDriveSeparator(path[1]))
         {
-            import std.ascii : isAlpha;
+            import ripstd.ascii : isAlpha;
             if (!isAlpha(path[0])) return false;
             remainder = path[2 .. $];
         }
@@ -3887,7 +3887,7 @@ unittest
         assert(!isValidPath(`\\`));
     }
 
-    import std.utf : byCodeUnit;
+    import ripstd.utf : byCodeUnit;
     assert(isValidPath("/foo/bar".byCodeUnit));
 }
 
@@ -3963,7 +3963,7 @@ string expandTilde(string inputPath) @safe nothrow
         static string combineCPathWithDPath(char* c_path, string path, size_t char_pos) @trusted nothrow
         {
             import core.stdc.string : strlen;
-            import std.exception : assumeUnique;
+            import ripstd.exception : assumeUnique;
 
             assert(c_path != null);
             assert(path.length > 0);
@@ -4025,7 +4025,7 @@ string expandTilde(string inputPath) @safe nothrow
             else
             {
                 import core.sys.posix.pwd : passwd, getpwnam_r;
-                import std.string : indexOf;
+                import ripstd.string : indexOf;
 
                 assert(path.length > 2 || (path.length == 2 && !isDirSeparator(path[1])));
                 assert(path[0] == '~');
@@ -4050,7 +4050,7 @@ string expandTilde(string inputPath) @safe nothrow
                 assert(last_char > 1);
 
                 // Reserve C memory for the getpwnam_r() function.
-                version (StdUnittest)
+                version (RIPStdUnittest)
                     uint extra_memory_size = 2;
                 else
                     uint extra_memory_size = 5 * 1024;
@@ -4120,7 +4120,7 @@ string expandTilde(string inputPath) @safe nothrow
 {
     version (Posix)
     {
-        import std.process : environment;
+        import ripstd.process : environment;
 
         auto oldHome = environment["HOME"];
         scope(exit) environment["HOME"] = oldHome;
@@ -4135,11 +4135,11 @@ string expandTilde(string inputPath) @safe nothrow
 {
     version (Posix)
     {
-        static if (__traits(compiles, { import std.process : executeShell; }))
-            import std.process : executeShell;
+        static if (__traits(compiles, { import ripstd.process : executeShell; }))
+            import ripstd.process : executeShell;
 
-        import std.process : environment;
-        import std.string : strip;
+        import ripstd.process : environment;
+        import ripstd.string : strip;
 
         // Retrieve the current home variable.
         auto oldHome = environment.get("HOME");
@@ -4183,7 +4183,7 @@ string expandTilde(string inputPath) @safe nothrow
     }
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
 private:
     /* Define a mock RandomAccessRange to use for unittesting.

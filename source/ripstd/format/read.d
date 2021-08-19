@@ -48,7 +48,7 @@ module ripstd.format.read;
 /// Booleans
 @safe pure unittest
 {
-    import std.format.spec : singleSpec;
+    import ripstd.format.spec : singleSpec;
 
     auto str = "false";
     auto spec = singleSpec("%s");
@@ -62,7 +62,7 @@ module ripstd.format.read;
 /// Null values
 @safe pure unittest
 {
-    import std.format.spec : singleSpec;
+    import ripstd.format.spec : singleSpec;
 
     auto str = "null";
     auto spec = singleSpec("%s");
@@ -72,7 +72,7 @@ module ripstd.format.read;
 /// Integrals
 @safe pure unittest
 {
-    import std.format.spec : singleSpec;
+    import ripstd.format.spec : singleSpec;
 
     // signed decimal values
     auto str = "123";
@@ -99,8 +99,8 @@ module ripstd.format.read;
 /// Floating point numbers
 @safe pure unittest
 {
-    import std.format.spec : singleSpec;
-    import std.math.operations : isClose;
+    import ripstd.format.spec : singleSpec;
+    import ripstd.math.operations : isClose;
 
     // natural notation
     auto str = "123.456";
@@ -122,7 +122,7 @@ module ripstd.format.read;
 /// Characters
 @safe pure unittest
 {
-    import std.format.spec : singleSpec;
+    import ripstd.format.spec : singleSpec;
 
     // only the first character is read
     auto str = "abc";
@@ -146,7 +146,7 @@ module ripstd.format.read;
 /// Arrays
 @safe pure unittest
 {
-    import std.format.spec : singleSpec;
+    import ripstd.format.spec : singleSpec;
 
     // string value
     string str = "aaa";
@@ -183,7 +183,7 @@ module ripstd.format.read;
 /// Associative arrays
 @safe pure unittest
 {
-    import std.format.spec : singleSpec;
+    import ripstd.format.spec : singleSpec;
 
     // as single value
     auto str = `["one": 1, "two": 2]`;
@@ -196,9 +196,9 @@ module ripstd.format.read;
     assert(str.unformatValue!(int[int])(spec) == [1: 1, 2: 4, 3: 9]);
 }
 
-import std.format.spec : FormatSpec;
-import std.format.internal.read;
-import std.traits : isSomeString;
+import ripstd.format.spec : FormatSpec;
+import ripstd.format.internal.read;
+import ripstd.traits : isSomeString;
 
 /**
 Reads an input range according to a format string and stores the read
@@ -235,10 +235,10 @@ Note:
  */
 uint formattedRead(Range, Char, Args...)(auto ref Range r, const(Char)[] fmt, auto ref Args args)
 {
-    import std.format : enforceFmt;
-    import std.range.primitives : empty;
-    import std.traits : isPointer;
-    import std.typecons : isTuple;
+    import ripstd.format : enforceFmt;
+    import ripstd.range.primitives : empty;
+    import ripstd.traits : isPointer;
+    import ripstd.typecons : isTuple;
 
     auto spec = FormatSpec!Char(fmt);
     static if (!Args.length)
@@ -302,7 +302,7 @@ uint formattedRead(Range, Char, Args...)(auto ref Range r, const(Char)[] fmt, au
 uint formattedRead(alias fmt, Range, Args...)(auto ref Range r, auto ref Args args)
 if (isSomeString!(typeof(fmt)))
 {
-    import std.format : checkFormatException;
+    import ripstd.format : checkFormatException;
 
     alias e = checkFormatException!(fmt, Args);
     static assert(!e, e.msg);
@@ -353,7 +353,7 @@ if (isSomeString!(typeof(fmt)))
     assert(amount == 15.25);
 
     // can also be used with tuples
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
 
     Tuple!(int, float) t;
     char[] line = "1 7643 2.125".dup;
@@ -363,9 +363,9 @@ if (isSomeString!(typeof(fmt)))
 
 @safe unittest
 {
-    import std.math.operations : isClose;
-    import std.math.traits : isNaN;
-    import std.range.primitives : empty;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.traits : isNaN;
+    import ripstd.range.primitives : empty;
 
     string s = " 1.2 3.4 ";
     double x, y, z;
@@ -403,9 +403,9 @@ if (isSomeString!(typeof(fmt)))
 // for backwards compatibility
 @safe pure unittest
 {
-    import std.math.operations : isClose;
-    import std.math.traits : isNaN;
-    import std.range.primitives : empty;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.traits : isNaN;
+    import ripstd.range.primitives : empty;
 
     string s = " 1.2 3.4 ";
     double x, y, z;
@@ -499,7 +499,7 @@ if (isSomeString!(typeof(fmt)))
 
 @safe pure unittest
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
 
     char[] line = "1 2".dup;
     int a, b;
@@ -570,7 +570,7 @@ if (isSomeString!(typeof(fmt)))
 
 @safe pure unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     string line;
 
@@ -590,8 +590,8 @@ if (isSomeString!(typeof(fmt)))
 
 @safe pure unittest
 {
-    import std.exception : assertThrown;
-    import std.format : FormatException;
+    import ripstd.exception : assertThrown;
+    import ripstd.format : FormatException;
 
     string input;
 
@@ -693,7 +693,7 @@ T unformatValue(T, Range, Char)(ref Range input, scope const ref FormatSpec!Char
 ///
 @safe pure unittest
 {
-    import std.format.spec : singleSpec;
+    import ripstd.format.spec : singleSpec;
 
     string s = "42";
     auto spec = singleSpec("%s");

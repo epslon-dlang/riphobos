@@ -18,29 +18,29 @@ $(TR $(TD Flags) $(TD
 ))
 ))
 
-    $(RED Unlike the other modules in std.datetime, this module is not currently
-          publicly imported in std.datetime.package, because the old
+    $(RED Unlike the other modules in ripstd.datetime, this module is not currently
+          publicly imported in ripstd.datetime.package, because the old
           versions of this functionality which use
-          $(REF TickDuration,core,time) are in std.datetime.package and would
+          $(REF TickDuration,core,time) are in ripstd.datetime.package and would
           conflict with the symbols in this module. After the old symbols have
           gone through the deprecation cycle and have been fully removed, then
-          this module will be publicly imported in std.datetime.package. The
+          this module will be publicly imported in ripstd.datetime.package. The
           old, deprecated symbols has been removed from the documentation in
           December 2019 and currently scheduled to be fully removed from Phobos
           after 2.094.)
 
-    So, for now, when using std.datetime.stopwatch, if other modules from
-    std.datetime are needed, then either import them individually rather than
-    importing std.datetime, or use selective or static imports to import
-    std.datetime.stopwatch. e.g.
+    So, for now, when using ripstd.datetime.stopwatch, if other modules from
+    ripstd.datetime are needed, then either import them individually rather than
+    importing ripstd.datetime, or use selective or static imports to import
+    ripstd.datetime.stopwatch. e.g.
 
     ----------------------------------------------------------------------------
-    import std.datetime;
-    import std.datetime.stopwatch : benchmark, StopWatch;
+    import ripstd.datetime;
+    import ripstd.datetime.stopwatch : benchmark, StopWatch;
     ----------------------------------------------------------------------------
 
-    The compiler will then know to use the symbols from std.datetime.stopwatch
-    rather than the deprecated ones from std.datetime.package.
+    The compiler will then know to use the symbols from ripstd.datetime.stopwatch
+    rather than the deprecated ones from ripstd.datetime.package.
 
     License:   $(HTTP www.boost.org/LICENSE_1_0.txt, Boost License 1.0).
     Authors:   $(HTTP jmdavisprog.com, Jonathan M Davis) and Kato Shoichi
@@ -49,7 +49,7 @@ $(TR $(TD Flags) $(TD
 module ripstd.datetime.stopwatch;
 
 public import core.time;
-import std.typecons : Flag;
+import ripstd.typecons : Flag;
 
 /++
     Used by StopWatch to indicate whether it should start immediately upon
@@ -428,7 +428,7 @@ Duration[fun.length] benchmark(fun...)(uint n)
 ///
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     int a;
     void f0() {}
@@ -442,7 +442,7 @@ Duration[fun.length] benchmark(fun...)(uint n)
 
 @safe nothrow unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     int a;
     void f0() nothrow {}

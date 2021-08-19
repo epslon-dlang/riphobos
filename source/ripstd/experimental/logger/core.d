@@ -5,12 +5,12 @@ Source: $(PHOBOSSRC std/experimental/logger/core.d)
 module ripstd.experimental.logger.core;
 
 import core.sync.mutex : Mutex;
-import std.datetime.date : DateTime;
-import std.datetime.systime : Clock, SysTime;
-import std.range.primitives;
-import std.traits;
+import ripstd.datetime.date : DateTime;
+import ripstd.datetime.systime : Clock, SysTime;
+import ripstd.range.primitives;
+import ripstd.traits;
 
-import std.experimental.logger.filelogger;
+import ripstd.experimental.logger.filelogger;
 
 /** This template evaluates if the passed `LogLevel` is active.
 The previously described version statements are used to decide if the
@@ -130,7 +130,7 @@ if (!moduleName.length)
 template moduleLogLevel(string moduleName)
 if (moduleName.length)
 {
-    import std.string : format;
+    import ripstd.string : format;
     mixin(q{
         static if (__traits(compiles, {import %1$s : logLevel;}))
         {
@@ -162,13 +162,13 @@ private string parentOf(string mod)
 /* This function formates a `SysTime` into an `OutputRange`.
 
 The `SysTime` is formatted similar to
-$(LREF std.datatime.DateTime.toISOExtString) except the fractional second part.
+$(LREF ripstd.datatime.DateTime.toISOExtString) except the fractional second part.
 The fractional second part is in milliseconds and is always 3 digits.
 */
 void systimeToISOString(OutputRange)(OutputRange o, const ref SysTime time)
 if (isOutputRange!(OutputRange,string))
 {
-    import std.format.write : formattedWrite;
+    import ripstd.format.write : formattedWrite;
 
     const auto dt = cast(DateTime) time;
     const auto fsec = time.fracSecs.total!"msecs";
@@ -631,7 +631,7 @@ alias fatalf = defaultLogFunctionf!(LogLevel.fatal);
 
 private struct MsgRange
 {
-    import std.traits : isSomeString, isSomeChar;
+    import ripstd.traits : isSomeString, isSomeChar;
 
     private Logger log;
 
@@ -648,7 +648,7 @@ private struct MsgRange
 
     void put(dchar elem) @safe
     {
-        import std.utf : encode;
+        import ripstd.utf : encode;
         char[4] buffer;
         size_t len = encode(buffer, elem);
         log.logMsgPart(buffer[0 .. len]);
@@ -657,7 +657,7 @@ private struct MsgRange
 
 private void formatString(A...)(MsgRange oRange, A args)
 {
-    import std.format.write : formattedWrite;
+    import ripstd.format.write : formattedWrite;
 
     foreach (arg; args)
     {
@@ -710,8 +710,8 @@ flexibility.
 */
 abstract class Logger
 {
-    import std.array : appender, Appender;
-    import std.concurrency : thisTid, Tid;
+    import ripstd.array : appender, Appender;
+    import ripstd.concurrency : thisTid, Tid;
 
     /** LogEntry is a aggregation combining all information associated
     with a log message. This aggregation will be passed to the method
@@ -1043,7 +1043,7 @@ abstract class Logger
             static if (isLoggingActiveAt!ll && ll >= moduleLogLevel!moduleName)
                 synchronized (mutex)
             {
-                import std.format.write : formattedWrite;
+                import ripstd.format.write : formattedWrite;
 
                 if (isLoggingEnabled(ll, this.logLevel_, globalLogLevel,
                                      condition))
@@ -1091,7 +1091,7 @@ abstract class Logger
             static if (isLoggingActiveAt!ll && ll >= moduleLogLevel!moduleName)
                 synchronized (mutex)
             {
-                import std.format.write : formattedWrite;
+                import ripstd.format.write : formattedWrite;
 
                 if (isLoggingEnabled(ll, this.logLevel_, globalLogLevel))
                 {
@@ -1444,7 +1444,7 @@ abstract class Logger
     {
         static if (isLoggingActive) synchronized (mutex)
         {
-            import std.format.write : formattedWrite;
+            import ripstd.format.write : formattedWrite;
 
             if (isLoggingEnabled(ll, this.logLevel_, globalLogLevel, condition))
             {
@@ -1492,7 +1492,7 @@ abstract class Logger
     {
         static if (isLoggingActive) synchronized (mutex)
         {
-            import std.format.write : formattedWrite;
+            import ripstd.format.write : formattedWrite;
 
             if (isLoggingEnabled(ll, this.logLevel_, globalLogLevel))
             {
@@ -1541,7 +1541,7 @@ abstract class Logger
     {
         static if (isLoggingActive) synchronized (mutex)
         {
-            import std.format.write : formattedWrite;
+            import ripstd.format.write : formattedWrite;
 
             if (isLoggingEnabled(this.logLevel_, this.logLevel_, globalLogLevel,
                 condition))
@@ -1587,7 +1587,7 @@ abstract class Logger
     {
         static if (isLoggingActive) synchronized (mutex)
         {
-            import std.format.write : formattedWrite;
+            import ripstd.format.write : formattedWrite;
 
             if (isLoggingEnabled(this.logLevel_, this.logLevel_,
                 globalLogLevel))
@@ -1626,11 +1626,11 @@ private shared LogLevel stdLoggerGlobalLogLevel = LogLevel.all;
 private @property Logger defaultSharedLoggerImpl() @trusted
 {
     import core.lifetime : emplace;
-    import std.stdio : stderr;
+    import ripstd.stdio : stderr;
 
     __gshared align(FileLogger.alignof) void[__traits(classInstanceSize, FileLogger)] _buffer;
 
-    import std.concurrency : initOnce;
+    import ripstd.concurrency : initOnce;
     initOnce!stdSharedDefaultLogger({
         auto buffer = cast(ubyte[]) _buffer;
         return emplace!FileLogger(buffer, stderr, LogLevel.all);
@@ -1802,8 +1802,8 @@ functions.
 /// Ditto
 @system unittest
 {
-    import std.experimental.logger.filelogger : FileLogger;
-    import std.file : deleteme, remove;
+    import ripstd.experimental.logger.filelogger : FileLogger;
+    import ripstd.file : deleteme, remove;
     Logger l = stdThreadLocalLog;
     stdThreadLocalLog = new FileLogger(deleteme ~ "-someFile.log");
     scope(exit) remove(deleteme ~ "-someFile.log");
@@ -1846,7 +1846,7 @@ package class TestLogger : Logger
     }
 }
 
-version (StdUnittest) private void testFuncNames(Logger logger) @safe
+version (RIPStdUnittest) private void testFuncNames(Logger logger) @safe
 {
     string s = "I'm here";
     logger.log(s);
@@ -1856,9 +1856,9 @@ version (StdUnittest) private void testFuncNames(Logger logger) @safe
 {
     auto tl1 = new TestLogger();
     testFuncNames(tl1);
-    assert(tl1.func == "std.experimental.logger.core.testFuncNames", tl1.func);
+    assert(tl1.func == "ripstd.experimental.logger.core.testFuncNames", tl1.func);
     assert(tl1.prettyFunc ==
-        "void std.experimental.logger.core.testFuncNames(Logger logger) @safe",
+        "void ripstd.experimental.logger.core.testFuncNames(Logger logger) @safe",
         tl1.prettyFunc);
     assert(tl1.msg == "I'm here", tl1.msg);
 }
@@ -1906,7 +1906,7 @@ version (StdUnittest) private void testFuncNames(Logger logger) @safe
 
 @safe unittest
 {
-    import std.experimental.logger.multilogger : MultiLogger;
+    import ripstd.experimental.logger.multilogger : MultiLogger;
 
     auto tl1 = new TestLogger;
     auto tl2 = new TestLogger;
@@ -1943,9 +1943,9 @@ version (StdUnittest) private void testFuncNames(Logger logger) @safe
 
 @safe unittest
 {
-    import std.conv : to;
-    import std.exception : assertThrown, assertNotThrown;
-    import std.format : format;
+    import ripstd.conv : to;
+    import ripstd.exception : assertThrown, assertNotThrown;
+    import ripstd.format : format;
 
     auto l = new TestLogger(LogLevel.all);
     string msg = "Hello Logger World";
@@ -2085,9 +2085,9 @@ version (StdUnittest) private void testFuncNames(Logger logger) @safe
 
 @system unittest // default logger
 {
-    import std.file : deleteme, exists, remove;
-    import std.stdio : File;
-    import std.string : indexOf;
+    import ripstd.file : deleteme, exists, remove;
+    import ripstd.stdio : File;
+    import ripstd.string : indexOf;
 
     string filename = deleteme ~ __FUNCTION__ ~ ".tempLogFile";
     FileLogger l = new FileLogger(filename);
@@ -2125,9 +2125,9 @@ version (StdUnittest) private void testFuncNames(Logger logger) @safe
 
 @system unittest
 {
-    import std.file : deleteme, remove;
-    import std.stdio : File;
-    import std.string : indexOf;
+    import ripstd.file : deleteme, remove;
+    import ripstd.stdio : File;
+    import ripstd.string : indexOf;
 
     string filename = deleteme ~ __FUNCTION__ ~ ".tempLogFile";
     auto oldunspecificLogger = sharedLog;
@@ -2160,7 +2160,7 @@ version (StdUnittest) private void testFuncNames(Logger logger) @safe
 
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     auto tl = new TestLogger(LogLevel.all);
     int l = __LINE__;
@@ -2178,9 +2178,9 @@ version (StdUnittest) private void testFuncNames(Logger logger) @safe
 // testing possible log conditions
 @safe unittest
 {
-    import std.conv : to;
-    import std.format : format;
-    import std.string : indexOf;
+    import ripstd.conv : to;
+    import ripstd.format : format;
+    import ripstd.string : indexOf;
 
     auto oldunspecificLogger = sharedLog;
 
@@ -2425,9 +2425,9 @@ version (StdUnittest) private void testFuncNames(Logger logger) @safe
 // more testing
 @safe unittest
 {
-    import std.conv : to;
-    import std.format : format;
-    import std.string : indexOf;
+    import ripstd.conv : to;
+    import ripstd.format : format;
+    import ripstd.string : indexOf;
 
     auto oldunspecificLogger = sharedLog;
 
@@ -2913,7 +2913,7 @@ version (StdUnittest) private void testFuncNames(Logger logger) @safe
 // Issue #5
 @safe unittest
 {
-    import std.string : indexOf;
+    import ripstd.string : indexOf;
 
     auto oldunspecificLogger = sharedLog;
 
@@ -2933,8 +2933,8 @@ version (StdUnittest) private void testFuncNames(Logger logger) @safe
 // Issue #5
 @safe unittest
 {
-    import std.experimental.logger.multilogger : MultiLogger;
-    import std.string : indexOf;
+    import ripstd.experimental.logger.multilogger : MultiLogger;
+    import ripstd.string : indexOf;
 
     stdThreadLocalLog.logLevel = LogLevel.all;
 
@@ -2962,7 +2962,7 @@ version (StdUnittest) private void testFuncNames(Logger logger) @safe
 
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     auto tl = new TestLogger();
     assertThrown!Throwable(tl.fatal("fatal"));
 }
@@ -3001,7 +3001,7 @@ private void trustedStore(T)(ref shared T dst, ref T src) @trusted
 // to shared logger
 @system unittest
 {
-    import core.atomic, core.thread, std.concurrency;
+    import core.atomic, core.thread, ripstd.concurrency;
 
     static shared logged_count = 0;
 
@@ -3074,7 +3074,7 @@ private void trustedStore(T)(ref shared T dst, ref T src) @trusted
 // https://issues.dlang.org/show_bug.cgi?id=14940
 @safe unittest
 {
-    import std.typecons : Nullable;
+    import ripstd.typecons : Nullable;
 
     Nullable!int a = 1;
     auto l = new TestLogger();
@@ -3104,7 +3104,7 @@ private void trustedStore(T)(ref shared T dst, ref T src) @trusted
 // https://issues.dlang.org/show_bug.cgi?id=17328
 @safe unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
 
     ubyte[] data = [0];
     string s = format("%(%02x%)", data); // format 00
@@ -3126,7 +3126,7 @@ private void trustedStore(T)(ref shared T dst, ref T src) @trusted
 // https://issues.dlang.org/show_bug.cgi?id=15954
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     auto tl = new TestLogger();
     tl.log("123456789".to!wstring);
     assert(tl.msg == "123456789");
@@ -3135,7 +3135,7 @@ private void trustedStore(T)(ref shared T dst, ref T src) @trusted
 // https://issues.dlang.org/show_bug.cgi?id=16256
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     auto tl = new TestLogger();
     tl.log("123456789"d);
     assert(tl.msg == "123456789");
@@ -3144,10 +3144,10 @@ private void trustedStore(T)(ref shared T dst, ref T src) @trusted
 // https://issues.dlang.org/show_bug.cgi?id=15517
 @system unittest
 {
-    import std.file : exists, remove, tempDir;
-    import std.path : buildPath;
-    import std.stdio : File;
-    import std.string : indexOf;
+    import ripstd.file : exists, remove, tempDir;
+    import ripstd.path : buildPath;
+    import ripstd.stdio : File;
+    import ripstd.string : indexOf;
 
     string fn = tempDir.buildPath("logfile.log");
     if (exists(fn))

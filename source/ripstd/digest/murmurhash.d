@@ -47,7 +47,7 @@ else version (X86_64)
 @safe unittest
 {
     // MurmurHash3!32, MurmurHash3!(128, 32) and MurmurHash3!(128, 64) implement
-    // the std.digest Template API.
+    // the ripstd.digest Template API.
     static assert(isDigest!(MurmurHash3!32));
     // The convenient digest template allows for quick hashing of any data.
     ubyte[4] hashed = digest!(MurmurHash3!32)([1, 2, 3, 4]);
@@ -97,7 +97,7 @@ else version (X86_64)
     assert(hashed == [188, 165, 108, 2]);
 }
 
-public import std.digest;
+public import ripstd.digest;
 
 @safe:
 
@@ -605,7 +605,7 @@ L_end:
     private T rotl(T)(T x, uint y)
     in
     {
-        import std.traits : isUnsigned;
+        import ripstd.traits : isUnsigned;
 
         static assert(isUnsigned!T);
         debug assert(y >= 0 && y <= (T.sizeof * 8));
@@ -617,7 +617,7 @@ L_end:
 
     private T shuffle(T)(T k, T c1, T c2, ubyte r1)
     {
-        import std.traits : isUnsigned;
+        import ripstd.traits : isUnsigned;
 
         static assert(isUnsigned!T);
         k *= c1;
@@ -628,7 +628,7 @@ L_end:
 
     private T update(T)(ref T h, T k, T mixWith, T c1, T c2, ubyte r1, ubyte r2, T n)
     {
-        import std.traits : isUnsigned;
+        import ripstd.traits : isUnsigned;
 
         static assert(isUnsigned!T);
         h ^= shuffle(k, c1, c2, r1);
@@ -685,7 +685,7 @@ the 'put' method.
     assert(hashed == [181, 151, 88, 252]);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     private auto hash(H, Element = H.Element)(string data)
     {

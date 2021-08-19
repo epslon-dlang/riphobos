@@ -19,7 +19,7 @@ Source: $(PHOBOSSRC std/format/spec.d)
  */
 module ripstd.format.spec;
 
-import std.traits : Unqual;
+import ripstd.traits : Unqual;
 
 template FormatSpec(Char)
 if (!is(Unqual!Char == Char))
@@ -41,10 +41,10 @@ Params:
 struct FormatSpec(Char)
 if (is(Unqual!Char == Char))
 {
-    import std.algorithm.searching : startsWith;
-    import std.ascii : isDigit;
-    import std.conv : parse, text, to;
-    import std.range.primitives;
+    import ripstd.algorithm.searching : startsWith;
+    import ripstd.ascii : isDigit;
+    import ripstd.conv : parse, text, to;
+    import ripstd.range.primitives;
 
     /**
        Minimum width.
@@ -166,7 +166,7 @@ if (is(Unqual!Char == Char))
     {
         union
         {
-            import std.bitmanip : bitfields;
+            import ripstd.bitmanip : bitfields;
             mixin(bitfields!(
                         bool, "flDash", 1,
                         bool, "flZero", 1,
@@ -248,7 +248,7 @@ if (is(Unqual!Char == Char))
      */
     bool writeUpToNextSpec(OutputRange)(ref OutputRange writer) scope
     {
-        import std.format : enforceFmt;
+        import ripstd.format : enforceFmt;
 
         if (trailing.empty)
             return false;
@@ -277,7 +277,7 @@ if (is(Unqual!Char == Char))
 
     private void fillUp() scope
     {
-        import std.format : enforceFmt, FormatException;
+        import ripstd.format : enforceFmt, FormatException;
 
         // Reset content
         if (__ctfe)
@@ -505,9 +505,9 @@ if (is(Unqual!Char == Char))
     //--------------------------------------------------------------------------
     package bool readUpToNextSpec(R)(ref R r) scope
     {
-        import std.ascii : isLower, isWhite;
-        import std.format : enforceFmt;
-        import std.utf : stride;
+        import ripstd.ascii : isLower, isWhite;
+        import ripstd.format : enforceFmt;
+        import ripstd.utf : stride;
 
         // Reset content
         if (__ctfe)
@@ -556,7 +556,7 @@ if (is(Unqual!Char == Char))
                 if (c == ' ')
                 {
                     while (!r.empty && isWhite(r.front)) r.popFront();
-                    //r = std.algorithm.find!(not!(isWhite))(r);
+                    //r = ripstd.algorithm.find!(not!(isWhite))(r);
                 }
                 else
                 {
@@ -574,8 +574,8 @@ if (is(Unqual!Char == Char))
 
     package string getCurFmtStr() const
     {
-        import std.array : appender;
-        import std.format.write : formatValue;
+        import ripstd.array : appender;
+        import ripstd.format.write : formatValue;
 
         auto w = appender!string();
         auto f = FormatSpec!Char("%s"); // for stringnize
@@ -614,7 +614,7 @@ if (is(Unqual!Char == Char))
      */
     string toString() const @safe pure
     {
-        import std.array : appender;
+        import ripstd.array : appender;
 
         auto app = appender!string();
         app.reserve(200 + trailing.length);
@@ -633,7 +633,7 @@ if (is(Unqual!Char == Char))
     void toString(OutputRange)(ref OutputRange writer) const
     if (isOutputRange!(OutputRange, char))
     {
-        import std.format.write : formatValue;
+        import ripstd.format.write : formatValue;
 
         auto s = singleSpec("%s");
 
@@ -674,7 +674,7 @@ if (is(Unqual!Char == Char))
 ///
 @safe pure unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     auto a = appender!(string)();
     auto fmt = "Number: %6.4e\nString: %s";
@@ -701,10 +701,10 @@ if (is(Unqual!Char == Char))
 
 @safe unittest
 {
-    import std.array : appender;
-    import std.conv : text;
-    import std.exception : assertThrown;
-    import std.format : FormatException;
+    import ripstd.array : appender;
+    import ripstd.conv : text;
+    import ripstd.exception : assertThrown;
+    import ripstd.format : FormatException;
 
     auto w = appender!(char[])();
     auto f = FormatSpec!char("abc%sdef%sghi");
@@ -740,7 +740,7 @@ if (is(Unqual!Char == Char))
 // https://issues.dlang.org/show_bug.cgi?id=5237
 @safe unittest
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     auto w = appender!string();
     auto f = FormatSpec!char("%.16f");
@@ -753,9 +753,9 @@ if (is(Unqual!Char == Char))
 // https://issues.dlang.org/show_bug.cgi?id=14059
 @safe unittest
 {
-    import std.array : appender;
-    import std.exception : assertThrown;
-    import std.format : FormatException;
+    import ripstd.array : appender;
+    import ripstd.exception : assertThrown;
+    import ripstd.format : FormatException;
 
     auto a = appender!(string)();
 
@@ -768,8 +768,8 @@ if (is(Unqual!Char == Char))
 
 @safe unittest
 {
-    import std.array : appender;
-    import std.format : format;
+    import ripstd.array : appender;
+    import ripstd.format : format;
 
     auto a = appender!(string)();
 
@@ -796,7 +796,7 @@ if (is(Unqual!Char == Char))
 
 @safe pure unittest
 {
-    import std.algorithm.searching : canFind, findSplitBefore;
+    import ripstd.algorithm.searching : canFind, findSplitBefore;
 
     auto expected = "width = 2" ~
         "\nprecision = 5" ~
@@ -822,9 +822,9 @@ if (is(Unqual!Char == Char))
 // https://issues.dlang.org/show_bug.cgi?id=15348
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.exception : collectExceptionMsg;
-    import std.format : FormatException;
+    import ripstd.array : appender;
+    import ripstd.exception : collectExceptionMsg;
+    import ripstd.format : FormatException;
 
     auto w = appender!(char[])();
     auto f = FormatSpec!char("%*10d");
@@ -851,9 +851,9 @@ Throws:
   */
 FormatSpec!Char singleSpec(Char)(Char[] fmt)
 {
-    import std.conv : text;
-    import std.format : enforceFmt;
-    import std.range.primitives : empty, front;
+    import ripstd.conv : text;
+    import ripstd.format : enforceFmt;
+    import ripstd.range.primitives : empty, front;
 
     enforceFmt(fmt.length >= 2, "fmt must be at least 2 characters long");
     enforceFmt(fmt.front == '%', "fmt must start with a '%' character");
@@ -877,8 +877,8 @@ FormatSpec!Char singleSpec(Char)(Char[] fmt)
 ///
 @safe pure unittest
 {
-    import std.array : appender;
-    import std.format.write : formatValue;
+    import ripstd.array : appender;
+    import ripstd.format.write : formatValue;
 
     auto spec = singleSpec("%10.3e");
     auto writer = appender!string();
@@ -889,8 +889,8 @@ FormatSpec!Char singleSpec(Char)(Char[] fmt)
 
 @safe pure unittest
 {
-    import std.exception : assertThrown;
-    import std.format : FormatException;
+    import ripstd.exception : assertThrown;
+    import ripstd.format : FormatException;
 
     auto spec = singleSpec("%2.3e");
 
@@ -912,15 +912,15 @@ FormatSpec!Char singleSpec(Char)(Char[] fmt)
 deprecated("enforceValidFormatSpec was accidentally made public and will be removed in 2.107.0")
 void enforceValidFormatSpec(T, Char)(scope const ref FormatSpec!Char f)
 {
-    import std.format.internal.write : evfs = enforceValidFormatSpec;
+    import ripstd.format.internal.write : evfs = enforceValidFormatSpec;
 
     evfs!T(f);
 }
 
 @safe unittest
 {
-    import std.exception : collectExceptionMsg;
-    import std.format : format, FormatException;
+    import ripstd.exception : collectExceptionMsg;
+    import ripstd.format : format, FormatException;
 
     // width/precision
     assert(collectExceptionMsg!FormatException(format("%*.d", 5.1, 2))

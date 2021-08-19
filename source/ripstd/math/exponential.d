@@ -32,7 +32,7 @@ Macros:
 
 module ripstd.math.exponential;
 
-import std.traits :  isFloatingPoint, isIntegral, isSigned, isUnsigned, Largest, Unqual;
+import ripstd.traits :  isFloatingPoint, isIntegral, isSigned, isUnsigned, Largest, Unqual;
 
 static import core.math;
 static import core.stdc.math;
@@ -64,7 +64,7 @@ version (D_HardFloat)
 Unqual!F pow(F, G)(F x, G n) @nogc @trusted pure nothrow
 if (isFloatingPoint!(F) && isIntegral!(G))
 {
-    import std.traits : Unsigned;
+    import ripstd.traits : Unsigned;
 
     real p = 1.0, v = void;
     Unsigned!(Unqual!G) m = n;
@@ -107,7 +107,7 @@ if (isFloatingPoint!(F) && isIntegral!(G))
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.operations : feqrel;
+    import ripstd.math.operations : feqrel;
 
     assert(pow(2.0, 5) == 32.0);
     assert(pow(1.5, 9).feqrel(38.4433) > 16);
@@ -117,7 +117,7 @@ if (isFloatingPoint!(F) && isIntegral!(G))
 
 @safe pure nothrow @nogc unittest
 {
-    import std.math.operations : isClose, feqrel;
+    import ripstd.math.operations : isClose, feqrel;
 
     // Make sure it instantiates and works properly on immutable values and
     // with various integer and float types.
@@ -151,7 +151,7 @@ if (isFloatingPoint!(F) && isIntegral!(G))
 
 @safe @nogc nothrow unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     assert(isClose(pow(2.0L, 10L), 1024, 1e-18));
 }
@@ -174,8 +174,8 @@ if (isFloatingPoint!(F) && isIntegral!(G))
 
 @safe @nogc nothrow unittest
 {
-    import std.math.operations : isClose;
-    import std.math.traits : isInfinity;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.traits : isInfinity;
 
     static float f1 = 19100.0f;
     static float f2 = 0.000012f;
@@ -207,7 +207,7 @@ if (isFloatingPoint!(F) && isIntegral!(G))
 
 @safe @nogc nothrow pure unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     enum f1 = 19100.0f;
     enum f2 = 0.000012f;
@@ -258,7 +258,7 @@ if (isFloatingPoint!(F) && isIntegral!(G))
 typeof(Unqual!(F).init * Unqual!(G).init) pow(F, G)(F x, G n) @nogc @trusted pure nothrow
 if (isIntegral!(F) && isIntegral!(G))
 {
-    import std.traits : isSigned;
+    import ripstd.traits : isSigned;
 
     typeof(return) p, v = void;
     Unqual!G m = n;
@@ -422,7 +422,7 @@ Unqual!(Largest!(F, G)) pow(F, G)(F x, G y) @nogc @trusted pure nothrow
 if (isFloatingPoint!(F) && isFloatingPoint!(G))
 {
     import core.math : fabs, sqrt;
-    import std.math.traits : isInfinity, isNaN, signbit;
+    import ripstd.math.traits : isInfinity, isNaN, signbit;
 
     alias Float = typeof(return);
 
@@ -587,7 +587,7 @@ if (isFloatingPoint!(F) && isFloatingPoint!(G))
             static if (maxOdd > ulong.max)
             {
                 // Generic method, for any FP type
-                import std.math.rounding : floor;
+                import ripstd.math.rounding : floor;
                 if (floor(y) != y)
                     return sqrt(x); // Complex result -- create a NaN
 
@@ -637,7 +637,7 @@ if (isFloatingPoint!(F) && isFloatingPoint!(G))
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     assert(isClose(pow(2.0, 3.0), 8.0));
     assert(isClose(pow(1.5, 10.0), 57.6650390625));
@@ -670,15 +670,15 @@ if (isFloatingPoint!(F) && isFloatingPoint!(G))
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     // the result is a complex number
     // which cannot be represented as floating point number
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
     assert(isNaN(pow(-2.5, -1.5)));
 
-    // use the ^^-operator of std.complex instead
-    import std.complex : complex;
+    // use the ^^-operator of ripstd.complex instead
+    import ripstd.complex : complex;
     auto c1 = complex(-2.5, 0.0);
     auto c2 = complex(-1.5, 0.0);
     auto result = c1 ^^ c2;
@@ -689,7 +689,7 @@ if (isFloatingPoint!(F) && isFloatingPoint!(G))
 
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     assert(pow(1.5, real.infinity) == real.infinity);
     assert(pow(0.5, real.infinity) == 0.0);
@@ -711,16 +711,16 @@ if (isFloatingPoint!(F) && isFloatingPoint!(G))
 
 @safe @nogc nothrow unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     assert(isClose(pow(2.0L, 10.0L), 1024, 1e-18));
 }
 
 @safe pure nothrow @nogc unittest
 {
-    import std.math.operations : isClose;
-    import std.math.traits : isIdentical, isNaN;
-    import std.math.constants : PI;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.traits : isIdentical, isNaN;
+    import ripstd.math.constants : PI;
 
     // Test all the special values.  These unittests can be run on Windows
     // by temporarily changing the version (linux) to version (all).
@@ -790,7 +790,7 @@ if (isFloatingPoint!(F) && isFloatingPoint!(G))
 // https://issues.dlang.org/show_bug.cgi?id=20508
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     assert(isNaN(pow(-double.infinity, 0.5)));
 
@@ -817,7 +817,7 @@ if (isFloatingPoint!(F) && isFloatingPoint!(G))
 Unqual!(Largest!(F, H)) powmod(F, G, H)(F x, G n, H m)
 if (isUnsigned!F && isUnsigned!G && isUnsigned!H)
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     alias T = Unqual!(Largest!(F, H));
     static if (T.sizeof <= 4)
@@ -968,7 +968,7 @@ if (isUnsigned!F && isUnsigned!G && isUnsigned!H)
 pragma(inline, true)
 real exp(real x) @trusted pure nothrow @nogc // TODO: @safe
 {
-    import std.math.constants : LOG2E;
+    import ripstd.math.constants : LOG2E;
 
     version (InlineAsm_X87)
     {
@@ -992,8 +992,8 @@ float exp(float x) @safe pure nothrow @nogc { return __ctfe ? cast(float) exp(ca
 ///
 @safe unittest
 {
-    import std.math.operations : feqrel;
-    import std.math.constants : E;
+    import ripstd.math.operations : feqrel;
+    import ripstd.math.constants : E;
 
     assert(exp(0.0) == 1.0);
     assert(exp(3.0).feqrel(E * E * E) > 16);
@@ -1001,11 +1001,11 @@ float exp(float x) @safe pure nothrow @nogc { return __ctfe ? cast(float) exp(ca
 
 private T expImpl(T)(T x) @safe pure nothrow @nogc
 {
-    import std.math : floatTraits, RealFormat;
-    import std.math.traits : isNaN;
-    import std.math.rounding : floor;
-    import std.math.algebraic : poly;
-    import std.math.constants : LOG2E;
+    import ripstd.math : floatTraits, RealFormat;
+    import ripstd.math.traits : isNaN;
+    import ripstd.math.rounding : floor;
+    import ripstd.math.algebraic : poly;
+    import ripstd.math.constants : LOG2E;
 
     alias F = floatTraits!T;
     static if (F.realFormat == RealFormat.ieeeSingle)
@@ -1142,16 +1142,16 @@ private T expImpl(T)(T x) @safe pure nothrow @nogc
 
 @safe @nogc nothrow unittest
 {
-    import std.math : floatTraits, RealFormat;
-    import std.math.operations : NaN, feqrel, isClose;
-    import std.math.constants : E;
-    import std.math.traits : isIdentical;
-    import std.math.algebraic : abs;
+    import ripstd.math : floatTraits, RealFormat;
+    import ripstd.math.operations : NaN, feqrel, isClose;
+    import ripstd.math.constants : E;
+    import ripstd.math.traits : isIdentical;
+    import ripstd.math.algebraic : abs;
 
-    version (IeeeFlagsSupport) import std.math.hardware : IeeeFlags, resetIeeeFlags, ieeeFlags;
+    version (IeeeFlagsSupport) import ripstd.math.hardware : IeeeFlags, resetIeeeFlags, ieeeFlags;
     version (FloatingPointControlSupport)
     {
-        import std.math.hardware : FloatingPointControl;
+        import ripstd.math.hardware : FloatingPointControl;
 
         FloatingPointControl ctrl;
         if (FloatingPointControl.hasExceptionTraps)
@@ -1284,7 +1284,7 @@ private T expImpl(T)(T x) @safe pure nothrow @nogc
         assert(isIdentical(x, NaN(0x123)));
     }
 
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     foreach (T; AliasSeq!(real, double, float))
         testExp!T();
 
@@ -1338,8 +1338,8 @@ float expm1(float x) @safe pure nothrow @nogc
 ///
 @safe unittest
 {
-    import std.math.traits : isIdentical;
-    import std.math.operations : feqrel;
+    import ripstd.math.traits : isIdentical;
+    import ripstd.math.operations : feqrel;
 
     assert(isIdentical(expm1(0.0), 0.0));
     assert(expm1(1.0).feqrel(1.71828) > 16);
@@ -1516,10 +1516,10 @@ L_largenegative:
 
 private T expm1Impl(T)(T x) @safe pure nothrow @nogc
 {
-    import std.math : floatTraits, RealFormat;
-    import std.math.rounding : floor;
-    import std.math.algebraic : poly;
-    import std.math.constants : LN2;
+    import ripstd.math : floatTraits, RealFormat;
+    import ripstd.math.rounding : floor;
+    import ripstd.math.algebraic : poly;
+    import ripstd.math.constants : LN2;
 
     // Coefficients for exp(x) - 1 and overflow/underflow limits.
     enum realFormat = floatTraits!T.realFormat;
@@ -1638,8 +1638,8 @@ private T expm1Impl(T)(T x) @safe pure nothrow @nogc
 
 @safe @nogc nothrow unittest
 {
-    import std.math.traits : isNaN;
-    import std.math.operations : isClose, CommonDefaultFor;
+    import ripstd.math.traits : isNaN;
+    import ripstd.math.operations : isClose, CommonDefaultFor;
 
     static void testExpm1(T)()
     {
@@ -1657,7 +1657,7 @@ private T expm1Impl(T)(T x) @safe pure nothrow @nogc
         }
     }
 
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     foreach (T; AliasSeq!(real, double))
         testExpm1!T();
 }
@@ -1694,8 +1694,8 @@ float exp2(float x) @nogc @safe pure nothrow { return __ctfe ? cast(float) exp2(
 ///
 @safe unittest
 {
-    import std.math.traits : isIdentical;
-    import std.math.operations : feqrel;
+    import ripstd.math.traits : isIdentical;
+    import ripstd.math.operations : feqrel;
 
     assert(isIdentical(exp2(0.0), 1.0));
     assert(exp2(2.0).feqrel(4.0) > 16);
@@ -1908,10 +1908,10 @@ L_was_nan:
 
 private T exp2Impl(T)(T x) @nogc @safe pure nothrow
 {
-    import std.math : floatTraits, RealFormat;
-    import std.math.traits : isNaN;
-    import std.math.rounding : floor;
-    import std.math.algebraic : poly;
+    import ripstd.math : floatTraits, RealFormat;
+    import ripstd.math.traits : isNaN;
+    import ripstd.math.rounding : floor;
+    import ripstd.math.algebraic : poly;
 
     // Coefficients for exp2(x)
     enum realFormat = floatTraits!T.realFormat;
@@ -2030,9 +2030,9 @@ private T exp2Impl(T)(T x) @nogc @safe pure nothrow
 
 @safe @nogc nothrow unittest
 {
-    import std.math.operations : feqrel, NaN, isClose;
-    import std.math.traits : isIdentical;
-    import std.math.constants : SQRT2;
+    import ripstd.math.operations : feqrel, NaN, isClose;
+    import ripstd.math.traits : isIdentical;
+    import ripstd.math.constants : SQRT2;
 
     assert(feqrel(exp2(0.5L), SQRT2) >= real.mant_dig -1);
     assert(exp2(8.0L) == 256.0);
@@ -2071,7 +2071,7 @@ private T exp2Impl(T)(T x) @nogc @safe pure nothrow
         }
     }
 
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     foreach (T; AliasSeq!(real, double, float))
         testExp2!T();
 }
@@ -2097,8 +2097,8 @@ private T exp2Impl(T)(T x) @nogc @safe pure nothrow
 T frexp(T)(const T value, out int exp) @trusted pure nothrow @nogc
 if (isFloatingPoint!T)
 {
-    import std.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
-    import std.math.traits : isSubnormal;
+    import ripstd.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
+    import ripstd.math.traits : isSubnormal;
 
     if (__ctfe)
     {
@@ -2324,7 +2324,7 @@ if (isFloatingPoint!T)
 ///
 @safe unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     int exp;
     real mantissa = frexp(123.456L, exp);
@@ -2341,7 +2341,7 @@ if (isFloatingPoint!T)
 
 @safe @nogc nothrow unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     int exp;
     real mantissa = frexp(123.456L, exp);
@@ -2352,10 +2352,10 @@ if (isFloatingPoint!T)
 
 @safe unittest
 {
-    import std.math : floatTraits, RealFormat;
-    import std.math.traits : isIdentical;
-    import std.meta : AliasSeq;
-    import std.typecons : tuple, Tuple;
+    import ripstd.math : floatTraits, RealFormat;
+    import ripstd.math.traits : isIdentical;
+    import ripstd.meta : AliasSeq;
+    import ripstd.typecons : tuple, Tuple;
 
     static foreach (T; AliasSeq!(real, double, float))
     {{
@@ -2456,7 +2456,7 @@ if (isFloatingPoint!T)
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     void foo() {
         static foreach (T; AliasSeq!(real, double, float))
         {{
@@ -2485,7 +2485,7 @@ if (isFloatingPoint!T)
 int ilogb(T)(const T x) @trusted pure nothrow @nogc
 if (isFloatingPoint!T)
 {
-    import std.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
+    import ripstd.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
 
     import core.bitop : bsr;
     alias F = floatTraits!T;
@@ -2642,7 +2642,7 @@ if (isIntegral!T && isUnsigned!T)
 int ilogb(T)(const T x) @safe pure nothrow @nogc
 if (isIntegral!T && isSigned!T)
 {
-    import std.traits : Unsigned;
+    import ripstd.traits : Unsigned;
     // Note: abs(x) can not be used because the return type is not Unsigned and
     //       the return value would be wrong for x == int.min
     Unsigned!T absx =  x >= 0 ? x : -x;
@@ -2680,10 +2680,10 @@ alias FP_ILOGBNAN = core.stdc.math.FP_ILOGBNAN;
 
 @safe nothrow @nogc unittest
 {
-    import std.math : floatTraits, RealFormat;
-    import std.math.operations : nextUp;
-    import std.meta : AliasSeq;
-    import std.typecons : Tuple;
+    import ripstd.math : floatTraits, RealFormat;
+    import ripstd.math.operations : nextUp;
+    import ripstd.meta : AliasSeq;
+    import ripstd.typecons : Tuple;
     static foreach (F; AliasSeq!(float, double, real))
     {{
         alias T = Tuple!(F, int);
@@ -2757,7 +2757,7 @@ float ldexp(float n, int exp)   @safe pure nothrow @nogc { return core.math.ldex
 ///
 @nogc @safe pure nothrow unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(float, double, real))
     {{
         T r;
@@ -2777,7 +2777,7 @@ float ldexp(float n, int exp)   @safe pure nothrow @nogc { return core.math.ldex
 
 @safe pure nothrow @nogc unittest
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     static if (floatTraits!(real).realFormat == RealFormat.ieeeExtended ||
                floatTraits!(real).realFormat == RealFormat.ieeeExtended53 ||
@@ -2831,7 +2831,7 @@ float ldexp(float n, int exp)   @safe pure nothrow @nogc { return core.math.ldex
 
 @safe @nogc nothrow unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     static real[3][] vals =    // value,exp,ldexp
     [
@@ -2862,7 +2862,7 @@ float ldexp(float n, int exp)   @safe pure nothrow @nogc { return core.math.ldex
 
 private
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     version (INLINE_YL2X) {} else
     {
@@ -2972,9 +2972,16 @@ private
  */
 real log(real x) @safe pure nothrow @nogc
 {
-    import std.math.constants : LN2, LOG2, SQRT1_2;
-    import std.math.traits : isInfinity, isNaN, signbit;
-    import std.math.algebraic : poly;
+    // because CTFE builtins are hardcoded in the compiler
+    if(__ctfe)
+    {
+        static import std.math.exponential;
+        return std.math.exponential.log(x);
+    }
+
+    import ripstd.math.constants : LN2, LOG2, SQRT1_2;
+    import ripstd.math.traits : isInfinity, isNaN, signbit;
+    import ripstd.math.algebraic : poly;
 
     version (INLINE_YL2X)
         return core.math.yl2x(x, LN2);
@@ -3054,8 +3061,8 @@ real log(real x) @safe pure nothrow @nogc
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.operations : feqrel;
-    import std.math.constants : E;
+    import ripstd.math.operations : feqrel;
+    import ripstd.math.constants : E;
 
     assert(feqrel(log(E), 1) >= real.mant_dig - 1);
 }
@@ -3072,9 +3079,16 @@ real log(real x) @safe pure nothrow @nogc
  */
 real log10(real x) @safe pure nothrow @nogc
 {
-    import std.math.constants : LOG2, LN2, SQRT1_2;
-    import std.math.algebraic : poly;
-    import std.math.traits : isNaN, isInfinity, signbit;
+    // because CTFE builtins are hardcoded in the compiler
+    if(__ctfe)
+    {
+        static import std.math.exponential;
+        return std.math.exponential.log10(x);
+    }
+
+    import ripstd.math.constants : LOG2, LN2, SQRT1_2;
+    import ripstd.math.algebraic : poly;
+    import ripstd.math.traits : isNaN, isInfinity, signbit;
 
     version (INLINE_YL2X)
         return core.math.yl2x(x, LOG2);
@@ -3158,7 +3172,7 @@ real log10(real x) @safe pure nothrow @nogc
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.algebraic : fabs;
+    import ripstd.math.algebraic : fabs;
 
     assert(fabs(log10(1000) - 3) < .000001);
 }
@@ -3179,8 +3193,8 @@ real log10(real x) @safe pure nothrow @nogc
  */
 real log1p(real x) @safe pure nothrow @nogc
 {
-    import std.math.traits : isNaN, isInfinity, signbit;
-    import std.math.constants : LN2;
+    import ripstd.math.traits : isNaN, isInfinity, signbit;
+    import ripstd.math.constants : LN2;
 
     version (INLINE_YL2X)
     {
@@ -3207,8 +3221,8 @@ real log1p(real x) @safe pure nothrow @nogc
 ///
 @safe pure unittest
 {
-    import std.math.traits : isIdentical, isNaN;
-    import std.math.operations : feqrel;
+    import ripstd.math.traits : isIdentical, isNaN;
+    import ripstd.math.operations : feqrel;
 
     assert(isIdentical(log1p(0.0), 0.0));
     assert(log1p(1.0).feqrel(0.69314) > 16);
@@ -3233,9 +3247,16 @@ real log1p(real x) @safe pure nothrow @nogc
  */
 real log2(real x) @safe pure nothrow @nogc
 {
-    import std.math.traits : isNaN, isInfinity, signbit;
-    import std.math.constants : SQRT1_2, LOG2E;
-    import std.math.algebraic : poly;
+    // because CTFE builtins are hardcoded in the compiler
+    if(__ctfe)
+    {
+        static import std.math.exponential;
+        return std.math.exponential.log2(x);
+    }
+
+    import ripstd.math.traits : isNaN, isInfinity, signbit;
+    import ripstd.math.constants : SQRT1_2, LOG2E;
+    import ripstd.math.algebraic : poly;
 
     version (INLINE_YL2X)
         return core.math.yl2x(x, 1.0L);
@@ -3310,14 +3331,14 @@ real log2(real x) @safe pure nothrow @nogc
 ///
 @safe unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     assert(isClose(log2(1024.0L), 10));
 }
 
 @safe @nogc nothrow unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     // check if values are equal to 19 decimal digits of precision
     assert(isClose(log2(1024.0L), 10, 1e-18));
@@ -3412,7 +3433,7 @@ float scalbn(float x, int n) @safe pure nothrow @nogc { return _scalbn(x,n); }
 pragma(inline, true)
 private F _scalbn(F)(F x, int n)
 {
-    import std.math.traits : isInfinity;
+    import ripstd.math.traits : isInfinity;
 
     if (__ctfe)
     {

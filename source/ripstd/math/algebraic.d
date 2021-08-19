@@ -29,7 +29,7 @@ module ripstd.math.algebraic;
 
 static import core.math;
 static import core.stdc.math;
-import std.traits : CommonType, isFloatingPoint, isIntegral, isSigned, Unqual;
+import ripstd.traits : CommonType, isFloatingPoint, isIntegral, isSigned, Unqual;
 
 /***********************************
  * Calculates the absolute value of a number.
@@ -63,7 +63,7 @@ if ((is(immutable Num == immutable short) || is(immutable Num == immutable byte)
 /// ditto
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isIdentical, isNaN;
+    import ripstd.math.traits : isIdentical, isNaN;
 
     assert(isIdentical(abs(-0.0L), 0.0L));
     assert(isNaN(abs(real.nan)));
@@ -84,7 +84,7 @@ if ((is(immutable Num == immutable short) || is(immutable Num == immutable byte)
 
 @safe pure nothrow @nogc unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(float, double, real))
     {{
         T f = 3;
@@ -132,6 +132,13 @@ real fabs(real x) @safe pure nothrow @nogc { return core.math.fabs(x); }
 pragma(inline, true)
 double fabs(double d) @trusted pure nothrow @nogc
 {
+    // because CTFE builtins are hardcoded in the compiler
+    if(__ctfe)
+    {
+        static import std.math.algebraic;
+        return std.math.algebraic.fabs(d);
+    }
+
     ulong tmp = *cast(ulong*)&d & 0x7FFF_FFFF_FFFF_FFFF;
     return *cast(double*)&tmp;
 }
@@ -140,6 +147,13 @@ double fabs(double d) @trusted pure nothrow @nogc
 pragma(inline, true)
 float fabs(float f) @trusted pure nothrow @nogc
 {
+    // because CTFE builtins are hardcoded in the compiler
+    if(__ctfe)
+    {
+        static import std.math.algebraic;
+        return std.math.algebraic.fabs(f);
+    }
+
     uint tmp = *cast(uint*)&f & 0x7FFF_FFFF;
     return *cast(float*)&tmp;
 }
@@ -147,7 +161,7 @@ float fabs(float f) @trusted pure nothrow @nogc
 ///
 @safe unittest
 {
-    import std.math.traits : isIdentical;
+    import ripstd.math.traits : isIdentical;
 
     assert(isIdentical(fabs(0.0f), 0.0f));
     assert(isIdentical(fabs(-0.0f), 0.0f));
@@ -204,8 +218,8 @@ real sqrt(real x) @nogc @safe pure nothrow { return core.math.sqrt(x); }
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.operations : feqrel;
-    import std.math.traits : isNaN;
+    import ripstd.math.operations : feqrel;
+    import ripstd.math.traits : isNaN;
 
     assert(sqrt(2.0).feqrel(1.4142) > 16);
     assert(sqrt(9.0).feqrel(3.0) > 16);
@@ -256,8 +270,8 @@ real cbrt(real x) @trusted nothrow @nogc
 {
     version (CRuntime_Microsoft)
     {
-        import std.math.traits : copysign;
-        import std.math.exponential : exp2;
+        import ripstd.math.traits : copysign;
+        import ripstd.math.exponential : exp2;
 
         version (INLINE_YL2X)
             return copysign(exp2(core.math.yl2x(fabs(x), 1.0L/3.0L)), x);
@@ -271,7 +285,7 @@ real cbrt(real x) @trusted nothrow @nogc
 ///
 @safe unittest
 {
-    import std.math.operations : feqrel;
+    import ripstd.math.operations : feqrel;
 
     assert(cbrt(1.0).feqrel(1.0) > 16);
     assert(cbrt(27.0).feqrel(3.0) > 16);
@@ -304,7 +318,7 @@ if (isFloatingPoint!T)
     // If both are huge, avoid overflow by scaling by 2^^-N.
     // If both are tiny, avoid underflow by scaling by 2^^N.
     import core.math : fabs, sqrt;
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     alias F = floatTraits!T;
 
@@ -377,7 +391,7 @@ if (isFloatingPoint!T)
 ///
 @safe unittest
 {
-    import std.math.operations : feqrel;
+    import ripstd.math.operations : feqrel;
 
     assert(hypot(1.0, 1.0).feqrel(1.4142) > 16);
     assert(hypot(3.0, 4.0).feqrel(5.0) > 16);
@@ -387,7 +401,7 @@ if (isFloatingPoint!T)
 
 @safe unittest
 {
-    import std.math.operations : feqrel;
+    import ripstd.math.operations : feqrel;
 
     assert(hypot(1.0f, 1.0f).feqrel(1.4142f) > 16);
     assert(hypot(3.0f, 4.0f).feqrel(5.0f) > 16);
@@ -402,9 +416,9 @@ if (isFloatingPoint!T)
 
 @safe unittest
 {
-    import std.math.operations : feqrel;
-    import std.math.traits : isIdentical;
-    import std.meta : AliasSeq;
+    import ripstd.math.operations : feqrel;
+    import ripstd.math.traits : isIdentical;
+    import ripstd.meta : AliasSeq;
 
     static foreach (T; AliasSeq!(float, double, real))
     {{
@@ -462,7 +476,7 @@ T hypot(T)(const T x, const T y, const T z) @safe pure nothrow @nogc
 if (isFloatingPoint!T)
 {
     import core.math : fabs, sqrt;
-    import std.math.operations : fmax;
+    import ripstd.math.operations : fmax;
     const absx = fabs(x);
     const absy = fabs(y);
     const absz = fabs(z);
@@ -480,7 +494,7 @@ if (isFloatingPoint!T)
 ///
 @safe unittest
 {
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
 
     assert(isClose(hypot(1.0, 2.0, 2.0), 3.0));
     assert(isClose(hypot(2.0, 3.0, 6.0), 7.0));
@@ -489,9 +503,9 @@ if (isFloatingPoint!T)
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
-    import std.math.traits : isIdentical;
-    import std.math.operations : isClose;
+    import ripstd.meta : AliasSeq;
+    import ripstd.math.traits : isIdentical;
+    import ripstd.math.operations : isClose;
     static foreach (T; AliasSeq!(float, double, real))
     {{
         static T[4][] vals = [
@@ -873,8 +887,8 @@ if (isFloatingPoint!T)
 
 @safe @nogc pure nothrow unittest
 {
-    import std.math.traits : isNaN;
-    import std.meta : AliasSeq;
+    import ripstd.math.traits : isNaN;
+    import ripstd.meta : AliasSeq;
 
     static foreach (T; AliasSeq!(float, double, real))
     {{
@@ -1005,8 +1019,8 @@ if (isFloatingPoint!T)
 
 @safe @nogc pure nothrow unittest
 {
-    import std.math.traits : isNaN;
-    import std.meta : AliasSeq;
+    import ripstd.math.traits : isNaN;
+    import ripstd.meta : AliasSeq;
 
     static foreach (T; AliasSeq!(float, double, real))
     {
@@ -1053,8 +1067,8 @@ private T powIntegralImpl(PowType type, T)(T val)
 
 private T powFloatingPointImpl(PowType type, T)(T x)
 {
-    import std.math.traits : copysign, isFinite;
-    import std.math.exponential : frexp;
+    import ripstd.math.traits : copysign, isFinite;
+    import ripstd.math.exponential : frexp;
 
     if (!x.isFinite)
         return x;

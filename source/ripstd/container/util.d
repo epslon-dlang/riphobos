@@ -28,14 +28,14 @@ if (is(T == struct) || is(T == class))
     T make(Args...)(Args arguments)
     if (is(T == struct) && __traits(compiles, T(arguments)))
     {
-        // constructing an std.container.Array without arguments,
+        // constructing an ripstd.container.Array without arguments,
         // does not initialize its payload and is equivalent
         // to a null reference. We therefore construct an empty container
         // by passing an empty array to its constructor.
         // https://issues.dlang.org/show_bug.cgi?id=13872.
         static if (arguments.length == 0)
         {
-            import std.range.primitives : ElementType;
+            import ripstd.range.primitives : ElementType;
             alias ET = ElementType!(T.Range);
             return T(ET[].init);
         }
@@ -54,8 +54,8 @@ if (is(T == struct) || is(T == class))
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container;
 
     auto arr = make!(Array!int)([4, 2, 3, 1]);
     assert(equal(arr[], [4, 2, 3, 1]));
@@ -70,8 +70,8 @@ if (is(T == struct) || is(T == class))
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container;
 
     auto arr1 = make!(Array!dchar)();
     assert(arr1.empty);
@@ -87,8 +87,8 @@ if (is(T == struct) || is(T == class))
 // https://issues.dlang.org/show_bug.cgi?id=8895
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container;
 
     auto a = make!(DList!int)(1,2,3,4);
     auto b = make!(DList!int)(1,2,3,4);
@@ -105,13 +105,13 @@ if (is(T == struct) || is(T == class))
 template make(alias Container, Args...)
 if (!is(Container))
 {
-    import std.range : isInputRange, isInfinite;
-    import std.traits : isDynamicArray;
+    import ripstd.range : isInputRange, isInfinite;
+    import ripstd.traits : isDynamicArray;
 
     auto make(Range)(Range range)
         if (!isDynamicArray!Range && isInputRange!Range && !isInfinite!Range)
     {
-        import std.range : ElementType;
+        import ripstd.range : ElementType;
         return .make!(Container!(ElementType!Range, Args))(range);
     }
 
@@ -125,9 +125,9 @@ if (!is(Container))
 /// forbid construction from infinite range
 @safe unittest
 {
-    import std.container.array : Array;
-    import std.range : only, repeat;
-    import std.range.primitives : isInfinite;
+    import ripstd.container.array : Array;
+    import ripstd.range : only, repeat;
+    import ripstd.range.primitives : isInfinite;
     static assert(__traits(compiles, { auto arr = make!Array(only(5)); }));
     static assert(!__traits(compiles, { auto arr = make!Array(repeat(5)); }));
 }
@@ -135,9 +135,9 @@ if (!is(Container))
 ///
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container.array, std.container.rbtree, std.container.slist;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container.array, ripstd.container.rbtree, ripstd.container.slist;
+    import ripstd.range : iota;
 
     auto arr = make!Array(iota(5));
     assert(equal(arr[], [0, 1, 2, 3, 4]));
@@ -155,8 +155,8 @@ if (!is(Container))
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container.rbtree;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container.rbtree;
 
     auto rbtmin = make!(RedBlackTree, "a < b", false)(3, 2, 2, 1);
     assert(equal(rbtmin[], [1, 2, 3]));
@@ -165,7 +165,7 @@ if (!is(Container))
 // https://issues.dlang.org/show_bug.cgi?id=13872
 @system unittest
 {
-    import std.container;
+    import ripstd.container;
 
     auto tree1 = make!(RedBlackTree!int)();
     auto refToTree1 = tree1;

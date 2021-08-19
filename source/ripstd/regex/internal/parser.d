@@ -4,17 +4,17 @@
 */
 module ripstd.regex.internal.parser;
 
-import std.regex.internal.ir;
-import std.range.primitives, std.uni, std.meta,
-    std.traits, std.typecons, std.exception;
-static import std.ascii;
+import ripstd.regex.internal.ir;
+import ripstd.range.primitives, ripstd.uni, ripstd.meta,
+    ripstd.traits, ripstd.typecons, ripstd.exception;
+static import ripstd.ascii;
 
 // package relevant info from parser into a regex object
 auto makeRegex(S, CG)(Parser!(S, CG) p)
 {
-    import std.regex.internal.backtracking : BacktrackingMatcher;
-    import std.regex.internal.thompson : ThompsonMatcher;
-    import std.algorithm.searching : canFind;
+    import ripstd.regex.internal.backtracking : BacktrackingMatcher;
+    import ripstd.regex.internal.thompson : ThompsonMatcher;
+    import ripstd.algorithm.searching : canFind;
     alias Char = BasicElementOf!S;
     Regex!Char re;
     auto g = p.g;
@@ -41,7 +41,7 @@ auto makeRegex(S, CG)(Parser!(S, CG) p)
             __ctfe || print();
         }
         //@@@BUG@@@ (not reduced)
-        //somehow just using validate _collides_ with std.utf.validate (!)
+        //somehow just using validate _collides_ with ripstd.utf.validate (!)
         version (assert) re.validateRe();
     }
     return re;
@@ -56,7 +56,7 @@ if (isSomeString!S)
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto re = makeRegex(`(?P<name>\w+) = (?P<var>\d+)`);
     auto nc = re.namedCaptures;
     static assert(isRandomAccessRange!(typeof(nc)));
@@ -200,7 +200,7 @@ struct CodeGen
 
     bool isOpenGroup(uint n)
     {
-        import std.algorithm.searching : canFind;
+        import ripstd.algorithm.searching : canFind;
         // walk the fixup stack and see if there are groups labeled 'n'
         // fixup '0' is reserved for alternations
         return fixupStack.data[1..$].
@@ -241,7 +241,7 @@ struct CodeGen
         }
         else
         {
-            import std.algorithm.searching : countUntil;
+            import ripstd.algorithm.searching : countUntil;
             const ivals = set.byInterval;
             immutable n = charsets.countUntil(set);
             if (n >= 0)
@@ -287,8 +287,8 @@ struct CodeGen
 
     void genNamedGroup(string name)
     {
-        import std.array : insertInPlace;
-        import std.range : assumeSorted;
+        import ripstd.array : insertInPlace;
+        import ripstd.range : assumeSorted;
         nesting++;
         pushFixup(length);
         immutable nglob = groupStack.top++;
@@ -316,7 +316,7 @@ struct CodeGen
 
     void endPattern(uint num)
     {
-        import std.algorithm.comparison : max;
+        import ripstd.algorithm.comparison : max;
         put(Bytecode(IR.End, num));
         ngroup = max(ngroup, groupStack.top);
         groupStack.top = 1; // reset group counter
@@ -344,7 +344,7 @@ struct CodeGen
     // repetition of {1,1}
     void fixRepetition(uint offset)
     {
-        import std.algorithm.mutation : copy;
+        import ripstd.algorithm.mutation : copy;
         immutable replace = ir[offset].code == IR.Nop;
         if (replace)
         {
@@ -356,9 +356,9 @@ struct CodeGen
     // repetition of {x,y}
     void fixRepetition(uint offset, uint min, uint max, bool greedy)
     {
-        static import std.algorithm.comparison;
-        import std.algorithm.mutation : copy;
-        import std.array : insertInPlace;
+        static import ripstd.algorithm.comparison;
+        import ripstd.algorithm.mutation : copy;
+        import ripstd.array : insertInPlace;
         immutable replace = ir[offset].code == IR.Nop;
         immutable len = cast(uint) ir.length - offset - replace;
         if (max != infinite)
@@ -375,7 +375,7 @@ struct CodeGen
                 putRaw(1);
                 putRaw(min);
                 putRaw(max);
-                counterDepth = std.algorithm.comparison.max(counterDepth, nesting+1);
+                counterDepth = ripstd.algorithm.comparison.max(counterDepth, nesting+1);
             }
         }
         else if (min) //&& max is infinite
@@ -393,7 +393,7 @@ struct CodeGen
                 putRaw(1);
                 putRaw(min);
                 putRaw(min);
-                counterDepth = std.algorithm.comparison.max(counterDepth, nesting+1);
+                counterDepth = ripstd.algorithm.comparison.max(counterDepth, nesting+1);
             }
             else if (replace)
             {
@@ -422,7 +422,7 @@ struct CodeGen
 
     void fixAlternation()
     {
-        import std.array : insertInPlace;
+        import ripstd.array : insertInPlace;
         uint fix = fixupStack.top;
         if (ir.length > fix && ir[fix].code == IR.Option)
         {
@@ -591,7 +591,7 @@ if (isForwardRange!R && is(ElementType!R : dchar))
     uint parseDecimal()
     {
         uint r = 0;
-        while (std.ascii.isDigit(front))
+        while (ripstd.ascii.isDigit(front))
         {
             if (r >= (uint.max/10))
                 error("Overflow in decimal number");
@@ -605,7 +605,7 @@ if (isForwardRange!R && is(ElementType!R : dchar))
     //
     @trusted void parseFlags(S)(S flags)
     {//@@@BUG@@@ text is @system
-        import std.conv : text;
+        import ripstd.conv : text;
         foreach (ch; flags)//flags are ASCII anyway
         {
         L_FlagSwitch:
@@ -678,7 +678,7 @@ if (isForwardRange!R && is(ElementType!R : dchar))
                         name ~= front;
                         popFront();
                         while (!empty && (isAlpha(front) ||
-                            front == '_' || std.ascii.isDigit(front)))
+                            front == '_' || ripstd.ascii.isDigit(front)))
                         {
                             name ~= front;
                             popFront();
@@ -798,14 +798,14 @@ if (isForwardRange!R && is(ElementType!R : dchar))
         case '{':
             popFront();
             enforce(!empty, "Unexpected end of regex pattern");
-            enforce(std.ascii.isDigit(front), "First number required in repetition");
+            enforce(ripstd.ascii.isDigit(front), "First number required in repetition");
             min = parseDecimal();
             if (front == '}')
                 max = min;
             else if (front == ',')
             {
                 popFront();
-                if (std.ascii.isDigit(front))
+                if (ripstd.ascii.isDigit(front))
                     max = parseDecimal();
                 else if (front == '}')
                     max = infinite;
@@ -906,7 +906,7 @@ if (isForwardRange!R && is(ElementType!R : dchar))
     //parse and generate IR for escape stand alone escape sequence
     @trusted void parseEscape()
     {//accesses array of appender
-        import std.algorithm.iteration : sum;
+        import ripstd.algorithm.iteration : sum;
         switch (front)
         {
         case 'f':   popFront(); g.put(Bytecode(IR.Char, '\f')); break;
@@ -972,7 +972,7 @@ if (isForwardRange!R && is(ElementType!R : dchar))
             //perl's disambiguation rule i.e.
             //get next digit only if there is such group number
             popFront();
-            while (nref < maxBackref && !empty && std.ascii.isDigit(front))
+            while (nref < maxBackref && !empty && ripstd.ascii.isDigit(front))
             {
                 nref = nref * 10 + front - '0';
                 popFront();
@@ -1010,8 +1010,8 @@ if (isForwardRange!R && is(ElementType!R : dchar))
     //
     @trusted void error(string msg)
     {
-        import std.array : appender;
-        import std.format.write : formattedWrite;
+        import ripstd.array : appender;
+        import ripstd.format.write : formattedWrite;
         auto app = appender!string();
         formattedWrite(app, "%s\nPattern with error: `%s` <--HERE-- `%s`",
                        msg, origin[0..$-pat.length], pat);
@@ -1143,7 +1143,7 @@ void fixupBytecode()(Bytecode[] ir)
 
 void optimize(Char)(ref Regex!Char zis)
 {
-    import std.array : insertInPlace;
+    import ripstd.array : insertInPlace;
     CodepointSet nextSet(uint idx)
     {
         CodepointSet set;
@@ -1191,7 +1191,7 @@ void optimize(Char)(ref Regex!Char zis)
 //IR code validator - proper nesting, illegal instructions, etc.
 @trusted void validateRe(Char)(ref Regex!Char zis)
 {//@@@BUG@@@ text is @system
-    import std.conv : text;
+    import ripstd.conv : text;
     with(zis)
     {
         for (uint pc = 0; pc < ir.length; pc += ir[pc].length)

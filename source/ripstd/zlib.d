@@ -9,7 +9,7 @@
  * $(LREF uncompress) directly.
  *
  * -------
- * import std.zlib;
+ * import ripstd.zlib;
  *
  * auto src =
  * "the quick brown fox jumps over the lazy dog\r
@@ -27,10 +27,10 @@
  * $(LREF Compress) and $(LREF UnCompress).
  *
  * -------
- * import std.zlib;
- * import std.stdio;
- * import std.conv : to;
- * import std.algorithm.iteration : map;
+ * import ripstd.zlib;
+ * import ripstd.stdio;
+ * import ripstd.conv : to;
+ * import ripstd.algorithm.iteration : map;
  *
  * UnCompress decmp = new UnCompress;
  * foreach (chunk; stdin.byChunk(4096).map!(x => decmp.uncompress(x)))
@@ -117,7 +117,7 @@ class ZlibException : Exception
 
 uint adler32(uint adler, const(void)[] buf)
 {
-    import std.range : chunks;
+    import ripstd.range : chunks;
     foreach (chunk; (cast(ubyte[]) buf).chunks(0xFFFF0000))
     {
         adler = etc.c.zlib.adler32(adler, chunk.ptr, cast(uint) chunk.length);
@@ -160,7 +160,7 @@ uint adler32(uint adler, const(void)[] buf)
 
 uint crc32(uint crc, const(void)[] buf)
 {
-    import std.range : chunks;
+    import ripstd.range : chunks;
     foreach (chunk; (cast(ubyte[]) buf).chunks(0xFFFF0000))
     {
         crc = etc.c.zlib.crc32(crc, chunk.ptr, cast(uint) chunk.length);
@@ -201,7 +201,7 @@ in
 do
 {
     import core.memory : GC;
-    import std.array : uninitializedArray;
+    import ripstd.array : uninitializedArray;
     auto destlen = srcbuf.length + ((srcbuf.length + 1023) / 1024) + 12;
     auto destbuf = uninitializedArray!(ubyte[])(destlen);
     auto err = etc.c.zlib.compress2(destbuf.ptr, &destlen, cast(ubyte *) srcbuf.ptr, srcbuf.length, level);
@@ -237,7 +237,7 @@ ubyte[] compress(const(void)[] srcbuf)
 
 void[] uncompress(const(void)[] srcbuf, size_t destlen = 0u, int winbits = 15)
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     int err;
     ubyte[] destbuf;
 
@@ -342,7 +342,7 @@ enum HeaderFormat {
 
 class Compress
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
   private:
     z_stream zs;
@@ -412,7 +412,7 @@ class Compress
     const(void)[] compress(const(void)[] buf)
     {
         import core.memory : GC;
-        import std.array : uninitializedArray;
+        import ripstd.array : uninitializedArray;
         int err;
         ubyte[] destbuf;
 
@@ -525,7 +525,7 @@ class Compress
 
 class UnCompress
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
   private:
     z_stream zs;
@@ -588,7 +588,7 @@ class UnCompress
             return null;
 
         import core.memory : GC;
-        import std.array : uninitializedArray;
+        import ripstd.array : uninitializedArray;
         int err;
 
         if (!inited)
@@ -668,10 +668,10 @@ class UnCompress
     // https://issues.dlang.org/show_bug.cgi?id=9505
     @system unittest
     {
-        import std.algorithm.comparison;
-        import std.array;
-        import std.file;
-        import std.zlib;
+        import ripstd.algorithm.comparison;
+        import ripstd.array;
+        import ripstd.file;
+        import ripstd.zlib;
 
         // Data that can be easily compressed
         ubyte[1024] originalData;
@@ -801,20 +801,20 @@ class UnCompress
 
 /* ========================== unittest ========================= */
 
-import std.random;
-import std.stdio;
+import ripstd.random;
+import ripstd.stdio;
 
 @system unittest // by Dave
 {
-    debug(zlib) writeln("std.zlib.unittest");
+    debug(zlib) writeln("ripstd.zlib.unittest");
 
     bool CompressThenUncompress (void[] src)
     {
-        ubyte[] dst = std.zlib.compress(src);
+        ubyte[] dst = ripstd.zlib.compress(src);
         double ratio = (dst.length / cast(double) src.length);
         debug(zlib) writef("src.length: %1$d, dst: %2$d, Ratio = %3$f", src.length, dst.length, ratio);
         ubyte[] uncompressedBuf;
-        uncompressedBuf = cast(ubyte[]) std.zlib.uncompress(dst);
+        uncompressedBuf = cast(ubyte[]) ripstd.zlib.uncompress(dst);
         assert(src.length == uncompressedBuf.length);
         assert(src == uncompressedBuf);
 
@@ -860,7 +860,7 @@ import std.stdio;
         }
     }
 
-    debug(zlib) writefln("PASSED std.zlib.unittest");
+    debug(zlib) writefln("PASSED ripstd.zlib.unittest");
 }
 
 

@@ -6,9 +6,9 @@ module ripstd.experimental.allocator.building_blocks.allocator_list;
 
 import core.memory : pageSize;
 
-import std.experimental.allocator.building_blocks.null_allocator;
-import std.experimental.allocator.common;
-import std.experimental.allocator.gc_allocator;
+import ripstd.experimental.allocator.building_blocks.null_allocator;
+import ripstd.experimental.allocator.common;
+import ripstd.experimental.allocator.gc_allocator;
 
 // Turn this on for debugging
 // debug = allocator_list;
@@ -69,10 +69,10 @@ called `factory`.
 struct AllocatorList(Factory, BookkeepingAllocator = GCAllocator)
 {
     import core.lifetime : emplace;
-    import std.experimental.allocator.building_blocks.stats_collector
+    import ripstd.experimental.allocator.building_blocks.stats_collector
         : StatsCollector, Options;
-    import std.traits : hasMember;
-    import std.typecons : Ternary;
+    import ripstd.traits : hasMember;
+    import ripstd.typecons : Ternary;
 
     private enum ouroboros = is(BookkeepingAllocator == NullAllocator);
 
@@ -193,7 +193,7 @@ struct AllocatorList(Factory, BookkeepingAllocator = GCAllocator)
     }
 
     static if (hasMember!(Allocator, "allocateZeroed"))
-    package(std) void[] allocateZeroed()(size_t s)
+    package(ripstd) void[] allocateZeroed()(size_t s)
     {
         for (auto p = &root, n = *p; n; p = &n.next, n = *p)
         {
@@ -230,7 +230,7 @@ struct AllocatorList(Factory, BookkeepingAllocator = GCAllocator)
     static if (hasMember!(Allocator, "alignedAllocate"))
     void[] alignedAllocate(size_t s, uint theAlignment)
     {
-        import std.algorithm.comparison : max;
+        import ripstd.algorithm.comparison : max;
         import core.checkedint : addu;
 
         if (theAlignment == 0 || s == 0)
@@ -620,13 +620,13 @@ template AllocatorList(alias factoryFunction,
 ///
 version (Posix) @system unittest
 {
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.free_list : ContiguousFreeList;
-    import std.experimental.allocator.building_blocks.null_allocator : NullAllocator;
-    import std.experimental.allocator.building_blocks.region : Region;
-    import std.experimental.allocator.building_blocks.segregator : Segregator;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.experimental.allocator.mmap_allocator : MmapAllocator;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.free_list : ContiguousFreeList;
+    import ripstd.experimental.allocator.building_blocks.null_allocator : NullAllocator;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.mmap_allocator : MmapAllocator;
 
     // Ouroboros allocator list based upon 4MB regions, fetched directly from
     // mmap. All memory is released upon destruction.
@@ -664,8 +664,8 @@ version (Posix) @system unittest
 @system unittest
 {
     // Create an allocator based upon 4MB regions, fetched from the GC heap.
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
     AllocatorList!((n) => Region!GCAllocator(new ubyte[max(n, 1024 * 4096)]),
         NullAllocator) a;
     const b1 = a.allocate(1024 * 8192);
@@ -678,8 +678,8 @@ version (Posix) @system unittest
 @system unittest
 {
     // Create an allocator based upon 4MB regions, fetched from the GC heap.
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
     AllocatorList!((n) => Region!()(new ubyte[max(n, 1024 * 4096)])) a;
     auto b1 = a.alignedAllocate(1024 * 8192, 1024);
     assert(b1 !is null); // still works due to overdimensioning
@@ -703,11 +703,11 @@ version (Posix) @system unittest
 @system unittest
 {
     import core.exception : AssertError;
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     // Create an allocator based upon 4MB regions, fetched from the GC heap.
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
     AllocatorList!((n) => Region!()(new ubyte[max(n, 1024 * 4096)])) a;
     auto b1 = a.alignedAllocate(0, 1);
     assert(b1 is null);
@@ -724,11 +724,11 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
 
     // Create an allocator based upon 4MB regions, fetched from the GC heap.
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
     AllocatorList!((n) => Region!()(new ubyte[max(n, 1024 * 4096)])) a;
     auto b0 = a.alignedAllocate(1, 1024);
     assert(b0.length == 1);
@@ -764,8 +764,8 @@ version (Posix) @system unittest
 @system unittest
 {
     // Create an allocator based upon 4MB regions, fetched from the GC heap.
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
     AllocatorList!((n) => Region!()(new ubyte[max(n, 1024 * 4096)])) a;
     auto b1 = a.allocate(1024 * 8192);
     assert(b1 !is null); // still works due to overdimensioning
@@ -778,10 +778,10 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import std.algorithm.comparison : max;
-    import std.experimental.allocator.building_blocks.region : Region;
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.typecons : Ternary;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.typecons : Ternary;
     AllocatorList!((n) => Region!()(new ubyte[max(n, 1024 * 4096)]), Mallocator) a;
     auto b1 = a.allocate(1024 * 8192);
     assert(b1 !is null);
@@ -798,7 +798,7 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
     enum bs = GCAllocator.alignment;
     AllocatorList!((n) => Region!GCAllocator(256 * bs)) a;
     auto b1 = a.allocate(192 * bs);
@@ -820,10 +820,10 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.algorithm.comparison : max;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.typecons : Ternary;
 
     static void testrw(void[] b)
     {
@@ -878,10 +878,10 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.algorithm.comparison : max;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.typecons : Ternary;
 
     static void testrw(void[] b)
     {
@@ -944,10 +944,10 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.algorithm.comparison : max;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.typecons : Ternary;
 
     static void testrw(void[] b)
     {
@@ -980,8 +980,8 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
-    import std.algorithm.comparison : max;
+    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.algorithm.comparison : max;
 
     enum maxIter = 100;
     enum numPages = 10;

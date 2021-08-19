@@ -5,7 +5,7 @@ D's built-in garbage-collected allocator.
 Source: $(PHOBOSSRC std/experimental/allocator/_gc_allocator.d)
 */
 module ripstd.experimental.allocator.gc_allocator;
-import std.experimental.allocator.common;
+import ripstd.experimental.allocator.common;
 
 /**
 D's built-in garbage-collected allocator.
@@ -13,8 +13,8 @@ D's built-in garbage-collected allocator.
 struct GCAllocator
 {
     import core.memory : GC;
-    import std.typecons : Ternary;
-    version (StdUnittest) @system unittest { testAllocator!(() => GCAllocator.instance); }
+    import ripstd.typecons : Ternary;
+    version (RIPStdUnittest) @system unittest { testAllocator!(() => GCAllocator.instance); }
 
     /**
     The alignment is a static constant equal to `platformAlignment`, which
@@ -151,7 +151,7 @@ pure @safe unittest
 pure @system unittest
 {
     import core.memory : GC;
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
 
     // test allocation sizes
     assert((() nothrow @safe @nogc => GCAllocator.instance.goodAllocSize(1))() == 16);
@@ -186,7 +186,7 @@ pure @system unittest
 
 pure nothrow @safe unittest
 {
-    import std.typecons : Ternary;
+    import ripstd.typecons : Ternary;
 
     void[] buffer = GCAllocator.instance.allocate(42);
     void[] result;

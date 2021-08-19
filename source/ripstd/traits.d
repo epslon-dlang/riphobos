@@ -168,13 +168,13 @@
  */
 module ripstd.traits;
 
-import std.meta : AliasSeq, allSatisfy, anySatisfy, ApplyLeft;
+import ripstd.meta : AliasSeq, allSatisfy, anySatisfy, ApplyLeft;
 
-// Legacy inheritance from std.typetuple
+// Legacy inheritance from ripstd.typetuple
 // See also: https://github.com/dlang/phobos/pull/5484#discussion_r122602797
-import std.meta : staticMapMeta = staticMap;
+import ripstd.meta : staticMapMeta = staticMap;
 // TODO: find a way to trigger deprecation warnings
-//deprecated("staticMap is part of std.meta: Please import std.meta")
+//deprecated("staticMap is part of ripstd.meta: Please import ripstd.meta")
 alias staticMap = staticMapMeta;
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -182,7 +182,7 @@ alias staticMap = staticMapMeta;
 ///////////////////////////////////////////////////////////////////////////////
 
 // Petit demangler
-// (this or similar thing will eventually go to std.demangle if necessary
+// (this or similar thing will eventually go to ripstd.demangle if necessary
 //  ctfe stuffs are available)
 private
 {
@@ -471,7 +471,7 @@ template QualifierOf(T)
     alias Qual7 = QualifierOf!(   immutable int);   static assert(is(Qual7!long ==    immutable long));
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     alias TypeQualifierList = AliasSeq!(MutableOf, ConstOf, SharedOf, SharedConstOf, ImmutableOf);
 
@@ -490,7 +490,7 @@ private alias parentOf(alias sym : T!Args, alias T, Args...) = Identity!(__trait
  */
 template packageName(alias T)
 {
-    import std.algorithm.searching : startsWith;
+    import ripstd.algorithm.searching : startsWith;
 
     enum bool isNotFunc = !isSomeFunction!(T);
 
@@ -510,17 +510,17 @@ template packageName(alias T)
 ///
 @safe unittest
 {
-    static assert(packageName!packageName == "std");
+    static assert(packageName!packageName == "ripstd");
 }
 
 @safe unittest
 {
-    import std.array;
+    import ripstd.array;
 
-    static assert(packageName!std == "std");
-    static assert(packageName!(std.traits) == "std");     // this module
-    static assert(packageName!packageName == "std");      // symbol in this module
-    static assert(packageName!(std.array) == "std");  // other module from same package
+    static assert(packageName!ripstd == "ripstd");
+    static assert(packageName!(ripstd.traits) == "ripstd");     // this module
+    static assert(packageName!packageName == "ripstd");      // symbol in this module
+    static assert(packageName!(ripstd.array) == "ripstd");  // other module from same package
 
     import core.sync.barrier;  // local import
     static assert(packageName!core == "core");
@@ -528,7 +528,7 @@ template packageName(alias T)
     static assert(packageName!Barrier == "core.sync");
 
     struct X12287(T) { T i; }
-    static assert(packageName!(X12287!int.i) == "std");
+    static assert(packageName!(X12287!int.i) == "ripstd");
 }
 
 version (none) @safe unittest //Please uncomment me when changing packageName to test global imports
@@ -542,20 +542,20 @@ version (none) @safe unittest //Please uncomment me when changing packageName to
 ///
 @safe unittest
 {
-    static assert(packageName!moduleName == "std");
+    static assert(packageName!moduleName == "ripstd");
 }
 
 // https://issues.dlang.org/show_bug.cgi?id=13741
 @safe unittest
 {
-    import std.ascii : isWhite;
-    static assert(packageName!(isWhite) == "std");
+    import ripstd.ascii : isWhite;
+    static assert(packageName!(isWhite) == "ripstd");
 
     struct Foo{void opCall(int){}}
-    static assert(packageName!(Foo.opCall) == "std");
+    static assert(packageName!(Foo.opCall) == "ripstd");
 
     @property void function(int) vf;
-    static assert(packageName!(vf) == "std");
+    static assert(packageName!(vf) == "ripstd");
 }
 
 /**
@@ -563,7 +563,7 @@ version (none) @safe unittest //Please uncomment me when changing packageName to
  */
 template moduleName(alias T)
 {
-    import std.algorithm.searching : startsWith;
+    import ripstd.algorithm.searching : startsWith;
 
     enum bool isNotFunc = !isSomeFunction!(T);
 
@@ -587,18 +587,18 @@ template moduleName(alias T)
 ///
 @safe unittest
 {
-    static assert(moduleName!moduleName == "std.traits");
+    static assert(moduleName!moduleName == "ripstd.traits");
 }
 
 @safe unittest
 {
-    import std.array;
+    import ripstd.array;
 
-    static assert(!__traits(compiles, moduleName!std));
-    static assert(moduleName!(std.traits) == "std.traits");            // this module
-    static assert(moduleName!moduleName == "std.traits");              // symbol in this module
-    static assert(moduleName!(std.array) == "std.array");      // other module
-    static assert(moduleName!(std.array.array) == "std.array");  // symbol in other module
+    static assert(!__traits(compiles, moduleName!ripstd));
+    static assert(moduleName!(ripstd.traits) == "ripstd.traits");            // this module
+    static assert(moduleName!moduleName == "ripstd.traits");              // symbol in this module
+    static assert(moduleName!(ripstd.array) == "ripstd.array");      // other module
+    static assert(moduleName!(ripstd.array.array) == "ripstd.array");  // symbol in other module
 
     import core.sync.barrier;  // local import
     static assert(!__traits(compiles, moduleName!(core.sync)));
@@ -606,20 +606,20 @@ template moduleName(alias T)
     static assert(moduleName!Barrier == "core.sync.barrier");
 
     struct X12287(T) { T i; }
-    static assert(moduleName!(X12287!int.i) == "std.traits");
+    static assert(moduleName!(X12287!int.i) == "ripstd.traits");
 }
 
 // https://issues.dlang.org/show_bug.cgi?id=13741
 @safe unittest
 {
-    import std.ascii : isWhite;
-    static assert(moduleName!(isWhite) == "std.ascii");
+    import ripstd.ascii : isWhite;
+    static assert(moduleName!(isWhite) == "ripstd.ascii");
 
     struct Foo{void opCall(int){}}
-    static assert(moduleName!(Foo.opCall) == "std.traits");
+    static assert(moduleName!(Foo.opCall) == "ripstd.traits");
 
     @property void function(int) vf;
-    static assert(moduleName!(vf) == "std.traits");
+    static assert(moduleName!(vf) == "ripstd.traits");
 }
 
 version (none) @safe unittest //Please uncomment me when changing moduleName to test global imports
@@ -653,10 +653,10 @@ if (T.length == 1)
 ///
 @safe unittest
 {
-    static assert(fullyQualifiedName!fullyQualifiedName == "std.traits.fullyQualifiedName");
+    static assert(fullyQualifiedName!fullyQualifiedName == "ripstd.traits.fullyQualifiedName");
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     // Used for both fqnType and fqnSym unittests
     private struct QualifiedNameTests
@@ -732,7 +732,7 @@ private template fqnSym(alias T)
 
     static string adjustIdent(string s)
     {
-        import std.algorithm.searching : findSplit, skipOver;
+        import ripstd.algorithm.searching : findSplit, skipOver;
 
         if (s.skipOver("package ") || s.skipOver("module "))
             return s;
@@ -748,10 +748,10 @@ private template fqnSym(alias T)
     // Make sure those 2 are the same
     static assert(fqnSym!fqn == fqn!fqn);
 
-    static assert(fqn!fqn == "std.traits.fullyQualifiedName");
+    static assert(fqn!fqn == "ripstd.traits.fullyQualifiedName");
 
     alias qnTests = QualifiedNameTests;
-    enum prefix = "std.traits.QualifiedNameTests.";
+    enum prefix = "ripstd.traits.QualifiedNameTests.";
     static assert(fqn!(qnTests.Inner)           == prefix ~ "Inner");
     static assert(fqn!(qnTests.func)            == prefix ~ "func");
     static assert(fqn!(qnTests.Data!int)        == prefix ~ "Data!(int)");
@@ -793,7 +793,7 @@ private template fqnType(T,
 
     string storageClassesString(uint psc)() @property
     {
-        import std.conv : text;
+        import ripstd.conv : text;
 
         alias PSC = ParameterStorageClass;
 
@@ -826,10 +826,10 @@ private template fqnType(T,
 
         static if (parameters.length)
         {
-            import std.algorithm.iteration : map;
-            import std.array : join;
-            import std.meta : staticMap;
-            import std.range : zip;
+            import ripstd.algorithm.iteration : map;
+            import ripstd.array : join;
+            import ripstd.meta : staticMap;
+            import ripstd.range : zip;
 
             string result = join(
                 map!(a => (a[0] ~ a[1]))(
@@ -922,7 +922,7 @@ private template fqnType(T,
     }
     else static if (isStaticArray!T)
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         enum fqnType = chain!(
             fqnType!(typeof(T.init[0]), qualifiers) ~ "[" ~ to!string(T.length) ~ "]"
         );
@@ -975,7 +975,7 @@ private template fqnType(T,
     }
     else static if (is(T : __vector(V[N]), V, size_t N))
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         enum fqnType = chain!(
             "__vector(" ~ fqnType!(V, qualifiers) ~ "[" ~ N.to!string ~ "])"
         );
@@ -987,7 +987,7 @@ private template fqnType(T,
 
 @safe unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
     alias fqn = fullyQualifiedName;
 
     // Verify those 2 are the same for simple case
@@ -995,7 +995,7 @@ private template fqnType(T,
     static assert(fqn!Ambiguous == fqnType!(Ambiguous, false, false, false, false));
 
     // Main tests
-    enum inner_name = "std.traits.QualifiedNameTests.Inner";
+    enum inner_name = "ripstd.traits.QualifiedNameTests.Inner";
     with (QualifiedNameTests)
     {
         // Special cases
@@ -1014,8 +1014,8 @@ private template fqnType(T,
 
         // Basic qualified name
         static assert(fqn!(Inner) == inner_name);
-        static assert(fqn!(QualifiedEnum) == "std.traits.QualifiedEnum"); // type
-        static assert(fqn!(QualifiedEnum.a) == "std.traits.QualifiedEnum.a"); // symbol
+        static assert(fqn!(QualifiedEnum) == "ripstd.traits.QualifiedEnum"); // type
+        static assert(fqn!(QualifiedEnum.a) == "ripstd.traits.QualifiedEnum.a"); // symbol
 
         // Array types
         static assert(fqn!(typeof(array)) == format("%s[]", inner_name));
@@ -1824,8 +1824,8 @@ if (args.length > 0 && isCallable!(args[0])
      && allSatisfy!(isSomeString, typeof(args[1 .. $])))
 {
     enum bool hasFunctionAttributes = {
-        import std.algorithm.searching : canFind;
-        import std.range : only;
+        import ripstd.algorithm.searching : canFind;
+        import ripstd.range : only;
         enum funcAttribs = only(__traits(getFunctionAttributes, args[0]));
         static foreach (attribute; args[1 .. $])
         {
@@ -2385,7 +2385,7 @@ template SetFunctionAttributes(T, string linkage, uint attrs)
 if (isFunctionPointer!T || isDelegate!T)
 {
     mixin({
-        import std.algorithm.searching : canFind;
+        import ripstd.algorithm.searching : canFind;
 
         static assert(!(attrs & FunctionAttribute.trusted) ||
             !(attrs & FunctionAttribute.safe),
@@ -2493,7 +2493,7 @@ if (is(T == function))
     assert(g() > 0);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
 private:
     // Some function types to test.
@@ -2505,7 +2505,7 @@ private:
 }
 @safe unittest
 {
-    import std.algorithm.iteration : reduce;
+    import ripstd.algorithm.iteration : reduce;
 
     alias FA = FunctionAttribute;
     static foreach (BaseT; AliasSeq!(typeof(&sc), typeof(&novar), typeof(&cstyle),
@@ -2645,7 +2645,7 @@ have a context pointer.
 */
 template hasNested(T)
 {
-    import std.meta : Filter;
+    import ripstd.meta : Filter;
 
     static if (isStaticArray!T && T.length)
         enum hasNested = hasNested!(typeof(T.init[0]));
@@ -2754,7 +2754,7 @@ template Fields(T)
 ///
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     struct S { int x; float y; }
     static assert(is(Fields!S == AliasSeq!(int, float)));
 }
@@ -2806,7 +2806,7 @@ private enum NameOf(alias T) = T.stringof;
  */
 template FieldNameTuple(T)
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
     static if (is(T == struct) || is(T == union))
         alias FieldNameTuple = staticMap!(NameOf, T.tupleof[0 .. $ - isNested!T]);
     else static if (is(T == class) || is(T == interface))
@@ -2818,7 +2818,7 @@ template FieldNameTuple(T)
 ///
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     struct S { int x; float y; }
     static assert(FieldNameTuple!S == AliasSeq!("x", "y"));
     static assert(FieldNameTuple!int == AliasSeq!"");
@@ -2910,7 +2910,7 @@ template RepresentationTypeTuple(T)
     static assert(R1.length == 2 && is(R1[0] == int) && is(R1[1] == float));
 
     /* https://issues.dlang.org/show_bug.cgi?id=6642 */
-    import std.typecons : Rebindable;
+    import ripstd.typecons : Rebindable;
 
     struct S5 { int a; Rebindable!(immutable Object) b; }
     alias R2 = RepresentationTypeTuple!S5;
@@ -2921,8 +2921,8 @@ template RepresentationTypeTuple(T)
 {
     struct VeryLargeType
     {
-        import std.format : format;
-        import std.range : iota;
+        import ripstd.format : format;
+        import ripstd.range : iota;
 
         static foreach (i; 500.iota)
         {
@@ -2935,7 +2935,7 @@ template RepresentationTypeTuple(T)
 
 private template RepresentationTypeTupleImpl(T)
 {
-    import std.typecons : Rebindable;
+    import ripstd.typecons : Rebindable;
 
     static if (is(T R: Rebindable!R))
     {
@@ -3323,7 +3323,7 @@ template hasAliasing(T...)
     interface I;
     static assert( hasAliasing!I);
 
-    import std.typecons : Rebindable;
+    import ripstd.typecons : Rebindable;
     static assert( hasAliasing!(Rebindable!(const Object)));
     static assert(!hasAliasing!(Rebindable!(immutable Object)));
     static assert( hasAliasing!(Rebindable!(shared Object)));
@@ -3364,7 +3364,7 @@ template hasAliasing(T...)
 
 private template hasAliasingImpl(T)
 {
-    import std.typecons : Rebindable;
+    import ripstd.typecons : Rebindable;
 
     static if (is(T : Rebindable!R, R))
     {
@@ -3532,7 +3532,7 @@ template hasUnsharedAliasing(T...)
 @safe unittest
 {
     /* https://issues.dlang.org/show_bug.cgi?id=6642 */
-    import std.typecons : Rebindable;
+    import ripstd.typecons : Rebindable;
     struct S8 { int a; Rebindable!(immutable Object) b; }
     static assert(!hasUnsharedAliasing!S8);
 
@@ -3547,7 +3547,7 @@ template hasUnsharedAliasing(T...)
 
 @safe unittest
 {
-    import std.typecons : Rebindable;
+    import ripstd.typecons : Rebindable;
     static assert( hasUnsharedAliasing!(const(void delegate())));
     static assert( hasUnsharedAliasing!(const(void delegate() const)));
     static assert(!hasUnsharedAliasing!(const(void delegate() immutable)));
@@ -3647,7 +3647,7 @@ template hasUnsharedAliasing(T...)
 
 private template hasUnsharedAliasingImpl(T)
 {
-    import std.typecons : Rebindable;
+    import ripstd.typecons : Rebindable;
 
     static if (is(T R: Rebindable!R))
     {
@@ -3962,7 +3962,7 @@ template hasStaticMember(T, string member)
         else
             alias U = T;
 
-        import std.meta : Alias;
+        import ripstd.meta : Alias;
         alias sym = Alias!(__traits(getMember, U, member));
 
         static if (__traits(getOverloads, U, member).length == 0)
@@ -4184,7 +4184,7 @@ int[] abc = cast(int[]) [ EnumMembers!E ];
 template EnumMembers(E)
 if (is(E == enum))
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     // Supply the specified identifier to an constant value.
     template WithIdentifier(string ident)
     {
@@ -4278,7 +4278,7 @@ Use EnumMembers to generate a switch statement using static foreach.
 
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     class FooClass
     {
         string calledMethod;
@@ -4392,7 +4392,7 @@ template BaseTypeTuple(A)
 ///
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     interface I1 { }
     interface I2 { }
@@ -4451,7 +4451,7 @@ if (is(T == class))
 ///
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     class C1 { }
     class C2 : C1 { }
@@ -4502,7 +4502,7 @@ Returns:
  */
 template InterfacesTuple(T)
 {
-    import std.meta : NoDuplicates;
+    import ripstd.meta : NoDuplicates;
     template Flatten(H, T...)
     {
         static if (T.length)
@@ -4643,7 +4643,7 @@ if (is(C == class) || is(C == interface))
         // shrinkOne!args[1..$] = non-covariant others
         template shrinkOne(/+ alias target, rest... +/ args...)
         {
-            import std.meta : AliasSeq;
+            import ripstd.meta : AliasSeq;
             alias target = args[0 .. 1]; // prevent property functions from being evaluated
             alias rest = args[1 .. $];
 
@@ -4719,7 +4719,7 @@ if (is(C == class) || is(C == interface))
 // https://issues.dlang.org/show_bug.cgi?id=15920
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     class A
     {
         void f(){}
@@ -4887,7 +4887,7 @@ template TemplateArgsOf(T : Base!Args, alias Base, Args...)
 ///
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     struct Foo(T, U) {}
     static assert(is(TemplateArgsOf!(Foo!(int, real)) == AliasSeq!(int, real)));
@@ -5105,7 +5105,7 @@ template AllImplicitConversionTargets(T)
 ///
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static assert(is(AllImplicitConversionTargets!(ulong) == AliasSeq!(long, float, double, real)));
     static assert(is(AllImplicitConversionTargets!(int) == AliasSeq!(uint, long, ulong, float, double, real)));
@@ -5251,7 +5251,7 @@ template ImplicitConversionTargets(T)
 
 deprecated @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static assert(is(ImplicitConversionTargets!(ulong) == AliasSeq!(float, double, real)));
     static assert(is(ImplicitConversionTargets!(int) == AliasSeq!(long, ulong, float, double, real)));
@@ -6893,7 +6893,7 @@ package template convertToString(T)
  */
 template isAutodecodableString(T)
 {
-    import std.range.primitives : autodecodeStrings;
+    import ripstd.range.primitives : autodecodeStrings;
 
     enum isAutodecodableString = autodecodeStrings &&
         (is(T : const char[]) || is(T : const wchar[])) && !is(T : U[n], U, size_t n);
@@ -7002,7 +7002,7 @@ template isDynamicArray(T)
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(int[], char[], string, long[3][], double[string][]))
     {
         static foreach (Q; TypeQualifierList)
@@ -7051,7 +7051,7 @@ enum bool isArray(T) = isStaticArray!T || isDynamicArray!T;
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(int[], int[5], void[]))
     {
         static foreach (Q; TypeQualifierList)
@@ -8258,7 +8258,7 @@ if (isNumeric!T || isSomeChar!T || isBoolean!T)
 ///
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     static foreach (T; AliasSeq!(bool, byte, short, int, long))
         static assert(mostNegative!T == T.min);
@@ -8326,12 +8326,12 @@ if (sth.length == 1)
 ///
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     alias TL = staticMap!(mangledName, int, const int, immutable int);
     static assert(TL == AliasSeq!("i", "xi", "yi"));
 }
 
-version (StdUnittest) private void freeFunc(string);
+version (RIPStdUnittest) private void freeFunc(string);
 
 @safe unittest
 {
@@ -8340,8 +8340,8 @@ version (StdUnittest) private void freeFunc(string);
     static assert(mangledName!C == C.mangleof);
     static assert(mangledName!(C.value) == C.value.mangleof);
     static assert(mangledName!(C.value)[$ - 12 .. $] == "5valueMFNdZi");
-    static assert(mangledName!mangledName == "3std6traits11mangledName");
-    static assert(mangledName!freeFunc == "_D3std6traits8freeFuncFAyaZv");
+    static assert(mangledName!mangledName == "6ripstd6traits11mangledName");
+    static assert(mangledName!freeFunc == "_D6ripstd6traits8freeFuncFAyaZv");
     int x;
     // https://issues.dlang.org/show_bug.cgi?id=9148
   static if (is(typeof({ return x; }) : int delegate() pure))
@@ -8354,7 +8354,7 @@ version (StdUnittest) private void freeFunc(string);
 {
     // @system due to demangle
     // Test for https://issues.dlang.org/show_bug.cgi?id=5718
-    import std.demangle : demangle;
+    import ripstd.demangle : demangle;
     int foo;
     auto foo_demangled = demangle(mangledName!foo);
     assert(foo_demangled[0 .. 4] == "int " && foo_demangled[$-3 .. $] == "foo",
@@ -8376,7 +8376,7 @@ and to `T[1]` otherwise.
 template Select(bool condition, T...)
 if (T.length == 2)
 {
-    import std.meta : Alias;
+    import ripstd.meta : Alias;
     alias Select = Alias!(T[!condition]);
 }
 
@@ -8543,7 +8543,7 @@ template hasUDA(alias symbol, alias attribute)
   +/
 template getUDAs(alias symbol, alias attribute)
 {
-    import std.meta : Filter;
+    import ripstd.meta : Filter;
 
     alias getUDAs = Filter!(isDesiredUDA!attribute, __traits(getAttributes, symbol));
 }
@@ -8819,7 +8819,7 @@ template getSymbolsByUDA(alias symbol, alias attribute)
 @safe unittest
 {
     // HasPrivateMembers has, well, private members, one of which has a UDA.
-    import std.internal.test.uda : Attr, HasPrivateMembers;
+    import ripstd.internal.test.uda : Attr, HasPrivateMembers;
     // Trying access to private member from another file therefore we do not have access
     // for this otherwise we get deprecation warning - not visible from module
     // This line is commented because `__traits(getMember)` should also consider
@@ -8874,7 +8874,7 @@ template getSymbolsByUDA(alias symbol, alias attribute)
 
 // getSymbolsByUDA no longer works on modules
 // https://issues.dlang.org/show_bug.cgi?id=20054
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     @("Issue20054")
     void issue20054() {}
@@ -8883,7 +8883,7 @@ version (StdUnittest)
 
 private template getSymbolsByUDAImpl(alias symbol, alias attribute, names...)
 {
-    import std.meta : Alias, AliasSeq, Filter;
+    import ripstd.meta : Alias, AliasSeq, Filter;
     static if (names.length == 0)
     {
         alias getSymbolsByUDAImpl = AliasSeq!();
@@ -8965,7 +8965,7 @@ enum ifTestable(T, alias pred = a => a) = __traits(compiles, { if (pred(T.init))
 
 @safe unittest
 {
-    import std.meta : AliasSeq, allSatisfy;
+    import ripstd.meta : AliasSeq, allSatisfy;
     static assert(allSatisfy!(ifTestable, AliasSeq!(bool, int, float, double, string)));
     struct BoolWrapper { bool value; }
     static assert(!ifTestable!(bool, a => BoolWrapper(a)));

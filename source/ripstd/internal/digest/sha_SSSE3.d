@@ -235,7 +235,7 @@ version (USE_SSSE3)
             }
             if (i1 < seq1.length)
             {
-                import std.algorithm.comparison : min;
+                import ripstd.algorithm.comparison : min;
 
                 res ~= seq1[i1 .. min(i1+dist, $)];
                 i1 += dist;
@@ -723,7 +723,7 @@ version (USE_SSSE3)
 
     // constants as extra argument for PIC
     // https://issues.dlang.org/show_bug.cgi?id=9378
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     version (_64Bit)
         alias ExtraArgs = AliasSeq!(typeof(&constants));
     else

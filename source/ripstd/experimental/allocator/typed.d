@@ -14,12 +14,12 @@ T2=$(TR <td style="text-align:left">`$1`</td> $(TD $(ARGS $+)))
 
 module ripstd.experimental.allocator.typed;
 
-import std.experimental.allocator;
-import std.experimental.allocator.common;
-import std.range : isInputRange, isForwardRange, walkLength, save, empty,
+import ripstd.experimental.allocator;
+import ripstd.experimental.allocator.common;
+import ripstd.range : isInputRange, isForwardRange, walkLength, save, empty,
     front, popFront;
-import std.traits : isPointer, hasElaborateDestructor;
-import std.typecons : Flag, Yes, No;
+import ripstd.traits : isPointer, hasElaborateDestructor;
+import ripstd.typecons : Flag, Yes, No;
 
 /**
 Allocation-related flags dictated by type characteristics. `TypedAllocator`
@@ -125,9 +125,9 @@ type.
 */
 struct TypedAllocator(PrimaryAllocator, Policies...)
 {
-    import std.algorithm.sorting : isSorted;
-    import std.meta : AliasSeq;
-    import std.typecons : Tuple;
+    import ripstd.algorithm.sorting : isSorted;
+    import ripstd.meta : AliasSeq;
+    import ripstd.typecons : Tuple;
 
     static assert(Policies.length == 0 || isSorted([Stride2!Policies]));
 
@@ -233,7 +233,7 @@ struct TypedAllocator(PrimaryAllocator, Policies...)
             result |= AllocFlag.forSharing;
         static if (!is(T == U[], U))
             result |= AllocFlag.fixedSize;
-        import std.traits : hasIndirections;
+        import ripstd.traits : hasIndirections;
         static if (!hasIndirections!T)
             result |= AllocFlag.hasNoIndirections;
         return result;
@@ -396,9 +396,9 @@ struct TypedAllocator(PrimaryAllocator, Policies...)
 ///
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.experimental.allocator.mmap_allocator : MmapAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.experimental.allocator.mmap_allocator : MmapAllocator;
     alias MyAllocator = TypedAllocator!(GCAllocator,
         AllocFlag.fixedSize | AllocFlag.threadLocal, Mallocator,
         AllocFlag.fixedSize | AllocFlag.threadLocal

@@ -73,9 +73,9 @@ Authors: $(HTTP erdani.com, Andrei Alexandrescu), David Simcha, and
 */
 module ripstd.range.interfaces;
 
-import std.meta;
-import std.range.primitives;
-import std.traits;
+import ripstd.meta;
+import ripstd.range.primitives;
+import ripstd.traits;
 
 /**These interfaces are intended to provide virtual function-based wrappers
  * around input ranges with element type E.  This is useful where a well-defined
@@ -131,8 +131,8 @@ interface InputRange(E) {
 ///
 @safe unittest
 {
-    import std.algorithm.iteration : map;
-    import std.range : iota;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.range : iota;
 
     void useRange(InputRange!int range) {
         // Function body.
@@ -262,7 +262,7 @@ interface OutputRange(E) {
 // type E.
 private string putMethods(E...)()
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     string ret;
 
@@ -513,7 +513,7 @@ template outputRangeObject(E...) {
 ///
 @safe unittest
 {
-     import std.array;
+     import ripstd.array;
      auto app = appender!(uint[])();
      auto appWrapped = outputRangeObject!(uint, uint[])(app);
      static assert(is(typeof(appWrapped) : OutputRange!(uint[])));
@@ -522,9 +522,9 @@ template outputRangeObject(E...) {
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.array;
-    import std.internal.test.dummyrange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.array;
+    import ripstd.internal.test.dummyrange;
 
     static void testEquality(R)(iInputRange r1, R r2) {
         assert(equal(r1, r2));

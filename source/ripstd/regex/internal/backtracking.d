@@ -1,13 +1,13 @@
 /*
-    Implementation of backtracking std.regex engine.
+    Implementation of backtracking ripstd.regex engine.
     Contains both compile-time and run-time versions.
 */
 module ripstd.regex.internal.backtracking;
 
-package(std.regex):
+package(ripstd.regex):
 
-import core.stdc.stdlib, std.range.primitives, std.traits, std.typecons;
-import std.regex.internal.ir;
+import core.stdc.stdlib, ripstd.range.primitives, ripstd.traits, ripstd.typecons;
+import ripstd.regex.internal.ir;
 
 import core.memory : pureMalloc, pureFree;
 
@@ -792,7 +792,7 @@ final:
 //very shitty string formatter, $$ replaced with next argument converted to string
 @trusted string ctSub( U...)(string format, U args)
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     bool seenDollar;
     foreach (i, ch; format)
     {
@@ -820,7 +820,7 @@ final:
 
 struct CtContext
 {
-    import std.conv : to, text;
+    import ripstd.conv : to, text;
     //dirty flags
     bool counter;
     //to mark the portion of matches to save
@@ -916,7 +916,7 @@ struct CtContext
     //
     CtState ctGenGroup(ref const(Bytecode)[] ir, int addr)
     {
-        import std.algorithm.comparison : max;
+        import ripstd.algorithm.comparison : max;
         auto bailOut = "goto L_backtrack;";
         auto nextInstr = ctSub("goto case $$;", addr+1);
         CtState r;

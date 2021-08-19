@@ -638,14 +638,14 @@ format specifiers. To avoid this behavior, use "%-(" instead of "%(":
     assert(format("%*.*,*?d", 20, 15, 6, '/', int.max) == "   000/002147/483647");
 }
 
-public import std.format.read;
-public import std.format.spec;
-public import std.format.write;
+public import ripstd.format.read;
+public import ripstd.format.spec;
+public import ripstd.format.write;
 
-import std.exception : enforce;
-import std.range.primitives : isInputRange;
-import std.traits : CharTypeOf, isSomeChar, isSomeString, StringTypeOf;
-import std.format.internal.write : hasToString;
+import ripstd.exception : enforce;
+import ripstd.range.primitives : isInputRange;
+import ripstd.traits : CharTypeOf, isSomeChar, isSomeString, StringTypeOf;
+import ripstd.format.internal.write : hasToString;
 
 /**
 Signals an issue encountered while formatting.
@@ -678,7 +678,7 @@ class FormatException : Exception
 ///
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     assertThrown!FormatException(format("%d", "foo"));
 }
@@ -690,7 +690,7 @@ deprecated("formatElement was accidentally made public and will be removed in 2.
 void formatElement(Writer, T, Char)(auto ref Writer w, T val, scope const ref FormatSpec!Char f)
 if (is(StringTypeOf!T) && !hasToString!(T, Char) && !is(T == enum))
 {
-    import std.format.internal.write : fe = formatElement;
+    import ripstd.format.internal.write : fe = formatElement;
 
     fe(w, val, f);
 }
@@ -700,7 +700,7 @@ deprecated("formatElement was accidentally made public and will be removed in 2.
 void formatElement(Writer, T, Char)(auto ref Writer w, T val, scope const ref FormatSpec!Char f)
 if (is(CharTypeOf!T) && !is(T == enum))
 {
-    import std.format.internal.write : fe = formatElement;
+    import ripstd.format.internal.write : fe = formatElement;
 
     fe(w, val, f);
 }
@@ -710,7 +710,7 @@ deprecated("formatElement was accidentally made public and will be removed in 2.
 void formatElement(Writer, T, Char)(auto ref Writer w, auto ref T val, scope const ref FormatSpec!Char f)
 if ((!is(StringTypeOf!T) || hasToString!(T, Char)) && !is(CharTypeOf!T) || is(T == enum))
 {
-    import std.format.internal.write : fe = formatElement;
+    import ripstd.format.internal.write : fe = formatElement;
 
     fe(w, val, f);
 }
@@ -726,15 +726,15 @@ deprecated("unformatElement was accidentally made public and will be removed in 
 T unformatElement(T, Range, Char)(ref Range input, scope const ref FormatSpec!Char spec)
 if (isInputRange!Range)
 {
-    import std.format.internal.read : ue = unformatElement;
+    import ripstd.format.internal.read : ue = unformatElement;
 
     return ue(input, spec);
 }
 
 // Used to check format strings are compatible with argument types
-package(std) static const checkFormatException(alias fmt, Args...) =
+package(ripstd) static const checkFormatException(alias fmt, Args...) =
 {
-    import std.conv : text;
+    import ripstd.conv : text;
 
     try
     {
@@ -773,7 +773,7 @@ See_Also:
 immutable(Char)[] format(Char, Args...)(in Char[] fmt, Args args)
 if (isSomeChar!Char)
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     auto w = appender!(immutable(Char)[]);
     auto n = formattedWrite(w, fmt, args);
@@ -781,7 +781,7 @@ if (isSomeChar!Char)
     {
         // In the future, this check will be removed to increase consistency
         // with formattedWrite
-        import std.conv : text;
+        import ripstd.conv : text;
         enforceFmt(n == args.length, text("Orphan format arguments: args[", n, "..", args.length, "]"));
     }
     return w.data;
@@ -797,7 +797,7 @@ if (isSomeChar!Char)
 
 @safe pure unittest
 {
-    import std.exception : assertCTFEable, assertThrown;
+    import ripstd.exception : assertCTFEable, assertThrown;
 
     assertCTFEable!(
     {
@@ -850,7 +850,7 @@ if (isSomeChar!Char)
 
 @safe unittest
 {
-    import std.conv : octal;
+    import ripstd.conv : octal;
 
     string s;
     int i;
@@ -1124,7 +1124,7 @@ if (isSomeChar!Char)
 
 @safe unittest
 {
-    import std.exception : assertCTFEable;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {
@@ -1360,9 +1360,9 @@ if (isSomeChar!Char)
 typeof(fmt) format(alias fmt, Args...)(Args args)
 if (isSomeString!(typeof(fmt)))
 {
-    import std.array : appender;
-    import std.range.primitives : ElementEncodingType;
-    import std.traits : Unqual;
+    import ripstd.array : appender;
+    import ripstd.range.primitives : ElementEncodingType;
+    import ripstd.traits : Unqual;
 
     alias e = checkFormatException!(fmt, Args);
     alias Char = Unqual!(ElementEncodingType!(typeof(fmt)));
@@ -1416,7 +1416,7 @@ if (isSomeString!(typeof(fmt)))
 // result of format
 private size_t guessLength(Char, S)(S fmtString)
 {
-    import std.array : appender;
+    import ripstd.array : appender;
 
     size_t len;
     auto output = appender!(immutable(Char)[])();
@@ -1532,8 +1532,8 @@ Note:
 char[] sformat(Char, Args...)(return scope char[] buf, scope const(Char)[] fmt, Args args)
 {
     import core.exception : RangeError;
-    import std.range.primitives;
-    import std.utf : encode;
+    import ripstd.range.primitives;
+    import ripstd.utf : encode;
 
     static struct Sink
     {
@@ -1575,7 +1575,7 @@ char[] sformat(Char, Args...)(return scope char[] buf, scope const(Char)[] fmt, 
     {
         // In the future, this check will be removed to increase consistency
         // with formattedWrite
-        import std.conv : text;
+        import ripstd.conv : text;
         enforceFmt(
             n == args.length,
             text("Orphan format arguments: args[", n, " .. ", args.length, "]")
@@ -1616,7 +1616,7 @@ if (isSomeString!(typeof(fmt)))
 // checking, what is implicitly and explicitly stated in the public unittest
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     char[20] buf;
     assertThrown!FormatException(sformat(buf[], "Here are %d %s.", 3.14, "apples"));
@@ -1626,7 +1626,7 @@ if (isSomeString!(typeof(fmt)))
 @safe unittest
 {
     import core.exception : RangeError;
-    import std.exception : assertCTFEable, assertThrown;
+    import ripstd.exception : assertCTFEable, assertThrown;
 
     assertCTFEable!(
     {
@@ -1663,20 +1663,20 @@ if (isSomeString!(typeof(fmt)))
     assert(u == v);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 private void formatReflectTest(T)(ref T val, string fmt, string formatted, string fn = __FILE__, size_t ln = __LINE__)
 {
     formatReflectTest(val, fmt, [formatted], fn, ln);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 private void formatReflectTest(T)(ref T val, string fmt, string[] formatted, string fn = __FILE__, size_t ln = __LINE__)
 {
     import core.exception : AssertError;
-    import std.algorithm.searching : canFind;
-    import std.array : appender;
-    import std.math.operations : isClose;
-    import std.traits : FloatingPointTypeOf;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.array : appender;
+    import ripstd.math.operations : isClose;
+    import ripstd.traits : FloatingPointTypeOf;
 
     auto w = appender!string();
     formattedWrite(w, fmt, val);
@@ -1771,7 +1771,7 @@ private void formatReflectTest(T)(ref T val, string fmt, string[] formatted, str
         formatReflectTest(aa, "{%([%s=%(%c%)]%|; %)}", [`{[1=hello]; [2=world]}`, `{[2=world]; [1=hello]}`]);
     }
 
-    import std.exception : assertCTFEable;
+    import ripstd.exception : assertCTFEable;
 
     assertCTFEable!(
     {

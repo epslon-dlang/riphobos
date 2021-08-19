@@ -81,12 +81,12 @@ Source: $(PHOBOSSRC std/array.d)
 */
 module ripstd.array;
 
-import std.functional;
-import std.meta;
-import std.traits;
+import ripstd.functional;
+import ripstd.meta;
+import ripstd.traits;
 
-import std.range.primitives;
-public import std.range.primitives : save, empty, popFront, popBack, front, back;
+import ripstd.range.primitives;
+public import ripstd.range.primitives : save, empty, popFront, popBack, front, back;
 
 /**
  * Allocates an array and initializes it with copies of the elements
@@ -161,7 +161,7 @@ if (isPointer!Range && isIterable!(PointerTarget!Range) && !isAutodecodableStrin
 
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     struct Foo
     {
         int a;
@@ -192,7 +192,7 @@ if (isPointer!Range && isIterable!(PointerTarget!Range) && !isAutodecodableStrin
 
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     struct Foo
     {
         int a;
@@ -219,7 +219,7 @@ if (isPointer!Range && isIterable!(PointerTarget!Range) && !isAutodecodableStrin
 
 @safe pure nothrow unittest
 {
-    import std.range;
+    import ripstd.range;
     static struct S{int* p;}
     auto a = array(immutable(S).init.repeat(5));
     assert(a.length == 5);
@@ -238,8 +238,8 @@ if (isPointer!Range && isIterable!(PointerTarget!Range) && !isAutodecodableStrin
         ~this() { nAlive -= alive; alive = false; }
     }
 
-    import std.algorithm.iteration : map;
-    import std.range : iota;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.range : iota;
 
     auto arr = iota(3).map!(a => S(a)).array;
     assert(nAlive == 3);
@@ -275,7 +275,7 @@ Returns:
 CopyTypeQualifiers!(ElementType!String,dchar)[] array(String)(scope String str)
 if (isAutodecodableString!String)
 {
-    import std.utf : toUTF32;
+    import ripstd.utf : toUTF32;
     auto temp = str.toUTF32;
     /* Unsafe cast. Allowed because toUTF32 makes a new array
        and copies all the elements.
@@ -286,8 +286,8 @@ if (isAutodecodableString!String)
 ///
 @safe pure nothrow unittest
 {
-    import std.range.primitives : isRandomAccessRange;
-    import std.traits : isAutodecodableString;
+    import ripstd.range.primitives : isRandomAccessRange;
+    import ripstd.traits : isAutodecodableString;
 
     // note that if autodecoding is turned off, `array` will not transcode these.
     static if (isAutodecodableString!string)
@@ -305,7 +305,7 @@ if (isAutodecodableString!String)
 
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     static struct TestArray { int x; string toString() @safe { return to!string(x); } }
 
@@ -409,9 +409,9 @@ if (isAutodecodableString!String)
 // https://issues.dlang.org/show_bug.cgi?id=10220
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.exception;
-    import std.range : repeat;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.exception;
+    import ripstd.range : repeat;
 
     static struct S
     {
@@ -454,7 +454,7 @@ See_Also: $(REF Tuple, std,typecons), $(REF zip, std,range)
 auto assocArray(Range)(Range r)
 if (isInputRange!Range)
 {
-    import std.typecons : isTuple;
+    import ripstd.typecons : isTuple;
 
     alias E = ElementType!Range;
     static assert(isTuple!E, "assocArray: argument must be a range of tuples,"
@@ -482,8 +482,8 @@ if (isInputRange!Values && isInputRange!Keys)
             // aaLiteral is nothrow when the destructors don't throw
             static if (is(typeof(() nothrow
             {
-                import std.range : ElementType;
-                import std.traits : hasElaborateDestructor;
+                import ripstd.range : ElementType;
+                import ripstd.traits : hasElaborateDestructor;
                 alias KeyElement = ElementType!Keys;
                 static if (hasElaborateDestructor!KeyElement)
                     KeyElement.init.__xdtor();
@@ -520,8 +520,8 @@ if (isInputRange!Values && isInputRange!Keys)
             // https://issues.dlang.org/show_bug.cgi?id=18592
             static if (is(typeof(() @safe
             {
-                import std.range : ElementType;
-                import std.traits : hasElaborateDestructor;
+                import ripstd.range : ElementType;
+                import ripstd.traits : hasElaborateDestructor;
                 alias KeyElement = ElementType!Keys;
                 static if (hasElaborateDestructor!KeyElement)
                     KeyElement.init.__xdtor();
@@ -548,9 +548,9 @@ if (isInputRange!Values && isInputRange!Keys)
 ///
 @safe pure /*nothrow*/ unittest
 {
-    import std.range : repeat, zip;
-    import std.typecons : tuple;
-    import std.range.primitives : autodecodeStrings;
+    import ripstd.range : repeat, zip;
+    import ripstd.typecons : tuple;
+    import ripstd.range.primitives : autodecodeStrings;
     auto a = assocArray(zip([0, 1, 2], ["a", "b", "c"])); // aka zipMap
     static assert(is(typeof(a) == string[int]));
     assert(a == [0:"a", 1:"b", 2:"c"]);
@@ -569,11 +569,11 @@ if (isInputRange!Values && isInputRange!Keys)
     assert(c == expected);
 }
 
-// Cannot be version (StdUnittest) - recursive instantiation error
+// Cannot be version (RIPStdUnittest) - recursive instantiation error
 // https://issues.dlang.org/show_bug.cgi?id=11053
 @safe pure nothrow unittest
 {
-    import std.typecons;
+    import ripstd.typecons;
     static assert(!__traits(compiles, [ 1, 2, 3 ].assocArray()));
     static assert(!__traits(compiles, [ tuple("foo", "bar", "baz") ].assocArray()));
     static assert(!__traits(compiles, [ tuple("foo") ].assocArray()));
@@ -583,7 +583,7 @@ if (isInputRange!Values && isInputRange!Keys)
 // https://issues.dlang.org/show_bug.cgi?id=13909
 @safe pure nothrow unittest
 {
-    import std.typecons;
+    import ripstd.typecons;
     auto a = [tuple!(const string, string)("foo", "bar")];
     auto b = [tuple!(string, const string)("foo", "bar")];
     assert(a == b);
@@ -606,9 +606,9 @@ if (isInputRange!Values && isInputRange!Keys)
 // https://issues.dlang.org/show_bug.cgi?id=5502
 @safe pure unittest
 {
-    import std.algorithm.iteration : filter, map;
-    import std.range : enumerate;
-    import std.range.primitives : autodecodeStrings;
+    import ripstd.algorithm.iteration : filter, map;
+    import ripstd.range : enumerate;
+    import ripstd.range.primitives : autodecodeStrings;
 
     auto r = "abcde".enumerate.filter!(a => a.index == 2);
     auto a = assocArray(r.map!(a => a.value), r.map!(a => a.index));
@@ -622,7 +622,7 @@ if (isInputRange!Values && isInputRange!Keys)
 
 @safe nothrow pure unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
     auto b = assocArray(3.iota, 3.iota(6));
     static assert(is(typeof(b) == int[int]));
     assert(b == [0: 3, 1: 4, 2: 5]);
@@ -648,14 +648,14 @@ if (isInputRange!Values && isInputRange!Keys)
     static assert(!__traits(compiles, () nothrow { assocArray([0], [ThrowingElement()]);}));
     assert(assocArray([0], [ThrowingElement()]) == [0: ThrowingElement()]);
 
-    import std.range : iota;
+    import ripstd.range : iota;
     static assert(!__traits(compiles, () nothrow { assocArray(1.iota, [ThrowingElement()]);}));
     assert(assocArray(1.iota, [ThrowingElement()]) == [0: ThrowingElement()]);
 }
 
 @system unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
     struct UnsafeElement
     {
         int i;
@@ -683,8 +683,8 @@ index (0 and 1 respectively).
 auto byPair(AA)(AA aa)
 if (isAssociativeArray!AA)
 {
-    import std.algorithm.iteration : map;
-    import std.typecons : tuple;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.typecons : tuple;
 
     return aa.byKeyValue
         .map!(pair => tuple!("key", "value")(pair.key, pair.value));
@@ -693,8 +693,8 @@ if (isAssociativeArray!AA)
 ///
 @safe pure nothrow unittest
 {
-    import std.algorithm.sorting : sort;
-    import std.typecons : tuple, Tuple;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.typecons : tuple, Tuple;
 
     auto aa = ["a": 1, "b": 2, "c": 3];
     Tuple!(string, int)[] pairs;
@@ -720,8 +720,8 @@ if (isAssociativeArray!AA)
 
 @safe pure nothrow unittest
 {
-    import std.typecons : tuple, Tuple;
-    import std.meta : AliasSeq;
+    import ripstd.typecons : tuple, Tuple;
+    import ripstd.meta : AliasSeq;
 
     auto aa = ["a":2];
     auto pairs = aa.byPair();
@@ -896,8 +896,8 @@ if (isDynamicArray!T && allSatisfy!(isIntegral, I))
 ///
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : repeat;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : repeat;
 
     auto arr = minimallyInitializedArray!(int[])(42);
     assert(arr.length == 42);
@@ -1095,7 +1095,7 @@ Returns:
 CommonType!(T[], U[]) overlap(T, U)(T[] a, U[] b) @trusted
 if (is(typeof(a.ptr < b.ptr) == bool))
 {
-    import std.algorithm.comparison : min;
+    import ripstd.algorithm.comparison : min;
 
     auto end = min(a.ptr + a.length, b.ptr + b.length);
     // CTFE requires pairing pointer comparisons, which forces a
@@ -1171,7 +1171,7 @@ if (is(typeof(a.ptr < b.ptr) == bool))
         @property Wrapper save() { return this; }
     }
     auto w = Wrapper([1,2,3,4]);
-    std.array.popFront(w); // should work
+    ripstd.array.popFront(w); // should work
 
     static assert(isInputRange!Wrapper);
     static assert(isForwardRange!Wrapper);
@@ -1182,7 +1182,7 @@ if (is(typeof(a.ptr < b.ptr) == bool))
 private void copyBackwards(T)(T[] src, T[] dest)
 {
     import core.stdc.string : memmove;
-    import std.format : format;
+    import ripstd.format : format;
 
     assert(src.length == dest.length, format!
             "src.length %s must equal dest.length %s"(src.length, dest.length));
@@ -1280,7 +1280,7 @@ if (isSomeString!(T[]) && allSatisfy!(isCharOrStringOrDcharRange, U))
     static if (is(Unqual!T == T)
         && allSatisfy!(isInputRangeWithLengthOrConvertible!dchar, U))
     {
-        import std.utf : codeLength, byDchar;
+        import ripstd.utf : codeLength, byDchar;
         // mutable, can do in place
         //helper function: re-encode dchar to Ts and store at *ptr
         static T* putDChar(T* ptr, dchar ch)
@@ -1292,7 +1292,7 @@ if (isSomeString!(T[]) && allSatisfy!(isCharOrStringOrDcharRange, U))
             }
             else
             {
-                import std.utf : encode;
+                import ripstd.utf : encode;
                 T[dchar.sizeof/T.sizeof] buf;
                 immutable len = encode(buf, ch);
                 final switch (len)
@@ -1406,10 +1406,10 @@ private template isInputRangeOrConvertible(E)
 {
     // @system due to insertInPlace
     import core.exception;
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : filter;
-    import std.conv : to;
-    import std.exception;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.conv : to;
+    import ripstd.exception;
 
 
     bool test(T, U, V)(T orig, size_t pos, U toInsert, V result)
@@ -1499,7 +1499,7 @@ private template isInputRangeOrConvertible(E)
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     // insertInPlace interop with postblit
     static struct Int
     {
@@ -1532,7 +1532,7 @@ private template isInputRangeOrConvertible(E)
 
 @safe unittest
 {
-    import std.exception;
+    import ripstd.exception;
     assertCTFEable!(
     {
         int[] a = [1, 2];
@@ -1662,7 +1662,7 @@ if (isDynamicArray!S)
 {
     alias RetType = ElementEncodingType!S[];
 
-    // Optimization for return join(std.range.repeat(s, n));
+    // Optimization for return join(ripstd.range.repeat(s, n));
     if (n == 0)
         return RetType.init;
     if (n == 1)
@@ -1685,8 +1685,8 @@ if (isDynamicArray!S)
 ElementType!S[] replicate(S)(S s, size_t n)
 if (isInputRange!S && !isDynamicArray!S)
 {
-    import std.range : repeat;
-    return join(std.range.repeat(s, n));
+    import ripstd.range : repeat;
+    return join(ripstd.range.repeat(s, n));
 }
 
 
@@ -1710,7 +1710,7 @@ if (isInputRange!S && !isDynamicArray!S)
 
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     static foreach (S; AliasSeq!(string, wstring, dstring, char[], wchar[], dchar[]))
     {{
@@ -1761,7 +1761,7 @@ if (isSomeString!S)
 
     foreach (i, dchar c ; s)
     {
-        import std.uni : isWhite;
+        import ripstd.uni : isWhite;
         if (isWhite(c))
         {
             if (inword)
@@ -1787,7 +1787,7 @@ if (isSomeString!S)
 ///
 @safe unittest
 {
-    import std.uni : isWhite;
+    import ripstd.uni : isWhite;
     assert("Learning,D,is,fun".split(",") == ["Learning", "D", "is", "fun"]);
     assert("Learning D is fun".split!isWhite == ["Learning", "D", "is", "fun"]);
     assert("Learning D is fun".split(" D ") == ["Learning", "is fun"]);
@@ -1805,9 +1805,9 @@ if (isSomeString!S)
 
 @safe unittest
 {
-    import std.conv : to;
-    import std.format : format;
-    import std.typecons;
+    import ripstd.conv : to;
+    import ripstd.format : format;
+    import ripstd.typecons;
 
     static auto makeEntry(S)(string l, string[] r)
     {return tuple(l.to!S(), r.to!(S[])());}
@@ -1837,7 +1837,7 @@ if (isSomeString!S)
 
 @safe unittest //purity, ctfe ...
 {
-    import std.exception;
+    import ripstd.exception;
     void dg() @safe pure {
         assert(split("hello world"c) == ["hello"c, "world"c]);
         assert(split("hello world"w) == ["hello"w, "world"w]);
@@ -1864,21 +1864,21 @@ if (isForwardRange!Range && (
     is(typeof(ElementType!Range.init == ElementType!Separator.init)) && isForwardRange!Separator
     ))
 {
-    import std.algorithm.iteration : splitter;
+    import ripstd.algorithm.iteration : splitter;
     return range.splitter(sep).array;
 }
 ///ditto
 auto split(alias isTerminator, Range)(Range range)
 if (isForwardRange!Range && is(typeof(unaryFun!isTerminator(range.front))))
 {
-    import std.algorithm.iteration : splitter;
+    import ripstd.algorithm.iteration : splitter;
     return range.splitter!isTerminator.array;
 }
 
 @safe unittest
 {
-    import std.algorithm.comparison : cmp;
-    import std.conv;
+    import ripstd.algorithm.comparison : cmp;
+    import ripstd.conv;
 
     static foreach (S; AliasSeq!(string, wstring, dstring,
                     immutable(string), immutable(wstring), immutable(dstring),
@@ -1974,7 +1974,7 @@ if (isInputRange!RoR &&
     static if (isSomeString!RetType &&
                !is(immutable ElementEncodingType!RetType == immutable ElementEncodingType!R))
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         auto sepArr = to!RetType(sep);
     }
     else static if (!isArray!R)
@@ -2035,7 +2035,7 @@ if (isInputRange!RoR &&
 // https://issues.dlang.org/show_bug.cgi?id=21337
 @system unittest
 {
-    import std.algorithm.iteration : map;
+    import ripstd.algorithm.iteration : map;
 
     static class Once
     {
@@ -2074,7 +2074,7 @@ if (isInputRange!RoR &&
     {
         static if (isSomeChar!E && isSomeChar!RetTypeElement && E.sizeof > RetTypeElement.sizeof)
         {
-            import std.utf : encode;
+            import ripstd.utf : encode;
             RetTypeElement[4 / RetTypeElement.sizeof] encodeSpace;
             immutable size_t sepArrLength = encode(encodeSpace, sep);
             return join(ror, encodeSpace[0 .. sepArrLength]);
@@ -2082,7 +2082,7 @@ if (isInputRange!RoR &&
         else
         {
             import core.internal.lifetime : emplaceRef;
-            import std.format : format;
+            import ripstd.format : format;
             size_t length;
             size_t rorLength;
             foreach (r; ror.save)
@@ -2209,8 +2209,8 @@ if (isInputRange!RoR &&
 
 @safe pure unittest
 {
-    import std.conv : to;
-    import std.range.primitives : autodecodeStrings;
+    import ripstd.conv : to;
+    import ripstd.range.primitives : autodecodeStrings;
 
     static foreach (T; AliasSeq!(string,wstring,dstring))
     {{
@@ -2259,9 +2259,9 @@ if (isInputRange!RoR &&
 
 @safe unittest
 {
-    import std.algorithm;
-    import std.conv : to;
-    import std.range;
+    import ripstd.algorithm;
+    import ripstd.conv : to;
+    import ripstd.range;
 
     static foreach (R; AliasSeq!(string, wstring, dstring))
     {{
@@ -2365,8 +2365,8 @@ if (isInputRange!RoR &&
 // https://issues.dlang.org/show_bug.cgi?id=10683
 @safe unittest
 {
-    import std.range : join;
-    import std.typecons : tuple;
+    import ripstd.range : join;
+    import ripstd.typecons : tuple;
     assert([[tuple(1)]].join == [tuple(1)]);
     assert([[tuple("x")]].join == [tuple("x")]);
 }
@@ -2375,7 +2375,7 @@ if (isInputRange!RoR &&
 @safe unittest
 {
     // Test that the range is iterated only once.
-    import std.algorithm.iteration : map;
+    import ripstd.algorithm.iteration : map;
     int c = 0;
     auto j1 = [1, 2, 3].map!(_ => [c++]).join;
     assert(c == 3);
@@ -2412,8 +2412,8 @@ E[] replace(E, R1, R2)(E[] subject, R1 from, R2 to)
 if ((isForwardRange!R1 && isForwardRange!R2 && (hasLength!R2 || isSomeString!R2)) ||
     is(Unqual!E : Unqual!R1))
 {
-    import std.algorithm.searching : find;
-    import std.range : dropOne;
+    import ripstd.algorithm.searching : find;
+    import ripstd.range : dropOne;
 
     static if (isInputRange!R1)
     {
@@ -2509,8 +2509,8 @@ if (isOutputRange!(Sink, E) &&
     ((isForwardRange!R1 && isForwardRange!R2 && (hasLength!R2 || isSomeString!R2)) ||
     is(Unqual!E : Unqual!R1)))
 {
-    import std.algorithm.searching : find;
-    import std.range : dropOne;
+    import ripstd.algorithm.searching : find;
+    import ripstd.range : dropOne;
 
     static if (isInputRange!R1)
     {
@@ -2567,8 +2567,8 @@ if (isOutputRange!(Sink, E) &&
 
 @safe unittest
 {
-    import std.algorithm.comparison : cmp;
-    import std.conv : to;
+    import ripstd.algorithm.comparison : cmp;
+    import ripstd.conv : to;
 
     static foreach (S; AliasSeq!(string, wstring, dstring, char[], wchar[], dchar[]))
     {
@@ -2598,8 +2598,8 @@ if (isOutputRange!(Sink, E) &&
 
 @safe unittest
 {
-    import std.algorithm.searching : skipOver;
-    import std.conv : to;
+    import ripstd.algorithm.searching : skipOver;
+    import ripstd.conv : to;
 
     struct CheckOutput(C)
     {
@@ -2653,7 +2653,7 @@ if (isInputRange!Range &&
 {
     static if (hasLength!Range && is(ElementEncodingType!Range : T))
     {
-        import std.algorithm.mutation : copy;
+        import ripstd.algorithm.mutation : copy;
         assert(from <= to, "from must be before or equal to to");
         immutable sliceLen = to - from;
         auto retval = new Unqual!(T)[](subject.length - sliceLen + stuff.length);
@@ -2694,9 +2694,9 @@ if (isInputRange!Range &&
 @system unittest
 {
     import core.exception;
-    import std.algorithm.iteration : filter;
-    import std.conv : to;
-    import std.exception;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.conv : to;
+    import ripstd.exception;
 
 
     auto a = [ 1, 2, 3, 4 ];
@@ -2790,8 +2790,8 @@ if (is(typeof(replace(array, from, to, stuff))))
               !isNarrowString!(T[]))
     {
         // optimized for homogeneous arrays that can be overwritten.
-        import std.algorithm.mutation : remove;
-        import std.typecons : tuple;
+        import ripstd.algorithm.mutation : remove;
+        import ripstd.typecons : tuple;
 
         if (overlap(array, stuff).length)
         {
@@ -2862,8 +2862,8 @@ if (is(typeof(replace(array, from, to, stuff))))
 
     void testStringReplaceInPlace(T, U)()
     {
-        import std.algorithm.comparison : equal;
-        import std.conv;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.conv;
         auto a = unicoded.to!(U[]);
         auto b = unicodedLong.to!(U[]);
 
@@ -2878,7 +2878,7 @@ if (is(typeof(replace(array, from, to, stuff))))
         assert(equal(test, resultLong), "Failed for types " ~ T.stringof ~ " and " ~ U.stringof);
     }
 
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     alias allChars = AliasSeq!(char, immutable(char), const(char),
                          wchar, immutable(wchar), const(wchar),
                          dchar, immutable(dchar), const(dchar));
@@ -2896,7 +2896,7 @@ if (is(typeof(replace(array, from, to, stuff))))
 @safe unittest
 {
     // the constraint for the first overload used to match this, which wouldn't compile.
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     long[] a = [1L, 2, 3];
     int[] b = [4, 5, 6];
     a.replaceInPlace(1, 2, b);
@@ -2906,10 +2906,10 @@ if (is(typeof(replace(array, from, to, stuff))))
 @system unittest
 {
     import core.exception;
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : filter;
-    import std.conv : to;
-    import std.exception;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : filter;
+    import ripstd.conv : to;
+    import ripstd.exception;
 
 
     bool test(T, U, V)(T orig, size_t from, size_t to, U toReplace, V result)
@@ -2995,12 +2995,12 @@ if (isDynamicArray!(E[]) &&
     if (from.empty) return subject;
     static if (isSomeString!(E[]))
     {
-        import std.string : indexOf;
+        import ripstd.string : indexOf;
         immutable idx = subject.indexOf(from);
     }
     else
     {
-        import std.algorithm.searching : countUntil;
+        import ripstd.algorithm.searching : countUntil;
         immutable idx = subject.countUntil(from);
     }
     if (idx == -1)
@@ -3012,7 +3012,7 @@ if (isDynamicArray!(E[]) &&
 
     static if (isSomeString!(E[]) && isSomeString!R1)
     {
-        import std.utf : codeLength;
+        import ripstd.utf : codeLength;
         immutable fromLength = codeLength!(Unqual!E, R1)(from);
     }
     else
@@ -3037,8 +3037,8 @@ if (isDynamicArray!(E[]) &&
 
 @safe unittest
 {
-    import std.algorithm.comparison : cmp;
-    import std.conv : to;
+    import ripstd.algorithm.comparison : cmp;
+    import ripstd.conv : to;
 
     static foreach (S; AliasSeq!(string, wstring, dstring, char[], wchar[], dchar[],
                           const(char[]), immutable(char[])))
@@ -3096,16 +3096,16 @@ if (isDynamicArray!(E[]) &&
     isForwardRange!R1 && is(typeof(appender!(E[])().put(from[0 .. 1]))) &&
     isForwardRange!R2 && is(typeof(appender!(E[])().put(to[0 .. 1]))))
 {
-    import std.range : retro;
+    import ripstd.range : retro;
     if (from.empty) return subject;
     static if (isSomeString!(E[]))
     {
-        import std.string : lastIndexOf;
+        import ripstd.string : lastIndexOf;
         auto idx = subject.lastIndexOf(from);
     }
     else
     {
-        import std.algorithm.searching : countUntil;
+        import ripstd.algorithm.searching : countUntil;
         auto idx = retro(subject).countUntil(retro(from));
     }
 
@@ -3114,7 +3114,7 @@ if (isDynamicArray!(E[]) &&
 
     static if (isSomeString!(E[]) && isSomeString!R1)
     {
-        import std.utf : codeLength;
+        import ripstd.utf : codeLength;
         auto fromLength = codeLength!(Unqual!E, R1)(from);
     }
     else
@@ -3150,8 +3150,8 @@ if (isDynamicArray!(E[]) &&
 
 @safe unittest
 {
-    import std.algorithm.comparison : cmp;
-    import std.conv : to;
+    import ripstd.algorithm.comparison : cmp;
+    import ripstd.conv : to;
 
     static foreach (S; AliasSeq!(string, wstring, dstring, char[], wchar[], dchar[],
                           const(char[]), immutable(char[])))
@@ -3232,7 +3232,7 @@ do
 
 @safe unittest
 {
-    import std.algorithm.comparison : cmp;
+    import ripstd.algorithm.comparison : cmp;
 
     string s = "hello";
     string slice = s[2 .. 4];
@@ -3447,10 +3447,10 @@ if (isDynamicArray!A)
         static if (isSomeChar!T && isSomeChar!U && T.sizeof < U.sizeof)
         {
             /* may throwable operation:
-             * - std.utf.encode
+             * - ripstd.utf.encode
              */
             // must do some transcoding around here
-            import std.utf : encode;
+            import ripstd.utf : encode;
             Unqual!T[T.sizeof == 1 ? 4 : 2] encoded;
             auto len = encode(encoded, item);
             put(encoded[0 .. len]);
@@ -3538,7 +3538,7 @@ if (isDynamicArray!A)
                         !is(immutable T == immutable ElementType!Range))
         {
             // need to decode and encode
-            import std.utf : decodeFront;
+            import ripstd.utf : decodeFront;
             while (!items.empty)
             {
                 auto c = items.decodeFront;
@@ -3589,7 +3589,7 @@ if (isDynamicArray!A)
          */
         void shrinkTo(size_t newlength) @trusted pure
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
             if (_data)
             {
                 enforce(newlength <= _data.arr.length, "Attempting to shrink Appender with newlength > length");
@@ -3613,7 +3613,7 @@ if (isDynamicArray!A)
      */
     string toString()() const
     {
-        import std.format.spec : singleSpec;
+        import ripstd.format.spec : singleSpec;
 
         auto app = appender!string();
         auto spec = singleSpec("%s");
@@ -3634,7 +3634,7 @@ if (isDynamicArray!A)
         return app.data;
     }
 
-    import std.format.spec : FormatSpec;
+    import ripstd.format.spec : FormatSpec;
 
     /// ditto
     template toString(Writer)
@@ -3642,8 +3642,8 @@ if (isDynamicArray!A)
     {
         void toString(ref Writer w, scope const ref FormatSpec!char fmt) const
         {
-            import std.format.write : formatValue;
-            import std.range.primitives : put;
+            import ripstd.format.write : formatValue;
+            import ripstd.range.primitives : put;
             put(w, Unqual!(typeof(this)).stringof);
             put(w, '(');
             formatValue(w, data, fmt);
@@ -3670,8 +3670,8 @@ if (isDynamicArray!A)
 
 @safe pure unittest
 {
-    import std.format : format;
-    import std.format.spec : singleSpec;
+    import ripstd.format : format;
+    import ripstd.format.spec : singleSpec;
 
     auto app = appender!(int[])();
     app.put(1);
@@ -3765,8 +3765,8 @@ if (isDynamicArray!A)
 
 @safe unittest
 {
-    import std.conv : to;
-    import std.utf : byCodeUnit;
+    import ripstd.conv : to;
+    import ripstd.utf : byCodeUnit;
     auto str = "ウェブサイト";
     auto wstr = appender!wstring();
     put(wstr, str.byCodeUnit);
@@ -3791,7 +3791,7 @@ if (isDynamicArray!A)
 private size_t appenderNewCapacity(size_t TSizeOf)(size_t curLen, size_t reqLen) @safe pure nothrow
 {
     import core.bitop : bsr;
-    import std.algorithm.comparison : max;
+    import ripstd.algorithm.comparison : max;
     if (curLen == 0)
         return max(reqLen,8);
     ulong mult = 100 + (1000UL) / (bsr(curLen * TSizeOf) + 1);
@@ -3929,7 +3929,7 @@ Appender!(E[]) appender(A : E[], E)(auto ref A array)
 
 @safe pure nothrow unittest
 {
-    import std.exception;
+    import ripstd.exception;
     {
         auto app = appender!(char[])();
         string b = "abcdefg";
@@ -4103,15 +4103,15 @@ unittest
 // https://issues.dlang.org/show_bug.cgi?id=10690
 @safe unittest
 {
-    import std.algorithm;
-    import std.typecons;
+    import ripstd.algorithm;
+    import ripstd.typecons;
     [tuple(1)].filter!(t => true).array; // No error
     [tuple("A")].filter!(t => true).array; // error
 }
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     //Coverage for put(Range)
     struct S1
     {
@@ -4131,7 +4131,7 @@ unittest
 
 @system unittest
 {
-    import std.range;
+    import ripstd.range;
     struct S2
     {
         void opAssign(S2){}
@@ -4195,7 +4195,7 @@ unittest
 // https://issues.dlang.org/show_bug.cgi?id=10753
 @safe unittest
 {
-    import std.algorithm.iteration : map;
+    import ripstd.algorithm.iteration : map;
     struct Foo {
        immutable dchar d;
     }
@@ -4208,7 +4208,7 @@ unittest
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     //New appender signature tests
     alias mutARR = int[];
@@ -4257,8 +4257,8 @@ unittest
 
 @safe unittest //Test large allocations (for GC.extend)
 {
-    import std.algorithm.comparison : equal;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range;
     Appender!(char[]) app;
     app.reserve(1); //cover reserve on non-initialized
     foreach (_; 0 .. 100_000)
@@ -4323,7 +4323,7 @@ unittest
     w.put(new shared A());
 
     // original case
-    import std.range;
+    import ripstd.range;
     InputRange!(shared A) foo()
     {
         return [new shared A].inputRangeObject;
@@ -4361,7 +4361,7 @@ unittest
 
 @system unittest
 {
-    import std.exception;
+    import ripstd.exception;
     {
         auto arr = new char[0];
         auto app = appender(&arr);
@@ -4545,8 +4545,8 @@ if (isInputRange!T && is(ElementType!T : U))
 auto staticArray(Un : U[n], U, size_t n, T)(scope T a, out size_t rangeLength)
 if (isInputRange!T && is(ElementType!T : U))
 {
-    import std.algorithm.mutation : uninitializedFill;
-    import std.range : take;
+    import ripstd.algorithm.mutation : uninitializedFill;
+    import ripstd.range : take;
     import core.internal.lifetime : emplaceRef;
 
     if (__ctfe)
@@ -4591,7 +4591,7 @@ if (isInputRange!T && is(ElementType!T : U))
 /// static array from range + size
 nothrow pure @safe unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
 
     auto input = 3.iota;
     auto a = input.staticArray!2;
@@ -4649,7 +4649,7 @@ nothrow pure @safe unittest
     auto a = [1, 2].staticArray;
     assert(is(typeof(a) == int[2]) && a == [1, 2]);
 
-    import std.range : iota;
+    import ripstd.range : iota;
 
     2.iota.staticArray!2.checkStaticArray!int([0, 1]);
     2.iota.staticArray!(double[2]).checkStaticArray!double([0, 1]);
@@ -4658,7 +4658,7 @@ nothrow pure @safe unittest
 
 nothrow pure @system unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
     size_t copiedAmount;
     2.iota.staticArray!1(copiedAmount);
     assert(copiedAmount == 1);
@@ -4683,7 +4683,7 @@ if (isInputRange!(typeof(a)))
 /// static array from CT range
 nothrow pure @safe unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
 
     enum a = staticArray!(2.iota);
     static assert(is(typeof(a) == int[2]));
@@ -4696,7 +4696,7 @@ nothrow pure @safe unittest
 
 nothrow pure @safe unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
 
     enum a = staticArray!(2.iota);
     staticArray!(2.iota).checkStaticArray!int([0, 1]);
@@ -4704,7 +4704,7 @@ nothrow pure @safe unittest
     staticArray!(long, 2.iota).checkStaticArray!long([0, 1]);
 }
 
-version (StdUnittest) private void checkStaticArray(T, T1, T2)(T1 a, T2 b) nothrow @safe pure @nogc
+version (RIPStdUnittest) private void checkStaticArray(T, T1, T2)(T1 a, T2 b) nothrow @safe pure @nogc
 {
     static assert(is(T1 == T[T1.length]));
     assert(a == b, "a must be equal to b");

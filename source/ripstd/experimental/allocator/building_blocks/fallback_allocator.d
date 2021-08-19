@@ -4,7 +4,7 @@ Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/fallback_allocato
 */
 module ripstd.experimental.allocator.building_blocks.fallback_allocator;
 
-import std.experimental.allocator.common;
+import ripstd.experimental.allocator.common;
 
 /**
 `FallbackAllocator` is the allocator equivalent of an "or" operator in
@@ -23,14 +23,14 @@ up by the `GCAllocator`.
 */
 struct FallbackAllocator(Primary, Fallback)
 {
-    import std.algorithm.comparison : min;
-    import std.traits : hasMember;
-    import std.typecons : Ternary;
+    import ripstd.algorithm.comparison : min;
+    import ripstd.traits : hasMember;
+    import ripstd.typecons : Ternary;
 
     // Need both allocators to be stateless
     // This is to avoid using default initialized stateful allocators
     static if (!stateSize!Primary && !stateSize!Fallback)
-    version (StdUnittest)
+    version (RIPStdUnittest)
     @system unittest
     {
         testAllocator!(() => FallbackAllocator());
@@ -70,7 +70,7 @@ struct FallbackAllocator(Primary, Fallback)
 
     static if (hasMember!(Primary, "allocateZeroed")
             || (hasMember!(Fallback, "allocateZeroed")))
-    package(std) void[] allocateZeroed()(size_t s)
+    package(ripstd) void[] allocateZeroed()(size_t s)
     {
         // Try to allocate with primary.
         static if (hasMember!(Primary, "allocateZeroed"))
@@ -296,10 +296,10 @@ struct FallbackAllocator(Primary, Fallback)
 
 @system unittest
 {
-    import std.conv : text;
-    import std.experimental.allocator.building_blocks.region : InSituRegion;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.typecons : Ternary;
+    import ripstd.conv : text;
+    import ripstd.experimental.allocator.building_blocks.region : InSituRegion;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.typecons : Ternary;
     FallbackAllocator!(InSituRegion!16_384, GCAllocator) a;
     // This allocation uses the stack
     auto b1 = a.allocate(1024);
@@ -318,8 +318,8 @@ struct FallbackAllocator(Primary, Fallback)
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlockWithInternalPointers;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlockWithInternalPointers;
+    import ripstd.typecons : Ternary;
 
     alias A =
         FallbackAllocator!(
@@ -342,8 +342,8 @@ struct FallbackAllocator(Primary, Fallback)
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.typecons : Ternary;
 
     auto a = FallbackAllocator!(Region!(), Region!())(
                 Region!()(new ubyte[4096 * 1024]),
@@ -355,11 +355,11 @@ struct FallbackAllocator(Primary, Fallback)
     assert(b.length == 100);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlockWithInternalPointers;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlockWithInternalPointers;
+    import ripstd.typecons : Ternary;
 
     alias A =
         FallbackAllocator!(
@@ -378,8 +378,8 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.typecons : Ternary;
 
     alias a = FallbackAllocator!(Mallocator, Mallocator).instance;
 
@@ -400,7 +400,7 @@ private auto ref forward(alias arg)()
     }
     else
     {
-        import std.algorithm.mutation : move;
+        import ripstd.algorithm.mutation : move;
         return move(arg);
     }
 }
@@ -459,9 +459,9 @@ fallbackAllocator(Primary, Fallback)(auto ref Primary p, auto ref Fallback f)
 ///
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.typecons : Ternary;
     auto a = fallbackAllocator(Region!GCAllocator(1024), GCAllocator.instance);
     auto b1 = a.allocate(1020);
     assert(b1.length == 1020);
@@ -471,19 +471,19 @@ fallbackAllocator(Primary, Fallback)(auto ref Primary p, auto ref Fallback f)
     assert(a.primary.owns(b2) == Ternary.no);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     testAllocator!(() => fallbackAllocator(Region!GCAllocator(1024), GCAllocator.instance));
 }
 
 // Ensure `owns` inherits function attributes
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : InSituRegion;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.region : InSituRegion;
+    import ripstd.typecons : Ternary;
 
     FallbackAllocator!(InSituRegion!16_384, InSituRegion!16_384) a;
     auto buff = a.allocate(42);
@@ -492,8 +492,8 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.typecons : Ternary;
 
     auto a = fallbackAllocator(GCAllocator.instance, GCAllocator.instance);
     auto b = a.allocate(1020);
@@ -506,8 +506,8 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.typecons : Ternary;
 
     alias A = FallbackAllocator!(Region!(), Region!());
     auto a = A(Region!()(new ubyte[16_384]), Region!()(new ubyte[16_384]));

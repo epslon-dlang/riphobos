@@ -7,14 +7,14 @@ Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/aligned_block_lis
 */
 module ripstd.experimental.allocator.building_blocks.aligned_block_list;
 
-import std.experimental.allocator.common;
-import std.experimental.allocator.building_blocks.null_allocator;
+import ripstd.experimental.allocator.common;
+import ripstd.experimental.allocator.building_blocks.null_allocator;
 
 // Common function implementation for thread local and shared AlignedBlockList
 private mixin template AlignedBlockListImpl(bool isShared)
 {
-    import std.traits : hasMember;
-    import std.typecons : Ternary;
+    import ripstd.traits : hasMember;
+    import ripstd.typecons : Ternary;
 
     static if (isShared)
     import core.internal.spinlock : SpinLock;
@@ -312,8 +312,8 @@ struct AlignedBlockList(Allocator, ParentAllocator, ulong theAlignment = (1 << 2
 {
     version (StdDdoc)
     {
-        import std.typecons : Ternary;
-        import std.traits : hasMember;
+        import ripstd.typecons : Ternary;
+        import ripstd.traits : hasMember;
 
         /**
         Returns a chunk of memory of size `n`
@@ -357,7 +357,7 @@ struct AlignedBlockList(Allocator, ParentAllocator, ulong theAlignment = (1 << 2
     }
     else
     {
-        import std.math.traits : isPowerOf2;
+        import ripstd.math.traits : isPowerOf2;
         static assert(isPowerOf2(alignment));
         mixin AlignedBlockListImpl!false;
     }
@@ -366,10 +366,10 @@ struct AlignedBlockList(Allocator, ParentAllocator, ulong theAlignment = (1 << 2
 ///
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
-    import std.experimental.allocator.building_blocks.segregator : Segregator;
-    import std.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
+    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.typecons : Ternary;
 
     /*
     In this example we use 'AlignedBlockList' in conjunction with other allocators
@@ -472,8 +472,8 @@ shared struct SharedAlignedBlockList(Allocator, ParentAllocator, ulong theAlignm
 {
     version (StdDdoc)
     {
-        import std.typecons : Ternary;
-        import std.traits : hasMember;
+        import ripstd.typecons : Ternary;
+        import ripstd.traits : hasMember;
 
         /**
         Returns a chunk of memory of size `n`
@@ -517,7 +517,7 @@ shared struct SharedAlignedBlockList(Allocator, ParentAllocator, ulong theAlignm
     }
     else
     {
-        import std.math.traits : isPowerOf2;
+        import ripstd.math.traits : isPowerOf2;
         static assert(isPowerOf2(alignment));
         mixin AlignedBlockListImpl!true;
     }
@@ -526,9 +526,9 @@ shared struct SharedAlignedBlockList(Allocator, ParentAllocator, ulong theAlignm
 ///
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : SharedRegion;
-    import std.experimental.allocator.building_blocks.ascending_page_allocator : SharedAscendingPageAllocator;
-    import std.experimental.allocator.building_blocks.null_allocator : NullAllocator;
+    import ripstd.experimental.allocator.building_blocks.region : SharedRegion;
+    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : SharedAscendingPageAllocator;
+    import ripstd.experimental.allocator.building_blocks.null_allocator : NullAllocator;
     import core.thread : ThreadGroup;
 
     enum numThreads = 8;
@@ -566,7 +566,7 @@ shared struct SharedAlignedBlockList(Allocator, ParentAllocator, ulong theAlignm
     tg.joinAll();
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     static void testrw(void[] b)
     {
@@ -582,10 +582,10 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region;
-    import std.experimental.allocator.building_blocks.ascending_page_allocator;
-    import std.random;
-    import std.algorithm.sorting : sort;
+    import ripstd.experimental.allocator.building_blocks.region;
+    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator;
+    import ripstd.random;
+    import ripstd.algorithm.sorting : sort;
     import core.thread : ThreadGroup;
     import core.internal.spinlock : SpinLock;
 
@@ -642,10 +642,10 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
-    import std.experimental.allocator.building_blocks.segregator : Segregator;
-    import std.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
-    import std.random;
+    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
+    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.random;
 
     alias SuperAllocator = Segregator!(
         256,

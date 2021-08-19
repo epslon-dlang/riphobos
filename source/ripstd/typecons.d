@@ -69,12 +69,12 @@ Authors:   $(HTTP erdani.org, Andrei Alexandrescu),
  */
 module ripstd.typecons;
 
-import std.format.spec : singleSpec, FormatSpec;
-import std.format.write : formatValue;
-import std.meta : AliasSeq, allSatisfy;
-import std.range.primitives : isOutputRange;
-import std.traits;
-import std.internal.attributes : betterC;
+import ripstd.format.spec : singleSpec, FormatSpec;
+import ripstd.format.write : formatValue;
+import ripstd.meta : AliasSeq, allSatisfy;
+import ripstd.range.primitives : isOutputRange;
+import ripstd.traits;
+import ripstd.internal.attributes : betterC;
 
 ///
 @safe unittest
@@ -230,11 +230,11 @@ public:
         return _p is null;
     }
     /** Transfer ownership to a `Unique` rvalue. Nullifies the current contents.
-    Same as calling std.algorithm.move on it.
+    Same as calling ripstd.algorithm.move on it.
     */
     Unique release()
     {
-        import std.algorithm.mutation : move;
+        import ripstd.algorithm.mutation : move;
         return this.move;
     }
 
@@ -464,7 +464,7 @@ Params:
 template Tuple(Specs...)
 if (distinctFieldNames!(Specs))
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
 
     // Parse (type,name) pairs (FieldSpecs) out of the specified
     // arguments. Some fields would have name, others not.
@@ -592,7 +592,7 @@ if (distinctFieldNames!(Specs))
         ///
         static if (Specs.length == 0) @safe unittest
         {
-            import std.meta : AliasSeq;
+            import ripstd.meta : AliasSeq;
             alias Fields = Tuple!(int, "id", string, float);
             static assert(is(Fields.Types == AliasSeq!(int, string, float)));
         }
@@ -605,7 +605,7 @@ if (distinctFieldNames!(Specs))
         ///
         static if (Specs.length == 0) @safe unittest
         {
-            import std.meta : AliasSeq;
+            import ripstd.meta : AliasSeq;
             alias Fields = Tuple!(int, "id", string, float);
             static assert(Fields.fieldNames == AliasSeq!("id", "", ""));
         }
@@ -818,7 +818,7 @@ if (distinctFieldNames!(Specs))
             {
                 if (field[i] != rhs.field[i])
                 {
-                    import std.math.traits : isNaN;
+                    import ripstd.math.traits : isNaN;
                     static if (isFloatingPoint!(Types[i]))
                     {
                         if (isNaN(field[i]))
@@ -850,7 +850,7 @@ if (distinctFieldNames!(Specs))
             {
                 if (field[i] != rhs.field[i])
                 {
-                    import std.math.traits : isNaN;
+                    import ripstd.math.traits : isNaN;
                     static if (isFloatingPoint!(Types[i]))
                     {
                         if (isNaN(field[i]))
@@ -943,7 +943,7 @@ if (distinctFieldNames!(Specs))
         ref Tuple opAssign(R)(auto ref R rhs)
         if (areCompatibleTuples!(typeof(this), R, "="))
         {
-            import std.algorithm.mutation : swap;
+            import ripstd.algorithm.mutation : swap;
 
             static if (is(R : Tuple!Types) && !__traits(isRef, rhs) && isTuple!R)
             {
@@ -981,7 +981,7 @@ if (distinctFieldNames!(Specs))
         ref rename(names...)() inout return
         if (names.length == 0 || allSatisfy!(isSomeString, typeof(names)))
         {
-            import std.algorithm.comparison : equal;
+            import ripstd.algorithm.comparison : equal;
             // to circumvent https://issues.dlang.org/show_bug.cgi?id=16418
             static if (names.length == 0 || equal([names], [fieldNames]))
                 return this;
@@ -992,11 +992,11 @@ if (distinctFieldNames!(Specs))
                 static assert(nN <= nT, "Cannot have more names than tuple members");
                 alias allNames = AliasSeq!(names, fieldNames[nN .. $]);
 
-                import std.meta : Alias, aliasSeqOf;
+                import ripstd.meta : Alias, aliasSeqOf;
 
                 template GetItem(size_t idx)
                 {
-                    import std.array : empty;
+                    import ripstd.array : empty;
                     static if (idx < nT)
                         alias GetItem = Alias!(Types[idx]);
                     else static if (allNames[idx - nT].empty)
@@ -1005,7 +1005,7 @@ if (distinctFieldNames!(Specs))
                         alias GetItem = Alias!(allNames[idx - nT]);
                 }
 
-                import std.range : roundRobin, iota;
+                import ripstd.range : roundRobin, iota;
                 alias NewTupleT = Tuple!(staticMap!(GetItem, aliasSeqOf!(
                         roundRobin(iota(nT), iota(nT, 2*nT)))));
                 return *(() @trusted => cast(NewTupleT*)&this)();
@@ -1043,8 +1043,8 @@ if (distinctFieldNames!(Specs))
             static assert(!__traits(compiles, t2.rename!("a","b","c","d")));
 
             // use it in a range pipeline
-            import std.range : iota, zip;
-            import std.algorithm.iteration : map, sum;
+            import ripstd.range : iota, zip;
+            import ripstd.algorithm.iteration : map, sum;
             auto res = zip(iota(1, 4), iota(10, 13))
                 .map!(t => t.rename!("a", "b"))
                 .map!(t => t.a * t.b)
@@ -1070,14 +1070,14 @@ if (distinctFieldNames!(Specs))
         if (is(typeof(translate) : V[K], V, K) && isSomeString!V &&
                 (isSomeString!K || is(K : size_t)))
         {
-            import std.meta : aliasSeqOf;
-            import std.range : ElementType;
+            import ripstd.meta : aliasSeqOf;
+            import ripstd.range : ElementType;
             static if (isSomeString!(ElementType!(typeof(translate.keys))))
             {
                 {
-                    import std.conv : to;
-                    import std.algorithm.iteration : filter;
-                    import std.algorithm.searching : canFind;
+                    import ripstd.conv : to;
+                    import ripstd.algorithm.iteration : filter;
+                    import ripstd.algorithm.searching : canFind;
                     enum notFound = translate.keys
                         .filter!(k => fieldNames.canFind(k) == -1);
                     static assert(notFound.empty, "Cannot find members "
@@ -1086,7 +1086,7 @@ if (distinctFieldNames!(Specs))
                 }
                 return this.rename!(aliasSeqOf!(
                     {
-                        import std.array : empty;
+                        import ripstd.array : empty;
                         auto names = [fieldNames];
                         foreach (ref n; names)
                             if (!n.empty)
@@ -1098,8 +1098,8 @@ if (distinctFieldNames!(Specs))
             else
             {
                 {
-                    import std.algorithm.iteration : filter;
-                    import std.conv : to;
+                    import ripstd.algorithm.iteration : filter;
+                    import ripstd.conv : to;
                     enum invalid = translate.keys.
                         filter!(k => k < 0 || k >= this.length);
                     static assert(invalid.empty, "Indices " ~ invalid.to!string
@@ -1263,13 +1263,13 @@ if (distinctFieldNames!(Specs))
          */
         string toString()() const
         {
-            import std.array : appender;
+            import ripstd.array : appender;
             auto app = appender!string();
             this.toString((const(char)[] chunk) => app ~= chunk);
             return app.data;
         }
 
-        import std.format.spec : FormatSpec;
+        import ripstd.format.spec : FormatSpec;
 
         /**
          * Formats `Tuple` with either `%s`, `%(inner%)` or `%(inner%|sep%)`.
@@ -1296,9 +1296,9 @@ if (distinctFieldNames!(Specs))
         /// ditto
         void toString(DG, Char)(scope DG sink, scope const ref FormatSpec!Char fmt) const
         {
-            import std.format : format, FormatException;
-            import std.format.write : formattedWrite;
-            import std.range : only;
+            import ripstd.format : format, FormatException;
+            import ripstd.format.write : formattedWrite;
+            import ripstd.range : only;
             if (fmt.nested)
             {
                 if (fmt.sep)
@@ -1362,7 +1362,7 @@ if (distinctFieldNames!(Specs))
         static if (Types.length == 0)
         @safe unittest
         {
-            import std.format : format;
+            import ripstd.format : format;
 
             Tuple!(int, double)[3] tupList = [ tuple(1, 1.0), tuple(2, 4.0), tuple(3, 9.0) ];
 
@@ -1384,8 +1384,8 @@ if (distinctFieldNames!(Specs))
         static if (Types.length == 0)
         @safe unittest
         {
-            import std.exception : assertThrown;
-            import std.format : format, FormatException;
+            import ripstd.exception : assertThrown;
+            import ripstd.format : format, FormatException;
 
             // Error: %( %) missing.
             assertThrown!FormatException(
@@ -1447,8 +1447,8 @@ if (distinctFieldNames!(Specs))
 /// Use tuples as ranges
 @safe unittest
 {
-    import std.algorithm.iteration : sum;
-    import std.range : only;
+    import ripstd.algorithm.iteration : sum;
+    import ripstd.range : only;
     auto t = tuple(1, 2);
     assert(t.expand.only.sum == 3);
 }
@@ -1463,7 +1463,7 @@ if (distinctFieldNames!(Specs))
 /// Concatenate tuples
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     auto t = tuple(1, "2") ~ tuple(ushort(42), true);
     static assert(is(t.Types == AliasSeq!(int, string, ushort, bool)));
     assert(t[1] == "2");
@@ -1643,7 +1643,7 @@ if (distinctFieldNames!(Specs))
 auto reverse(T)(T t)
 if (isTuple!T)
 {
-    import std.meta : Reverse;
+    import ripstd.meta : Reverse;
     // @@@BUG@@@ Cannot be an internal function due to forward reference issues.
 
     // @@@BUG@@@ 9929 Need 'this' when calling template with expanded tuple
@@ -1698,7 +1698,7 @@ private template ReverseTupleSpecs(T...)
 
 @safe unittest
 {
-    import std.conv;
+    import ripstd.conv;
     {
         Tuple!(int, "a", int, "b") nosh;
         static assert(nosh.length == 2);
@@ -1996,7 +1996,7 @@ private template ReverseTupleSpecs(T...)
 }
 @safe unittest
 {
-    import std.exception : assertCTFEable;
+    import ripstd.exception : assertCTFEable;
 
     // https://issues.dlang.org/show_bug.cgi?id=10218
     assertCTFEable!(
@@ -2095,8 +2095,8 @@ private template ReverseTupleSpecs(T...)
 
 @safe unittest
 {
-    import std.format : format, FormatException;
-    import std.exception : assertThrown;
+    import ripstd.format : format, FormatException;
+    import ripstd.exception : assertThrown;
 
     //enum tupStr = tuple(1, 1.0).toString; // toString is *impure*.
     //static assert(tupStr == `Tuple!(int, double)(1, 1)`);
@@ -2317,7 +2317,7 @@ if (is(T == class) || is(T == interface) || isDynamicArray!T || isAssociativeArr
     {
         static if (isDynamicArray!T)
         {
-            import std.range.primitives : ElementEncodingType;
+            import ripstd.range.primitives : ElementEncodingType;
             alias Rebindable = const(ElementEncodingType!T)[];
         }
         else
@@ -2868,7 +2868,7 @@ struct Nullable(T)
     // https://issues.dlang.org/show_bug.cgi?id=17482
     @system unittest
     {
-        import std.variant : Variant;
+        import ripstd.variant : Variant;
         Nullable!Variant a = Variant(12);
         assert(a == 12);
         Nullable!Variant e;
@@ -2899,7 +2899,7 @@ struct Nullable(T)
      */
     string toString()
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto app = appender!string();
         auto spec = singleSpec("%s");
         toString(app, spec);
@@ -2909,7 +2909,7 @@ struct Nullable(T)
     /// ditto
     string toString() const
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto app = appender!string();
         auto spec = singleSpec("%s");
         toString(app, spec);
@@ -2920,7 +2920,7 @@ struct Nullable(T)
     void toString(W)(ref W writer, scope const ref FormatSpec!char fmt)
     if (isOutputRange!(W, char))
     {
-        import std.range.primitives : put;
+        import ripstd.range.primitives : put;
         if (isNull)
             put(writer, "Nullable.null");
         else
@@ -2931,7 +2931,7 @@ struct Nullable(T)
     void toString(W)(ref W writer, scope const ref FormatSpec!char fmt) const
     if (isOutputRange!(W, char))
     {
-        import std.range.primitives : put;
+        import ripstd.range.primitives : put;
         if (isNull)
             put(writer, "Nullable.null");
         else
@@ -2962,8 +2962,8 @@ struct Nullable(T)
     // https://issues.dlang.org/show_bug.cgi?id=14940
     @safe unittest
     {
-        import std.array : appender;
-        import std.format.write : formattedWrite;
+        import ripstd.array : appender;
+        import ripstd.format.write : formattedWrite;
 
         auto app = appender!string();
         Nullable!int a = 1;
@@ -2974,7 +2974,7 @@ struct Nullable(T)
     // https://issues.dlang.org/show_bug.cgi?id=19799
     @safe unittest
     {
-        import std.format : format;
+        import ripstd.format : format;
 
         const Nullable!string a = const(Nullable!string)();
 
@@ -3012,7 +3012,7 @@ struct Nullable(T)
      */
     void opAssign()(T value)
     {
-        import std.algorithm.mutation : moveEmplace, move;
+        import ripstd.algorithm.mutation : moveEmplace, move;
 
         // the lifetime of the value in copy shall be managed by
         // this Nullable, so we must avoid calling its destructor.
@@ -3141,7 +3141,7 @@ auto nullable(T)(T t)
 ///
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     auto a = 42.nullable;
     assert(!a.isNull);
@@ -3172,7 +3172,7 @@ auto nullable(T)(T t)
 }
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     static struct S { int x; }
     Nullable!S s;
@@ -3320,7 +3320,7 @@ auto nullable(T)(T t)
 // https://issues.dlang.org/show_bug.cgi?id=10268
 @system unittest
 {
-    import std.json;
+    import ripstd.json;
     JSONValue value = null;
     auto na = Nullable!JSONValue(value);
 
@@ -3372,15 +3372,15 @@ auto nullable(T)(T t)
 // https://issues.dlang.org/show_bug.cgi?id=10357
 @safe unittest
 {
-    import std.datetime;
+    import ripstd.datetime;
     Nullable!SysTime time = SysTime(0);
 }
 
 // https://issues.dlang.org/show_bug.cgi?id=10915
 @system unittest
 {
-    import std.conv : to;
-    import std.array;
+    import ripstd.conv : to;
+    import ripstd.array;
 
     Appender!string buffer;
 
@@ -3461,7 +3461,7 @@ auto nullable(T)(T t)
 // https://issues.dlang.org/show_bug.cgi?id=19037
 @safe unittest
 {
-    import std.datetime : SysTime;
+    import ripstd.datetime : SysTime;
 
     struct Test
     {
@@ -3573,7 +3573,7 @@ auto nullable(T)(T t)
 // https://issues.dlang.org/show_bug.cgi?id=21704
 @safe unittest
 {
-    import std.array : staticArray;
+    import ripstd.array : staticArray;
 
     bool destroyed;
 
@@ -3635,8 +3635,8 @@ Params:
 
     template toString()
     {
-        import std.format.spec : FormatSpec;
-        import std.format.write : formatValue;
+        import ripstd.format.spec : FormatSpec;
+        import ripstd.format.write : formatValue;
         // Needs to be a template because of https://issues.dlang.org/show_bug.cgi?id=13737.
         void toString()(scope void delegate(const(char)[]) sink, scope const ref FormatSpec!char fmt)
         {
@@ -3745,7 +3745,7 @@ Params:
  */
     void opAssign()(T value)
     {
-        import std.algorithm.mutation : swap;
+        import ripstd.algorithm.mutation : swap;
 
         swap(value, _value);
     }
@@ -3791,7 +3791,7 @@ Returns:
 ///
 @system unittest
 {
-    import std.exception : assertThrown, assertNotThrown;
+    import ripstd.exception : assertThrown, assertNotThrown;
 
     Nullable!(int, -1) ni;
     //`get` is implicitly called. Will throw
@@ -3850,7 +3850,7 @@ if (is (typeof(nullValue) == T))
 ///
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     Nullable!(int, int.min) a;
     assert(a.isNull);
@@ -3962,7 +3962,7 @@ if (is (typeof(nullValue) == T))
 }
 @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     // https://issues.dlang.org/show_bug.cgi?id=10915
     Nullable!(int, 1) ni = 1;
@@ -4017,7 +4017,7 @@ See also:
  */
 template apply(alias fun)
 {
-    import std.functional : unaryFun;
+    import ripstd.functional : unaryFun;
 
     auto apply(T)(auto ref T t)
     if (isInstanceOf!(Nullable, T) && is(typeof(unaryFun!fun(T.init.get))))
@@ -4145,8 +4145,8 @@ Params:
 
     template toString()
     {
-        import std.format.spec : FormatSpec;
-        import std.format.write : formatValue;
+        import ripstd.format.spec : FormatSpec;
+        import ripstd.format.write : formatValue;
         // Needs to be a template because of https://issues.dlang.org/show_bug.cgi?id=13737.
         void toString()(scope void delegate(const(char)[]) sink, scope const ref FormatSpec!char fmt)
         {
@@ -4243,7 +4243,7 @@ Params:
     ///
     @system unittest
     {
-        import std.exception : assertThrown, assertNotThrown;
+        import ripstd.exception : assertThrown, assertNotThrown;
 
         NullableRef!int nr;
         assert(nr.isNull);
@@ -4269,7 +4269,7 @@ This function is also called for the implicit conversion to `T`.
     ///
     @system unittest
     {
-        import std.exception : assertThrown, assertNotThrown;
+        import ripstd.exception : assertThrown, assertNotThrown;
 
         NullableRef!int nr;
         //`get` is implicitly called. Will throw
@@ -4296,7 +4296,7 @@ auto nullableRef(T)(T* t)
 ///
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     int x = 5, y = 7;
     auto a = nullableRef(&x);
@@ -4398,7 +4398,7 @@ auto nullableRef(T)(T* t)
 // https://issues.dlang.org/show_bug.cgi?id=10915
 @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     NullableRef!int nri;
     assert(nri.to!string() == "Nullable.null");
@@ -4451,7 +4451,7 @@ alias BlackHole(Base) = AutoImplement!(Base, generateEmptyFunction, isAbstractFu
 ///
 @system unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     static abstract class C
     {
@@ -4474,7 +4474,7 @@ alias BlackHole(Base) = AutoImplement!(Base, generateEmptyFunction, isAbstractFu
 
 @system unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     // return default
     {
@@ -4542,7 +4542,7 @@ alias WhiteHole(Base) = AutoImplement!(Base, generateAssertTrap, isAbstractFunct
 ///
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     static class C
     {
@@ -4579,7 +4579,7 @@ class NotImplementedError : Error
 
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     // nothrow
     {
         interface I_1
@@ -4637,11 +4637,11 @@ Params:
 // Prints log messages for each call to overridden functions.
 string generateLogger(C, alias fun)() @property
 {
-    import std.traits;
+    import ripstd.traits;
     enum qname = C.stringof ~ "." ~ __traits(identifier, fun);
     string stmt;
 
-    stmt ~= q{ struct Importer { import std.stdio; } };
+    stmt ~= q{ struct Importer { import ripstd.stdio; } };
     stmt ~= `Importer.writeln("Log: ` ~ qname ~ `(", args, ")");`;
     static if (!__traits(isAbstractFunction, fun))
     {
@@ -4686,7 +4686,7 @@ BUGS:
 $(UL
  $(LI Variadic arguments to constructors are not forwarded to super.)
  $(LI Deep interface inheritance causes compile error with messages like
-      "Error: function std.typecons._AutoImplement!(Foo)._AutoImplement.bar
+      "Error: function ripstd.typecons._AutoImplement!(Foo)._AutoImplement.bar
       does not override any function".  [$(BUGZILLA 2525)] )
  $(LI The `parent` keyword is actually a delegate to the super class'
       corresponding member function.  [$(BUGZILLA 2540)] )
@@ -4739,7 +4739,7 @@ if (is(Interface == interface) && is(BaseClass == class))
 
     template fallback(T, alias func)
     {
-        import std.format : format;
+        import ripstd.format : format;
         // for all implemented methods:
         // - try default first
         // - only on a failure run & return fallback
@@ -4788,7 +4788,7 @@ private static:
     {
         template Impl(names...)
         {
-            import std.meta : Filter;
+            import ripstd.meta : Filter;
             static if (names.length > 0)
             {
                 alias methods = Filter!(pred, MemberFunctionsTuple!(C, names[0]));
@@ -4855,7 +4855,7 @@ private static:
     // overloaded function with the name.
     template INTERNAL_FUNCINFO_ID(string name, size_t i)
     {
-        import std.format : format;
+        import ripstd.format : format;
 
         enum string INTERNAL_FUNCINFO_ID = format("F_%s_%s", name, i);
     }
@@ -5116,11 +5116,11 @@ private static:
         }
     }
 
-    import std.meta : templateNot;
+    import ripstd.meta : templateNot;
     alias Implementation = AutoImplement!(Issue17177, how, templateNot!isFinalFunction);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
     // https://issues.dlang.org/show_bug.cgi?id=10647
     // Add prefix "issue10647_" as a workaround for
@@ -5217,8 +5217,8 @@ private static:
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
     // Internal stuffs
     //:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::://
-    import std.format;
-    alias format = std.format.format;
+    import ripstd.format;
+    alias format = ripstd.format.format;
 
     enum CONSTRUCTOR_NAME = "__ctor";
 
@@ -5307,7 +5307,7 @@ private static:
     public string generateFunction(
             string myFuncInfo, string name, func... )() @property
     {
-        import std.format : format;
+        import ripstd.format : format;
 
         enum isCtor = (name == CONSTRUCTOR_NAME);
 
@@ -5528,7 +5528,7 @@ template generateAssertTrap(C, func...)
 ///
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     alias WhiteHole(Base) = AutoImplement!(Base, generateAssertTrap);
 
@@ -5562,7 +5562,7 @@ if (is(T == class) || is(T == interface))
     {
         static if (is(Unqual!S : Unqual!T))
         {
-            import std.traits : QualifierOf;
+            import ripstd.traits : QualifierOf;
             alias Qual = QualifierOf!S; // SharedOf or MutableOf
             alias TmpT = Qual!(Unqual!T);
             inout(TmpT) tmp = source;   // bypass opCast by implicit conversion
@@ -5604,7 +5604,7 @@ wraps the `src` object, then returns it.
 template wrap(Targets...)
 if (Targets.length >= 1 && allSatisfy!(isMutable, Targets))
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
 
     // strict upcast
     auto wrap(Source)(inout Source src) @trusted pure nothrow
@@ -5638,7 +5638,7 @@ if (Targets.length >= 1 && allSatisfy!(isMutable, Targets))
         template OnlyVirtual(members...)
         {
             enum notFinal(alias T) = !__traits(isFinalFunction, T);
-            import std.meta : Filter;
+            import ripstd.meta : Filter;
             alias OnlyVirtual = Filter!(notFinal, members);
         }
 
@@ -5727,7 +5727,7 @@ if (Targets.length >= 1 && allSatisfy!(isMutable, Targets))
                 return dynamicCast!(inout Object)(_wrap_source);
             }
 
-            import std.conv : to;
+            import ripstd.conv : to;
             import core.lifetime : forward;
             template generateFun(size_t i)
             {
@@ -5786,7 +5786,7 @@ if (Targets.length >= 1 && allSatisfy!(isMutable, Targets))
 template wrap(Targets...)
 if (Targets.length >= 1 && !allSatisfy!(isMutable, Targets))
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
 
     alias wrap = .wrap!(staticMap!(Unqual, Targets));
 }
@@ -5897,7 +5897,7 @@ if (!isMutable!Target)
 ///
 @system unittest
 {
-    import std.traits : FunctionAttribute, functionAttributes;
+    import ripstd.traits : FunctionAttribute, functionAttributes;
     interface A { int run(); }
     interface B { int stop(); @property int status(); }
     class X
@@ -5973,7 +5973,7 @@ private interface Structural
 // https://issues.dlang.org/show_bug.cgi?id=10377
 @system unittest
 {
-    import std.range, std.algorithm;
+    import ripstd.range, ripstd.algorithm;
 
     interface MyInputRange(T)
     {
@@ -6052,7 +6052,7 @@ private interface Structural
 // Make a tuple of non-static function symbols
 package template GetOverloadedMethods(T)
 {
-    import std.meta : Filter;
+    import ripstd.meta : Filter;
 
     alias allMembers = __traits(allMembers, T);
     template follows(size_t i = 0)
@@ -6317,7 +6317,7 @@ enum RefCountedAutoInitialize
 @system unittest
 {
     import core.exception : AssertError;
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     struct Foo
     {
@@ -6421,7 +6421,7 @@ if (!is(T == class) && !(is(T == interface)))
 
         private void move(ref T source) nothrow pure
         {
-            import std.algorithm.mutation : moveEmplace;
+            import ripstd.algorithm.mutation : moveEmplace;
 
             allocateStore();
             moveEmplace(source, _store._payload);
@@ -6433,13 +6433,13 @@ if (!is(T == class) && !(is(T == interface)))
         {
             static if (enableGCScan)
             {
-                import std.internal.memory : enforceCalloc;
+                import ripstd.internal.memory : enforceCalloc;
                 _store = cast(Impl*) enforceCalloc(1, Impl.sizeof);
                 pureGcAddRange(&_store._payload, T.sizeof);
             }
             else
             {
-                import std.internal.memory : enforceMalloc;
+                import ripstd.internal.memory : enforceMalloc;
                 _store = cast(Impl*) enforceMalloc(Impl.sizeof);
             }
         }
@@ -6556,7 +6556,7 @@ Assignment operators
  */
     void opAssign(typeof(this) rhs)
     {
-        import std.algorithm.mutation : swap;
+        import ripstd.algorithm.mutation : swap;
 
         swap(_refCounted._store, rhs._refCounted._store);
     }
@@ -6564,7 +6564,7 @@ Assignment operators
 /// Ditto
     void opAssign(T rhs)
     {
-        import std.algorithm.mutation : move;
+        import ripstd.algorithm.mutation : move;
 
         static if (autoInit == RefCountedAutoInitialize.yes)
         {
@@ -6634,7 +6634,7 @@ assert(refCountedStore.isInitialized)).
     {
         string toString(this This)()
         {
-            import std.conv : to;
+            import ripstd.conv : to;
             return to!string(refCountedPayload);
         }
     }
@@ -6697,7 +6697,7 @@ pure @system unittest
 
 @betterC pure @system nothrow @nogc unittest
 {
-    import std.algorithm.mutation : swap;
+    import ripstd.algorithm.mutation : swap;
 
     RefCounted!int p1, p2;
     swap(p1, p2);
@@ -6770,7 +6770,7 @@ pure @system unittest
 // https://issues.dlang.org/show_bug.cgi?id=20502
 @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     // Check that string conversion is transparent for refcounted
     // structs that do not have either toString or alias this.
     struct A { Object a; }
@@ -6821,7 +6821,7 @@ RefCounted!(T, RefCountedAutoInitialize.no) refCounted(T)(T val)
     static assert(!__traits(compiles, {auto file2 = file;}));
 
     // make the file refcounted to share ownership
-    import std.algorithm.mutation : move;
+    import ripstd.algorithm.mutation : move;
     auto rcFile = refCounted(move(file));
     assert(rcFile.name == "name");
     assert(file.name == null);
@@ -6988,7 +6988,7 @@ mixin template Proxy(alias a)
 
     static if (!is(typeof(this) == class))
     {
-        import std.traits;
+        import ripstd.traits;
         static if (isAssignable!ValueType)
         {
             auto ref opAssign(this X)(auto ref typeof(this) v)
@@ -7055,7 +7055,7 @@ mixin template Proxy(alias a)
 
     }
 
-    import std.traits : isArray;
+    import ripstd.traits : isArray;
 
     static if (isArray!ValueType)
     {
@@ -7142,7 +7142,7 @@ mixin template Proxy(alias a)
  */
 @safe unittest
 {
-    import std.math.traits : isInfinity;
+    import ripstd.math.traits : isInfinity;
 
     float f = 1.0;
     assert(!f.isInfinity);
@@ -7649,7 +7649,7 @@ struct Typedef(T, T init = T.init, string cookie=null)
      */
     string toString(this T)()
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto app = appender!string();
         auto spec = singleSpec("%s");
         toString(app, spec);
@@ -7666,7 +7666,7 @@ struct Typedef(T, T init = T.init, string cookie=null)
     ///
     @safe unittest
     {
-        import std.conv : to;
+        import ripstd.conv : to;
 
         int i = 123;
         auto td = Typedef!int(i);
@@ -7748,7 +7748,7 @@ template TypedefType(T)
 ///
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     alias MyInt = Typedef!int;
     static assert(is(TypedefType!MyInt == int));
@@ -7860,8 +7860,8 @@ template TypedefType(T)
 @safe unittest
 {
     // https://issues.dlang.org/show_bug.cgi?id=8655
-    import std.typecons;
-    import std.bitmanip;
+    import ripstd.typecons;
+    import ripstd.bitmanip;
     static import core.stdc.config;
 
     alias c_ulong = Typedef!(core.stdc.config.c_ulong);
@@ -7878,7 +7878,7 @@ template TypedefType(T)
 // https://issues.dlang.org/show_bug.cgi?id=12596
 @safe unittest
 {
-    import std.typecons;
+    import ripstd.typecons;
     alias TD = Typedef!int;
     TD x = TD(1);
     TD y = TD(x);
@@ -7887,7 +7887,7 @@ template TypedefType(T)
 
 @safe unittest // about toHash
 {
-    import std.typecons;
+    import ripstd.typecons;
     {
         alias TD = Typedef!int;
         int[TD] td;
@@ -7957,8 +7957,8 @@ template TypedefType(T)
 
 @system unittest // toString
 {
-    import std.meta : AliasSeq;
-    import std.conv : to;
+    import ripstd.meta : AliasSeq;
+    import ripstd.conv : to;
 
     struct TestS {}
     class TestC {}
@@ -8115,7 +8115,7 @@ if (is(T == class))
     // Restrictions
     version (Bug)
     {
-        import std.algorithm.mutation : move;
+        import ripstd.algorithm.mutation : move;
         auto invalid = a1.move; // illegal, scoped objects can't be moved
     }
     static assert(!is(typeof({
@@ -8842,7 +8842,7 @@ public:
 // BitFlags can be variadically initialized
 @safe @nogc pure nothrow unittest
 {
-    import std.traits : EnumMembers;
+    import ripstd.traits : EnumMembers;
 
     enum Enum
     {
@@ -9012,7 +9012,7 @@ Like $(LREF ReplaceType), but does not perform replacement in types for which
 */
 template ReplaceTypeUnless(alias pred, From, To, T...)
 {
-    import std.meta;
+    import ripstd.meta;
 
     static if (T.length == 1)
     {
@@ -9081,7 +9081,7 @@ template ReplaceTypeUnless(alias pred, From, To, T...)
 ///
 @safe unittest
 {
-    import std.traits : isArray;
+    import ripstd.traits : isArray;
 
     static assert(
         is(ReplaceTypeUnless!(isArray, int, string, int*) == string*) &&

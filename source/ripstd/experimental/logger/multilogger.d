@@ -4,8 +4,8 @@ Source: $(PHOBOSSRC std/experimental/logger/multilogger.d)
 */
 module ripstd.experimental.logger.multilogger;
 
-import std.experimental.logger.core;
-import std.experimental.logger.filelogger;
+import ripstd.experimental.logger.core;
+import ripstd.experimental.logger.filelogger;
 
 /** This Element is stored inside the `MultiLogger` and associates a
 `Logger` to a `string`.
@@ -72,8 +72,8 @@ class MultiLogger : Logger
     */
     Logger removeLogger(in char[] toRemove) @safe
     {
-        import std.algorithm.mutation : copy;
-        import std.range.primitives : back, popBack;
+        import ripstd.algorithm.mutation : copy;
+        import ripstd.range.primitives : back, popBack;
         for (size_t i = 0; i < this.logger.length; ++i)
         {
             if (this.logger[i].name == toRemove)
@@ -108,8 +108,8 @@ class MultiLogger : Logger
 
 @safe unittest
 {
-    import std.exception : assertThrown;
-    import std.experimental.logger.nulllogger;
+    import ripstd.exception : assertThrown;
+    import ripstd.experimental.logger.nulllogger;
     auto a = new MultiLogger;
     auto n0 = new NullLogger();
     auto n1 = new NullLogger();
@@ -145,14 +145,14 @@ class MultiLogger : Logger
 // Issue #16
 @system unittest
 {
-    import std.file : deleteme;
-    import std.stdio : File;
-    import std.string : indexOf;
+    import ripstd.file : deleteme;
+    import ripstd.stdio : File;
+    import ripstd.string : indexOf;
     string logName = deleteme ~ __FUNCTION__ ~ ".log";
     auto logFileOutput = File(logName, "w");
     scope(exit)
     {
-        import std.file : remove;
+        import ripstd.file : remove;
         logFileOutput.close();
         remove(logName);
     }

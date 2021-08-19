@@ -101,14 +101,14 @@ version (Windows)
     import core.stdc.stdio;
     import core.sys.windows.winbase;
     import core.sys.windows.winnt;
-    import std.utf;
-    import std.windows.syserror;
+    import ripstd.utf;
+    import ripstd.windows.syserror;
 }
 
-import std.internal.cstring;
-import std.range.primitives;
-import std.stdio;
-import std.traits : isSomeChar;
+import ripstd.internal.cstring;
+import ripstd.range.primitives;
+import ripstd.stdio;
+import ripstd.traits : isSomeChar;
 
 version (OSX)
     version = Darwin;
@@ -213,7 +213,7 @@ static:
     */
     string opIndex(scope const(char)[] name) @safe
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         return get(name, null).enforce("Environment variable not found: "~name);
     }
 
@@ -280,7 +280,7 @@ static:
     {
         version (Posix)
         {
-            import std.exception : enforce, errnoEnforce;
+            import ripstd.exception : enforce, errnoEnforce;
             if (value is null)
             {
                 remove(name);
@@ -300,7 +300,7 @@ static:
         }
         else version (Windows)
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
             enforce(
                 SetEnvironmentVariableW(name.tempCStringW(), value.tempCStringW()),
                 sysErrorString(GetLastError())
@@ -384,14 +384,14 @@ static:
     */
     string[string] toAA() @trusted
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         string[string] aa;
         version (Posix)
         {
             auto environ = getEnvironPtr;
             for (int i=0; environ[i] != null; ++i)
             {
-                import std.string : indexOf;
+                import ripstd.string : indexOf;
 
                 immutable varDef = to!string(environ[i]);
                 immutable eq = indexOf(varDef, '=');
@@ -410,8 +410,8 @@ static:
         }
         else version (Windows)
         {
-            import std.exception : enforce;
-            import std.uni : toUpper;
+            import ripstd.exception : enforce;
+            import ripstd.uni : toUpper;
             auto envBlock = GetEnvironmentStringsW();
             enforce(envBlock, "Failed to retrieve environment variables.");
             scope(exit) FreeEnvironmentStringsW(envBlock);
@@ -459,7 +459,7 @@ private:
             // then we try to read it in to a buffer of that length. Lots
             // of error conditions because the windows API is nasty.
 
-            import std.conv : to;
+            import ripstd.conv : to;
             const namezTmp = name.tempCStringW();
             WCHAR[] buf;
 
@@ -515,7 +515,7 @@ private:
 
     string cachedToString(C)(scope const(C)[] v) @safe
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         // Cache the last call's result.
         static string lastResult;
@@ -527,7 +527,7 @@ private:
         }
         else if (!v.equal(lastResult))
         {
-            import std.conv : to;
+            import ripstd.conv : to;
             lastResult = v.to!string;
         }
         return lastResult;
@@ -536,7 +536,7 @@ private:
 
 @safe unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     // New variable
     environment["std_process"] = "foo";
     assert(environment["std_process"] == "foo");
@@ -593,7 +593,7 @@ private:
 
     // Complete the roundtrip
     auto aa2 = environment.toAA();
-    import std.conv : text;
+    import ripstd.conv : text;
     assert(aa == aa2, text(aa, " != ", aa2));
     assert("std_process" in environment);
 
@@ -667,13 +667,13 @@ private:
 }
 
 
-package(std) string uniqueTempPath() @safe
+package(ripstd) string uniqueTempPath() @safe
 {
-    import std.file : tempDir;
-    import std.path : buildPath;
-    import std.uuid : randomUUID;
+    import ripstd.file : tempDir;
+    import ripstd.path : buildPath;
+    import ripstd.uuid : randomUUID;
     // Path should contain spaces to test escaping whitespace
-    return buildPath(tempDir(), "std.process temporary file " ~
+    return buildPath(tempDir(), "ripstd.process temporary file " ~
         randomUUID().toString());
 }
 
@@ -752,8 +752,8 @@ streams of its parent.
 // file named errors.log.
 auto logFile = File("errors.log", "w");
 auto pid = spawnProcess(["dmd", "myprog.d"],
-                        std.stdio.stdin,
-                        std.stdio.stdout,
+                        ripstd.stdio.stdin,
+                        ripstd.stdio.stdout,
                         logFile);
 if (wait(pid) != 0)
     writeln("Compilation failed. See errors.log for details.");
@@ -803,9 +803,9 @@ $(REF StdioException, std,stdio) on failure to pass one of the streams
 $(REF RangeError, core,exception) if `args` is empty.
 */
 Pid spawnProcess(scope const(char[])[] args,
-                 File stdin = std.stdio.stdin,
-                 File stdout = std.stdio.stdout,
-                 File stderr = std.stdio.stderr,
+                 File stdin = ripstd.stdio.stdin,
+                 File stdout = ripstd.stdio.stdout,
+                 File stderr = ripstd.stdio.stderr,
                  const string[string] env = null,
                  Config config = Config.none,
                  scope const char[] workDir = null)
@@ -833,9 +833,9 @@ Pid spawnProcess(scope const(char[])[] args,
     @trusted // TODO: Should be @safe
 {
     return spawnProcess(args,
-                        std.stdio.stdin,
-                        std.stdio.stdout,
-                        std.stdio.stderr,
+                        ripstd.stdio.stdin,
+                        ripstd.stdio.stdout,
+                        ripstd.stdio.stderr,
                         env,
                         config,
                         workDir);
@@ -843,9 +843,9 @@ Pid spawnProcess(scope const(char[])[] args,
 
 /// ditto
 Pid spawnProcess(scope const(char)[] program,
-                 File stdin = std.stdio.stdin,
-                 File stdout = std.stdio.stdout,
-                 File stderr = std.stdio.stderr,
+                 File stdin = ripstd.stdio.stdin,
+                 File stdout = ripstd.stdio.stdout,
+                 File stderr = ripstd.stdio.stderr,
                  const string[string] env = null,
                  Config config = Config.none,
                  scope const(char)[] workDir = null)
@@ -893,10 +893,10 @@ private Pid spawnProcessPosix(scope const(char[])[] args,
     @trusted // TODO: Should be @safe
 {
     import core.exception : RangeError;
-    import std.algorithm.searching : any;
-    import std.conv : text;
-    import std.path : isDirSeparator;
-    import std.string : toStringz;
+    import ripstd.algorithm.searching : any;
+    import ripstd.conv : text;
+    import ripstd.path : isDirSeparator;
+    import ripstd.string : toStringz;
 
     if (args.empty) throw new RangeError();
     const(char)[] name = args[0];
@@ -1207,13 +1207,13 @@ private Pid spawnProcessPosix(scope const(char[])[] args,
 
         // Parent process:  Close streams and return.
         if (!(config.flags & Config.Flags.retainStdin ) && stdinFD  > STDERR_FILENO
-                                            && stdinFD  != getFD(std.stdio.stdin ))
+                                            && stdinFD  != getFD(ripstd.stdio.stdin ))
             stdin.close();
         if (!(config.flags & Config.Flags.retainStdout) && stdoutFD > STDERR_FILENO
-                                            && stdoutFD != getFD(std.stdio.stdout))
+                                            && stdoutFD != getFD(ripstd.stdio.stdout))
             stdout.close();
         if (!(config.flags & Config.Flags.retainStderr) && stderrFD > STDERR_FILENO
-                                            && stderrFD != getFD(std.stdio.stderr))
+                                            && stderrFD != getFD(ripstd.stdio.stderr))
             stderr.close();
         return new Pid(id, owned);
     }
@@ -1222,8 +1222,8 @@ private Pid spawnProcessPosix(scope const(char[])[] args,
 version (Posix)
 @system unittest
 {
-    import std.concurrency : ownerTid, receiveTimeout, send, spawn;
-    import std.datetime : seconds;
+    import ripstd.concurrency : ownerTid, receiveTimeout, send, spawn;
+    import ripstd.datetime : seconds;
 
     sigset_t ss;
     sigemptyset(&ss);
@@ -1247,9 +1247,9 @@ version (Posix)
     };
 
     auto pid = spawnProcess(["sleep", "10000"],
-                            std.stdio.stdin,
-                            std.stdio.stdout,
-                            std.stdio.stderr,
+                            ripstd.stdio.stdin,
+                            ripstd.stdio.stdout,
+                            ripstd.stdio.stderr,
                             null,
                             config,
                             null);
@@ -1294,7 +1294,7 @@ private Pid spawnProcessWin(scope const(char)[] commandLine,
     @trusted
 {
     import core.exception : RangeError;
-    import std.conv : text;
+    import ripstd.conv : text;
 
     if (commandLine.empty) throw new RangeError("Command line is empty");
 
@@ -1361,13 +1361,13 @@ private Pid spawnProcessWin(scope const(char)[] commandLine,
 
     // figure out if we should close any of the streams
     if (!(config.flags & Config.Flags.retainStdin ) && stdinFD  > STDERR_FILENO
-                                        && stdinFD  != getFD(std.stdio.stdin ))
+                                        && stdinFD  != getFD(ripstd.stdio.stdin ))
         stdin.close();
     if (!(config.flags & Config.Flags.retainStdout) && stdoutFD > STDERR_FILENO
-                                        && stdoutFD != getFD(std.stdio.stdout))
+                                        && stdoutFD != getFD(ripstd.stdio.stdout))
         stdout.close();
     if (!(config.flags & Config.Flags.retainStderr) && stderrFD > STDERR_FILENO
-                                        && stderrFD != getFD(std.stdio.stderr))
+                                        && stderrFD != getFD(ripstd.stdio.stderr))
         stderr.close();
 
     // close the thread handle in the process info structure
@@ -1453,8 +1453,8 @@ private LPVOID createEnv(const string[string] childEnv,
                          bool mergeWithParentEnv)
 {
     if (mergeWithParentEnv && childEnv.length == 0) return null;
-    import std.array : appender;
-    import std.uni : toUpper;
+    import ripstd.array : appender;
+    import ripstd.uni : toUpper;
     auto envz = appender!(wchar[])();
     void put(string var, string val)
     {
@@ -1494,12 +1494,12 @@ version (Windows) @system unittest
 // Searches the PATH variable for the given executable file,
 // (checking that it is in fact executable).
 version (Posix)
-package(std) string searchPathFor(scope const(char)[] executable)
+package(ripstd) string searchPathFor(scope const(char)[] executable)
     @safe
 {
-    import std.algorithm.iteration : splitter;
-    import std.conv : text;
-    import std.path : chainPath;
+    import ripstd.algorithm.iteration : splitter;
+    import ripstd.conv : text;
+    import ripstd.path : chainPath;
 
     string result;
 
@@ -1534,7 +1534,7 @@ if (isInputRange!R && isSomeChar!(ElementEncodingType!R))
 
 version (Posix) @safe unittest
 {
-    import std.algorithm;
+    import ripstd.algorithm;
     auto lsPath = searchPathFor("ls");
     assert(!lsPath.empty);
     assert(lsPath[0] == '/');
@@ -1582,18 +1582,18 @@ version (Posix) @system unittest
 {
     import core.sys.posix.fcntl : open, O_RDONLY;
     import core.sys.posix.unistd : close;
-    import std.algorithm.searching : canFind, findSplitBefore;
-    import std.array : split;
-    import std.conv : to;
-    static import std.file;
-    import std.functional : reverseArgs;
-    import std.path : buildPath;
+    import ripstd.algorithm.searching : canFind, findSplitBefore;
+    import ripstd.array : split;
+    import ripstd.conv : to;
+    static import ripstd.file;
+    import ripstd.functional : reverseArgs;
+    import ripstd.path : buildPath;
 
     auto directory = uniqueTempPath();
-    std.file.mkdir(directory);
-    scope(exit) std.file.rmdirRecurse(directory);
+    ripstd.file.mkdir(directory);
+    scope(exit) ripstd.file.rmdirRecurse(directory);
     auto path = buildPath(directory, "tmp");
-    std.file.write(path, null);
+    ripstd.file.write(path, null);
     auto fd = open(path.tempCString, O_RDONLY);
     scope(exit) close(fd);
 
@@ -1646,7 +1646,7 @@ version (Posix) @system unittest
             return;
         }
 
-        std.stdio.stderr.writeln(__FILE__, ':', __LINE__,
+        ripstd.stdio.stderr.writeln(__FILE__, ':', __LINE__,
                 ": Warning: Couldn't find any way to check open files");
     }
     testFDs();
@@ -1699,8 +1699,8 @@ version (Posix) @system unittest
 
 @system unittest // Stream redirection in spawnProcess().
 {
-    import std.path : buildPath;
-    import std.string;
+    import ripstd.path : buildPath;
+    import ripstd.string;
     version (Windows) TestScript prog =
        "set /p INPUT=
         echo %INPUT% output %~1
@@ -1715,7 +1715,7 @@ version (Posix) @system unittest
     // Pipes
     void testPipes(Config config)
     {
-        import std.file, std.uuid, core.thread, std.exception;
+        import ripstd.file, ripstd.uuid, core.thread, ripstd.exception;
         auto pipei = pipe();
         auto pipeo = pipe();
         auto pipee = pipe();
@@ -1736,11 +1736,11 @@ version (Posix) @system unittest
     // Files
     void testFiles(Config config)
     {
-        import std.ascii, std.file, std.uuid, core.thread, std.exception;
+        import ripstd.ascii, ripstd.file, ripstd.uuid, core.thread, ripstd.exception;
         auto pathi = buildPath(tempDir(), randomUUID().toString());
         auto patho = buildPath(tempDir(), randomUUID().toString());
         auto pathe = buildPath(tempDir(), randomUUID().toString());
-        std.file.write(pathi, "INPUT"~std.ascii.newline);
+        ripstd.file.write(pathi, "INPUT"~ripstd.ascii.newline);
         auto filei = File(pathi, "r");
         auto fileo = File(patho, "w");
         auto filee = File(pathe, "w");
@@ -1766,8 +1766,8 @@ version (Posix) @system unittest
 
 @system unittest // Error handling in spawnProcess()
 {
-    import std.algorithm.searching : canFind;
-    import std.exception : assertThrown, collectExceptionMsg;
+    import ripstd.algorithm.searching : canFind;
+    import ripstd.exception : assertThrown, collectExceptionMsg;
 
     static void testNotFoundException(string program)
     {
@@ -1780,10 +1780,10 @@ version (Posix) @system unittest
     // can't execute malformed file with executable permissions
     version (Posix)
     {
-        import std.path : buildPath;
-        import std.file : remove, write, setAttributes, tempDir;
+        import ripstd.path : buildPath;
+        import ripstd.file : remove, write, setAttributes, tempDir;
         import core.sys.posix.sys.stat : S_IRUSR, S_IWUSR, S_IXUSR, S_IRGRP, S_IXGRP, S_IROTH, S_IXOTH;
-        import std.conv : to;
+        import ripstd.conv : to;
         string deleteme = buildPath(tempDir(), "deleteme.std.process.unittest.pid") ~ to!string(thisProcessID);
         write(deleteme, "");
         scope(exit) remove(deleteme);
@@ -1795,8 +1795,8 @@ version (Posix) @system unittest
 
 @system unittest // Specifying a working directory.
 {
-    import std.path;
-    import std.file;
+    import ripstd.path;
+    import ripstd.file;
     TestScript prog = "echo foo>bar";
 
     auto directory = uniqueTempPath();
@@ -1810,15 +1810,15 @@ version (Posix) @system unittest
 
 @system unittest // Specifying a bad working directory.
 {
-    import std.exception : assertThrown;
-    import std.file;
+    import ripstd.exception : assertThrown;
+    import ripstd.file;
     TestScript prog = "echo";
 
     auto directory = uniqueTempPath();
     assertThrown!ProcessException(spawnProcess([prog.path], null, Config.none, directory));
     assertThrown!ProcessException(spawnProcess([prog.path], null, Config.detached, directory));
 
-    std.file.write(directory, "foo");
+    ripstd.file.write(directory, "foo");
     scope(exit) remove(directory);
     assertThrown!ProcessException(spawnProcess([prog.path], null, Config.none, directory));
     assertThrown!ProcessException(spawnProcess([prog.path], null, Config.detached, directory));
@@ -1851,8 +1851,8 @@ version (Posix) @system unittest
 // Reopening the standard streams (https://issues.dlang.org/show_bug.cgi?id=13258)
 @system unittest
 {
-    import std.string;
-    import std.file;
+    import ripstd.string;
+    import ripstd.file;
     void fun()
     {
         spawnShell("echo foo").wait();
@@ -1863,12 +1863,12 @@ version (Posix) @system unittest
     scope(exit) if (exists(tmpFile)) remove(tmpFile);
 
     {
-        auto oldOut = std.stdio.stdout;
-        scope(exit) std.stdio.stdout = oldOut;
+        auto oldOut = ripstd.stdio.stdout;
+        scope(exit) ripstd.stdio.stdout = oldOut;
 
-        std.stdio.stdout = File(tmpFile, "w");
+        ripstd.stdio.stdout = File(tmpFile, "w");
         fun();
-        std.stdio.stdout.close();
+        ripstd.stdio.stdout.close();
     }
 
     auto lines = readText(tmpFile).splitLines();
@@ -1880,10 +1880,10 @@ version (Windows)
 @system unittest
 {
     auto fn = uniqueTempPath();
-    std.file.write(fn, "AAAAAAAAAA");
+    ripstd.file.write(fn, "AAAAAAAAAA");
 
     auto f = File(fn, "a");
-    spawnProcess(["cmd", "/c", "echo BBBBB"], std.stdio.stdin, f).wait();
+    spawnProcess(["cmd", "/c", "echo BBBBB"], ripstd.stdio.stdin, f).wait();
 
     auto data = readText(fn);
     assert(data == "AAAAAAAAAABBBBB\r\n", data);
@@ -1894,8 +1894,8 @@ version (Windows)
 // with indicating a workDir.
 version (Posix) @system unittest
 {
-    import std.file : mkdir, write, setAttributes;
-    import std.conv : octal;
+    import ripstd.file : mkdir, write, setAttributes;
+    import ripstd.conv : octal;
 
     auto dir = uniqueTempPath();
     mkdir(dir);
@@ -1930,9 +1930,9 @@ $(LREF escapeShellCommand), which may be helpful in constructing a
 properly quoted and escaped shell _command line for the current platform.
 */
 Pid spawnShell(scope const(char)[] command,
-               File stdin = std.stdio.stdin,
-               File stdout = std.stdio.stdout,
-               File stderr = std.stdio.stderr,
+               File stdin = ripstd.stdio.stdin,
+               File stdout = ripstd.stdio.stdout,
+               File stderr = ripstd.stdio.stderr,
                scope const string[string] env = null,
                Config config = Config.none,
                scope const(char)[] workDir = null,
@@ -1970,9 +1970,9 @@ Pid spawnShell(scope const(char)[] command,
     @trusted // TODO: Should be @safe
 {
     return spawnShell(command,
-                      std.stdio.stdin,
-                      std.stdio.stdout,
-                      std.stdio.stderr,
+                      ripstd.stdio.stdin,
+                      ripstd.stdio.stdout,
+                      ripstd.stdio.stderr,
                       env,
                       config,
                       workDir,
@@ -1985,7 +1985,7 @@ Pid spawnShell(scope const(char)[] command,
         auto cmd = "echo %FOO%";
     else version (Posix)
         auto cmd = "echo $foo";
-    import std.file;
+    import ripstd.file;
     auto tmpFile = uniqueTempPath();
     scope(exit) if (exists(tmpFile)) remove(tmpFile);
     auto redir = "> \""~tmpFile~'"';
@@ -1993,17 +1993,17 @@ Pid spawnShell(scope const(char)[] command,
     assert(wait(spawnShell(cmd~redir, env)) == 0);
     auto f = File(tmpFile, "a");
     version (CRuntime_Microsoft) f.seek(0, SEEK_END); // MSVCRT probably seeks to the end when writing, not before
-    assert(wait(spawnShell(cmd, std.stdio.stdin, f, std.stdio.stderr, env)) == 0);
+    assert(wait(spawnShell(cmd, ripstd.stdio.stdin, f, ripstd.stdio.stderr, env)) == 0);
     f.close();
-    auto output = std.file.readText(tmpFile);
+    auto output = ripstd.file.readText(tmpFile);
     assert(output == "bar\nbar\n" || output == "bar\r\nbar\r\n");
 }
 
 version (Windows)
 @system unittest
 {
-    import std.string;
-    import std.conv : text;
+    import ripstd.string;
+    import ripstd.conv : text;
     TestScript prog = "echo %0 %*";
     auto outputFn = uniqueTempPath();
     scope(exit) if (exists(outputFn)) remove(outputFn);
@@ -2206,7 +2206,7 @@ private:
     version (Posix)
     int performWait(bool block) @trusted
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         enforce!ProcessException(owned, "Can't wait on a detached process");
         if (_processID == terminated) return _exitCode;
         int exitCode;
@@ -2256,7 +2256,7 @@ private:
     {
         int performWait(const bool block, const DWORD timeout = INFINITE) @trusted
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
             enforce!ProcessException(owned, "Can't wait on a detached process");
             if (_processID == terminated) return _exitCode;
             assert(_handle != INVALID_HANDLE_VALUE);
@@ -2283,7 +2283,7 @@ private:
 
         int performWait(Duration timeout) @safe
         {
-            import std.exception : enforce;
+            import ripstd.exception : enforce;
             const msecs = timeout.total!"msecs";
 
             // Limit this implementation the maximum wait time offered by
@@ -2404,7 +2404,7 @@ int wait(Pid pid) @safe
     else version (Posix) assert(pid.osHandle < 0);
 }
 
-private import std.typecons : Tuple;
+private import ripstd.typecons : Tuple;
 
 /**
 Waits until either the process associated with `pid` terminates or the
@@ -2421,7 +2421,7 @@ The timeout may not exceed `(uint.max - 1).msecs` (~ 7 weeks, 17 hours).
 $(BLUE This function is Windows-Only.)
 
 Returns:
-An $(D std.typecons.Tuple!(bool, "terminated", int, "status")).
+An $(D ripstd.typecons.Tuple!(bool, "terminated", int, "status")).
 
 Throws:
 $(LREF ProcessException) on failure or on attempt to wait for detached process.
@@ -2447,8 +2447,8 @@ Tuple!(bool, "terminated", int, "status") waitTimeout(Pid pid, Duration timeout)
 version (Windows)
 @system unittest // Pid and waitTimeout()
 {
-    import std.exception : collectException;
-    import std.typecons : tuple;
+    import ripstd.exception : collectException;
+    import ripstd.typecons : tuple;
 
     TestScript prog = ":Loop\ngoto Loop;";
     auto pid = spawnProcess(prog.path);
@@ -2485,7 +2485,7 @@ get the exit code, but also to avoid the process becoming a "zombie"
 when it finally terminates.  (See $(LREF wait) for details).
 
 Returns:
-An $(D std.typecons.Tuple!(bool, "terminated", int, "status")).
+An $(D ripstd.typecons.Tuple!(bool, "terminated", int, "status")).
 
 Throws:
 $(LREF ProcessException) on failure or on attempt to wait for detached process.
@@ -2512,7 +2512,7 @@ by the time we reach the end of the scope.
 */
 auto tryWait(Pid pid) @safe
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
     assert(pid !is null, "Called tryWait on a null Pid.");
     auto code = pid.performWait(false);
     return Tuple!(bool, "terminated", int, "status")(pid._processID == Pid.terminated, code);
@@ -2583,7 +2583,7 @@ void kill(Pid pid)
 /// ditto
 void kill(Pid pid, int codeOrSignal)
 {
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
     enforce!ProcessException(pid.owned, "Can't kill detached process");
     version (Windows)
     {
@@ -2606,7 +2606,7 @@ void kill(Pid pid, int codeOrSignal)
 @system unittest // tryWait() and kill()
 {
     import core.thread;
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     // The test script goes into an infinite loop.
     version (Windows)
     {
@@ -2645,7 +2645,7 @@ void kill(Pid pid, int codeOrSignal)
 @system unittest // wait() and kill() detached process
 {
     import core.thread;
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     TestScript prog = "exit 0";
     auto pid = spawnProcess([prog.path], null, Config.detached);
     /*
@@ -2684,7 +2684,7 @@ way of doing this.)
 auto p = pipe();
 auto outFile = File("D downloads.txt", "w");
 auto cpid = spawnProcess(["curl", "http://dlang.org/download.html"],
-                         std.stdio.stdin, p.writeEnd);
+                         ripstd.stdio.stdin, p.writeEnd);
 scope(exit) wait(cpid);
 auto gpid = spawnProcess(["grep", "-o", `http://\S*\.zip`],
                          p.readEnd, outFile);
@@ -2786,7 +2786,7 @@ private:
 
 @system unittest
 {
-    import std.string;
+    import ripstd.string;
     auto p = pipe();
     p.writeEnd.writeln("Hello World");
     p.writeEnd.flush();
@@ -2943,7 +2943,7 @@ private ProcessPipes pipeProcessImpl(alias spawnFunc, Cmd, ExtraSpawnFuncArgs...
     }
     else
     {
-        childStdin = std.stdio.stdin;
+        childStdin = ripstd.stdio.stdin;
     }
 
     if (redirectFlags & Redirect.stdout)
@@ -2957,7 +2957,7 @@ private ProcessPipes pipeProcessImpl(alias spawnFunc, Cmd, ExtraSpawnFuncArgs...
     }
     else
     {
-        childStdout = std.stdio.stdout;
+        childStdout = ripstd.stdio.stdout;
     }
 
     if (redirectFlags & Redirect.stderr)
@@ -2971,7 +2971,7 @@ private ProcessPipes pipeProcessImpl(alias spawnFunc, Cmd, ExtraSpawnFuncArgs...
     }
     else
     {
-        childStderr = std.stdio.stderr;
+        childStderr = ripstd.stdio.stderr;
     }
 
     if (redirectFlags & Redirect.stdoutToStderr)
@@ -2979,9 +2979,9 @@ private ProcessPipes pipeProcessImpl(alias spawnFunc, Cmd, ExtraSpawnFuncArgs...
         if (redirectFlags & Redirect.stderrToStdout)
         {
             // We know that neither of the other options have been
-            // set, so we assign the std.stdio.std* streams directly.
-            childStdout = std.stdio.stderr;
-            childStderr = std.stdio.stdout;
+            // set, so we assign the ripstd.stdio.std* streams directly.
+            childStdout = ripstd.stdio.stderr;
+            childStderr = ripstd.stdio.stdout;
         }
         else
         {
@@ -3033,7 +3033,7 @@ enum Redirect
 
 @system unittest
 {
-    import std.string;
+    import ripstd.string;
     version (Windows) TestScript prog =
        "call :sub %~1 %~2 0
         call :sub %~1 %~2 1
@@ -3090,7 +3090,7 @@ enum Redirect
 
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     TestScript prog = "exit 0";
     assertThrown!StdioException(pipeProcess(
         prog.path,
@@ -3221,7 +3221,7 @@ shellPath = The path to the shell to use to run the specified program.
 
 
 Returns:
-An $(D std.typecons.Tuple!(int, "status", string, "output")).
+An $(D ripstd.typecons.Tuple!(int, "status", string, "output")).
 
 POSIX_specific:
 If the process is terminated by a signal, the `status` field of
@@ -3280,9 +3280,9 @@ private auto executeImpl(alias pipeFunc, Cmd, ExtraPipeFuncArgs...)(
     ExtraPipeFuncArgs extraArgs = ExtraPipeFuncArgs.init)
     @trusted //TODO: @safe
 {
-    import std.algorithm.comparison : min;
-    import std.array : appender;
-    import std.typecons : Tuple;
+    import ripstd.algorithm.comparison : min;
+    import ripstd.array : appender;
+    import ripstd.typecons : Tuple;
 
     auto redirect = (config.flags & Config.Flags.stderrPassThrough)
         ? Redirect.stdout
@@ -3315,7 +3315,7 @@ private auto executeImpl(alias pipeFunc, Cmd, ExtraPipeFuncArgs...)(
 
 @system unittest
 {
-    import std.string;
+    import ripstd.string;
     // To avoid printing the newline characters, we use the echo|set trick on
     // Windows, and printf on POSIX (neither echo -n nor echo \c are portable).
     version (Windows) TestScript prog =
@@ -3340,7 +3340,7 @@ private auto executeImpl(alias pipeFunc, Cmd, ExtraPipeFuncArgs...)(
 
 @safe unittest
 {
-    import std.string;
+    import ripstd.string;
     auto r1 = executeShell("echo foo");
     assert(r1.status == 0);
     assert(r1.output.chomp() == "foo");
@@ -3355,10 +3355,10 @@ private auto executeImpl(alias pipeFunc, Cmd, ExtraPipeFuncArgs...)(
 @system unittest
 {
     // Temporarily disable output to stderr so as to not spam the build log.
-    import std.stdio : stderr;
-    import std.typecons : Tuple;
-    import std.file : readText;
-    import std.traits : ReturnType;
+    import ripstd.stdio : stderr;
+    import ripstd.typecons : Tuple;
+    import ripstd.file : readText;
+    import ripstd.traits : ReturnType;
 
     ReturnType!executeShell r;
     auto tmpname = uniqueTempPath;
@@ -3372,13 +3372,13 @@ private auto executeImpl(alias pipeFunc, Cmd, ExtraPipeFuncArgs...)(
     assert(r.status == 0);
     assert(r.output.empty);
     auto witness = readText(tmpname);
-    import std.ascii : newline;
+    import ripstd.ascii : newline;
     assert(witness == "D rox" ~ newline, "'" ~ witness ~ "'");
 }
 
 @safe unittest
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
     void foo() //Just test the compilation
     {
         auto ret1 = execute(["dummy", "arg"]);
@@ -3392,7 +3392,7 @@ private auto executeImpl(alias pipeFunc, Cmd, ExtraPipeFuncArgs...)(
 /// An exception that signals a problem with starting or waiting for a process.
 class ProcessException : Exception
 {
-    import std.exception : basicExceptionCtors;
+    import ripstd.exception : basicExceptionCtors;
     mixin basicExceptionCtors;
 
     // Creates a new ProcessException based on errno.
@@ -3410,7 +3410,7 @@ class ProcessException : Exception
                                          string file = __FILE__,
                                          size_t line = __LINE__)
     {
-        import std.exception : errnoString;
+        import ripstd.exception : errnoString;
         auto errnoMsg = errnoString(error);
         auto msg = customMsg.empty ? errnoMsg
                                    : customMsg ~ " (" ~ errnoMsg ~ ')';
@@ -3470,14 +3470,14 @@ version (Windows) private immutable string shellSwitch = "/C";
 // file. On Windows the file name gets a .cmd extension, while on
 // POSIX its executable permission bit is set.  The file is
 // automatically deleted when the object goes out of scope.
-version (StdUnittest)
+version (RIPStdUnittest)
 private struct TestScript
 {
     this(string code) @system
     {
         // @system due to chmod
-        import std.ascii : newline;
-        import std.file : write;
+        import ripstd.ascii : newline;
+        import ripstd.file : write;
         version (Windows)
         {
             auto ext = ".cmd";
@@ -3493,20 +3493,20 @@ private struct TestScript
         version (Posix)
         {
             import core.sys.posix.sys.stat : chmod;
-            import std.conv : octal;
+            import ripstd.conv : octal;
             chmod(path.tempCString(), octal!777);
         }
     }
 
     ~this()
     {
-        import std.file : remove, exists;
+        import ripstd.file : remove, exists;
         if (!path.empty && exists(path))
         {
             try { remove(path); }
             catch (Exception e)
             {
-                debug std.stdio.stderr.writeln(e.msg);
+                debug ripstd.stdio.stderr.writeln(e.msg);
             }
         }
     }
@@ -3638,7 +3638,7 @@ private string escapeShellCommandString(string command) @safe pure
 
 private string escapeWindowsShellCommand(scope const(char)[] command) @safe pure
 {
-    import std.array : appender;
+    import ripstd.array : appender;
     auto result = appender!string();
     result.reserve(command.length);
 
@@ -3670,7 +3670,7 @@ private string escapeWindowsShellCommand(scope const(char)[] command) @safe pure
 private string escapeShellArguments(scope const(char[])[] args...)
     @trusted pure nothrow
 {
-    import std.exception : assumeUnique;
+    import ripstd.exception : assumeUnique;
     char[] buf;
 
     @safe nothrow
@@ -3713,7 +3713,7 @@ string escapeWindowsArgument(scope const(char)[] arg) @trusted pure nothrow
     // Rationale for leaving this function as public:
     // this algorithm of escaping paths is also used in other software,
     // e.g. DMD's response files.
-    import std.exception : assumeUnique;
+    import ripstd.exception : assumeUnique;
     auto buf = escapeWindowsArgumentImpl!charAllocator(arg);
     return assumeUnique(buf);
 }
@@ -3765,7 +3765,7 @@ if (is(typeof(allocator(size_t.init)[0] = char.init)))
         }
     }
 
-    import std.ascii : isDigit;
+    import ripstd.ascii : isDigit;
     // Empty arguments need to be specified as ""
     if (!arg.length)
         needEscape = true;
@@ -3802,7 +3802,7 @@ if (is(typeof(allocator(size_t.init)[0] = char.init)))
     return buf;
 }
 
-version (Windows) version (StdUnittest)
+version (Windows) version (RIPStdUnittest)
 {
 private:
     import core.stdc.stddef;
@@ -3810,13 +3810,13 @@ private:
     import core.sys.windows.shellapi : CommandLineToArgvW;
     import core.sys.windows.winbase;
     import core.sys.windows.winnt;
-    import std.array;
+    import ripstd.array;
 
     string[] parseCommandLine(string line)
     {
-        import std.algorithm.iteration : map;
-        import std.array : array;
-        import std.conv : to;
+        import ripstd.algorithm.iteration : map;
+        import ripstd.array : array;
+        import ripstd.conv : to;
         auto lpCommandLine = (to!(WCHAR[])(line) ~ '\0').ptr;
         int numArgs;
         auto args = CommandLineToArgvW(lpCommandLine, &numArgs);
@@ -3828,7 +3828,7 @@ private:
 
     @system unittest
     {
-        import std.conv : text;
+        import ripstd.conv : text;
         string[] testStrings = [
             `Hello`,
             `Hello, world`,
@@ -3857,7 +3857,7 @@ private:
 
 private string escapePosixArgument(scope const(char)[] arg) @trusted pure nothrow
 {
-    import std.exception : assumeUnique;
+    import ripstd.exception : assumeUnique;
     auto buf = escapePosixArgumentImpl!charAllocator(arg);
     return assumeUnique(buf);
 }
@@ -3870,7 +3870,7 @@ if (is(typeof(allocator(size_t.init)[0] = char.init)))
     // single quote, and reopen quotes
 
     // Below code is equivalent to:
-    // return `'` ~ std.array.replace(arg, `'`, `'\''`) ~ `'`;
+    // return `'` ~ ripstd.array.replace(arg, `'`, `'\''`) ~ `'`;
 
     size_t size = 1 + arg.length + 1;
     foreach (char c; arg)
@@ -3935,7 +3935,7 @@ version (unittest_burnin)
 
     // To run this unit test, create std_process_unittest_helper.d with the
     // following content and compile it:
-    // import std.stdio, std.array; void main(string[] args) { write(args.join("\0")); }
+    // import ripstd.stdio, ripstd.array; void main(string[] args) { write(args.join("\0")); }
     // Then, test this module with:
     // rdmd --main -unittest -version=unittest_burnin process.d
 
@@ -4033,7 +4033,7 @@ version (unittest_burnin)
 }
 
 // =============================================================================
-// Everything below this line was part of the old std.process, and most of
+// Everything below this line was part of the old ripstd.process, and most of
 // it will be deprecated and removed.
 // =============================================================================
 
@@ -4061,7 +4061,7 @@ import core.thread;
 
 version (Windows)
 {
-    import std.file, std.format, std.random;
+    import ripstd.file, ripstd.format, ripstd.random;
 }
 version (Posix)
 {
@@ -4070,7 +4070,7 @@ version (Posix)
 
 private void toAStringz(in string[] a, const(char)**az)
 {
-    import std.string : toStringz;
+    import ripstd.string : toStringz;
     foreach (string s; a)
     {
         *az++ = toStringz(s);
@@ -4206,9 +4206,9 @@ extern(C)
 private int execv_(in string pathname, in string[] argv)
 {
     import core.exception : OutOfMemoryError;
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
     auto argv_ = cast(const(char)**)core.stdc.stdlib.malloc((char*).sizeof * (1 + argv.length));
-    enforce!OutOfMemoryError(argv_ !is null, "Out of memory in std.process.");
+    enforce!OutOfMemoryError(argv_ !is null, "Out of memory in ripstd.process.");
     scope(exit) core.stdc.stdlib.free(argv_);
 
     toAStringz(argv, argv_);
@@ -4219,12 +4219,12 @@ private int execv_(in string pathname, in string[] argv)
 private int execve_(in string pathname, in string[] argv, in string[] envp)
 {
     import core.exception : OutOfMemoryError;
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
     auto argv_ = cast(const(char)**)core.stdc.stdlib.malloc((char*).sizeof * (1 + argv.length));
-    enforce!OutOfMemoryError(argv_ !is null, "Out of memory in std.process.");
+    enforce!OutOfMemoryError(argv_ !is null, "Out of memory in ripstd.process.");
     scope(exit) core.stdc.stdlib.free(argv_);
     auto envp_ = cast(const(char)**)core.stdc.stdlib.malloc((char*).sizeof * (1 + envp.length));
-    enforce!OutOfMemoryError(envp_ !is null, "Out of memory in std.process.");
+    enforce!OutOfMemoryError(envp_ !is null, "Out of memory in ripstd.process.");
     scope(exit) core.stdc.stdlib.free(envp_);
 
     toAStringz(argv, argv_);
@@ -4236,9 +4236,9 @@ private int execve_(in string pathname, in string[] argv, in string[] envp)
 private int execvp_(in string pathname, in string[] argv)
 {
     import core.exception : OutOfMemoryError;
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
     auto argv_ = cast(const(char)**)core.stdc.stdlib.malloc((char*).sizeof * (1 + argv.length));
-    enforce!OutOfMemoryError(argv_ !is null, "Out of memory in std.process.");
+    enforce!OutOfMemoryError(argv_ !is null, "Out of memory in ripstd.process.");
     scope(exit) core.stdc.stdlib.free(argv_);
 
     toAStringz(argv, argv_);
@@ -4250,8 +4250,8 @@ private int execvpe_(in string pathname, in string[] argv, in string[] envp)
 {
 version (Posix)
 {
-    import std.array : split;
-    import std.conv : to;
+    import ripstd.array : split;
+    import ripstd.conv : to;
     // Is pathname rooted?
     if (pathname[0] == '/')
     {
@@ -4286,12 +4286,12 @@ version (Posix)
 else version (Windows)
 {
     import core.exception : OutOfMemoryError;
-    import std.exception : enforce;
+    import ripstd.exception : enforce;
     auto argv_ = cast(const(char)**)core.stdc.stdlib.malloc((char*).sizeof * (1 + argv.length));
-    enforce!OutOfMemoryError(argv_ !is null, "Out of memory in std.process.");
+    enforce!OutOfMemoryError(argv_ !is null, "Out of memory in ripstd.process.");
     scope(exit) core.stdc.stdlib.free(argv_);
     auto envp_ = cast(const(char)**)core.stdc.stdlib.malloc((char*).sizeof * (1 + envp.length));
-    enforce!OutOfMemoryError(envp_ !is null, "Out of memory in std.process.");
+    enforce!OutOfMemoryError(envp_ !is null, "Out of memory in ripstd.process.");
     scope(exit) core.stdc.stdlib.free(envp_);
 
     toAStringz(argv, argv_);
@@ -4373,7 +4373,7 @@ else version (Posix)
             // Trusted because it's allocated via strdup above
             (() @trusted => free(cast(void*) browser))();
 
-        version (StdUnittest)
+        version (RIPStdUnittest)
         {
             // Verify that the test script actually suceeds
             int status;
@@ -4397,8 +4397,8 @@ version (Windows) { /* Doesn't use BROWSER */ }
 else
 @system unittest
 {
-    import std.conv : text;
-    import std.range : repeat;
+    import ripstd.conv : text;
+    import ripstd.range : repeat;
     immutable string url = text("http://", repeat('x', 249));
 
     TestScript prog = `if [ "$1" != "` ~ url ~ `" ]; then exit 1; fi`;

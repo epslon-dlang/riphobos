@@ -19,10 +19,10 @@
 module ripstd.container.array;
 
 import core.exception : RangeError;
-import std.range.primitives;
-import std.traits;
+import ripstd.range.primitives;
+import ripstd.traits;
 
-public import std.container.util;
+public import ripstd.container.util;
 
 ///
 pure @system unittest
@@ -54,7 +54,7 @@ pure @system unittest
 ///
 pure @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto arr = Array!int(1, 2, 3);
 
     // concat
@@ -139,7 +139,7 @@ private struct RangeT(A)
 
     static if (isMutable!A)
     {
-        import std.algorithm.mutation : move;
+        import ripstd.algorithm.mutation : move;
 
         E moveFront()
         {
@@ -267,13 +267,13 @@ struct Array(T)
 if (!is(immutable T == immutable bool))
 {
     import core.memory : free = pureFree;
-    import std.internal.memory : enforceMalloc, enforceRealloc;
+    import ripstd.internal.memory : enforceMalloc, enforceRealloc;
     import core.stdc.string : memcpy, memmove, memset;
 
     import core.memory : GC;
 
-    import std.exception : enforce;
-    import std.typecons : RefCounted, RefCountedAutoInitialize;
+    import ripstd.exception : enforce;
+    import ripstd.typecons : RefCounted, RefCountedAutoInitialize;
 
     // This structure is not copyable.
     private struct Payload
@@ -309,7 +309,7 @@ if (!is(immutable T == immutable bool))
 
         @property void length(size_t newLength)
         {
-            import std.algorithm.mutation : initializeAll;
+            import ripstd.algorithm.mutation : initializeAll;
 
             if (length >= newLength)
             {
@@ -991,7 +991,7 @@ if (!is(immutable T == immutable bool))
         }
         else
         {
-            import std.algorithm.mutation : bringToFront;
+            import ripstd.algorithm.mutation : bringToFront;
             enforce(_data);
             immutable offset = r._a;
             enforce(offset <= length);
@@ -1010,7 +1010,7 @@ if (!is(immutable T == immutable bool))
     if (isImplicitlyConvertible!(Stuff, T) ||
             isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
     {
-        import std.algorithm.mutation : bringToFront;
+        import ripstd.algorithm.mutation : bringToFront;
         enforce(r._outer._data is _data);
         // TODO: optimize
         immutable offset = r._b;
@@ -1074,7 +1074,7 @@ if (!is(immutable T == immutable bool))
      */
     Range linearRemove(Range r)
     {
-        import std.algorithm.mutation : copy;
+        import ripstd.algorithm.mutation : copy;
 
         enforce(r._outer._data is _data);
         enforce(_data.refCountedStore.isInitialized);
@@ -1188,7 +1188,7 @@ if (!is(immutable T == immutable bool))
 @safe unittest
 {
     // https://issues.dlang.org/show_bug.cgi?id=13621
-    import std.container : Array, BinaryHeap;
+    import ripstd.container : Array, BinaryHeap;
     alias Heap = BinaryHeap!(Array!int);
 }
 
@@ -1268,8 +1268,8 @@ if (!is(immutable T == immutable bool))
 // Give the Range object some testing.
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : retro;
     auto a = Array!int(0, 1, 2, 3, 4, 5, 6)[];
     auto b = Array!int(6, 5, 4, 3, 2, 1, 0)[];
     alias A = typeof(a);
@@ -1344,7 +1344,7 @@ if (!is(immutable T == immutable bool))
 // test replace!Stuff with range Stuff
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = Array!int([1, 42, 5]);
     a.replace(a[1 .. 2], [2, 3, 4]);
     assert(equal(a[], [1, 2, 3, 4, 5]));
@@ -1353,28 +1353,28 @@ if (!is(immutable T == immutable bool))
 // test insertBefore and replace with empty Arrays
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = Array!int();
     a.insertBefore(a[], 1);
     assert(equal(a[], [1]));
 }
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = Array!int();
     a.insertBefore(a[], [1, 2]);
     assert(equal(a[], [1, 2]));
 }
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = Array!int();
     a.replace(a[], [1, 2]);
     assert(equal(a[], [1, 2]));
 }
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = Array!int();
     a.replace(a[], 1);
     assert(equal(a[], [1]));
@@ -1382,7 +1382,7 @@ if (!is(immutable T == immutable bool))
 // make sure that Array instances refuse ranges that don't belong to them
 @system unittest
 {
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
 
     Array!int a = [1, 2, 3];
     auto r = a.dup[];
@@ -1426,7 +1426,7 @@ if (!is(immutable T == immutable bool))
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     //Test "array-wide" operations
     auto a = Array!int([0, 1, 2]); //Array
@@ -1499,7 +1499,7 @@ if (!is(immutable T == immutable bool))
 // https://issues.dlang.org/show_bug.cgi?id=11884
 @system unittest
 {
-    import std.algorithm.iteration : filter;
+    import ripstd.algorithm.iteration : filter;
     auto a = Array!int([1, 2, 2].filter!"true"());
 }
 
@@ -1601,7 +1601,7 @@ if (!is(immutable T == immutable bool))
  * typeof may give wrong result in case of classes defining `opCall` operator
  * https://issues.dlang.org/show_bug.cgi?id=20589
  *
- * destructor std.container.array.Array!(MyClass).Array.~this is @system
+ * destructor ripstd.container.array.Array!(MyClass).Array.~this is @system
  * so the unittest is @system too
  */
 @system unittest
@@ -1619,7 +1619,7 @@ if (!is(immutable T == immutable bool))
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = Array!int([1,2,3,4,5]);
     assert(a.length == 5);
 
@@ -1642,8 +1642,8 @@ if (!is(immutable T == immutable bool))
 struct Array(T)
 if (is(immutable T == immutable bool))
 {
-    import std.exception : enforce;
-    import std.typecons : RefCounted, RefCountedAutoInitialize;
+    import ripstd.exception : enforce;
+    import ripstd.typecons : RefCounted, RefCountedAutoInitialize;
 
     static immutable uint bitsPerWord = size_t.sizeof * 8;
     private static struct Data
@@ -1867,7 +1867,7 @@ if (is(immutable T == immutable bool))
      */
     void reserve(size_t e)
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         _store.refCountedStore.ensureInitialized();
         _store._backend.reserve(to!size_t((e + bitsPerWord - 1) / bitsPerWord));
     }
@@ -2054,7 +2054,7 @@ if (is(immutable T == immutable bool))
      */
     @property void length(size_t newLength)
     {
-        import std.conv : to;
+        import ripstd.conv : to;
         _store.refCountedStore.ensureInitialized();
         auto newDataLength =
             to!size_t((newLength + bitsPerWord - 1) / bitsPerWord);
@@ -2225,7 +2225,7 @@ if (is(immutable T == immutable bool))
      */
     size_t insertBefore(Stuff)(Range r, Stuff stuff)
     {
-        import std.algorithm.mutation : bringToFront;
+        import ripstd.algorithm.mutation : bringToFront;
         // TODO: make this faster, it moves one bit at a time
         immutable inserted = stableInsertBack(stuff);
         immutable tailLength = length - inserted;
@@ -2243,7 +2243,7 @@ if (is(immutable T == immutable bool))
     if (isImplicitlyConvertible!(Stuff, T) ||
             isInputRange!Stuff && isImplicitlyConvertible!(ElementType!Stuff, T))
     {
-        import std.algorithm.mutation : bringToFront;
+        import ripstd.algorithm.mutation : bringToFront;
         // TODO: make this faster, it moves one bit at a time
         immutable inserted = stableInsertBack(stuff);
         immutable tailLength = length - inserted;
@@ -2289,7 +2289,7 @@ if (is(immutable T == immutable bool))
      */
     Range linearRemove(Range r)
     {
-        import std.algorithm.mutation : copy;
+        import ripstd.algorithm.mutation : copy;
         copy(this[r._b .. length], this[r._a .. length]);
         length = length - r.length;
         return this[r._a .. length];
@@ -2298,7 +2298,7 @@ if (is(immutable T == immutable bool))
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto a = Array!bool([true, true, false, false, true, false]);
     assert(equal(a[], [true, true, false, false, true, false]));
@@ -2307,8 +2307,8 @@ if (is(immutable T == immutable bool))
 // using Ranges
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : retro;
     bool[] arr = [true, true, false, false, true, false];
 
     auto a = Array!bool(retro(arr));
@@ -2366,7 +2366,7 @@ if (is(immutable T == immutable bool))
 {
     auto a = Array!char('a', 'b');
     assert(Array!char("abc") == a ~ 'c');
-    import std.utf : byCodeUnit;
+    import ripstd.utf : byCodeUnit;
     assert(Array!char("abcd") == a ~ "cd".byCodeUnit);
 }
 
@@ -2398,7 +2398,7 @@ if (is(immutable T == immutable bool))
 
 @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     Array!bool a;
     assert(a.length == 0);
     a.insert(true);
@@ -2407,7 +2407,7 @@ if (is(immutable T == immutable bool))
 
 @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     Array!bool a;
     assert(a.capacity == 0);
     foreach (i; 0 .. 100)
@@ -2471,7 +2471,7 @@ if (is(immutable T == immutable bool))
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = Array!bool([true, false, true, true]);
     auto b = Array!bool([true, true, false, true]);
     assert(equal((a ~ b)[],
@@ -2483,7 +2483,7 @@ if (is(immutable T == immutable bool))
 }
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = Array!bool([true, false, true, true]);
     auto b = Array!bool([false, true, false, true, true]);
     a ~= b;
@@ -2551,7 +2551,7 @@ if (is(immutable T == immutable bool))
 
 @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     Array!bool a;
     version (bugxxxx)
     {
@@ -2562,14 +2562,14 @@ if (is(immutable T == immutable bool))
     a.insertBefore(a[], false);
     assert(a.length == 2, to!string(a.length));
     a.insertBefore(a[1 .. $], true);
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     assert(a[].equal([false, true, true]));
 }
 
 // https://issues.dlang.org/show_bug.cgi?id=21555
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     Array!bool arr;
     size_t len = arr.insertBack([false, true]);
     assert(len == 2);
@@ -2578,7 +2578,7 @@ if (is(immutable T == immutable bool))
 // https://issues.dlang.org/show_bug.cgi?id=21556
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     Array!bool a;
     a.insertBack([true, true, false, false, true]);
     assert(a.length == 5);
@@ -2592,7 +2592,7 @@ if (is(immutable T == immutable bool))
 
 @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     Array!bool a;
     a.length = 10;
     a.insertAfter(a[0 .. 5], true);

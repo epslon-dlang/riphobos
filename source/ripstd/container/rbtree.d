@@ -19,8 +19,8 @@ module ripstd.container.rbtree;
 ///
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.container.rbtree;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.container.rbtree;
 
     auto rbt = redBlackTree(3, 1, 4, 2, 5);
     assert(rbt.front == 1);
@@ -41,7 +41,7 @@ module ripstd.container.rbtree;
     assert(rbt.upperBound(3).equal([4, 5]));
 
     // A Red Black tree with the highest element at front:
-    import std.range : iota;
+    import ripstd.range : iota;
     auto maxTree = redBlackTree!"a > b"(iota(5));
     assert(equal(maxTree[], [4, 3, 2, 1, 0]));
 
@@ -56,12 +56,12 @@ module ripstd.container.rbtree;
     assert(equal(ubt[], [0, 0, 1, 1]));
 }
 
-import std.format;
-import std.functional : binaryFun;
+import ripstd.format;
+import ripstd.functional : binaryFun;
 
-public import std.container.util;
+public import ripstd.container.util;
 
-version (StdUnittest) debug = RBDoChecks;
+version (RIPStdUnittest) debug = RBDoChecks;
 
 //debug = RBDoChecks;
 
@@ -739,14 +739,14 @@ private struct RBRange(N)
 final class RedBlackTree(T, alias less = "a < b", bool allowDuplicates = false)
 if (is(typeof(binaryFun!less(T.init, T.init))))
 {
-    import std.meta : allSatisfy;
-    import std.range : Take;
-    import std.range.primitives : isInputRange, walkLength;
-    import std.traits : isIntegral, isDynamicArray, isImplicitlyConvertible;
+    import ripstd.meta : allSatisfy;
+    import ripstd.range : Take;
+    import ripstd.range.primitives : isInputRange, walkLength;
+    import ripstd.traits : isIntegral, isDynamicArray, isImplicitlyConvertible;
 
     alias _less = binaryFun!less;
 
-    version (StdUnittest)
+    version (RIPStdUnittest)
     {
         static if (is(typeof(less) == string))
         {
@@ -814,8 +814,8 @@ if (is(typeof(binaryFun!less(T.init, T.init))))
 
     static if (doUnittest) @safe pure unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.range.primitives;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.range.primitives;
         auto ts = new RedBlackTree(1, 2, 3, 4, 5);
         assert(ts.length == 5);
         auto r = ts[];
@@ -992,7 +992,7 @@ if (is(typeof(binaryFun!less(T.init, T.init))))
 
     static if (doUnittest) @safe pure unittest
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         auto ts = new RedBlackTree(1, 2, 3, 4, 5);
         assert(ts.length == 5);
         auto ts2 = ts.dup;
@@ -1070,7 +1070,7 @@ if (is(typeof(binaryFun!less(T.init, T.init))))
      */
     override bool opEquals(Object rhs)
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         RedBlackTree that = cast(RedBlackTree) rhs;
         if (that is null) return false;
@@ -1438,7 +1438,7 @@ if (is(typeof(binaryFun!less(T.init, T.init))))
 
     static if (doUnittest) @safe pure unittest
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         auto ts = new RedBlackTree(1,2,3,4,5);
         assert(ts.length == 5);
         auto r = ts[];
@@ -1484,8 +1484,8 @@ if (is(typeof(binaryFun!less(T.init, T.init))))
 
     static if (doUnittest) @safe pure unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.range : take;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.range : take;
         auto ts = new RedBlackTree(1,2,3,4,5);
         auto r = ts[];
         r.popFront();
@@ -1562,7 +1562,7 @@ assert(equal(rbt[], [5]));
            isImplicitlyConvertible!(ElementType!Stuff, Elem) &&
            !isDynamicArray!Stuff)
     {
-        import std.array : array;
+        import ripstd.array : array;
         //We use array in case stuff is a Range from this RedBlackTree - either
         //directly or indirectly.
         return removeKey(array(stuff));
@@ -1576,8 +1576,8 @@ assert(equal(rbt[], [5]));
 
     static if (doUnittest) @safe pure unittest
     {
-        import std.algorithm.comparison : equal;
-        import std.range : take;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.range : take;
         auto rbt = new RedBlackTree(5, 4, 3, 7, 2, 1, 7, 6, 2, 19, 45);
 
         //The cast(Elem) is because these tests are instantiated with a variety
@@ -1731,7 +1731,7 @@ assert(equal(rbt[], [5]));
 
     static if (doUnittest) @safe pure unittest
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         auto ts = new RedBlackTree(1, 2, 3, 4, 5);
         auto rl = ts.lowerBound(3);
         auto ru = ts.upperBound(3);
@@ -1760,7 +1760,7 @@ assert(equal(rbt[], [5]));
          */
         void printTree(Node n, int indent = 0)
         {
-            import std.stdio : write, writeln;
+            import ripstd.stdio : write, writeln;
             if (n !is null)
             {
                 printTree(n.right, indent + 2);
@@ -1790,7 +1790,7 @@ assert(equal(rbt[], [5]));
             //
             int recurse(Node n, string path)
             {
-                import std.stdio : writeln;
+                import ripstd.stdio : writeln;
                 if (n is null)
                     return 1;
                 if (n.parent.left !is n && n.parent.right !is n)
@@ -1840,7 +1840,7 @@ assert(equal(rbt[], [5]));
 
     /**
       Formats the RedBlackTree into a sink function. For more info see $(D
-      std.format.formatValue). Note that this only is available when the
+      ripstd.format.formatValue). Note that this only is available when the
       element type can be formatted. Otherwise, the default toString from
       Object is used.
      */
@@ -1890,7 +1890,7 @@ assert(equal(rbt[], [5]));
 //Verify Example for removeKey.
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto rbt = redBlackTree!true(0, 1, 1, 1, 4, 5, 7);
     rbt.removeKey(1, 4, 7);
     assert(equal(rbt[], [0, 1, 1, 5]));
@@ -1901,7 +1901,7 @@ assert(equal(rbt[], [5]));
 //Tests for removeKey
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     {
         auto rbt = redBlackTree(["hello", "world", "foo", "bar"]);
         assert(equal(rbt[], ["bar", "foo", "hello", "world"]));
@@ -1956,8 +1956,8 @@ assert(equal(rbt[], [5]));
     alias t = RedBlackTree!T;
 }
 
-import std.range.primitives : isInputRange, ElementType;
-import std.traits : isArray, isSomeString;
+import ripstd.range.primitives : isInputRange, ElementType;
+import ripstd.traits : isArray, isSomeString;
 
 /++
     Convenience function for creating a `RedBlackTree!E` from a list of
@@ -2033,7 +2033,7 @@ if ( is(typeof(binaryFun!less((ElementType!Stuff).init, (ElementType!Stuff).init
 ///
 @safe pure unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
 
     auto rbt1 = redBlackTree(0, 1, 5, 7);
     auto rbt2 = redBlackTree!string("hello", "world");
@@ -2059,8 +2059,8 @@ if ( is(typeof(binaryFun!less((ElementType!Stuff).init, (ElementType!Stuff).init
 //Range construction.
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
     auto rbt = new RedBlackTree!(int, "a > b")(iota(5));
     assert(equal(rbt[], [4, 3, 2, 1, 0]));
 }
@@ -2069,7 +2069,7 @@ if ( is(typeof(binaryFun!less((ElementType!Stuff).init, (ElementType!Stuff).init
 // construction with arrays
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto rbt = redBlackTree!"a > b"([0, 1, 2, 3, 4]);
     assert(equal(rbt[], [4, 3, 2, 1, 0]));
@@ -2099,8 +2099,8 @@ if ( is(typeof(binaryFun!less((ElementType!Stuff).init, (ElementType!Stuff).init
 // convenience wrapper range construction
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : chain, iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : chain, iota;
 
     auto rbt = redBlackTree(iota(3));
     assert(equal(rbt[], [0, 1, 2]));
@@ -2123,7 +2123,7 @@ if ( is(typeof(binaryFun!less((ElementType!Stuff).init, (ElementType!Stuff).init
 
 @safe pure unittest
 {
-    import std.array : array;
+    import ripstd.array : array;
 
     auto rt1 = redBlackTree(5, 4, 3, 2, 1);
     assert(rt1.length == 5);
@@ -2144,7 +2144,7 @@ if ( is(typeof(binaryFun!less((ElementType!Stuff).init, (ElementType!Stuff).init
 
 @system unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     auto rt1 = redBlackTree!string();
     assert(rt1.to!string == "RedBlackTree([])");
@@ -2172,7 +2172,7 @@ if ( is(typeof(binaryFun!less((ElementType!Stuff).init, (ElementType!Stuff).init
     allQualifiers();
 
     static assert(is(typeof(rt1.upperBound(3).front) == const(int)));
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     assert(rt1.upperBound(3).equal([4, 5]));
     assert(rt1.lowerBound(3).equal([1, 2]));
     assert(rt1.equalRange(3).equal([3]));
@@ -2188,7 +2188,7 @@ if ( is(typeof(binaryFun!less((ElementType!Stuff).init, (ElementType!Stuff).init
     static assert(is(typeof(5 in rt1)));
 
     static assert(is(typeof(rt1.upperBound(3).front) == immutable(int)));
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     assert(rt1.upperBound(2).equal([3, 4, 5]));
 }
 
@@ -2205,7 +2205,7 @@ if ( is(typeof(binaryFun!less((ElementType!Stuff).init, (ElementType!Stuff).init
     RedBlackTree!(immutable int) t1;
     RedBlackTree!(const int) t2;
 
-    import std.algorithm.iteration : map;
+    import ripstd.algorithm.iteration : map;
     static struct S { int* p; }
     auto t3 = new RedBlackTree!(immutable S, (a, b) => *a.p < *b.p);
     t3.insert([1, 2, 3].map!(x => immutable S(new int(x))));
@@ -2216,7 +2216,7 @@ if ( is(typeof(binaryFun!less((ElementType!Stuff).init, (ElementType!Stuff).init
 // make sure the comparator can be a delegate
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto t = new RedBlackTree!(int, delegate(a, b) => a > b);
     t.insert([1, 3, 5, 4, 2]);

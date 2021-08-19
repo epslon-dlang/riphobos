@@ -11,7 +11,7 @@
  */
 module ripstd.typetuple;
 
-public import std.meta;
+public import ripstd.meta;
 
 /**
  * Alternate name for $(REF AliasSeq, std,meta) for legacy compatibility.
@@ -21,7 +21,7 @@ alias TypeTuple = AliasSeq;
 ///
 @safe unittest
 {
-    import std.typetuple;
+    import ripstd.typetuple;
     alias TL = TypeTuple!(int, double);
 
     int foo(TL td)  // same as int foo(int, double);

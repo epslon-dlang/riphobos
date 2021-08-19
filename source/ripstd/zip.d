@@ -41,9 +41,9 @@ Examples:
 
 Example for reading an existing zip archive:
 ---
-import std.stdio : writeln, writefln;
-import std.file : read;
-import std.zip;
+import ripstd.stdio : writeln, writefln;
+import ripstd.file : read;
+import ripstd.zip;
 
 void main(string[] args)
 {
@@ -67,9 +67,9 @@ void main(string[] args)
 
 Example for writing files into a zip archive:
 ---
-import std.file : write;
-import std.string : representation;
-import std.zip;
+import ripstd.file : write;
+import ripstd.string : representation;
+import ripstd.zip;
 
 void main()
 {
@@ -112,7 +112,7 @@ void main()
  */
 module ripstd.zip;
 
-import std.exception : enforce;
+import ripstd.exception : enforce;
 
 // Non-Android/Apple ARM POSIX-only, because we can't rely on the unzip
 // command being available on Android, Apple ARM or Windows
@@ -128,7 +128,7 @@ else version (Posix)
 /// Thrown on error.
 class ZipException : Exception
 {
-    import std.exception : basicExceptionCtors;
+    import ripstd.exception : basicExceptionCtors;
     ///
     mixin basicExceptionCtors;
 }
@@ -143,8 +143,8 @@ enum CompressionMethod : ushort
 /// A single file or directory inside the archive.
 final class ArchiveMember
 {
-    import std.conv : to, octal;
-    import std.datetime.systime : DosFileTime, SysTime, SysTimeToDosFileTime;
+    import ripstd.conv : to, octal;
+    import ripstd.datetime.systime : DosFileTime, SysTime, SysTimeToDosFileTime;
 
     /**
      * The name of the archive member; it is used to index the
@@ -400,7 +400,7 @@ final class ArchiveMember
 
 @safe pure unittest
 {
-    import std.exception : assertThrown, assertNotThrown;
+    import ripstd.exception : assertThrown, assertNotThrown;
 
     auto am = new ArchiveMember();
 
@@ -419,10 +419,10 @@ final class ArchiveMember
  */
 final class ZipArchive
 {
-    import std.algorithm.comparison : max;
-    import std.bitmanip : littleEndianToNative, nativeToLittleEndian;
-    import std.conv : to;
-    import std.datetime.systime : DosFileTime;
+    import ripstd.algorithm.comparison : max;
+    import ripstd.bitmanip : littleEndianToNative, nativeToLittleEndian;
+    import ripstd.conv : to;
+    import ripstd.datetime.systime : DosFileTime;
 
 private:
     // names are taken directly from the specification
@@ -568,7 +568,7 @@ public:
                     break;
 
                 case CompressionMethod.deflate:
-                    import std.zlib : compress;
+                    import ripstd.zlib : compress;
                     () @trusted
                     {
                         de._compressedData = cast(ubyte[]) compress(cast(void[]) de._expandedData);
@@ -581,7 +581,7 @@ public:
             }
 
             de._compressedSize = to!uint(de._compressedData.length);
-            import std.zlib : crc32;
+            import ripstd.zlib : crc32;
             () @trusted { de._crc32 = crc32(0, cast(void[]) de._expandedData); }();
         }
         assert(de._compressedData.length == de._compressedSize, "Archive member compressed failed.");
@@ -589,7 +589,7 @@ public:
 
     @safe unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         ArchiveMember am = new ArchiveMember();
         am.compressionMethod = cast(CompressionMethod) 3;
@@ -614,7 +614,7 @@ public:
     // https://issues.dlang.org/show_bug.cgi?id=20398
     @safe unittest
     {
-        import std.string : representation;
+        import ripstd.string : representation;
 
         ArchiveMember file1 = new ArchiveMember();
         file1.name = "test1.txt";
@@ -642,9 +642,9 @@ public:
      */
     void[] build() @safe pure
     {
-        import std.array : array, uninitializedArray;
-        import std.algorithm.sorting : sort;
-        import std.string : representation;
+        import ripstd.array : array, uninitializedArray;
+        import ripstd.algorithm.sorting : sort;
+        import ripstd.string : representation;
 
         uint i;
         uint directoryOffset;
@@ -781,7 +781,7 @@ public:
 
     @safe pure unittest
     {
-        import std.exception : assertNotThrown;
+        import ripstd.exception : assertNotThrown;
 
         ZipArchive zip = new ZipArchive();
         zip.comment = "A";
@@ -790,8 +790,8 @@ public:
 
     @safe pure unittest
     {
-        import std.range : repeat, array;
-        import std.exception : assertThrown;
+        import ripstd.range : repeat, array;
+        import ripstd.exception : assertThrown;
 
         ZipArchive zip = new ZipArchive();
         zip.comment = 'A'.repeat(70_000).array;
@@ -958,7 +958,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // contains wrong directorySize (extra byte 0xff)
         auto file =
@@ -979,7 +979,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // wrong eocdOffset
         auto file =
@@ -996,7 +996,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // wrong signature of zip64 end of central directory
         auto file =
@@ -1013,7 +1013,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // wrong size of zip64 end of central directory
         auto file =
@@ -1030,7 +1030,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // too many entries in zip64 end of central directory
         auto file =
@@ -1047,7 +1047,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // zip64: numEntries and totalEntries differ
         auto file =
@@ -1064,7 +1064,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // zip64: directorySize too large
         auto file =
@@ -1106,7 +1106,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // wrong central file header signature
         auto file =
@@ -1127,7 +1127,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // invalid field lengths in file header
         auto file =
@@ -1214,7 +1214,7 @@ public:
      */
     ubyte[] expand(ArchiveMember de)
     {
-        import std.string : representation;
+        import ripstd.string : representation;
 
         uint namelen;
         uint extralen;
@@ -1253,7 +1253,7 @@ public:
                 // -15 is a magic value used to decompress zip files.
                 // It has the effect of not requiring the 2 byte header
                 // and 4 byte trailer.
-                import std.zlib : uncompress;
+                import ripstd.zlib : uncompress;
                 de._expandedData = cast(ubyte[]) uncompress(cast(void[]) de.compressedData, de.expandedSize, -15);
                 return de.expandedData;
 
@@ -1264,7 +1264,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // check for correct local file header signature
         auto file =
@@ -1287,7 +1287,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // check for encryption flag
         auto file =
@@ -1310,7 +1310,7 @@ public:
 
     @system unittest
     {
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         // check for invalid compression method
         auto file =
@@ -1425,7 +1425,7 @@ private:
             removeSegment(20,30);
             assert(_segs == [Segment(200,300),Segment(400,500),Segment(0,20),Segment(30,100)]);
 
-            import std.exception : assertThrown;
+            import ripstd.exception : assertThrown;
 
             _segs = [Segment(0,100), Segment(200,300), Segment(400,500)];
             assertThrown(removeSegment(120,230));
@@ -1476,8 +1476,8 @@ debug(print)
     assert(zip3.directory["foo"].compressedSize == am1.compressedSize);
 
     // Test if packing and unpacking produces the original data
-    import std.conv, std.stdio;
-    import std.random : uniform, MinstdRand0;
+    import ripstd.conv, ripstd.stdio;
+    import ripstd.random : uniform, MinstdRand0;
     MinstdRand0 gen;
     const uint itemCount = 20, minSize = 10, maxSize = 500;
     foreach (variant; 0 .. 2)
@@ -1511,8 +1511,8 @@ debug(print)
 
 @system unittest
 {
-    import std.conv : to;
-    import std.random : Mt19937, randomShuffle;
+    import ripstd.conv : to;
+    import ripstd.random : Mt19937, randomShuffle;
     // Test if packing and unpacking preserves order.
     auto rand = Mt19937(15966);
     string[] names;
@@ -1550,7 +1550,7 @@ debug(print)
 
 @system unittest
 {
-    import std.zlib;
+    import ripstd.zlib;
 
     ubyte[] src = cast(ubyte[])
 "the quick brown fox jumps over the lazy dog\r
@@ -1564,7 +1564,7 @@ the quick brown fox jumps over the lazy dog\r
 @system unittest
 {
     // @system due to ZipArchive.build
-    import std.datetime;
+    import ripstd.datetime;
     ubyte[] buf = [1, 2, 3, 4, 5, 0, 7, 8, 9];
 
     auto ar = new ZipArchive;
@@ -1588,7 +1588,7 @@ the quick brown fox jumps over the lazy dog\r
 @system unittest
 {
     // invalid format of end of central directory entry
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!ZipException(new ZipArchive(cast(void[]) "\x50\x4B\x05\x06aaaaaaaaaaaaaaaaaaaa"));
 }
 
@@ -1600,7 +1600,7 @@ the quick brown fox jumps over the lazy dog\r
     assert(za.directory.length == 0);
 
     // one byte too short or too long should not pass
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!ZipException(new ZipArchive(cast(void[]) "\x50\x4B\x05\x06\x00\x00\x00\x00\x00\x00\x00"~
                                                           "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"));
     assertThrown!ZipException(new ZipArchive(cast(void[]) "\x50\x4B\x05\x06\x00\x00\x00\x00\x00\x00\x00"~
@@ -1631,7 +1631,7 @@ the quick brown fox jumps over the lazy dog\r
         "\xF2\x8A\x5D\x75\x78\x0B\x00\x01\x04\xEB\x03\x00\x00\x04\xEB\x03\x00\x00\x50\x4B"~
         "\x05\x06\x00\x00\x00\x00\x01\x00\x01\x00\x53\x00\x00\x00\xFF\x00\x00\x00\x00\x00";
 
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!ZipException(new ZipArchive(cast(void[]) file));
 }
 
@@ -1674,7 +1674,7 @@ the quick brown fox jumps over the lazy dog\r
         "\x06\x00\x00\x00\x00\x01\x00\x01\x00\x4a\x00\x00\x00\x43\x00\x00"~
         "\x00\x00\x00";
 
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!ZipException(new ZipArchive(cast(void[]) file));
 
     // local file header and file data overlap second local file header and file data
@@ -1715,7 +1715,7 @@ the quick brown fox jumps over the lazy dog\r
 version (HasUnzip)
 @system unittest
 {
-    import std.datetime, std.file, std.format, std.path, std.process, std.stdio;
+    import ripstd.datetime, ripstd.file, ripstd.format, ripstd.path, ripstd.process, ripstd.stdio;
 
     if (executeShell("unzip").status != 0)
     {
@@ -1735,7 +1735,7 @@ version (HasUnzip)
     mkdirRecurse(deleteme);
     scope(exit) rmdirRecurse(deleteme);
     string zipFile = buildPath(deleteme, "foo.zip");
-    std.file.write(zipFile, cast(byte[]) data2);
+    ripstd.file.write(zipFile, cast(byte[]) data2);
 
     auto result = executeShell(format("unzip -l %s", zipFile));
     scope(failure) writeln(result.output);

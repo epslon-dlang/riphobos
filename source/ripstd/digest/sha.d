@@ -61,7 +61,7 @@ module ripstd.digest.sha;
 @safe unittest
 {
     //Template API
-    import std.digest.sha;
+    import ripstd.digest.sha;
 
     ubyte[20] hash1 = sha1Of("abc");
     assert(toHexString(hash1) == "A9993E364706816ABA3E25717850C26C9CD0D89D");
@@ -83,7 +83,7 @@ module ripstd.digest.sha;
 @safe unittest
 {
     //OOP API
-    import std.digest.sha;
+    import ripstd.digest.sha;
 
     auto sha1 = new SHA1Digest();
     ubyte[] hash1 = sha1.digest("abc");
@@ -113,11 +113,11 @@ else version (D_InlineAsm_X86_64)
 
 import core.bitop;
 
-public import std.digest;
+public import ripstd.digest;
 
 /*
  * Helper methods for encoding the buffer.
- * Can be removed if the optimizer can inline the methods from std.bitmanip.
+ * Can be removed if the optimizer can inline the methods from ripstd.bitmanip.
  */
 version (LittleEndian)
 {
@@ -159,7 +159,7 @@ struct SHA(uint hashBlockSize, uint digestSize)
         version (USE_SSSE3)
         {
             import core.cpuid : ssse3;
-            import std.internal.digest.sha_SSSE3 : sse3_constants=constants, transformSSSE3;
+            import ripstd.internal.digest.sha_SSSE3 : sse3_constants=constants, transformSSSE3;
 
             static void transform(uint[5]* state, const(ubyte[64])* block) pure nothrow @nogc
             {
@@ -831,8 +831,8 @@ alias SHA512_256 = SHA!(1024, 256); /// SHA alias for SHA-512/256, hash is ubyte
 
 @system unittest
 {
-    import std.conv : hexString;
-    import std.range;
+    import ripstd.conv : hexString;
+    import ripstd.range;
 
     ubyte[20] digest;
     ubyte[28] digest224;
@@ -1200,8 +1200,8 @@ alias SHA512_256Digest = WrapperDigest!SHA512_256; ///ditto
 
 @system unittest
 {
-    import std.conv : hexString;
-    import std.exception;
+    import ripstd.conv : hexString;
+    import ripstd.exception;
     auto sha = new SHA1Digest();
 
     sha.put(cast(ubyte[])"abcdef");

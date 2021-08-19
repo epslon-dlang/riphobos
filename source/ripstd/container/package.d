@@ -10,7 +10,7 @@ approaches have been used. $(REF make, std,container,util) allows for
 uniform construction with either approach.
 
 ---
-import std.container;
+import ripstd.container;
 // Construct a red-black tree and an array both containing the values 1, 2, 3.
 // RedBlackTree should typically be allocated using `new`
 RedBlackTree!int rbTree = new RedBlackTree!int(1, 2, 3);
@@ -24,7 +24,7 @@ Array!int array2 = make!(Array!int)(1, 2, 3);
 Note that `make` can infer the element type from the given arguments.
 
 ---
-import std.container;
+import ripstd.container;
 auto rbTree = make!RedBlackTree(1, 2, 3); // RedBlackTree!int
 auto array = make!Array("1", "2", "3"); // Array!string
 ---
@@ -36,7 +36,7 @@ assignment both variables refer to the same underlying data.
 
 To make a copy of a container, use the `c.dup` container primitive.
 ---
-import std.container, std.range;
+import ripstd.container, ripstd.range;
 Array!int originalArray = make!(Array!int)(1, 2, 3);
 Array!int secondArray = originalArray;
 assert(equal(originalArray[], secondArray[]));
@@ -56,7 +56,7 @@ $(B Attention:) If the container is implemented as a class, using an
 uninitialized instance can cause a null pointer dereference.
 
 ---
-import std.container;
+import ripstd.container;
 
 RedBlackTree!int rbTree;
 rbTree.insert(5); // null pointer dereference
@@ -68,7 +68,7 @@ have an identity and assignment does not create two references to the same
 data.
 
 ---
-import std.container;
+import ripstd.container;
 
 // create an uninitialized array
 Array!int array1;
@@ -92,7 +92,7 @@ For example, to construct an `Array` of ten empty `Array`s, use
 the following that calls `make` ten times.
 
 ---
-import std.container, std.range;
+import ripstd.container, ripstd.range;
 
 auto arrOfArrs = make!Array(generate!(() => make!(Array!int)).take(10));
 ---
@@ -148,10 +148,10 @@ as the one being worked with. It is important to note that many generic range
 algorithms return the same range type as their input range.
 
 ---
-import std.algorithm.comparison : equal;
-import std.algorithm.iteration : find;
-import std.container;
-import std.range : take;
+import ripstd.algorithm.comparison : equal;
+import ripstd.algorithm.iteration : find;
+import ripstd.container;
+import ripstd.range : take;
 
 auto array = make!Array(1, 2, 3);
 
@@ -174,9 +174,9 @@ a member function, the documention usually refers to the parameter's templated
 type as `Stuff`.
 
 ---
-import std.algorithm.comparison : equal;
-import std.container;
-import std.range : iota;
+import ripstd.algorithm.comparison : equal;
+import ripstd.container;
+import ripstd.range : iota;
 
 auto array = make!Array(1, 2);
 
@@ -508,13 +508,13 @@ Authors: Steven Schveighoffer, $(HTTP erdani.com, Andrei Alexandrescu)
 
 module ripstd.container;
 
-public import std.container.array;
-public import std.container.binaryheap;
-public import std.container.dlist;
-public import std.container.rbtree;
-public import std.container.slist;
+public import ripstd.container.array;
+public import ripstd.container.binaryheap;
+public import ripstd.container.dlist;
+public import ripstd.container.rbtree;
+public import ripstd.container.slist;
 
-import std.meta;
+import ripstd.meta;
 
 
 /* The following documentation and type `TotalContainer` are

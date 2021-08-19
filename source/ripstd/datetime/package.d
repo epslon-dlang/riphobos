@@ -73,7 +73,7 @@
     )
 
     See_Also:
-        $(DDLINK intro-to-datetime, Introduction to std.datetime,
+        $(DDLINK intro-to-datetime, Introduction to ripstd.datetime,
                  Introduction to std&#46;datetime)<br>
         $(HTTP en.wikipedia.org/wiki/ISO_8601, ISO 8601)<br>
         $(HTTP en.wikipedia.org/wiki/Tz_database,
@@ -90,7 +90,7 @@ module ripstd.datetime;
 /// Get the current time from the system clock
 @safe unittest
 {
-    import std.datetime.systime : SysTime, Clock;
+    import ripstd.datetime.systime : SysTime, Clock;
 
     SysTime currentTime = Clock.currTime();
 }
@@ -101,7 +101,7 @@ and get its ISO string.
  */
 @safe unittest
 {
-    import std.datetime.date : DateTime;
+    import ripstd.datetime.date : DateTime;
 
     auto dt = DateTime(2018, 1, 1, 12, 30, 10);
     assert(dt.toISOString() == "20180101T123010");
@@ -114,8 +114,8 @@ add two days.
  */
 @safe unittest
 {
-    import std.datetime.systime : SysTime;
-    import std.datetime.timezone : UTC;
+    import ripstd.datetime.systime : SysTime;
+    import ripstd.datetime.timezone : UTC;
     import core.time : days;
 
     auto st = SysTime(DateTime(2018, 1, 1, 12, 30, 10), UTC());
@@ -125,15 +125,15 @@ add two days.
 }
 
 public import core.time;
-public import std.datetime.date;
-public import std.datetime.interval;
-public import std.datetime.systime;
-public import std.datetime.timezone;
+public import ripstd.datetime.date;
+public import ripstd.datetime.interval;
+public import ripstd.datetime.systime;
+public import ripstd.datetime.timezone;
 
 import core.exception : AssertError;
-import std.functional : unaryFun;
-import std.traits;
-import std.typecons : Flag, Yes, No;
+import ripstd.functional : unaryFun;
+import ripstd.traits;
+import ripstd.typecons : Flag, Yes, No;
 
 
 // Verify module example.
@@ -147,16 +147,16 @@ import std.typecons : Flag, Yes, No;
 // Verify Examples for core.time.Duration which couldn't be in core.time.
 @safe unittest
 {
-    assert(std.datetime.Date(2010, 9, 7) + dur!"days"(5) ==
-           std.datetime.Date(2010, 9, 12));
+    assert(ripstd.datetime.Date(2010, 9, 7) + dur!"days"(5) ==
+           ripstd.datetime.Date(2010, 9, 12));
 
-    assert(std.datetime.Date(2010, 9, 7) - std.datetime.Date(2010, 10, 3) ==
+    assert(ripstd.datetime.Date(2010, 9, 7) - ripstd.datetime.Date(2010, 10, 3) ==
            dur!"days"(-26));
 }
 
 @safe unittest
 {
-    import std.traits : hasUnsharedAliasing;
+    import ripstd.traits : hasUnsharedAliasing;
     /* https://issues.dlang.org/show_bug.cgi?id=6642 */
     static assert(!hasUnsharedAliasing!Date);
     static assert(!hasUnsharedAliasing!TimeOfDay);

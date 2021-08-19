@@ -4,7 +4,7 @@ Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/scoped_allocator.
 */
 module ripstd.experimental.allocator.building_blocks.scoped_allocator;
 
-import std.experimental.allocator.common;
+import ripstd.experimental.allocator.common;
 
 /**
 
@@ -23,17 +23,17 @@ struct ScopedAllocator(ParentAllocator)
     static if (!stateSize!ParentAllocator)
     {
         // This test is available only for stateless allocators
-        version (StdUnittest)
+        version (RIPStdUnittest)
         @system unittest
         {
             testAllocator!(() => ScopedAllocator());
         }
     }
 
-    import std.experimental.allocator.building_blocks.affix_allocator
+    import ripstd.experimental.allocator.building_blocks.affix_allocator
         : AffixAllocator;
-    import std.traits : hasMember;
-    import std.typecons : Ternary;
+    import ripstd.traits : hasMember;
+    import ripstd.typecons : Ternary;
 
     private struct Node
     {
@@ -110,7 +110,7 @@ struct ScopedAllocator(ParentAllocator)
     }
 
     static if (hasMember!(Allocator, "allocateZeroed"))
-    package(std) void[] allocateZeroed()(size_t n)
+    package(ripstd) void[] allocateZeroed()(size_t n)
     {
         auto b = parent.allocateZeroed(n);
         mixin(_processAndReturnAllocateResult);
@@ -215,8 +215,8 @@ struct ScopedAllocator(ParentAllocator)
 ///
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.typecons : Ternary;
     ScopedAllocator!Mallocator alloc;
     assert(alloc.empty == Ternary.yes);
     const b = alloc.allocate(10);
@@ -224,18 +224,18 @@ struct ScopedAllocator(ParentAllocator)
     assert(alloc.empty == Ternary.no);
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     testAllocator!(() => ScopedAllocator!GCAllocator());
 }
 
 @system unittest // https://issues.dlang.org/show_bug.cgi?id=16046
 {
-    import std.exception;
-    import std.experimental.allocator;
-    import std.experimental.allocator.mallocator;
+    import ripstd.exception;
+    import ripstd.experimental.allocator;
+    import ripstd.experimental.allocator.mallocator;
     ScopedAllocator!Mallocator alloc;
     auto foo = alloc.make!int(1).enforce;
     auto bar = alloc.make!int(2).enforce;
@@ -245,7 +245,7 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
     ScopedAllocator!GCAllocator a;
 
     assert(__traits(compiles, (() nothrow @safe @nogc => a.goodAllocSize(0))()));
@@ -259,7 +259,7 @@ version (StdUnittest)
 // Test that deallocateAll infers from parent
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
 
     ScopedAllocator!(Region!()) a;
     a.parent.parent = Region!()(new ubyte[1024 * 64]);
@@ -274,9 +274,9 @@ version (StdUnittest)
 
 @system unittest
 {
-    import std.experimental.allocator.building_blocks.region : Region;
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.typecons : Ternary;
 
     auto a = Region!(Mallocator)(1024 * 64);
     auto b = a.allocate(42);
@@ -293,8 +293,8 @@ version (StdUnittest)
 // Test empty
 @system unittest
 {
-    import std.experimental.allocator.mallocator : Mallocator;
-    import std.typecons : Ternary;
+    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.typecons : Ternary;
     ScopedAllocator!Mallocator alloc;
 
     assert((() pure nothrow @safe @nogc => alloc.empty)() == Ternary.yes);

@@ -20,10 +20,10 @@ Authors:   $(HTTP erdani.org, Andrei Alexandrescu),
  */
 module ripstd.experimental.typecons;
 
-import std.meta; // : AliasSeq, allSatisfy;
-import std.traits;
+import ripstd.meta; // : AliasSeq, allSatisfy;
+import ripstd.traits;
 
-import std.typecons : Tuple, tuple, Bind, DerivedFunctionType, GetOverloadedMethods;
+import ripstd.typecons : Tuple, tuple, Bind, DerivedFunctionType, GetOverloadedMethods;
 
 private
 {
@@ -43,7 +43,7 @@ if (is(T == class) || is(T == interface))
     {
         static if (is(Unqual!S : Unqual!T))
         {
-            import std.traits : QualifierOf;
+            import ripstd.traits : QualifierOf;
             alias Qual = QualifierOf!S; // SharedOf or MutableOf
             alias TmpT = Qual!(Unqual!T);
             inout(TmpT) tmp = source;   // bypass opCast by implicit conversion
@@ -80,7 +80,7 @@ if (is(T == class) || is(T == interface))
 private template implementsInterface(Source, Targets...)
 if (Targets.length >= 1 && allSatisfy!(isMutable, Targets))
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
 
     // strict upcast
     bool implementsInterface()()
@@ -112,7 +112,7 @@ if (Targets.length >= 1 && allSatisfy!(isMutable, Targets))
             {
                 enum foundFunc = findCovariantFunction!(TargetMembers[i], Source, SourceMembers);
 
-                version (StdUnittest) {}
+                version (RIPStdUnittest) {}
                 else debug
                 {
                     static if (foundFunc == -1)
@@ -131,7 +131,7 @@ if (Targets.length >= 1 && allSatisfy!(isMutable, Targets))
 private template implementsInterface(Source, Targets...)
 if (Targets.length >= 1 && !allSatisfy!(isMutable, Targets))
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
 
     alias implementsInterface = .implementsInterface!(Source, staticMap!(Unqual, Targets));
 }
@@ -189,7 +189,7 @@ private enum isInterface(ConceptType) = is(ConceptType == interface);
 template wrap(Targets...)
 if (Targets.length >= 1 && allSatisfy!(isInterface, Targets))
 {
-    import std.meta : ApplyLeft, staticMap;
+    import ripstd.meta : ApplyLeft, staticMap;
 
     version (StdDdoc)
     {
@@ -290,7 +290,7 @@ if (Targets.length >= 1 && allSatisfy!(isInterface, Targets))
                     }
                 }
 
-                import std.conv : to;
+                import ripstd.conv : to;
                 import core.lifetime : forward;
                 template generateFun(size_t i)
                 {
@@ -302,7 +302,7 @@ if (Targets.length >= 1 && allSatisfy!(isInterface, Targets))
                         bool first = true;
                         foreach (i; 0 .. num)
                         {
-                            import std.conv : to;
+                            import ripstd.conv : to;
                             r ~= (first ? "" : ", ") ~ " a" ~ (i+1).to!string;
                             first = false;
                         }
@@ -370,7 +370,7 @@ private template wrapperSignature(alias fun)
         bool first = true;
         foreach (i, p; param)
         {
-            import std.conv : to;
+            import ripstd.conv : to;
             r ~= (first ? "" : ", ") ~ p.stringof ~ " a" ~ (i+1).to!string;
             first = false;
         }
@@ -517,7 +517,7 @@ version (StdDdoc)
 ///
 @system unittest
 {
-    import std.traits : functionAttributes, FunctionAttribute;
+    import ripstd.traits : functionAttributes, FunctionAttribute;
     interface A { int run(); }
     interface B { int stop(); @property int status(); }
     class X
@@ -575,7 +575,7 @@ template unwrap(Target)
                         break;
                 }
             } while (upCastSource);
-            import std.conv : ConvException;
+            import ripstd.conv : ConvException;
             throw new ConvException(unwrapExceptionText!(Source,Target));
         }
         // structural downcast for class target
@@ -667,7 +667,7 @@ template unwrap(Target)
 // https://issues.dlang.org/show_bug.cgi?id=10377
 @system unittest
 {
-    import std.algorithm, std.range;
+    import ripstd.algorithm, ripstd.range;
 
     interface MyInputRange(T)
     {
@@ -831,7 +831,7 @@ else
 {
     struct Final
     {
-        import std.typecons : Proxy;
+        import ripstd.typecons : Proxy;
 
         private T final_value;
         mixin Proxy!final_value;

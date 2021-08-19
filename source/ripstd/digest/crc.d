@@ -58,13 +58,13 @@ $(TR $(TDNW Helpers) $(TD $(MYREF crcHexString) $(MYREF crc32Of) $(MYREF crc64EC
  */
 module ripstd.digest.crc;
 
-public import std.digest;
+public import ripstd.digest;
 
 ///
 @safe unittest
 {
     //Template API
-    import std.digest.crc;
+    import ripstd.digest.crc;
 
     ubyte[4] hash = crc32Of("The quick brown fox jumps over the lazy dog");
     assert(crcHexString(hash) == "414FA339");
@@ -82,7 +82,7 @@ public import std.digest;
 @safe unittest
 {
     //OOP API
-    import std.digest.crc;
+    import ripstd.digest.crc;
 
     auto crc = new CRC32Digest();
     ubyte[] hash = crc.digest("The quick brown fox jumps over the lazy dog");
@@ -277,7 +277,7 @@ if (N == 32 || N == 64)
          */
         R peek() const @safe pure nothrow @nogc
         {
-            import std.bitmanip : nativeToLittleEndian;
+            import ripstd.bitmanip : nativeToLittleEndian;
             //Complement, LSB first / Little Endian, see http://rosettacode.org/wiki/CRC-32
             return nativeToLittleEndian(~_state);
         }
@@ -364,7 +364,7 @@ if (N == 32 || N == 64)
 
 @system unittest
 {
-    import std.conv : hexString;
+    import ripstd.conv : hexString;
     ubyte[4] digest;
 
     CRC32 crc;
@@ -405,7 +405,7 @@ if (N == 32 || N == 64)
 
 @system unittest
 {
-    import std.conv : hexString;
+    import ripstd.conv : hexString;
     ubyte[8] digest;
 
     CRC64ECMA crc;
@@ -445,7 +445,7 @@ if (N == 32 || N == 64)
 
 @system unittest
 {
-    import std.conv : hexString;
+    import ripstd.conv : hexString;
     ubyte[8] digest;
 
     CRC64ISO crc;
@@ -507,13 +507,13 @@ ubyte[4] crc32Of(T...)(T data)
     ubyte[] data = [4,5,7,25];
     assert(data.crc32Of == [167, 180, 199, 131]);
 
-    import std.utf : byChar;
+    import ripstd.utf : byChar;
     assert("hello"d.byChar.crc32Of == [134, 166, 16, 54]);
 
     ubyte[4] hash = "abc".crc32Of();
     assert(hash == digest!CRC32("ab", "c"));
 
-    import std.range : iota;
+    import ripstd.range : iota;
     enum ubyte S = 5, F = 66;
     assert(iota(S, F).crc32Of == [59, 140, 234, 154]);
 }
@@ -542,14 +542,14 @@ ubyte[8] crc64ECMAOf(T...)(T data)
     ubyte[] data = [4,5,7,25];
     assert(data.crc64ECMAOf == [58, 142, 220, 214, 118, 98, 105, 69]);
 
-    import std.utf : byChar;
+    import ripstd.utf : byChar;
     assert("hello"d.byChar.crc64ECMAOf == [177, 55, 185, 219, 229, 218, 30, 155]);
 
     ubyte[8] hash = "abc".crc64ECMAOf();
     assert("abc".crc64ECMAOf == [39, 118, 39, 26, 74, 9, 216, 44]);
     assert(hash == digest!CRC64ECMA("ab", "c"));
 
-    import std.range : iota;
+    import ripstd.range : iota;
     enum ubyte S = 5, F = 66;
     assert(iota(S, F).crc64ECMAOf == [6, 184, 91, 238, 46, 213, 127, 188]);
 }
@@ -578,14 +578,14 @@ ubyte[8] crc64ISOOf(T...)(T data)
     ubyte[] data = [4,5,7,25];
     assert(data.crc64ISOOf == [0, 0, 0, 80, 137, 232, 203, 120]);
 
-    import std.utf : byChar;
+    import ripstd.utf : byChar;
     assert("hello"d.byChar.crc64ISOOf == [0, 0, 16, 216, 226, 238, 62, 60]);
 
     ubyte[8] hash = "abc".crc64ISOOf();
     assert("abc".crc64ISOOf == [0, 0, 0, 0, 32, 196, 118, 55]);
     assert(hash == digest!CRC64ISO("ab", "c"));
 
-    import std.range : iota;
+    import ripstd.range : iota;
     enum ubyte S = 5, F = 66;
 
     assert(iota(S, F).crc64ISOOf == [21, 185, 116, 95, 219, 11, 54, 7]);
@@ -676,9 +676,9 @@ alias CRC64ISODigest = WrapperDigest!CRC64ISO;
 
 @system unittest
 {
-    import std.conv : hexString;
-    import std.range;
-    import std.exception;
+    import ripstd.conv : hexString;
+    import ripstd.range;
+    import ripstd.exception;
 
     auto crc = new CRC32Digest();
 

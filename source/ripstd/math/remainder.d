@@ -51,8 +51,8 @@ real fmod(real x, real y) @trusted nothrow @nogc
 ///
 @safe unittest
 {
-    import std.math.operations : feqrel;
-    import std.math.traits : isIdentical, isNaN;
+    import ripstd.math.operations : feqrel;
+    import ripstd.math.traits : isIdentical, isNaN;
 
     assert(isIdentical(fmod(0.0, 1.0), 0.0));
     assert(fmod(5.0, 3.0).feqrel(2.0) > 16);
@@ -74,8 +74,8 @@ real modf(real x, ref real i) @trusted nothrow @nogc
 {
     version (CRuntime_Microsoft)
     {
-        import std.math.traits : copysign, isInfinity;
-        import std.math.rounding : trunc;
+        import ripstd.math.traits : copysign, isInfinity;
+        import ripstd.math.rounding : trunc;
 
         i = trunc(x);
         return copysign(isInfinity(x) ? 0.0 : x - i, x);
@@ -87,7 +87,7 @@ real modf(real x, ref real i) @trusted nothrow @nogc
 ///
 @safe unittest
 {
-    import std.math.operations : feqrel;
+    import ripstd.math.operations : feqrel;
 
     real frac;
     real intpart;
@@ -131,8 +131,8 @@ real remquo(real x, real y, out int n) @trusted nothrow @nogc  /// ditto
 ///
 @safe @nogc nothrow unittest
 {
-    import std.math.operations : feqrel;
-    import std.math.traits : isNaN;
+    import ripstd.math.operations : feqrel;
+    import ripstd.math.traits : isNaN;
 
     assert(remainder(5.1, 3.0).feqrel(-0.9) > 16);
     assert(remainder(-5.1, 3.0).feqrel(0.9) > 16);
@@ -145,7 +145,7 @@ real remquo(real x, real y, out int n) @trusted nothrow @nogc  /// ditto
 ///
 @safe @nogc nothrow unittest
 {
-    import std.math.operations : feqrel;
+    import ripstd.math.operations : feqrel;
 
     int n;
 

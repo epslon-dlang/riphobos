@@ -45,13 +45,13 @@ $(TR $(TDNW Helpers) $(TD $(MYREF md5Of))
  */
 module ripstd.digest.md;
 
-public import std.digest;
+public import ripstd.digest;
 
 ///
 @safe unittest
 {
     //Template API
-    import std.digest.md;
+    import ripstd.digest.md;
 
     //Feeding data
     ubyte[1024] data;
@@ -67,7 +67,7 @@ public import std.digest;
 @safe unittest
 {
     //OOP API
-    import std.digest.md;
+    import ripstd.digest.md;
 
     auto md5 = new MD5Digest();
     ubyte[] hash = md5.digest("abc");
@@ -183,7 +183,7 @@ struct MD5
 
             version (BigEndian)
             {
-                import std.bitmanip : littleEndianToNative;
+                import ripstd.bitmanip : littleEndianToNative;
 
                 for (size_t i = 0; i < 16; i++)
                 {
@@ -356,7 +356,7 @@ struct MD5
           */
         ubyte[16] finish() @trusted pure nothrow @nogc
         {
-            import std.bitmanip : nativeToLittleEndian;
+            import ripstd.bitmanip : nativeToLittleEndian;
 
             ubyte[16] data = void;
             ubyte[8] bits = void;
@@ -437,8 +437,8 @@ struct MD5
 
 @system unittest
 {
-    import std.range;
-    import std.conv : hexString;
+    import ripstd.range;
+    import ripstd.conv : hexString;
 
     ubyte[16] digest;
 
@@ -542,7 +542,7 @@ alias MD5Digest = WrapperDigest!MD5;
 
 @system unittest
 {
-    import std.conv : hexString;
+    import ripstd.conv : hexString;
     auto md5 = new MD5Digest();
 
     md5.put(cast(ubyte[])"abcdef");
@@ -557,7 +557,7 @@ alias MD5Digest = WrapperDigest!MD5;
 
     debug
     {
-        import std.exception;
+        import ripstd.exception;
         assertThrown!Error(md5.finish(result[0 .. 15]));
     }
 

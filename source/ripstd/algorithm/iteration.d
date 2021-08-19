@@ -72,10 +72,10 @@ T2=$(TR $(TDNW $(LREF $1)) $(TD $+))
  */
 module ripstd.algorithm.iteration;
 
-import std.functional : unaryFun, binaryFun;
-import std.range.primitives;
-import std.traits;
-import std.typecons : Flag, Yes, No;
+import ripstd.functional : unaryFun, binaryFun;
+import ripstd.range.primitives;
+import ripstd.traits;
+import ripstd.typecons : Flag, Yes, No;
 
 private template aggregate(fun...)
 if (fun.length >= 1)
@@ -103,7 +103,7 @@ if (fun.length >= 1)
 
     @safe unittest
     {
-        import std.algorithm.comparison : equal, max, min;
+        import ripstd.algorithm.comparison : equal, max, min;
 
         auto data = [[4, 2, 1, 3], [4, 9, -1, 3, 2], [3]];
 
@@ -112,7 +112,7 @@ if (fun.length >= 1)
         assert(agg1.equal([4, 9, 3]));
 
         // Multiple aggregating functions
-        import std.typecons : tuple;
+        import ripstd.typecons : tuple;
         auto agg2 = data.aggregate!(max, min);
         assert(agg2.equal([
             tuple(4, 1),
@@ -170,9 +170,9 @@ if (isBidirectionalRange!Range)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range, std.stdio;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range, ripstd.stdio;
+    import ripstd.typecons : tuple;
 
     ulong counter = 0;
     double fun(int x)
@@ -231,8 +231,8 @@ same cost or side effects.
 +/
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range;
     int i = 0;
 
     auto r = iota(0, 4).tee!((a){i = a;}, No.pipeOnPop);
@@ -248,8 +248,8 @@ same cost or side effects.
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range;
     auto a = [1, 2, 3, 4];
     assert(equal(a.map!(a => (a - 1) * a)().cache(),                      [ 0, 2, 6, 12]));
     assert(equal(a.map!(a => (a - 1) * a)().cacheBidirectional().retro(), [12, 6, 2,  0]));
@@ -261,7 +261,7 @@ same cost or side effects.
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     //immutable test
     static struct S
@@ -279,7 +279,7 @@ same cost or side effects.
 
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     //safety etc
     auto a = [1, 2, 3, 4];
@@ -296,8 +296,8 @@ same cost or side effects.
 
 @safe unittest
 {
-    import std.range : cycle;
-    import std.algorithm.comparison : equal;
+    import ripstd.range : cycle;
+    import ripstd.algorithm.comparison : equal;
 
     auto c = [1, 2, 3].cycle().cache();
     c = c[1 .. $];
@@ -324,8 +324,8 @@ private struct _Cache(R, bool bidir)
 
     private
     {
-        import std.algorithm.internal : algoFormat;
-        import std.meta : AliasSeq;
+        import ripstd.algorithm.internal : algoFormat;
+        import ripstd.meta : AliasSeq;
 
         alias E  = ElementType!R;
         alias UE = Unqual!E;
@@ -458,7 +458,7 @@ private struct _Cache(R, bool bidir)
             }
             do
             {
-                import std.range : takeExactly;
+                import ripstd.range : takeExactly;
                 return this[low .. $].takeExactly(high - low);
             }
         }
@@ -490,13 +490,13 @@ if (fun.length >= 1)
      */
     auto map(Range)(Range r) if (isInputRange!(Unqual!Range))
     {
-        import std.meta : AliasSeq, staticMap;
+        import ripstd.meta : AliasSeq, staticMap;
 
         alias RE = ElementType!(Range);
         static if (fun.length > 1)
         {
-            import std.functional : adjoin;
-            import std.meta : staticIndexOf;
+            import ripstd.functional : adjoin;
+            import ripstd.meta : staticIndexOf;
 
             alias _funs = staticMap!(unaryFun, fun);
             alias _fun = adjoin!_funs;
@@ -528,8 +528,8 @@ if (fun.length >= 1)
 ///
 @safe @nogc unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : chain, only;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : chain, only;
     auto squares =
         chain(only(1, 2, 3, 4), only(5, 6)).map!(a => a * a);
     assert(equal(squares, only(1, 4, 9, 16, 25, 36)));
@@ -560,8 +560,8 @@ it separately:
 */
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : to;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : to;
 
     alias stringize = map!(to!string);
     assert(equal(stringize([ 1, 2, 3, 4 ]), [ "1", "2", "3", "4" ]));
@@ -570,7 +570,7 @@ it separately:
 // Verify workaround for https://issues.dlang.org/show_bug.cgi?id=15777
 @safe unittest
 {
-    import std.algorithm.mutation, std.string;
+    import ripstd.algorithm.mutation, ripstd.string;
     auto foo(string[] args)
     {
         return args.map!strip;
@@ -667,7 +667,7 @@ private struct MapResult(alias fun, Range)
 
             auto opSlice(opSlice_t low, opSlice_t high)
             {
-                import std.range : takeExactly;
+                import ripstd.range : takeExactly;
                 return this[low .. $].takeExactly(high - low);
             }
         }
@@ -684,9 +684,9 @@ private struct MapResult(alias fun, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : to;
-    import std.functional : adjoin;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : to;
+    import ripstd.functional : adjoin;
 
     alias stringize = map!(to!string);
     assert(equal(stringize([ 1, 2, 3, 4 ]), [ "1", "2", "3", "4" ]));
@@ -703,12 +703,12 @@ private struct MapResult(alias fun, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.ascii : toUpper;
-    import std.internal.test.dummyrange;
-    import std.range;
-    import std.typecons : tuple;
-    import std.random : uniform, Random = Xorshift;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.ascii : toUpper;
+    import ripstd.internal.test.dummyrange;
+    import ripstd.range;
+    import ripstd.typecons : tuple;
+    import ripstd.random : uniform, Random = Xorshift;
 
     int[] arr1 = [ 1, 2, 3, 4 ];
     const int[] arr1Const = arr1;
@@ -818,8 +818,8 @@ private struct MapResult(alias fun, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range;
     auto LL = iota(1L, 4L);
     auto m = map!"a*a"(LL);
     assert(equal(m, [1L, 4L, 9L]));
@@ -827,7 +827,7 @@ private struct MapResult(alias fun, Range)
 
 @safe unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
 
     // https://issues.dlang.org/show_bug.cgi?id=10130 - map of iota with const step.
     const step = 2;
@@ -843,8 +843,8 @@ private struct MapResult(alias fun, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range;
     //slicing infinites
     auto rr = iota(0, 5).cycle().map!"a * a"();
     alias RR = typeof(rr);
@@ -855,7 +855,7 @@ private struct MapResult(alias fun, Range)
 
 @safe unittest
 {
-    import std.range;
+    import ripstd.range;
     struct S {int* p;}
     auto m = immutable(S).init.repeat().map!"a".save;
     assert(m.front == immutable(S)(null));
@@ -874,7 +874,7 @@ private struct MapResult(alias fun, Range)
         long opIndex(ulong i) immutable { return 3; }
     }
 
-    import std.algorithm.iteration : map;
+    import ripstd.algorithm.iteration : map;
     Always3.init.map!(e => e)[ulong.max];
 }
 
@@ -905,9 +905,9 @@ See_Also: $(REF tee, std,range)
  */
 template each(alias fun = "a")
 {
-    import std.meta : AliasSeq;
-    import std.traits : Parameters;
-    import std.typecons : Flag, Yes, No;
+    import ripstd.meta : AliasSeq;
+    import ripstd.traits : Parameters;
+    import ripstd.typecons : Flag, Yes, No;
 
 private:
     alias BinaryArgs = AliasSeq!(fun, "i", "a");
@@ -1097,8 +1097,8 @@ public:
 ///
 @safe unittest
 {
-    import std.range : iota;
-    import std.typecons : No;
+    import ripstd.range : iota;
+    import ripstd.typecons : No;
 
     int[] arr;
     iota(5).each!(n => arr ~= n);
@@ -1153,7 +1153,7 @@ public:
 // binary foreach with two ref args
 @system unittest
 {
-    import std.range : lockstep;
+    import ripstd.range : lockstep;
 
     auto a = [ 1, 2, 3 ];
     auto b = [ 2, 3, 4 ];
@@ -1168,7 +1168,7 @@ public:
 // application of `each` with >2 args (opApply)
 @system unittest
 {
-    import std.range : lockstep;
+    import ripstd.range : lockstep;
     auto a = [0,1,2];
     auto b = [3,4,5];
     auto c = [6,7,8];
@@ -1184,7 +1184,7 @@ public:
 // application of `each` with >2 args (range interface)
 @safe unittest
 {
-    import std.range : zip;
+    import ripstd.range : zip;
     auto a = [0,1,2];
     auto b = [3,4,5];
     auto c = [6,7,8];
@@ -1234,7 +1234,7 @@ public:
 // `each` should behave similar to foreach
 @safe unittest
 {
-    import std.range : iota;
+    import ripstd.range : iota;
 
     auto arr = [1, 2, 3, 4];
 
@@ -1251,7 +1251,7 @@ public:
 // `each` should behave similar to foreach
 @system unittest
 {
-    import std.range : iota, lockstep;
+    import ripstd.range : iota, lockstep;
 
     // 2 ref parameters and index
     auto arrA = [1, 2, 3, 4];
@@ -1279,8 +1279,8 @@ public:
 // `each` should behave similar to foreach
 @system unittest
 {
-    import std.range : lockstep;
-    import std.typecons : Tuple;
+    import ripstd.range : lockstep;
+    import ripstd.typecons : Tuple;
 
     auto a = "abc";
     auto b = "def";
@@ -1342,9 +1342,9 @@ if (is(typeof(unaryFun!predicate)))
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.math.operations : isClose;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.math.operations : isClose;
+    import ripstd.range;
 
     int[] arr = [ 1, 2, 3, 4, 5 ];
 
@@ -1433,9 +1433,9 @@ private struct FilterResult(alias pred, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange;
+    import ripstd.range;
 
     auto shouldNotLoop4ever = repeat(1).filter!(x => x % 2 == 0);
     static assert(isInfinite!(typeof(shouldNotLoop4ever)));
@@ -1495,7 +1495,7 @@ private struct FilterResult(alias pred, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     int[] a = [ 3, 4 ];
     const aConst = a;
@@ -1511,8 +1511,8 @@ private struct FilterResult(alias pred, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.functional : compose, pipe;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.functional : compose, pipe;
 
     assert(equal(compose!(map!"2 * a", filter!"a & 1")([1,2,3,4,5]),
                     [2,6,10]));
@@ -1522,7 +1522,7 @@ private struct FilterResult(alias pred, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     int x = 10;
     int underX(int a) { return a < x; }
@@ -1533,8 +1533,8 @@ private struct FilterResult(alias pred, Range)
 // https://issues.dlang.org/show_bug.cgi?id=19823
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : dropOne;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : dropOne;
 
     auto a = [1, 2, 3, 4];
     assert(a.filter!(a => a != 1).dropOne.equal([3, 4]));
@@ -1579,8 +1579,8 @@ template filterBidirectional(alias pred)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range;
 
     int[] arr = [ 1, 2, 3, 4, 5 ];
     auto small = filterBidirectional!("a < 3")(arr);
@@ -1678,7 +1678,7 @@ Group!(pred, Range) group(alias pred = "a == b", Range)(Range r)
 struct Group(alias pred, R)
 if (isInputRange!R)
 {
-    import std.typecons : Rebindable, tuple, Tuple;
+    import ripstd.typecons : Rebindable, tuple, Tuple;
 
     private alias comp = binaryFun!pred;
 
@@ -1766,8 +1766,8 @@ if (isInputRange!R)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : tuple, Tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : tuple, Tuple;
 
     int[] arr = [ 1, 2, 2, 2, 2, 3, 4, 4, 4, 5 ];
     assert(equal(group(arr), [ tuple(1, 1u), tuple(2, 4u), tuple(3, 1u),
@@ -1780,8 +1780,8 @@ if (isInputRange!R)
  */
 @safe unittest
 {
-    import std.algorithm.sorting : sort;
-    import std.array : assocArray;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.array : assocArray;
 
     uint[string] result;
     auto range = ["a", "b", "a", "c", "b", "c", "c", "d", "e"];
@@ -1794,9 +1794,9 @@ if (isInputRange!R)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange;
-    import std.typecons : tuple, Tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange;
+    import ripstd.typecons : tuple, Tuple;
 
     int[] arr = [ 1, 2, 2, 2, 2, 3, 4, 4, 4, 5 ];
     assert(equal(group(arr), [ tuple(1, 1u), tuple(2, 4u), tuple(3, 1u),
@@ -1818,8 +1818,8 @@ if (isInputRange!R)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : tuple;
 
     // https://issues.dlang.org/show_bug.cgi?id=13857
     immutable(int)[] a1 = [1,1,2,2,2,3,4,4,5,6,6,7,8,9,9,9];
@@ -1856,8 +1856,8 @@ if (isInputRange!R)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : tuple;
 
     int[] arr = [ 1, 2, 2, 2, 2, 3, 4, 4, 4, 5 ];
     auto r = arr.group;
@@ -1880,8 +1880,8 @@ if (isInputRange!R)
 // https://issues.dlang.org/show_bug.cgi?id=18657
 pure @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : refRange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : refRange;
     string s = "foo";
     auto r = refRange(&s).group;
     assert(equal(r.save, "foo".group));
@@ -1978,7 +1978,7 @@ if (isInputRange!Range && !isForwardRange!Range)
         openChunk = true;
         static if (isUnary)
         {
-            import std.typecons : tuple;
+            import ripstd.typecons : tuple;
             return tuple(unaryFun!pred(_prev),
                          ChunkByChunkImpl!(eq, Range)(r, _prev));
         }
@@ -2018,7 +2018,7 @@ private struct ChunkByOuter(Range, bool eqEquivalenceAssured)
 // Inner range for forward range version of chunkBy
 private struct ChunkByGroup(alias eq, Range, bool eqEquivalenceAssured)
 {
-    import std.typecons : RefCounted;
+    import ripstd.typecons : RefCounted;
 
     alias OuterRange = ChunkByOuter!(Range, eqEquivalenceAssured);
 
@@ -2102,7 +2102,7 @@ private enum GroupingOpType{binaryEquivalent, binaryAny, unary}
 private struct ChunkByImpl(alias pred, alias eq, GroupingOpType opType, Range)
 if (isForwardRange!Range)
 {
-    import std.typecons : RefCounted;
+    import ripstd.typecons : RefCounted;
 
     enum bool eqEquivalenceAssured = opType != GroupingOpType.binaryAny;
     alias OuterRange = ChunkByOuter!(Range, eqEquivalenceAssured);
@@ -2125,7 +2125,7 @@ if (isForwardRange!Range)
 
     static if (opType == GroupingOpType.unary) @property auto front()
     {
-        import std.typecons : tuple;
+        import ripstd.typecons : tuple;
         return tuple(unaryFun!pred(impl.current.front), InnerRange(impl));
     }
     else @property auto front()
@@ -2181,9 +2181,9 @@ if (isForwardRange!Range)
 //Test for https://issues.dlang.org/show_bug.cgi?id=14909
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : tuple;
-    import std.stdio;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : tuple;
+    import ripstd.stdio;
     auto n = 3;
     auto s = [1,2,3].chunkBy!(a => a+n);
     auto t = s.save.map!(x=>x[0]);
@@ -2195,7 +2195,7 @@ if (isForwardRange!Range)
 //Test for https://issues.dlang.org/show_bug.cgi?id=18751
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     string[] data = [ "abc", "abc", "def" ];
     int[] indices = [ 0, 1, 2 ];
@@ -2207,7 +2207,7 @@ if (isForwardRange!Range)
 //Additional test for fix for issues 14909 and 18751
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto v = [2,4,8,3,6,9,1,5,7];
     auto i = 2;
     assert(v.chunkBy!((a,b) => a % i == b % i).equal!equal([[2,4,8],[3],[6],[9,1,5,7]]));
@@ -2215,7 +2215,7 @@ if (isForwardRange!Range)
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     size_t popCount = 0;
     class RefFwdRange
@@ -2331,7 +2331,7 @@ if (isInputRange!Range)
 /// Showing usage with binary predicate:
 /*FIXME: @safe*/ @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // Grouping by particular attribute of each element:
     auto data = [
@@ -2358,9 +2358,9 @@ if (isInputRange!Range)
 /// Showing usage with unary predicate:
 /* FIXME: pure @safe nothrow*/ @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range.primitives;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range.primitives;
+    import ripstd.typecons : tuple;
 
     // Grouping by particular attribute of each element:
     auto range =
@@ -2407,8 +2407,8 @@ if (isInputRange!Range)
 
 /*FIXME: pure @safe nothrow*/ @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : tuple;
 
     struct Item { int x, y; }
 
@@ -2525,9 +2525,9 @@ if (isInputRange!Range)
      *   main range. The chunk is still available via front, it is just empty.
      */
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         import core.exception : AssertError;
-        import std.exception : assertThrown;
+        import ripstd.exception : assertThrown;
 
         auto a = [[0, 0], [0, 1],
                   [1, 2], [1, 3], [1, 4],
@@ -2635,8 +2635,8 @@ if (isInputRange!Range)
 
     // https://issues.dlang.org/show_bug.cgi?id=19532 - Using roundRobin/chunkBy
     {
-        import std.algorithm.comparison : equal;
-        import std.range : roundRobin;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.range : roundRobin;
 
         auto a0 = [0, 1, 3, 6];
         auto a1 = [0, 2, 4, 6, 7];
@@ -2659,8 +2659,8 @@ if (isInputRange!Range)
 
     // https://issues.dlang.org/show_bug.cgi?id=19532 - Using merge/chunkBy
     {
-        import std.algorithm.comparison : equal;
-        import std.algorithm.sorting : merge;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.algorithm.sorting : merge;
 
         auto a0 = [2, 3, 5];
         auto a1 = [2, 4, 5];
@@ -2682,8 +2682,8 @@ if (isInputRange!Range)
 
     // https://issues.dlang.org/show_bug.cgi?id=19532 - Using chunkBy/map-fold
     {
-        import std.algorithm.comparison : equal;
-        import std.algorithm.iteration : fold, map;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.algorithm.iteration : fold, map;
 
         auto a = [0, 0, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 6, 6, 6, 7, 8, 8, 9];
         auto expected = [0, 3, 4, 6, 8, 5, 18, 7, 16, 9];
@@ -2709,8 +2709,8 @@ if (isInputRange!Range)
     // https://issues.dlang.org/show_bug.cgi?id=19532
     // Using multiwayMerge/chunkBy
     {
-        import std.algorithm.comparison : equal;
-        import std.algorithm.setops : multiwayMerge;
+        import ripstd.algorithm.comparison : equal;
+        import ripstd.algorithm.setops : multiwayMerge;
 
         {
             auto a0 = [2, 3, 5];
@@ -2786,7 +2786,7 @@ relations.
 
 auto splitWhen(alias pred, Range)(Range r)
 if (isForwardRange!Range)
-{   import std.functional : not;
+{   import ripstd.functional : not;
     return ChunkByImpl!(not!pred, not!pred, GroupingOpType.binaryAny, Range)(r);
 }
 
@@ -2794,8 +2794,8 @@ if (isForwardRange!Range)
 ///
 nothrow pure @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : dropExactly;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : dropExactly;
     auto source = [4, 3, 2, 11, 0, -3, -3, 5, 3, 0];
 
     auto result1 = source.splitWhen!((a,b) => a <= b);
@@ -2818,8 +2818,8 @@ nothrow pure @system unittest
 //ensure we don't iterate the underlying range twice
 nothrow @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.math.algebraic : abs;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.math.algebraic : abs;
 
     struct SomeRange
     {
@@ -2853,7 +2853,7 @@ nothrow @system unittest
 // Issue 13595
 @system unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto r = [1, 2, 3, 4, 5, 6, 7, 8, 9].splitWhen!((x, y) => ((x*y) % 3) > 0);
     assert(r.equal!equal([
         [1],
@@ -2866,8 +2866,8 @@ nothrow @system unittest
 nothrow pure @system unittest
 {
     // Grouping by maximum adjacent difference:
-    import std.math.algebraic : abs;
-    import std.algorithm.comparison : equal;
+    import ripstd.math.algebraic : abs;
+    import ripstd.algorithm.comparison : equal;
     auto r3 = [1, 3, 2, 5, 4, 9, 10].splitWhen!((a, b) => abs(a-b) >= 3);
     assert(r3.equal!equal([
         [1, 3, 2],
@@ -3102,8 +3102,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.conv : text;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.conv : text;
 
     assert(["abc", "def"].joiner.equal("abcdef"));
     assert(["Mary", "has", "a", "little", "lamb"]
@@ -3116,9 +3116,9 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range.interfaces;
-    import std.range.primitives;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range.interfaces;
+    import ripstd.range.primitives;
     // joiner() should work for non-forward ranges too.
     auto r = inputRangeObject(["abc", "def"]);
     assert(equal(joiner(r, "xyz"), "abcxyzdef"));
@@ -3126,8 +3126,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range;
 
     // Related to https://issues.dlang.org/show_bug.cgi?id=8061
     auto r = joiner([
@@ -3175,7 +3175,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // Transience correctness test
     struct TransientRange
@@ -3346,7 +3346,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
         {
             bool checkFinalElement()
             {
-                import std.range : dropOne;
+                import ripstd.range : dropOne;
 
                 if (reachedFinalElement)
                     return true;
@@ -3453,8 +3453,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : repeat;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : repeat;
 
     assert([""].joiner.equal(""));
     assert(["", ""].joiner.equal(""));
@@ -3468,7 +3468,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 /// joiner allows in-place mutation!
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = [ [1, 2, 3], [42, 43] ];
     auto j = joiner(a);
     j.front = 44;
@@ -3479,9 +3479,9 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 /// insert characters fully lazily into a string
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : chain, cycle, iota, only, retro, take, zip;
-    import std.format : format;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : chain, cycle, iota, only, retro, take, zip;
+    import ripstd.format : format;
 
     static immutable number = "12345678";
     static immutable delimiter = ",";
@@ -3496,7 +3496,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 
 @safe unittest
 {
-    import std.range.interfaces : inputRangeObject;
+    import ripstd.range.interfaces : inputRangeObject;
     static assert(isInputRange!(typeof(joiner([""]))));
     static assert(isForwardRange!(typeof(joiner([""]))));
 }
@@ -3505,7 +3505,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 {
     // Initial version of PR #6115 caused a compilation failure for
     // https://github.com/BlackEdder/ggplotd/blob/d4428c08db5ffdc05dfd29690bf7da9073ea1dc5/source/ggplotd/stat.d#L562-L583
-    import std.range : zip;
+    import ripstd.range : zip;
     int[] xCoords = [1, 2, 3];
     int[] yCoords = [4, 5, 6];
     auto coords = zip(xCoords, xCoords[1..$]).map!( (xr) {
@@ -3522,9 +3522,9 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 
 @system unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range.interfaces : inputRangeObject;
-    import std.range : retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range.interfaces : inputRangeObject;
+    import ripstd.range : retro;
 
     // https://issues.dlang.org/show_bug.cgi?id=8240
     assert(equal(joiner([inputRangeObject("")]), ""));
@@ -3557,8 +3557,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 /// joiner can be bidirectional
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : retro;
 
     auto a = [[1, 2, 3], [4, 5]];
     auto j = a.joiner;
@@ -3570,8 +3570,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 // bidirectional joiner: test for filtering empty elements
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : retro;
 
     alias El = (e) => new int(e);
     auto a = [null, [null, El(1), null, El(2), null, El(3), null], null, [null, El(4), null, El(5), null]];
@@ -3589,8 +3589,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 // bidirectional joiner is @nogc
 @safe @nogc unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota, only, retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota, only, retro;
 
     auto a = only(iota(1, 4), iota(4, 6));
     auto j = a.joiner;
@@ -3601,8 +3601,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 // bidirectional joiner supports assignment to the back
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : popBackN;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : popBackN;
 
     auto a = [[1, 2, 3], [4, 5]];
     auto j = a.joiner;
@@ -3616,8 +3616,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 // bidirectional joiner works with auto-decoding
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : retro;
 
     auto a = ["😀😐", "😠"];
     auto j = a.joiner;
@@ -3627,8 +3627,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 // test two-side iteration
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : popBackN;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : popBackN;
 
     auto arrs = [
         [[1], [2], [3], [4], [5]],
@@ -3659,7 +3659,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     struct TransientRange
     {
@@ -3704,8 +3704,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.internal : algoFormat;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.internal : algoFormat;
 
     struct TransientRange
     {
@@ -3745,7 +3745,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
         result ~= c;
     }
 
-    import std.conv : to;
+    import ripstd.conv : to;
     assert(equal(result, "abc12def34"d),
         //Convert to string for assert's message
         to!string("Unexpected result: '%s'"d.algoFormat(result)));
@@ -3754,8 +3754,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 // https://issues.dlang.org/show_bug.cgi?id=8061
 @system unittest
 {
-    import std.conv : to;
-    import std.range.interfaces;
+    import ripstd.conv : to;
+    import ripstd.range.interfaces;
 
     auto r = joiner([inputRangeObject("ab"), inputRangeObject("cd")]);
     assert(isForwardRange!(typeof(r)));
@@ -3766,7 +3766,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 
 @safe unittest
 {
-    import std.range : repeat;
+    import ripstd.range : repeat;
 
     class AssignableRange
     {
@@ -3866,11 +3866,11 @@ See_Also:
 template reduce(fun...)
 if (fun.length >= 1)
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
 
     alias binfuns = staticMap!(binaryFun, fun);
     static if (fun.length > 1)
-        import std.typecons : tuple, isTuple;
+        import ripstd.typecons : tuple, isTuple;
 
     /++
     No-seed version. The first element of `r` is used as the seed's value.
@@ -3894,7 +3894,7 @@ if (fun.length >= 1)
     auto reduce(R)(R r)
     if (isIterable!R)
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         alias E = Select!(isInputRange!R, ElementType!R, ForeachType!R);
         alias Args = staticMap!(ReduceSeedType!E, binfuns);
 
@@ -3943,7 +3943,7 @@ if (fun.length >= 1)
             return reducePreImpl(r, seed);
         else
         {
-            import std.algorithm.internal : algoFormat;
+            import ripstd.algorithm.internal : algoFormat;
             static assert(isTuple!S, algoFormat("Seed %s should be a Tuple", S.stringof));
             return reducePreImpl(r, seed.expand);
         }
@@ -3962,7 +3962,7 @@ if (fun.length >= 1)
     private auto reduceImpl(bool mustInitialize, R, Args...)(R r, ref Args args)
     if (isIterable!R)
     {
-        import std.algorithm.internal : algoFormat;
+        import ripstd.algorithm.internal : algoFormat;
         static assert(Args.length == fun.length,
             algoFormat("Seed %s does not have the correct amount of fields (should be %s)", Args.stringof, fun.length));
         alias E = Select!(isInputRange!R, ElementType!R, ForeachType!R);
@@ -4019,9 +4019,9 @@ remarkable power and flexibility.
 */
 @safe unittest
 {
-    import std.algorithm.comparison : max, min;
-    import std.math.operations : isClose;
-    import std.range;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.math.operations : isClose;
+    import ripstd.range;
 
     int[] arr = [ 1, 2, 3, 4, 5 ];
     // Sum all elements
@@ -4074,10 +4074,10 @@ The number of seeds must be correspondingly increased.
 */
 @safe unittest
 {
-    import std.algorithm.comparison : max, min;
-    import std.math.operations : isClose;
-    import std.math.algebraic : sqrt;
-    import std.typecons : tuple, Tuple;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.algebraic : sqrt;
+    import ripstd.typecons : tuple, Tuple;
 
     double[] a = [ 3.0, 4, 7, 11, 3, 2, 5 ];
     // Compute minimum and maximum in one pass
@@ -4099,9 +4099,9 @@ The number of seeds must be correspondingly increased.
 
 @safe unittest
 {
-    import std.algorithm.comparison : max, min;
-    import std.range : chain;
-    import std.typecons : tuple, Tuple;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.range : chain;
+    import ripstd.typecons : tuple, Tuple;
 
     double[] a = [ 3, 4 ];
     auto r = reduce!("a + b")(0.0, a);
@@ -4128,10 +4128,10 @@ The number of seeds must be correspondingly increased.
 
 @safe unittest
 {
-    import std.algorithm.comparison : max, min;
-    import std.exception : assertThrown;
-    import std.range : iota;
-    import std.typecons : tuple, Tuple;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.exception : assertThrown;
+    import ripstd.range : iota;
+    import ripstd.typecons : tuple, Tuple;
 
     // Test the opApply case.
     static struct OpApply
@@ -4180,8 +4180,8 @@ The number of seeds must be correspondingly increased.
 {
     // https://issues.dlang.org/show_bug.cgi?id=10408
     // Two-function reduce of a const array.
-    import std.algorithm.comparison : max, min;
-    import std.typecons : tuple, Tuple;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.typecons : tuple, Tuple;
 
     const numbers = [10, 30, 20];
     immutable m = reduce!(min)(numbers);
@@ -4193,7 +4193,7 @@ The number of seeds must be correspondingly increased.
 @safe unittest
 {
     // https://issues.dlang.org/show_bug.cgi?id=10709
-    import std.typecons : tuple, Tuple;
+    import ripstd.typecons : tuple, Tuple;
 
     enum foo = "a + 0.5 * b";
     auto r = [0, 1, 2, 3];
@@ -4224,8 +4224,8 @@ The number of seeds must be correspondingly increased.
     int fun(int a, int b) @safe {return a + b + 1;}
     auto foo()
     {
-        import std.algorithm.comparison : max;
-        import std.typecons : tuple, Tuple;
+        import ripstd.algorithm.comparison : max;
+        import ripstd.typecons : tuple, Tuple;
 
         auto a = reduce!(fun)([1, 2, 3]);
         auto b = reduce!(fun, fun)([1, 2, 3]);
@@ -4244,8 +4244,8 @@ The number of seeds must be correspondingly increased.
 
 @safe unittest
 {
-    import std.algorithm.comparison : max, min;
-    import std.typecons : tuple, Tuple;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.typecons : tuple, Tuple;
 
     //http://forum.dlang.org/post/oghtttkopzjshsuflelk@forum.dlang.org
     //Seed is tuple of const.
@@ -4262,8 +4262,8 @@ The number of seeds must be correspondingly increased.
 // https://issues.dlang.org/show_bug.cgi?id=12569
 @safe unittest
 {
-    import std.algorithm.comparison : max, min;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.typecons : tuple;
     dchar c = 'a';
     reduce!(min, max)(tuple(c, c), "hello"); // OK
     static assert(!is(typeof(reduce!(min, max)(tuple(c), "hello"))));
@@ -4293,7 +4293,7 @@ The number of seeds must be correspondingly increased.
 // reduce shouldn't throw if the length is statically known
 pure nothrow @safe @nogc unittest
 {
-    import std.algorithm.comparison : min;
+    import ripstd.algorithm.comparison : min;
     int[5] arr;
     arr[2] = -1;
     assert(arr.reduce!min == -1);
@@ -4307,7 +4307,7 @@ private template ReduceSeedType(E)
 {
     static template ReduceSeedType(alias fun)
     {
-        import std.algorithm.internal : algoFormat;
+        import ripstd.algorithm.internal : algoFormat;
 
         alias ReduceSeedType = Unqual!(typeof(fun(lvalueOf!E, lvalueOf!E)));
 
@@ -4367,7 +4367,7 @@ if (fun.length >= 1)
         }
         else
         {
-            import std.typecons : tuple;
+            import ripstd.typecons : tuple;
             return reduce!fun(tuple(seed), r);
         }
     }
@@ -4384,8 +4384,8 @@ if (fun.length >= 1)
     // Sum all elements with explicit seed
     assert(arr.fold!((a, b) => a + b)(6) == 21);
 
-    import std.algorithm.comparison : min, max;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : min, max;
+    import ripstd.typecons : tuple;
 
     // Compute minimum and maximum at the same time
     assert(arr.fold!(min, max) == tuple(1, 5));
@@ -4445,7 +4445,7 @@ Note:
 template cumulativeFold(fun...)
 if (fun.length >= 1)
 {
-    import std.meta : staticMap;
+    import ripstd.meta : staticMap;
     private alias binfuns = staticMap!(binaryFun, fun);
 
     /++
@@ -4492,7 +4492,7 @@ if (fun.length >= 1)
 
     private auto cumulativeFoldImpl(R, Args...)(R range, ref Args args)
     {
-        import std.algorithm.internal : algoFormat;
+        import ripstd.algorithm.internal : algoFormat;
 
         static assert(Args.length == 0 || Args.length == fun.length,
             algoFormat("Seed %s does not have the correct amount of fields (should be %s)",
@@ -4543,7 +4543,7 @@ if (fun.length >= 1)
                 assert(!empty, "Attempting to fetch the front of an empty cumulativeFold.");
                 static if (fun.length > 1)
                 {
-                    import std.typecons : tuple;
+                    import ripstd.typecons : tuple;
                     return tuple(state);
                 }
                 else
@@ -4584,10 +4584,10 @@ if (fun.length >= 1)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : max, min;
-    import std.array : array;
-    import std.math.operations : isClose;
-    import std.range : chain;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.array : array;
+    import ripstd.math.operations : isClose;
+    import ripstd.range : chain;
 
     int[] arr = [1, 2, 3, 4, 5];
     // Partial sum of all elements
@@ -4640,10 +4640,10 @@ The number of seeds must be correspondingly increased.
 */
 @safe unittest
 {
-    import std.algorithm.comparison : max, min;
-    import std.algorithm.iteration : map;
-    import std.math.operations : isClose;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.math.operations : isClose;
+    import ripstd.typecons : tuple;
 
     double[] a = [3.0, 4, 7, 11, 3, 2, 5];
     // Compute minimum and maximum in one pass
@@ -4660,10 +4660,10 @@ The number of seeds must be correspondingly increased.
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal, max, min;
-    import std.conv : to;
-    import std.range : chain;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal, max, min;
+    import ripstd.conv : to;
+    import ripstd.range : chain;
+    import ripstd.typecons : tuple;
 
     double[] a = [3, 4];
     auto r = a.cumulativeFold!("a + b")(0.0);
@@ -4695,10 +4695,10 @@ The number of seeds must be correspondingly increased.
 
 @safe unittest
 {
-    import std.algorithm.comparison : max, min;
-    import std.array : array;
-    import std.math.operations : isClose;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : max, min;
+    import ripstd.array : array;
+    import ripstd.math.operations : isClose;
+    import ripstd.typecons : tuple;
 
     const float a = 0.0;
     const float[] b = [1.2, 3, 3.3];
@@ -4719,8 +4719,8 @@ The number of seeds must be correspondingly increased.
 
 @safe unittest
 {
-    import std.math.operations : isClose;
-    import std.typecons : tuple;
+    import ripstd.math.operations : isClose;
+    import ripstd.typecons : tuple;
 
     enum foo = "a + 0.5 * b";
     auto r = [0, 1, 2, 3];
@@ -4733,9 +4733,9 @@ The number of seeds must be correspondingly increased.
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal, max, min;
-    import std.array : array;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal, max, min;
+    import ripstd.array : array;
+    import ripstd.typecons : tuple;
 
     //Seed is tuple of const.
     static auto minmaxElement(alias F = min, alias G = max, R)(in R range)
@@ -4751,8 +4751,8 @@ The number of seeds must be correspondingly increased.
 // https://issues.dlang.org/show_bug.cgi?id=12569
 @safe unittest
 {
-    import std.algorithm.comparison : equal, max, min;
-    import std.typecons : tuple;
+    import ripstd.algorithm.comparison : equal, max, min;
+    import ripstd.typecons : tuple;
 
     dchar c = 'a';
 
@@ -4781,8 +4781,8 @@ The number of seeds must be correspondingly increased.
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange : AllDummyRanges, propagatesLength,
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange : AllDummyRanges, propagatesLength,
         propagatesRangeType, RangeType;
 
     foreach (DummyType; AllDummyRanges)
@@ -4856,8 +4856,8 @@ auto splitter(alias pred = "a == b",
 if (is(typeof(binaryFun!pred(r.front, s)) : bool)
         && ((hasSlicing!Range && hasLength!Range) || isNarrowString!Range))
 {
-    import std.algorithm.searching : find;
-    import std.conv : unsigned;
+    import ripstd.algorithm.searching : find;
+    import ripstd.conv : unsigned;
 
     struct Result
     {
@@ -4887,7 +4887,7 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
         {
             size_t lastIndexOf(Range haystack, Separator needle)
             {
-                import std.range : retro;
+                import ripstd.range : retro;
                 auto r = haystack.retro().find!pred(needle);
                 return r.retro().length - 1;
             }
@@ -4901,7 +4901,7 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 
             static if (isNarrowString!Range)
             {
-                import std.utf : codeLength;
+                import ripstd.utf : codeLength;
 
                 _separatorLength = codeLength!(ElementEncodingType!Range)(separator);
             }
@@ -5091,7 +5091,7 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Basic splitting with characters and numbers.
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert("a|bc|def".splitter('|').equal([ "a", "bc", "def" ]));
 
@@ -5103,8 +5103,8 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Basic splitting with characters and numbers and keeping sentinels.
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : Yes;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : Yes;
 
     assert("a|bc|def".splitter!("a == b", Yes.keepSeparators)('|')
         .equal([ "a", "|", "bc", "|", "def" ]));
@@ -5117,7 +5117,7 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Adjacent separators.
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert("|ab|".splitter('|').equal([ "", "ab", "" ]));
     assert("ab".splitter('|').equal([ "ab" ]));
@@ -5133,8 +5133,8 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Adjacent separators and keeping sentinels.
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : Yes;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : Yes;
 
     assert("|ab|".splitter!("a == b", Yes.keepSeparators)('|')
         .equal([ "", "|", "ab", "|", "" ]));
@@ -5154,8 +5154,8 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Empty and separator-only ranges.
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : empty;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : empty;
 
     assert("".splitter('|').empty);
     assert("|".splitter('|').equal([ "", "" ]));
@@ -5165,9 +5165,9 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Empty and separator-only ranges and keeping sentinels.
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : Yes;
-    import std.range : empty;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : Yes;
+    import ripstd.range : empty;
 
     assert("".splitter!("a == b", Yes.keepSeparators)('|').empty);
     assert("|".splitter!("a == b", Yes.keepSeparators)('|')
@@ -5179,7 +5179,7 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Use a range for splitting
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert("a=>bc=>def".splitter("=>").equal([ "a", "bc", "def" ]));
     assert("a|b||c".splitter("||").equal([ "a|b", "c" ]));
@@ -5199,8 +5199,8 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Use a range for splitting
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : Yes;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : Yes;
 
     assert("a=>bc=>def".splitter!("a == b", Yes.keepSeparators)("=>")
         .equal([ "a", "=>", "bc", "=>", "def" ]));
@@ -5225,8 +5225,8 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Custom predicate functions.
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.ascii : toLower;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.ascii : toLower;
 
     assert("abXcdxef".splitter!"a.toLower == b"('x').equal(
                  [ "ab", "cd", "ef" ]));
@@ -5238,9 +5238,9 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Custom predicate functions.
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : Yes;
-    import std.ascii : toLower;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : Yes;
+    import ripstd.ascii : toLower;
 
     assert("abXcdxef".splitter!("a.toLower == b", Yes.keepSeparators)('x')
         .equal([ "ab", "X", "cd", "x", "ef" ]));
@@ -5253,8 +5253,8 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Use splitter without a separator
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range.primitives : front;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range.primitives : front;
 
     assert(equal(splitter!(a => a == '|')("a|bc|def"), [ "a", "bc", "def" ]));
     assert(equal(splitter!(a => a == ' ')("hello  world"), [ "hello", "", "world" ]));
@@ -5276,7 +5276,7 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Leading separators, trailing separators, or no separators.
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert("|ab|".splitter('|').equal([ "", "ab", "" ]));
     assert("ab".splitter('|').equal([ "ab" ]));
@@ -5285,8 +5285,8 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Leading separators, trailing separators, or no separators.
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : Yes;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : Yes;
 
     assert("|ab|".splitter!("a == b", Yes.keepSeparators)('|')
         .equal([ "", "|", "ab", "|", "" ]));
@@ -5297,17 +5297,17 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Splitter returns bidirectional ranges if the delimiter is a single element
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : retro;
     assert("a|bc|def".splitter('|').retro.equal([ "def", "bc", "a" ]));
 }
 
 /// Splitter returns bidirectional ranges if the delimiter is a single element
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : Yes;
-    import std.range : retro;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : Yes;
+    import ripstd.range : retro;
     assert("a|bc|def".splitter!("a == b", Yes.keepSeparators)('|')
         .retro.equal([ "def", "|", "bc", "|", "a" ]));
 }
@@ -5315,9 +5315,9 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 /// Splitting by word lazily
 @safe unittest
 {
-    import std.ascii : isWhite;
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : splitter;
+    import ripstd.ascii : isWhite;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : splitter;
 
     string str = "Hello World!";
     assert(str.splitter!(isWhite).equal(["Hello", "World!"]));
@@ -5325,10 +5325,10 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 
 @safe unittest
 {
-    import std.algorithm;
-    import std.array : array;
-    import std.internal.test.dummyrange;
-    import std.range : retro;
+    import ripstd.algorithm;
+    import ripstd.array : array;
+    import ripstd.internal.test.dummyrange;
+    import ripstd.range : retro;
 
     assert(equal(splitter("hello  world", ' '), [ "hello", "", "world" ]));
     assert(equal(splitter("žlutoučkýřkůň", 'ř'), [ "žlutoučký", "kůň" ]));
@@ -5389,8 +5389,8 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 }
 @safe unittest
 {
-    import std.algorithm;
-    import std.range;
+    import ripstd.algorithm;
+    import ripstd.range;
     auto L = retro(iota(1L, 10L));
     auto s = splitter(L, 5L);
     assert(equal(s.front, [9L, 8L, 7L, 6L]));
@@ -5403,7 +5403,7 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 // https://issues.dlang.org/show_bug.cgi?id=18470
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     const w = [[0], [1], [2]];
     assert(w.splitter!((a, b) => a.front() == b)(1).equal([[[0]], [[2]]]));
@@ -5412,8 +5412,8 @@ if (is(typeof(binaryFun!pred(r.front, s)) : bool)
 // https://issues.dlang.org/show_bug.cgi?id=18470
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.ascii : toLower;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.ascii : toLower;
 
     assert("abXcdxef".splitter!"a.toLower == b"('x').equal(["ab", "cd", "ef"]));
     assert("abXcdxef".splitter!((a, b) => a.toLower == b)('x').equal(["ab", "cd", "ef"]));
@@ -5429,8 +5429,8 @@ if (is(typeof(binaryFun!pred(r.front, s.front)) : bool)
         && isForwardRange!Separator
         && (hasLength!Separator || isNarrowString!Separator))
 {
-    import std.algorithm.searching : find;
-    import std.conv : unsigned;
+    import ripstd.algorithm.searching : find;
+    import ripstd.conv : unsigned;
 
     static struct Result
     {
@@ -5557,8 +5557,8 @@ if (is(typeof(binaryFun!pred(r.front, s.front)) : bool)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.typecons : Tuple;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : Tuple;
 
     alias C = Tuple!(int, "x", int, "y");
     auto a = [C(1,0), C(2,0), C(3,1), C(4,0)];
@@ -5567,9 +5567,9 @@ if (is(typeof(binaryFun!pred(r.front, s.front)) : bool)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.array : split;
-    import std.conv : text;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.array : split;
+    import ripstd.conv : text;
 
     auto s = ",abc, de, fg,hi,";
     auto sp0 = splitter(s, ',');
@@ -5610,7 +5610,7 @@ if (is(typeof(binaryFun!pred(r.front, s.front)) : bool)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto s6 = ",";
     auto sp6 = splitter(s6, ',');
     foreach (e; sp6) {}
@@ -5620,7 +5620,7 @@ if (is(typeof(binaryFun!pred(r.front, s.front)) : bool)
 // https://issues.dlang.org/show_bug.cgi?id=10773
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto s = splitter("abc", "");
     assert(s.equal(["a", "b", "c"]));
@@ -5628,7 +5628,7 @@ if (is(typeof(binaryFun!pred(r.front, s.front)) : bool)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // Test by-reference separator
     class RefSep {
@@ -5656,7 +5656,7 @@ if (isForwardRange!Range && is(typeof(unaryFun!isTerminator(r.front))))
 
 private struct SplitterResult(alias isTerminator, Range)
 {
-    import std.algorithm.searching : find;
+    import ripstd.algorithm.searching : find;
     enum fullSlicing = (hasLength!Range && hasSlicing!Range) || isSomeString!Range;
 
     private Range _input;
@@ -5734,7 +5734,7 @@ private struct SplitterResult(alias isTerminator, Range)
             return _input[0 .. _end];
         else
         {
-            import std.range : takeExactly;
+            import ripstd.range : takeExactly;
             return _input.takeExactly(_end);
         }
     }
@@ -5783,8 +5783,8 @@ private struct SplitterResult(alias isTerminator, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
 
     auto L = iota(1L, 10L);
     auto s = splitter(L, [5L, 6L]);
@@ -5797,9 +5797,9 @@ private struct SplitterResult(alias isTerminator, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.internal : algoFormat;
-    import std.internal.test.dummyrange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.internal : algoFormat;
+    import ripstd.internal.test.dummyrange;
 
     void compare(string sentence, string[] witness)
     {
@@ -5832,9 +5832,9 @@ private struct SplitterResult(alias isTerminator, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.internal : algoFormat;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.internal : algoFormat;
+    import ripstd.range;
 
     struct Entry
     {
@@ -5859,8 +5859,8 @@ private struct SplitterResult(alias isTerminator, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.uni : isWhite;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.uni : isWhite;
 
     // https://issues.dlang.org/show_bug.cgi?id=6791
     assert(equal(
@@ -5877,8 +5877,8 @@ private struct SplitterResult(alias isTerminator, Range)
 // https://issues.dlang.org/show_bug.cgi?id=18657
 pure @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : refRange;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : refRange;
     string s = "foobar";
     auto r = refRange(&s).splitter!(c => c == 'b');
     assert(equal!equal(r.save, ["foo", "ar"]));
@@ -5890,7 +5890,7 @@ Lazily splits the character-based range `s` into words, using whitespace as the
 delimiter.
 
 This function is character-range specific and, contrary to
-`splitter!(std.uni.isWhite)`, runs of whitespace will be merged together
+`splitter!(ripstd.uni.isWhite)`, runs of whitespace will be merged together
 (no empty tokens will be produced).
 
 Params:
@@ -5907,7 +5907,7 @@ if (isSomeString!Range ||
     !isConvertibleToString!Range &&
     isSomeChar!(ElementEncodingType!Range))
 {
-    import std.algorithm.searching : find;
+    import ripstd.algorithm.searching : find;
     static struct Result
     {
     private:
@@ -5917,8 +5917,8 @@ if (isSomeString!Range ||
 
         void getFirst()
         {
-            import std.uni : isWhite;
-            import std.traits : Unqual;
+            import ripstd.uni : isWhite;
+            import ripstd.traits : Unqual;
 
             static if (is(immutable ElementEncodingType!Range == immutable wchar) &&
                        is(immutable ElementType!Range == immutable dchar))
@@ -5944,10 +5944,10 @@ if (isSomeString!Range ||
             else
             {
                 // need to decode the characters until we find a space. This is
-                // ported from std.string.stripLeft.
-                static import std.ascii;
-                static import std.uni;
-                import std.utf : decodeFront;
+                // ported from ripstd.string.stripLeft.
+                static import ripstd.ascii;
+                static import ripstd.uni;
+                import ripstd.utf : decodeFront;
 
                 auto input = _s.save;
                 size_t iLength = input.length;
@@ -5955,9 +5955,9 @@ if (isSomeString!Range ||
                 while (!input.empty)
                 {
                     auto c = input.front;
-                    if (std.ascii.isASCII(c))
+                    if (ripstd.ascii.isASCII(c))
                     {
-                        if (std.ascii.isWhite(c))
+                        if (ripstd.ascii.isWhite(c))
                             break;
                         input.popFront();
                         --iLength;
@@ -5965,7 +5965,7 @@ if (isSomeString!Range ||
                     else
                     {
                         auto dc = decodeFront(input);
-                        if (std.uni.isWhite(dc))
+                        if (ripstd.uni.isWhite(dc))
                             break;
                         iLength = input.length;
                     }
@@ -5982,7 +5982,7 @@ if (isSomeString!Range ||
     public:
         this(Range s)
         {
-            import std.string : stripLeft;
+            import ripstd.string : stripLeft;
             _s = s.stripLeft();
             getFirst();
         }
@@ -5995,7 +5995,7 @@ if (isSomeString!Range ||
 
         void popFront()
         {
-            import std.string : stripLeft;
+            import ripstd.string : stripLeft;
             version (assert) if (empty) throw new RangeError();
             _s = _s[_frontLength .. $].stripLeft();
             getFirst();
@@ -6017,18 +6017,18 @@ if (isSomeString!Range ||
 ///
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     auto a = " a     bcd   ef gh ";
     assert(equal(splitter(a), ["a", "bcd", "ef", "gh"][]));
 }
 
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.meta : AliasSeq;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.meta : AliasSeq;
     static foreach (S; AliasSeq!(string, wstring, dstring))
     {{
-        import std.conv : to;
+        import ripstd.conv : to;
         S a = " a  \u2028   bcd   ef gh ";
         assert(equal(splitter(a), [to!S("a"), to!S("bcd"), to!S("ef"), to!S("gh")]));
         a = "";
@@ -6041,8 +6041,8 @@ if (isSomeString!Range ||
 
 @safe unittest
 {
-    import std.conv : to;
-    import std.string : strip;
+    import ripstd.conv : to;
+    import ripstd.string : strip;
 
     // TDPL example, page 8
     uint[string] dictionary;
@@ -6071,9 +6071,9 @@ if (isSomeString!Range ||
 @safe unittest
 {
     // do it with byCodeUnit
-    import std.conv : to;
-    import std.string : strip;
-    import std.utf : byCodeUnit;
+    import ripstd.conv : to;
+    import ripstd.string : strip;
+    import ripstd.utf : byCodeUnit;
 
     alias BCU = typeof("abc".byCodeUnit());
 
@@ -6104,8 +6104,8 @@ if (isSomeString!Range ||
 // https://issues.dlang.org/show_bug.cgi?id=19238
 @safe pure unittest
 {
-    import std.utf : byCodeUnit;
-    import std.algorithm.comparison : equal;
+    import ripstd.utf : byCodeUnit;
+    import ripstd.algorithm.comparison : equal;
     auto range = "hello    world".byCodeUnit.splitter;
     static assert(is(typeof(range.front()) == typeof("hello".byCodeUnit())));
     assert(range.equal(["hello".byCodeUnit, "world".byCodeUnit]));
@@ -6119,10 +6119,10 @@ if (isSomeString!Range ||
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.internal : algoFormat;
-    import std.array : split;
-    import std.conv : text;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.internal : algoFormat;
+    import ripstd.array : split;
+    import ripstd.conv : text;
 
     // Check consistency:
     // All flavors of split should produce the same results
@@ -6193,7 +6193,7 @@ if (isSomeString!Range ||
 // of its needles
 private template hasDifferentAutodecoding(Range, Needles...)
 {
-    import std.meta : anySatisfy;
+    import ripstd.meta : anySatisfy;
     /* iff
        - the needles needs auto-decoding, but the incoming range doesn't (or vice versa)
        - both (range, needle) need auto-decoding and don't share the same common type
@@ -6207,7 +6207,7 @@ private template hasDifferentAutodecoding(Range, Needles...)
 
 @safe nothrow @nogc pure unittest
 {
-    import std.meta : AliasSeq; // used for better clarity
+    import ripstd.meta : AliasSeq; // used for better clarity
 
     static assert(!hasDifferentAutodecoding!(string, AliasSeq!(string, string)));
     static assert(!hasDifferentAutodecoding!(wstring, AliasSeq!(wstring, wstring)));
@@ -6255,8 +6255,8 @@ for string algorithms with translation tables.
 template substitute(substs...)
 if (substs.length >= 2 && isExpressions!substs)
 {
-    import std.range.primitives : ElementType;
-    import std.traits : CommonType;
+    import ripstd.range.primitives : ElementType;
+    import ripstd.traits : CommonType;
 
     static assert(!(substs.length & 1), "The number of substitution parameters must be even");
 
@@ -6305,9 +6305,9 @@ if (substs.length >= 2 && isExpressions!substs)
 auto substitute(alias pred = (a, b) => a == b, R, Substs...)(R r, Substs substs)
 if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 {
-    import std.range.primitives : ElementType;
-    import std.meta : allSatisfy;
-    import std.traits : CommonType;
+    import ripstd.range.primitives : ElementType;
+    import ripstd.meta : allSatisfy;
+    import ripstd.traits : CommonType;
 
     static assert(!(Substs.length & 1), "The number of substitution parameters must be even");
 
@@ -6316,7 +6316,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
     // Substitute individual elements
     static if (!is(CommonType!(ElementType!R, Substs) == void))
     {
-        import std.functional : binaryFun;
+        import ripstd.functional : binaryFun;
 
         // Imitate a value closure to be @nogc
         static struct ReplaceElement
@@ -6344,8 +6344,8 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
     else static if (!is(CommonType!(ElementType!R, ElementType!(Substs[0])) == void)  &&
                         allSatisfy!(isForwardRange, Substs))
     {
-        import std.range : choose, take;
-        import std.meta : Stride;
+        import ripstd.range : choose, take;
+        import ripstd.meta : Stride;
 
         auto replaceElement(E)(E e)
         {
@@ -6381,8 +6381,8 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 
         static struct SubstituteSplitter
         {
-            import std.range : drop;
-            import std.typecons : Tuple;
+            import ripstd.range : drop;
+            import ripstd.typecons : Tuple;
 
             private
             {
@@ -6451,7 +6451,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
                 }
                 else
                 {
-                    import std.algorithm.searching : countUntil, find;
+                    import ripstd.algorithm.searching : countUntil, find;
 
                     auto match = rest.find!pred(needles);
 
@@ -6485,7 +6485,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
                                 case i:
                                     static if (hasDifferentAutodecoding)
                                     {
-                                        import std.utf : codeLength;
+                                        import ripstd.utf : codeLength;
 
                                         // cache calculated needle length
                                         if (needleLengths[i] != -1)
@@ -6538,7 +6538,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 ///
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // substitute single elements
     assert("do_it".substitute('_', ' ').equal("do it"));
@@ -6561,14 +6561,14 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
     assert(y.equal([0.1, 2, 3]));
     static assert(is(typeof(y.front) == double));
 
-    import std.range : retro;
+    import ripstd.range : retro;
     assert([1, 2, 3].substitute(1, 0.1).retro.equal([3, 2, 0.1]));
 }
 
 /// Use the faster compile-time overload
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // substitute subranges of a range
     assert("apple_tree".substitute!("apple", "banana",
@@ -6585,8 +6585,8 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 /// Multiple substitutes
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range.primitives : ElementType;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range.primitives : ElementType;
 
     int[3] x = [1, 2, 3];
     auto y = x[].substitute(1, 0.1)
@@ -6603,7 +6603,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // Test the first example with compile-time overloads
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     // substitute single elements
     assert("do_it".substitute!('_', ' ').equal("do it"));
@@ -6626,15 +6626,15 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
     assert(y.equal([0.1, 2, 3]));
     static assert(is(typeof(y.front) == double));
 
-    import std.range : retro;
+    import ripstd.range : retro;
     assert([1, 2, 3].substitute!(1, 0.1).retro.equal([3, 2, 0.1]));
 }
 
 // test infinite ranges
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : cycle, take;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : cycle, take;
 
     int[] x = [1, 2, 3];
     assert(x.cycle.substitute!(1, 0.1).take(4).equal([0.1, 2, 3, 0.1]));
@@ -6644,8 +6644,8 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // test infinite ranges
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange : AllDummyRanges;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange : AllDummyRanges;
 
     foreach (R; AllDummyRanges)
     {
@@ -6662,7 +6662,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // test multiple replacements
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert("alpha.beta.gamma"
             .substitute("alpha", "1",
@@ -6688,7 +6688,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // test combination of subrange + element replacement
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert(("abcDe".substitute("a", "AA",
                                "b", "DD")
@@ -6701,7 +6701,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // test const + immutable storage groups
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto xyz_abc(T)(T value)
     {
@@ -6721,7 +6721,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // test with narrow strings (auto-decoding) and subranges
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert("äöü€".substitute("ä", "b", "ü", "u").equal("böu€"));
     assert("äöü€".substitute!("ä", "b", "ü", "u").equal("böu€"));
@@ -6737,7 +6737,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // test with narrow strings (auto-decoding) and single elements
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert("äöü€".substitute('ä', 'b', 'ü', 'u').equal("böu€"));
     assert("äöü€".substitute!('ä', 'b', 'ü', 'u').equal("böu€"));
@@ -6752,7 +6752,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // test auto-decoding {n,w,d} strings X {n,w,d} strings
 @safe pure unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert("ääöü€".substitute("ä", "b", "ü", "u").equal("bböu€"));
     assert("ääöü€".substitute("ä"w, "b"w, "ü"w, "u"w).equal("bböu€"));
@@ -6775,7 +6775,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // test repeated replacement
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert([1, 2, 3, 1, 1, 2].substitute(1, 0).equal([0, 2, 3, 0, 0, 2]));
     assert([1, 2, 3, 1, 1, 2].substitute!(1, 0).equal([0, 2, 3, 0, 0, 2]));
@@ -6785,7 +6785,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // test @nogc for single element replacements
 @safe @nogc unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     static immutable arr = [1, 2, 3, 1, 1, 2];
     static immutable expected = [0, 2, 3, 0, 0, 2];
@@ -6797,8 +6797,8 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // test different range types
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange : AllDummyRanges;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange : AllDummyRanges;
 
     static foreach (DummyType; AllDummyRanges)
     {{
@@ -6817,7 +6817,7 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // https://issues.dlang.org/show_bug.cgi?id=19207
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
     assert([1, 2, 3, 4].substitute([1], [7]).equal([7, 2, 3, 4]));
     assert([1, 2, 3, 4].substitute([2], [7]).equal([1, 7, 3, 4]));
     assert([1, 2, 3, 4].substitute([4], [7]).equal([1, 2, 3, 7]));
@@ -6828,8 +6828,8 @@ if (isInputRange!R && Substs.length >= 2 && !is(CommonType!(Substs) == void))
 // tests recognizing empty base ranges
 nothrow pure @safe unittest
 {
-    import std.utf : byCodeUnit;
-    import std.algorithm.comparison : equal;
+    import ripstd.utf : byCodeUnit;
+    import ripstd.algorithm.comparison : equal;
 
     assert("".byCodeUnit.substitute('4', 'A').empty);
     assert("".byCodeUnit.substitute('0', 'O', '5', 'S', '1', 'l').empty);
@@ -6935,7 +6935,7 @@ if (isInputRange!R && !isInfinite!R && is(typeof(seed = seed + r.front)))
 /// Ditto
 @safe pure nothrow unittest
 {
-    import std.range;
+    import ripstd.range;
 
     //simple integral sumation
     assert(sum([ 1, 2, 3, 4]) == 10);
@@ -6957,7 +6957,7 @@ if (isInputRange!R && !isInfinite!R && is(typeof(seed = seed + r.front)))
     assert(sum([1F, 2, 3, 4]) == 10);
 
     //Force pair-wise floating point sumation on large integers
-    import std.math.operations : isClose;
+    import ripstd.math.operations : isClose;
     assert(iota(ulong.max / 2, ulong.max / 2 + 4096).sum(0.0)
                .isClose((ulong.max / 2) * 4096.0 + 4096^^2 / 2));
 }
@@ -6968,7 +6968,7 @@ if (isInputRange!R && !isInfinite!R)
 {
     import core.bitop : bsf;
     // Works for r with at least length < 2^^(64 + log2(16)), in keeping with the use of size_t
-    // elsewhere in std.algorithm and std.range on 64 bit platforms. The 16 in log2(16) comes
+    // elsewhere in ripstd.algorithm and ripstd.range on 64 bit platforms. The 16 in log2(16) comes
     // from the manual unrolling in sumPairWise16
     F[64] store = void;
     size_t idx = 0;
@@ -7050,7 +7050,7 @@ if (isForwardRange!R && !isRandomAccessRange!R)
 private auto sumPairwiseN(size_t N, bool needEmptyChecks, F, R)(ref R r)
 if (isForwardRange!R && !isRandomAccessRange!R)
 {
-    import std.math.traits : isPowerOf2;
+    import ripstd.math.traits : isPowerOf2;
     static assert(isPowerOf2(N), "N must be a power of 2");
     static if (N == 2) return sumPair!(needEmptyChecks, F)(r);
     else return sumPairwiseN!(N/2, needEmptyChecks, F)(r)
@@ -7109,7 +7109,7 @@ private auto sumKahan(Result, R)(Result result, R r)
 
 @safe pure nothrow unittest
 {
-    import std.container;
+    import ripstd.container;
     static assert(is(typeof(sum(SList!float()[])) == double));
     static assert(is(typeof(sum(SList!double()[])) == double));
     static assert(is(typeof(sum(SList!real()[])) == real));
@@ -7133,8 +7133,8 @@ private auto sumKahan(Result, R)(Result result, R r)
 
 @system unittest
 {
-    import std.bigint;
-    import std.range;
+    import ripstd.bigint;
+    import ripstd.range;
 
     immutable BigInt[] a = BigInt("1_000_000_000_000_000_000").repeat(10).array();
     immutable ulong[]  b = (ulong.max/2).repeat(10).array();
@@ -7146,7 +7146,7 @@ private auto sumKahan(Result, R)(Result result, R r)
 
 @safe pure nothrow @nogc unittest
 {
-    import std.range;
+    import ripstd.range;
     foreach (n; iota(50))
         assert(repeat(1.0, n).sum == n);
 }
@@ -7154,7 +7154,7 @@ private auto sumKahan(Result, R)(Result result, R r)
 // Issue 19525
 @safe unittest
 {
-    import std.datetime : Duration, minutes;
+    import ripstd.datetime : Duration, minutes;
     assert([1.minutes].sum() == 1.minutes);
 }
 
@@ -7209,7 +7209,7 @@ if (isInputRange!R &&
     is(typeof(r.front / size_t(1))) &&
     !isInfinite!R)
 {
-    import std.algorithm.iteration : sum, reduce;
+    import ripstd.algorithm.iteration : sum, reduce;
 
     // per item division vis-a-vis the previous overload is too
     // inaccurate for integer division, which the user defined
@@ -7223,7 +7223,7 @@ if (isInputRange!R &&
     }
     else
     {
-        import std.typecons : tuple;
+        import ripstd.typecons : tuple;
 
         if (r.empty)
             return seed;
@@ -7237,8 +7237,8 @@ if (isInputRange!R &&
 ///
 @safe @nogc pure nothrow unittest
 {
-    import std.math.operations : isClose;
-    import std.math.traits : isNaN;
+    import ripstd.math.operations : isClose;
+    import ripstd.math.traits : isNaN;
 
     static immutable arr1 = [1, 2, 3];
     static immutable arr2 = [1.5, 2.5, 12.5];
@@ -7251,8 +7251,8 @@ if (isInputRange!R &&
 
 @safe pure nothrow unittest
 {
-    import std.internal.test.dummyrange : ReferenceInputRange;
-    import std.math.operations : isClose;
+    import ripstd.internal.test.dummyrange : ReferenceInputRange;
+    import ripstd.math.operations : isClose;
 
     auto r1 = new ReferenceInputRange!int([1, 2, 3]);
     assert(r1.mean.isClose(2));
@@ -7264,9 +7264,9 @@ if (isInputRange!R &&
 // Test user defined types
 @system pure unittest
 {
-    import std.bigint : BigInt;
-    import std.internal.test.dummyrange : ReferenceInputRange;
-    import std.math.operations : isClose;
+    import ripstd.bigint : BigInt;
+    import ripstd.internal.test.dummyrange : ReferenceInputRange;
+    import ripstd.math.operations : isClose;
 
     auto bigint_arr = [BigInt("1"), BigInt("2"), BigInt("3"), BigInt("6")];
     auto bigint_arr2 = new ReferenceInputRange!BigInt([
@@ -7320,8 +7320,8 @@ if (isInputRange!Range && is(typeof(binaryFun!pred(r.front, r.front)) == bool))
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.mutation : copy;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.mutation : copy;
 
     int[] arr = [ 1, 2, 2, 2, 2, 3, 4, 4, 4, 5 ];
     assert(equal(uniq(arr), [ 1, 2, 3, 4, 5 ][]));
@@ -7406,9 +7406,9 @@ private struct UniqResult(alias pred, Range)
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.internal.test.dummyrange;
-    import std.range;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.internal.test.dummyrange;
+    import ripstd.range;
 
     int[] arr = [ 1, 2, 2, 2, 2, 3, 4, 4, 4, 5 ];
     auto r = uniq(arr);
@@ -7435,7 +7435,7 @@ private struct UniqResult(alias pred, Range)
 // https://issues.dlang.org/show_bug.cgi?id=17264
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     const(int)[] var = [0, 1, 1, 2];
     assert(var.uniq.equal([0, 1, 2]));
@@ -7473,8 +7473,8 @@ if (isRandomAccessRange!Range && hasLength!Range)
     ///
     this(Range r)
     {
-        import std.array : array;
-        import std.range : iota;
+        import ripstd.array : array;
+        import ripstd.range : iota;
 
         this._r = r;
         _state = r.length ? new size_t[r.length-1] : null;
@@ -7491,7 +7491,7 @@ if (isRandomAccessRange!Range && hasLength!Range)
     /// Returns: the front of the range
     @property auto front()
     {
-        import std.range : indexed;
+        import ripstd.range : indexed;
         return _r.indexed(_indices);
     }
 
@@ -7500,7 +7500,7 @@ if (isRandomAccessRange!Range && hasLength!Range)
     {
         void next(int n)
         {
-            import std.algorithm.mutation : swap;
+            import ripstd.algorithm.mutation : swap;
 
             if (n > _indices.length)
             {
@@ -7527,8 +7527,8 @@ if (isRandomAccessRange!Range && hasLength!Range)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
     assert(equal!equal(iota(3).permutations,
         [[0, 1, 2],
          [1, 0, 2],

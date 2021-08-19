@@ -29,9 +29,9 @@ $(TR $(TD Utilities) $(TD
 module ripstd.datetime.timezone;
 
 import core.time : abs, convert, dur, Duration, hours, minutes;
-import std.datetime.systime : Clock, stdTimeToUnixTime, SysTime;
-import std.range.primitives : back, empty, front, isOutputRange, popFront;
-import std.traits : isIntegral, isSomeString;
+import ripstd.datetime.systime : Clock, stdTimeToUnixTime, SysTime;
+import ripstd.range.primitives : back, empty, front, isOutputRange, popFront;
+import ripstd.traits : isIntegral, isSomeString;
 
 version (OSX)
     version = Darwin;
@@ -47,7 +47,7 @@ version (Windows)
     import core.stdc.time : time_t;
     import core.sys.windows.winbase;
     import core.sys.windows.winsock2;
-    import std.windows.registry;
+    import ripstd.windows.registry;
 
     // Uncomment and run unittests to print missing Windows TZ translations.
     // Please subscribe to Microsoft Daylight Saving Time & Time Zone Blog
@@ -61,7 +61,7 @@ else version (Posix)
     import core.sys.posix.sys.types : time_t;
 }
 
-version (StdUnittest) import std.exception : assertThrown;
+version (RIPStdUnittest) import ripstd.exception : assertThrown;
 
 
 /++
@@ -199,12 +199,12 @@ public:
     @system unittest
     {
         import core.exception : AssertError;
-        import std.conv : to;
-        import std.file : exists, isFile;
-        import std.format : format;
-        import std.path : chainPath;
-        import std.stdio : writefln;
-        import std.typecons : tuple;
+        import ripstd.conv : to;
+        import ripstd.file : exists, isFile;
+        import ripstd.format : format;
+        import ripstd.path : chainPath;
+        import ripstd.stdio : writefln;
+        import ripstd.typecons : tuple;
 
         version (Posix) alias getTimeZone = PosixTimeZone.getTimeZone;
         else version (Windows) alias getTimeZone = WindowsTimeZone.getTimeZone;
@@ -237,7 +237,7 @@ public:
             //assert(tz.dstName == dstName);  //Locale-dependent
             assert(tz.hasDST == hasDST);
 
-            import std.datetime.date : DateTime;
+            import ripstd.datetime.date : DateTime;
             immutable stdDate = DateTime(2010, north ? 1 : 7, 1, 6, 0, 0);
             immutable dstDate = DateTime(2010, north ? 7 : 1, 1, 6, 0, 0);
             auto std = SysTime(stdDate, tz);
@@ -312,7 +312,7 @@ public:
                     // Whenever a leap second is added/removed,
                     // this will have to be adjusted.
                     //enum leapDiff = convert!("seconds", "hnsecs")(25);
-                    //assert(leapSTD.adjTime - leapDiff == std.adjTime);
+                    //assert(leapSTD.adjTime - leapDiff == ripstd.adjTime);
                     //assert(leapDST.adjTime - leapDiff == dst.adjTime);
                 }
             }
@@ -320,7 +320,7 @@ public:
             return tz;
         }
 
-        import std.datetime.date : DateTime;
+        import ripstd.datetime.date : DateTime;
         auto dstSwitches = [/+America/Los_Angeles+/ tuple(DateTime(2012, 3, 11),  DateTime(2012, 11, 4), 2, 2),
                             /+America/New_York+/    tuple(DateTime(2012, 3, 11),  DateTime(2012, 11, 4), 2, 2),
                             ///+America/Santiago+/    tuple(DateTime(2011, 8, 21),  DateTime(2011, 5, 8), 0, 0),
@@ -328,7 +328,7 @@ public:
                             /+Europe/Paris+/        tuple(DateTime(2012, 3, 25),  DateTime(2012, 10, 28), 2, 3),
                             /+Australia/Adelaide+/  tuple(DateTime(2012, 10, 7),  DateTime(2012, 4, 1), 2, 3)];
 
-        import std.datetime.date : DateTimeException;
+        import ripstd.datetime.date : DateTimeException;
         version (Posix)
         {
             version (FreeBSD)            enum utcZone = "Etc/UTC";
@@ -390,7 +390,7 @@ public:
             // a DST switch.
             foreach (hour; -12 .. 13)
             {
-                import std.exception : enforce;
+                import ripstd.exception : enforce;
                 auto st = SysTime(dstSwitches[i][0] + dur!"hours"(hour), tz);
                 immutable targetHour = hour < 0 ? hour + 24 : hour;
 
@@ -466,7 +466,7 @@ public:
                                                __FILE__, line);
                     }
 
-                    import std.exception : enforce;
+                    import ripstd.exception : enforce;
                     enforce((utc + offset).hour == local.hour, msg("1"));
                     enforce((utc + offset + dur!"minutes"(1)).hour == local.hour, msg("2"));
                 }
@@ -584,7 +584,7 @@ public:
         version (Posix)
         {
             import core.stdc.time : tzname;
-            import std.conv : to;
+            import ripstd.conv : to;
             try
                 return to!string(tzname[0]);
             catch (Exception e)
@@ -669,7 +669,7 @@ public:
         version (Posix)
         {
             import core.stdc.time : tzname;
-            import std.conv : to;
+            import ripstd.conv : to;
             try
                 return to!string(tzname[1]);
             catch (Exception e)
@@ -757,7 +757,7 @@ public:
             {
                 try
                 {
-                    import std.datetime.date : Date;
+                    import ripstd.datetime.date : Date;
                     auto currYear = (cast(Date) Clock.currTime()).year;
                     auto janOffset = SysTime(Date(currYear, 1, 4), cast(immutable) this).stdTime -
                                      SysTime(Date(currYear, 1, 4), UTC()).stdTime;
@@ -943,8 +943,8 @@ public:
     @safe unittest
     {
         import core.exception : AssertError;
-        import std.format : format;
-        import std.typecons : tuple;
+        import ripstd.format : format;
+        import ripstd.typecons : tuple;
 
         assert(LocalTime().tzToUTC(LocalTime().utcToTZ(0)) == 0);
         assert(LocalTime().utcToTZ(LocalTime().tzToUTC(0)) == 0);
@@ -956,7 +956,7 @@ public:
         {
             scope(exit) clearTZEnvVar();
 
-            import std.datetime.date : DateTime;
+            import ripstd.datetime.date : DateTime;
             auto tzInfos = [tuple("America/Los_Angeles", DateTime(2012, 3, 11), DateTime(2012, 11, 4), 2, 2),
                             tuple("America/New_York",    DateTime(2012, 3, 11), DateTime(2012, 11, 4), 2, 2),
                             //tuple("America/Santiago",    DateTime(2011, 8, 21), DateTime(2011, 5, 8), 0, 0),
@@ -967,7 +967,7 @@ public:
 
             foreach (i; 0 .. tzInfos.length)
             {
-                import std.exception : enforce;
+                import ripstd.exception : enforce;
                 auto tzName = tzInfos[i][0];
                 setTZEnvVar(tzName);
                 immutable spring = tzInfos[i][3];
@@ -1100,7 +1100,7 @@ private:
     static immutable(LocalTime) singleton() @trusted
     {
         import core.stdc.time : tzset;
-        import std.concurrency : initOnce;
+        import ripstd.concurrency : initOnce;
         static instance = new immutable(LocalTime)();
         static shared bool guard;
         initOnce!guard({tzset(); return true;}());
@@ -1188,7 +1188,7 @@ public:
             scope(exit) clearTZEnvVar();
 
             setTZEnvVar("UTC");
-            import std.datetime.date : Date;
+            import ripstd.datetime.date : Date;
             auto std = SysTime(Date(2010, 1, 1));
             auto dst = SysTime(Date(2010, 7, 1));
             assert(UTC().utcToTZ(std.stdTime) == std.stdTime);
@@ -1221,7 +1221,7 @@ public:
             scope(exit) clearTZEnvVar();
 
             setTZEnvVar("UTC");
-            import std.datetime.date : Date;
+            import ripstd.datetime.date : Date;
             auto std = SysTime(Date(2010, 1, 1));
             auto dst = SysTime(Date(2010, 7, 1));
             assert(UTC().tzToUTC(std.stdTime) == std.stdTime);
@@ -1366,8 +1366,8 @@ public:
     this(Duration utcOffset, string stdName = "") @safe immutable pure
     {
         // FIXME This probably needs to be changed to something like (-12 - 13).
-        import std.datetime.date : DateTimeException;
-        import std.exception : enforce;
+        import ripstd.datetime.date : DateTimeException;
+        import ripstd.exception : enforce;
         enforce!DateTimeException(abs(utcOffset) < dur!"minutes"(1440),
                                     "Offset from UTC must be within range (-24:00 - 24:00).");
         super("", stdName, "");
@@ -1407,7 +1407,7 @@ package:
       +/
     static string toISOString(Duration utcOffset) @safe pure
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto w = appender!string();
         w.reserve(5);
         toISOString(w, utcOffset);
@@ -1418,9 +1418,9 @@ package:
     static void toISOString(W)(ref W writer, Duration utcOffset)
     if (isOutputRange!(W, char))
     {
-        import std.datetime.date : DateTimeException;
-        import std.exception : enforce;
-        import std.format.write : formattedWrite;
+        import ripstd.datetime.date : DateTimeException;
+        import ripstd.exception : enforce;
+        import ripstd.format.write : formattedWrite;
         immutable absOffset = abs(utcOffset);
         enforce!DateTimeException(absOffset < dur!"minutes"(1440),
                                   "Offset from UTC must be within range (-24:00 - 24:00).");
@@ -1442,7 +1442,7 @@ package:
             return SimpleTimeZone.toISOString(offset);
         }
 
-        import std.datetime.date : DateTimeException;
+        import ripstd.datetime.date : DateTimeException;
         assertThrown!DateTimeException(testSTZInvalid(dur!"minutes"(1440)));
         assertThrown!DateTimeException(testSTZInvalid(dur!"minutes"(-1440)));
 
@@ -1478,7 +1478,7 @@ package:
       +/
     static string toISOExtString(Duration utcOffset) @safe pure
     {
-        import std.array : appender;
+        import ripstd.array : appender;
         auto w = appender!string();
         w.reserve(6);
         toISOExtString(w, utcOffset);
@@ -1488,9 +1488,9 @@ package:
     // ditto
     static void toISOExtString(W)(ref W writer, Duration utcOffset)
     {
-        import std.datetime.date : DateTimeException;
-        import std.format.write : formattedWrite;
-        import std.exception : enforce;
+        import ripstd.datetime.date : DateTimeException;
+        import ripstd.format.write : formattedWrite;
+        import ripstd.exception : enforce;
 
         immutable absOffset = abs(utcOffset);
         enforce!DateTimeException(absOffset < dur!"minutes"(1440),
@@ -1513,7 +1513,7 @@ package:
             return SimpleTimeZone.toISOExtString(offset);
         }
 
-        import std.datetime.date : DateTimeException;
+        import ripstd.datetime.date : DateTimeException;
         assertThrown!DateTimeException(testSTZInvalid(dur!"minutes"(1440)));
         assertThrown!DateTimeException(testSTZInvalid(dur!"minutes"(-1440)));
 
@@ -1551,10 +1551,10 @@ package:
     static immutable(SimpleTimeZone) fromISOString(S)(S isoString) @safe pure
         if (isSomeString!S)
     {
-        import std.algorithm.searching : startsWith;
-        import std.conv : text, to, ConvException;
-        import std.datetime.date : DateTimeException;
-        import std.exception : enforce;
+        import ripstd.algorithm.searching : startsWith;
+        import ripstd.conv : text, to, ConvException;
+        import ripstd.datetime.date : DateTimeException;
+        import ripstd.exception : enforce;
 
         auto whichSign = isoString.startsWith('-', '+');
         enforce!DateTimeException(whichSign > 0, text("Invalid ISO String ", isoString));
@@ -1595,7 +1595,7 @@ package:
     @safe unittest
     {
         import core.exception : AssertError;
-        import std.format : format;
+        import ripstd.format : format;
 
         foreach (str; ["", "Z", "-", "+", "-:", "+:", "-1:", "+1:", "+1", "-1",
                        "-24:00", "+24:00", "-24", "+24", "-2400", "+2400",
@@ -1611,7 +1611,7 @@ package:
                        "-ab:cd", "+abcd", "-0Z:00", "-Z", "-00Z",
                        "01:00", "12:00", "23:59"])
         {
-            import std.datetime.date : DateTimeException;
+            import ripstd.datetime.date : DateTimeException;
             assertThrown!DateTimeException(SimpleTimeZone.fromISOString(str), format("[%s]", str));
         }
 
@@ -1656,7 +1656,7 @@ package:
     @safe unittest
     {
         import core.exception : AssertError;
-        import std.format : format;
+        import ripstd.format : format;
 
         static void test(scope const string isoString, int expectedOffset, size_t line = __LINE__)
         {
@@ -1705,12 +1705,12 @@ package:
     static immutable(SimpleTimeZone) fromISOExtString(S)(S isoExtString) @safe pure
         if (isSomeString!S)
     {
-        import std.algorithm.searching : startsWith;
-        import std.conv : ConvException, to;
-        import std.datetime.date : DateTimeException;
-        import std.exception : enforce;
-        import std.format : format;
-        import std.string : indexOf;
+        import ripstd.algorithm.searching : startsWith;
+        import ripstd.conv : ConvException, to;
+        import ripstd.datetime.date : DateTimeException;
+        import ripstd.exception : enforce;
+        import ripstd.format : format;
+        import ripstd.string : indexOf;
 
         auto whichSign = isoExtString.startsWith('-', '+');
         enforce!DateTimeException(whichSign > 0, format("Invalid ISO String: %s", isoExtString));
@@ -1757,7 +1757,7 @@ package:
     @safe unittest
     {
         import core.exception : AssertError;
-        import std.format : format;
+        import ripstd.format : format;
 
         foreach (str; ["", "Z", "-", "+", "-:", "+:", "-1:", "+1:", "+1", "-1",
                        "-24:00", "+24:00", "-24", "+24", "-2400", "-2400",
@@ -1773,7 +1773,7 @@ package:
                        "-ab:cd", "abcd", "-0Z:00", "-Z", "-00Z",
                        "0100", "1200", "2359"])
         {
-            import std.datetime.date : DateTimeException;
+            import ripstd.datetime.date : DateTimeException;
             assertThrown!DateTimeException(SimpleTimeZone.fromISOExtString(str), format("[%s]", str));
         }
 
@@ -1818,7 +1818,7 @@ package:
     @safe unittest
     {
         import core.exception : AssertError;
-        import std.format : format;
+        import ripstd.format : format;
 
         static void test(scope const string isoExtString, int expectedOffset, size_t line = __LINE__)
         {
@@ -1889,12 +1889,12 @@ private:
   +/
 final class PosixTimeZone : TimeZone
 {
-    import std.algorithm.searching : countUntil, canFind, startsWith;
-    import std.file : isDir, isFile, exists, dirEntries, SpanMode, DirEntry;
-    import std.path : extension;
-    import std.stdio : File;
-    import std.string : strip, representation;
-    import std.traits : isArray, isSomeChar;
+    import ripstd.algorithm.searching : countUntil, canFind, startsWith;
+    import ripstd.file : isDir, isFile, exists, dirEntries, SpanMode, DirEntry;
+    import ripstd.path : extension;
+    import ripstd.stdio : File;
+    import ripstd.string : strip, representation;
+    import ripstd.traits : isArray, isSomeChar;
 public:
 
     /++
@@ -2019,7 +2019,7 @@ public:
     }
     else version (TZDatabaseDir)
     {
-        import std.string : strip;
+        import ripstd.string : strip;
         enum defaultTZDatabaseDir = strip(import("TZDatabaseDirFile"));
     }
     else version (Android)
@@ -2068,13 +2068,13 @@ public:
     //      directory.
     static immutable(PosixTimeZone) getTimeZone(string name, string tzDatabaseDir = defaultTZDatabaseDir) @trusted
     {
-        import std.algorithm.sorting : sort;
-        import std.conv : to;
-        import std.datetime.date : DateTimeException;
-        import std.exception : enforce;
-        import std.format : format;
-        import std.path : asNormalizedPath, chainPath;
-        import std.range : retro;
+        import ripstd.algorithm.sorting : sort;
+        import ripstd.conv : to;
+        import ripstd.datetime.date : DateTimeException;
+        import ripstd.exception : enforce;
+        import ripstd.format : format;
+        import ripstd.path : asNormalizedPath, chainPath;
+        import ripstd.range : retro;
 
         name = strip(name);
 
@@ -2098,7 +2098,7 @@ public:
         version (Android) tzFile.seek(*tzfileOffset);
         immutable gmtZone = name.representation().canFind("GMT");
 
-        import std.datetime.date : DateTimeException;
+        import ripstd.datetime.date : DateTimeException;
         try
         {
             _enforceValidTZFile(readVal!(char[])(tzFile, 4) == "TZif");
@@ -2419,21 +2419,21 @@ public:
       +/
     static string[] getInstalledTZNames(string subName = "", string tzDatabaseDir = defaultTZDatabaseDir) @safe
     {
-        import std.algorithm.sorting : sort;
-        import std.array : appender;
-        import std.exception : enforce;
-        import std.format : format;
+        import ripstd.algorithm.sorting : sort;
+        import ripstd.array : appender;
+        import ripstd.exception : enforce;
+        import ripstd.format : format;
 
         version (Posix)
             subName = strip(subName);
         else version (Windows)
         {
-            import std.array : replace;
-            import std.path : dirSeparator;
+            import ripstd.array : replace;
+            import ripstd.path : dirSeparator;
             subName = replace(strip(subName), "/", dirSeparator);
         }
 
-        import std.datetime.date : DateTimeException;
+        import ripstd.datetime.date : DateTimeException;
         enforce(tzDatabaseDir.exists(), new DateTimeException(format("Directory %s does not exist.", tzDatabaseDir)));
         enforce(tzDatabaseDir.isDir, new DateTimeException(format("%s is not a directory.", tzDatabaseDir)));
 
@@ -2441,15 +2441,15 @@ public:
 
         version (Android)
         {
-            import std.algorithm.iteration : filter;
-            import std.algorithm.mutation : copy;
+            import ripstd.algorithm.iteration : filter;
+            import ripstd.algorithm.mutation : copy;
 
             const index = () @trusted { return tzdataIndex(tzDatabaseDir); }();
             index.byKey.filter!(a => a.startsWith(subName)).copy(timezones);
         }
         else
         {
-            import std.path : baseName;
+            import ripstd.path : baseName;
             // dirEntries is @system because it uses a DirIterator with a
             // RefCounted variable, but here, no references to the payload is
             // escaped to the outside, so this should be @trusted
@@ -2481,8 +2481,8 @@ public:
 
     version (Posix) @system unittest
     {
-        import std.exception : assertNotThrown;
-        import std.stdio : writefln;
+        import ripstd.exception : assertNotThrown;
+        import ripstd.stdio : writefln;
         static void testPTZSuccess(string tzName)
         {
             scope(failure) writefln("TZName which threw: %s", tzName);
@@ -2499,7 +2499,7 @@ public:
 
         auto tzNames = getInstalledTZNames();
 
-        import std.datetime.date : DateTimeException;
+        import ripstd.datetime.date : DateTimeException;
         foreach (tzName; tzNames)
             assertNotThrown!DateTimeException(testPTZSuccess(tzName));
 
@@ -2642,7 +2642,7 @@ private:
     static T readVal(T)(ref File tzFile) @trusted
         if ((isIntegral!T || isSomeChar!T) || is(immutable T == immutable bool))
     {
-        import std.bitmanip : bigEndianToNative;
+        import ripstd.bitmanip : bigEndianToNative;
         T[1] buff;
 
         _enforceValidTZFile(!tzFile.eof);
@@ -2684,7 +2684,7 @@ private:
       +/
     static void _enforceValidTZFile(bool result, size_t line = __LINE__) @safe pure
     {
-        import std.datetime.date : DateTimeException;
+        import ripstd.datetime.date : DateTimeException;
         if (!result)
             throw new DateTimeException("Not a valid tzdata file.", __FILE__, line);
     }
@@ -2753,17 +2753,17 @@ private:
         // located in the tzdata file from the index and caches it for later.
         static const(uint[string]) tzdataIndex(string tzDir)
         {
-            import std.concurrency : initOnce;
+            import ripstd.concurrency : initOnce;
 
             __gshared uint[string] _tzIndex;
 
             // _tzIndex is initialized once and then shared across all threads.
             initOnce!_tzIndex(
             {
-                import std.conv : to;
-                import std.datetime.date : DateTimeException;
-                import std.format : format;
-                import std.path : asNormalizedPath, chainPath;
+                import ripstd.conv : to;
+                import ripstd.datetime.date : DateTimeException;
+                import ripstd.format : format;
+                import ripstd.path : asNormalizedPath, chainPath;
 
                 enum indexEntrySize = 52;
                 const combinedFile = asNormalizedPath(chainPath(tzDir, "tzdata")).to!string;
@@ -2959,10 +2959,10 @@ else version (Windows)
 {
     final class WindowsTimeZone : TimeZone
     {
-        import std.algorithm.sorting : sort;
-        import std.array : appender;
-        import std.conv : to;
-        import std.format : format;
+        import ripstd.algorithm.sorting : sort;
+        import ripstd.array : appender;
+        import ripstd.conv : to;
+        import ripstd.format : format;
 
     public:
 
@@ -3032,7 +3032,7 @@ else version (Windows)
 
                 return new immutable WindowsTimeZone(name, tzInfo);
             }
-            import std.datetime.date : DateTimeException;
+            import ripstd.datetime.date : DateTimeException;
             throw new DateTimeException(format("Failed to find time zone: %s", name));
         }
 
@@ -3051,8 +3051,8 @@ else version (Windows)
 
         @safe unittest
         {
-            import std.exception : assertNotThrown;
-            import std.stdio : writefln;
+            import ripstd.exception : assertNotThrown;
+            import ripstd.stdio : writefln;
             static void testWTZSuccess(string tzName)
             {
                 scope(failure) writefln("TZName which threw: %s", tzName);
@@ -3062,7 +3062,7 @@ else version (Windows)
 
             auto tzNames = getInstalledTZNames();
 
-            import std.datetime.date : DateTimeException;
+            import ripstd.datetime.date : DateTimeException;
             foreach (tzName; tzNames)
                 assertNotThrown!DateTimeException(testWTZSuccess(tzName));
         }
@@ -3077,13 +3077,13 @@ else version (Windows)
                 if (tzInfo.DaylightDate.wMonth == 0)
                     return false;
 
-                import std.datetime.date : DateTime, Month;
+                import ripstd.datetime.date : DateTime, Month;
                 auto utcDateTime = cast(DateTime) SysTime(stdTime, UTC());
 
                 //The limits of what SystemTimeToTzSpecificLocalTime will accept.
                 if (utcDateTime.year < 1601)
                 {
-                    import std.datetime.date : Month;
+                    import ripstd.datetime.date : Month;
                     if (utcDateTime.month == Month.feb && utcDateTime.day == 29)
                         utcDateTime.day = 28;
                     utcDateTime.year = 1601;
@@ -3148,7 +3148,7 @@ else version (Windows)
             TIME_ZONE_INFORMATION tzInfo;
             GetTimeZoneInformation(&tzInfo);
 
-            import std.datetime.date : DateTime;
+            import ripstd.datetime.date : DateTime;
             foreach (year; [1600, 1601, 30_827, 30_828])
                 WindowsTimeZone._dstInEffect(&tzInfo, SysTime(DateTime(year, 1, 1)).stdTime);
         }
@@ -3169,7 +3169,7 @@ else version (Windows)
             {
                 try
                 {
-                    import std.datetime.date : DateTime, Month;
+                    import ripstd.datetime.date : DateTime, Month;
                     bool dstInEffectForLocalDateTime(DateTime localDateTime)
                     {
                         // The limits of what SystemTimeToTzSpecificLocalTime will accept.
@@ -3235,7 +3235,7 @@ else version (Windows)
                         return false;
                     }
 
-                    import std.datetime.date : DateTime;
+                    import ripstd.datetime.date : DateTime;
                     auto localDateTime = cast(DateTime) SysTime(adjTime, UTC());
                     auto localDateTimeBefore = localDateTime - dur!"hours"(1);
                     auto localDateTimeAfter = localDateTime + dur!"hours"(1);
@@ -3307,8 +3307,8 @@ else version (Posix)
     {
         import core.stdc.time : tzset;
         import core.sys.posix.stdlib : setenv;
-        import std.internal.cstring : tempCString;
-        import std.path : asNormalizedPath, chainPath;
+        import ripstd.internal.cstring : tempCString;
+        import ripstd.path : asNormalizedPath, chainPath;
 
         version (Android)
             auto value = asNormalizedPath(tzDatabaseName);
@@ -3363,7 +3363,7 @@ else version (Posix)
 
 --------------------
     // Parse the conversions from a local file.
-    auto text = std.file.readText("path/to/windowsZones.xml");
+    auto text = ripstd.file.readText("path/to/windowsZones.xml");
     auto conversions = parseTZConversions(text);
 
     // Alternatively, grab the XML file from the web at runtime
@@ -3371,7 +3371,7 @@ else version (Posix)
     // that has the downside that the code needs to worry about the
     // site being down or unicode.org changing the URL.
     auto url = "http://unicode.org/cldr/data/common/supplemental/windowsZones.xml";
-    auto conversions2 = parseTZConversions(std.net.curl.get(url));
+    auto conversions2 = parseTZConversions(ripstd.net.curl.get(url));
 --------------------
   +/
 struct TZConversions
@@ -3395,13 +3395,13 @@ struct TZConversions
 TZConversions parseTZConversions(string windowsZonesXMLText) @safe pure
 {
     // This is a bit hacky, since it doesn't properly read XML, but it avoids
-    // needing to pull in std.xml (which we're theoretically replacing at some
+    // needing to pull in ripstd.xml (which we're theoretically replacing at some
     // point anyway).
-    import std.algorithm.iteration : uniq;
-    import std.algorithm.searching : find;
-    import std.algorithm.sorting : sort;
-    import std.array : array, split;
-    import std.string : lineSplitter;
+    import ripstd.algorithm.iteration : uniq;
+    import ripstd.algorithm.searching : find;
+    import ripstd.algorithm.sorting : sort;
+    import ripstd.array : array, split;
+    import ripstd.string : lineSplitter;
 
     string[][string] win2Nix;
     string[][string] nix2Win;
@@ -3411,7 +3411,7 @@ TZConversions parseTZConversions(string windowsZonesXMLText) @safe pure
 
     foreach (line; windowsZonesXMLText.lineSplitter())
     {
-        import std.exception : enforce;
+        import ripstd.exception : enforce;
         // Sample line:
         // <mapZone other="Canada Central Standard Time" territory="CA" type="America/Regina America/Swift_Current"/>
 
@@ -3453,9 +3453,9 @@ TZConversions parseTZConversions(string windowsZonesXMLText) @safe pure
 
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : uniq;
-    import std.algorithm.sorting : isSorted;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : uniq;
+    import ripstd.algorithm.sorting : isSorted;
 
     // Reduced text from http://unicode.org/cldr/data/common/supplemental/windowsZones.xml
     auto sampleFileText =

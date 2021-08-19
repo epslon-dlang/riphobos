@@ -2,7 +2,7 @@
 
 /**
  * The only purpose of this module is to do the static construction for
- * std.windows.registry, to eliminate cyclic construction errors.
+ * ripstd.windows.registry, to eliminate cyclic construction errors.
  *
  * License:   $(HTTP www.boost.org/LICENSE_1_0.txt, Boost License 1.0).
  * Authors:   Kenji Hara

@@ -104,8 +104,8 @@ Distributed under the Boost Software License, Version 1.0.
 module ripstd.random;
 
 
-import std.range.primitives;
-import std.traits;
+import ripstd.range.primitives;
+import ripstd.traits;
 
 version (OSX)
     version = Darwin;
@@ -122,8 +122,8 @@ version (D_InlineAsm_X86_64) version = InlineAsm_X86_Any;
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : among, equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : among, equal;
+    import ripstd.range : iota;
 
     // seed a random generator with a constant
     auto rnd = Random(42);
@@ -174,12 +174,12 @@ version (D_InlineAsm_X86_64) version = InlineAsm_X86_Any;
     assert([0, 1, 2, 4, 5].randomShuffle(rnd2).equal([2, 0, 4, 5, 1]));
 }
 
-version (StdUnittest)
+version (RIPStdUnittest)
 {
-    static import std.meta;
+    static import ripstd.meta;
     package alias Xorshift64_64 = XorshiftEngine!(ulong, 64, -12, 25, -27);
     package alias Xorshift128_64 = XorshiftEngine!(ulong, 128, 23, -18, -5);
-    package alias PseudoRngTypes = std.meta.AliasSeq!(MinstdRand0, MinstdRand, Mt19937, Xorshift32, Xorshift64,
+    package alias PseudoRngTypes = ripstd.meta.AliasSeq!(MinstdRand0, MinstdRand, Mt19937, Xorshift32, Xorshift64,
                                                       Xorshift96, Xorshift128, Xorshift160, Xorshift192,
                                                       Xorshift64_64, Xorshift128_64);
 }
@@ -246,7 +246,7 @@ version (StdUnittest)
 template isUniformRNG(Rng, ElementType)
 {
     enum bool isUniformRNG = .isUniformRNG!Rng &&
-        is(std.range.primitives.ElementType!Rng == ElementType);
+        is(ripstd.range.primitives.ElementType!Rng == ElementType);
 }
 
 /**
@@ -686,7 +686,7 @@ alias MinstdRand = LinearCongruentialEngine!(uint, 48_271, 0, 2_147_483_647);
 
 @safe @nogc unittest
 {
-    import std.range;
+    import ripstd.range;
     static assert(isForwardRange!MinstdRand);
     static assert(isUniformRNG!MinstdRand);
     static assert(isUniformRNG!MinstdRand0);
@@ -738,7 +738,7 @@ alias MinstdRand = LinearCongruentialEngine!(uint, 48_271, 0, 2_147_483_647);
     assert(rnd.front == 399268537);
 
     // Check .save works
-    static foreach (Type; std.meta.AliasSeq!(MinstdRand0, MinstdRand))
+    static foreach (Type; ripstd.meta.AliasSeq!(MinstdRand0, MinstdRand))
     {{
         auto rnd1 = Type(123_456_789);
         rnd1.popFront();
@@ -1094,8 +1094,8 @@ alias Mt19937 = MersenneTwisterEngine!(uint, 32, 624, 397, 31,
 
 @safe nothrow unittest
 {
-    import std.algorithm;
-    import std.range;
+    import ripstd.algorithm;
+    import ripstd.range;
     static assert(isUniformRNG!Mt19937);
     static assert(isUniformRNG!(Mt19937, uint));
     static assert(isSeedable!Mt19937);
@@ -1137,8 +1137,8 @@ alias Mt19937_64 = MersenneTwisterEngine!(ulong, 64, 312, 156, 31,
 
 @safe nothrow unittest
 {
-    import std.algorithm;
-    import std.range;
+    import ripstd.algorithm;
+    import ripstd.range;
     static assert(isUniformRNG!Mt19937_64);
     static assert(isUniformRNG!(Mt19937_64, ulong));
     static assert(isSeedable!Mt19937_64);
@@ -1156,9 +1156,9 @@ alias Mt19937_64 = MersenneTwisterEngine!(ulong, 64, 312, 156, 31,
 
 @safe unittest
 {
-    import std.algorithm;
-    import std.exception;
-    import std.range;
+    import ripstd.algorithm;
+    import ripstd.exception;
+    import ripstd.range;
 
     Mt19937 gen;
 
@@ -1188,7 +1188,7 @@ alias Mt19937_64 = MersenneTwisterEngine!(ulong, 64, 312, 156, 31,
 @safe @nogc unittest
 {
     // Check .save works
-    static foreach (Type; std.meta.AliasSeq!(Mt19937, Mt19937_64))
+    static foreach (Type; ripstd.meta.AliasSeq!(Mt19937, Mt19937_64))
     {{
         auto gen1 = Type(123_456_789);
         gen1.popFront();
@@ -1216,7 +1216,7 @@ alias Mt19937_64 = MersenneTwisterEngine!(ulong, 64, 312, 156, 31,
     static immutable ulong[] expected10kValue = [4123659995uL, 4123659995uL,
                                 51991688252792uL, 3031481165133029945uL];
 
-    static foreach (i, R; std.meta.AliasSeq!(MT!(uint, 32), MT!(ulong, 32), MT!(ulong, 48), MT!(ulong, 64)))
+    static foreach (i, R; ripstd.meta.AliasSeq!(MT!(uint, 32), MT!(ulong, 32), MT!(ulong, 48), MT!(ulong, 64)))
     {{
         auto a = R();
         a.seed(a.defaultSeed); // checks that some alternative paths in `seed` are utilized
@@ -1580,7 +1580,7 @@ alias Xorshift    = Xorshift128;                            /// ditto
 
 @safe @nogc unittest
 {
-    import std.range;
+    import ripstd.range;
     static assert(isForwardRange!Xorshift);
     static assert(isUniformRNG!Xorshift);
     static assert(isUniformRNG!(Xorshift, uint));
@@ -1613,7 +1613,7 @@ alias Xorshift    = Xorshift128;                            /// ditto
             2772699174618556175UL],
     ];
 
-    alias XorshiftTypes = std.meta.AliasSeq!(Xorshift32, Xorshift64, Xorshift96,
+    alias XorshiftTypes = ripstd.meta.AliasSeq!(Xorshift32, Xorshift64, Xorshift96,
         Xorshift128, Xorshift160, Xorshift192, Xorshift64_64, Xorshift128_64);
 
     foreach (I, Type; XorshiftTypes)
@@ -1644,7 +1644,7 @@ alias Xorshift    = Xorshift128;                            /// ditto
 
 
 /* A complete list of all pseudo-random number generators implemented in
- * std.random.  This can be used to confirm that a given function or
+ * ripstd.random.  This can be used to confirm that a given function or
  * object is compatible with all the pseudo-random number generators
  * available.  It is enabled only in unittest mode.
  */
@@ -1957,8 +1957,8 @@ A singleton instance of the default random number generator
 ///
 @safe nothrow @nogc unittest
 {
-    import std.algorithm.iteration : sum;
-    import std.range : take;
+    import ripstd.algorithm.iteration : sum;
+    import ripstd.range : take;
     auto rnd = rndGen;
     assert(rnd.take(3).sum > 0);
 }
@@ -2055,8 +2055,8 @@ if (!is(CommonType!(T1, T2) == void))
 /// Create an array of random numbers using range functions and UFCS
 @safe unittest
 {
-    import std.array : array;
-    import std.range : generate, takeExactly;
+    import ripstd.array : array;
+    import ripstd.range : generate, takeExactly;
 
     int[] arr = generate!(() => uniform(0, 100)).takeExactly(10).array;
     assert(arr.length == 10);
@@ -2099,12 +2099,12 @@ auto uniform(string boundaries = "[)",
 (T1 a, T2 b, ref UniformRandomNumberGenerator urng)
 if (isFloatingPoint!(CommonType!(T1, T2)) && isUniformRNG!UniformRandomNumberGenerator)
 {
-    import std.conv : text;
-    import std.exception : enforce;
+    import ripstd.conv : text;
+    import ripstd.exception : enforce;
     alias NumberType = Unqual!(CommonType!(T1, T2));
     static if (boundaries[0] == '(')
     {
-        import std.math.operations : nextafter;
+        import ripstd.math.operations : nextafter;
         NumberType _a = nextafter(cast(NumberType) a, NumberType.infinity);
     }
     else
@@ -2113,7 +2113,7 @@ if (isFloatingPoint!(CommonType!(T1, T2)) && isUniformRNG!UniformRandomNumberGen
     }
     static if (boundaries[1] == ')')
     {
-        import std.math.operations : nextafter;
+        import ripstd.math.operations : nextafter;
         NumberType _b = nextafter(cast(NumberType) b, -NumberType.infinity);
     }
     else
@@ -2121,7 +2121,7 @@ if (isFloatingPoint!(CommonType!(T1, T2)) && isUniformRNG!UniformRandomNumberGen
         NumberType _b = b;
     }
     enforce(_a <= _b,
-            text("std.random.uniform(): invalid bounding interval ",
+            text("ripstd.random.uniform(): invalid bounding interval ",
                     boundaries[0], a, ", ", b, boundaries[1]));
     NumberType result =
         _a + (_b - _a) * cast(NumberType) (urng.front - urng.min)
@@ -2198,13 +2198,13 @@ auto uniform(string boundaries = "[)", T1, T2, RandomGen)
 if ((isIntegral!(CommonType!(T1, T2)) || isSomeChar!(CommonType!(T1, T2))) &&
      isUniformRNG!RandomGen)
 {
-    import std.conv : text, unsigned;
-    import std.exception : enforce;
+    import ripstd.conv : text, unsigned;
+    import ripstd.exception : enforce;
     alias ResultType = Unqual!(CommonType!(T1, T2));
     static if (boundaries[0] == '(')
     {
         enforce(a < ResultType.max,
-                text("std.random.uniform(): invalid left bound ", a));
+                text("ripstd.random.uniform(): invalid left bound ", a));
         ResultType lower = cast(ResultType) (a + 1);
     }
     else
@@ -2215,7 +2215,7 @@ if ((isIntegral!(CommonType!(T1, T2)) || isSomeChar!(CommonType!(T1, T2))) &&
     static if (boundaries[1] == ']')
     {
         enforce(lower <= b,
-                text("std.random.uniform(): invalid bounding interval ",
+                text("ripstd.random.uniform(): invalid bounding interval ",
                         boundaries[0], a, ", ", b, boundaries[1]));
         /* Cannot use this next optimization with dchar, as dchar
          * only partially uses its full bit range
@@ -2225,7 +2225,7 @@ if ((isIntegral!(CommonType!(T1, T2)) || isSomeChar!(CommonType!(T1, T2))) &&
             if (b == ResultType.max && lower == ResultType.min)
             {
                 // Special case - all bits are occupied
-                return std.random.uniform!ResultType(rng);
+                return ripstd.random.uniform!ResultType(rng);
             }
         }
         auto upperDist = unsigned(b - lower) + 1u;
@@ -2233,7 +2233,7 @@ if ((isIntegral!(CommonType!(T1, T2)) || isSomeChar!(CommonType!(T1, T2))) &&
     else
     {
         enforce(lower < b,
-                text("std.random.uniform(): invalid bounding interval ",
+                text("ripstd.random.uniform(): invalid bounding interval ",
                         boundaries[0], a, ", ", b, boundaries[1]));
         auto upperDist = unsigned(b - lower);
     }
@@ -2257,7 +2257,7 @@ if ((isIntegral!(CommonType!(T1, T2)) || isSomeChar!(CommonType!(T1, T2))) &&
 
 @safe unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
     auto gen = Mt19937(123_456_789);
     static assert(isForwardRange!(typeof(gen)));
 
@@ -2268,7 +2268,7 @@ if ((isIntegral!(CommonType!(T1, T2)) || isSomeChar!(CommonType!(T1, T2))) &&
     auto c = uniform(0.0, 1.0);
     assert(0 <= c && c < 1);
 
-    static foreach (T; std.meta.AliasSeq!(char, wchar, dchar, byte, ubyte, short, ushort,
+    static foreach (T; ripstd.meta.AliasSeq!(char, wchar, dchar, byte, ubyte, short, ushort,
                           int, uint, long, ulong, float, double, real))
     {{
         T lo = 0, hi = 100;
@@ -2322,7 +2322,7 @@ if ((isIntegral!(CommonType!(T1, T2)) || isSomeChar!(CommonType!(T1, T2))) &&
 
     auto reproRng = Xorshift(239842);
 
-    static foreach (T; std.meta.AliasSeq!(char, wchar, dchar, byte, ubyte, short,
+    static foreach (T; ripstd.meta.AliasSeq!(char, wchar, dchar, byte, ubyte, short,
                           ushort, int, uint, long, ulong))
     {{
         T lo = T.min + 10, hi = T.max - 10;
@@ -2510,7 +2510,7 @@ if (!is(T == enum) && (isIntegral!T || isSomeChar!T))
 
 @safe unittest
 {
-    static foreach (T; std.meta.AliasSeq!(char, wchar, dchar, byte, ubyte, short, ushort,
+    static foreach (T; ripstd.meta.AliasSeq!(char, wchar, dchar, byte, ubyte, short, ushort,
                           int, uint, long, ulong))
     {{
         T init = uniform!T();
@@ -2534,7 +2534,7 @@ auto uniform(E, UniformRandomNumberGenerator)
 if (is(E == enum) && isUniformRNG!UniformRandomNumberGenerator)
 {
     static immutable E[EnumMembers!E.length] members = [EnumMembers!E];
-    return members[std.random.uniform(0, members.length, urng)];
+    return members[ripstd.random.uniform(0, members.length, urng)];
 }
 
 /// Ditto
@@ -2639,7 +2639,7 @@ do
 ///
 @safe @nogc unittest
 {
-    import std.math.operations : feqrel;
+    import ripstd.math.operations : feqrel;
 
     auto rnd = MinstdRand0(42);
 
@@ -2657,11 +2657,11 @@ do
 
 @safe @nogc unittest
 {
-    import std.meta;
+    import ripstd.meta;
     static foreach (UniformRNG; PseudoRngTypes)
     {{
 
-        static foreach (T; std.meta.AliasSeq!(float, double, real))
+        static foreach (T; ripstd.meta.AliasSeq!(float, double, real))
         {{
             UniformRNG rng = UniformRNG(123_456_789);
 
@@ -2698,7 +2698,7 @@ array of size `n` of positive numbers of type `F` that sum to
 F[] uniformDistribution(F = double)(size_t n, F[] useThis = null)
 if (isFloatingPoint!F)
 {
-    import std.numeric : normalize;
+    import ripstd.numeric : normalize;
     useThis.length = n;
     foreach (ref e; useThis)
     {
@@ -2711,8 +2711,8 @@ if (isFloatingPoint!F)
 ///
 @safe unittest
 {
-    import std.algorithm.iteration : reduce;
-    import std.math.operations : isClose;
+    import ripstd.algorithm.iteration : reduce;
+    import ripstd.math.operations : isClose;
 
     auto a = uniformDistribution(5);
     assert(a.length == 5);
@@ -2765,7 +2765,7 @@ auto ref choice(Range)(auto ref Range range)
 
 @safe unittest
 {
-    import std.algorithm.searching : canFind;
+    import ripstd.algorithm.searching : canFind;
 
     class MyTestClass
     {
@@ -2791,8 +2791,8 @@ auto ref choice(Range)(auto ref Range range)
 
 @system unittest
 {
-    import std.algorithm.iteration : map;
-    import std.algorithm.searching : canFind;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.algorithm.searching : canFind;
 
     auto array = [1, 2, 3, 4, 5];
     auto elemAddr = &choice(array);
@@ -2819,7 +2819,7 @@ Returns:
 Range randomShuffle(Range, RandomGen)(Range r, ref RandomGen gen)
 if (isRandomAccessRange!Range && isUniformRNG!RandomGen)
 {
-    import std.algorithm.mutation : swapAt;
+    import ripstd.algorithm.mutation : swapAt;
     const n = r.length;
     foreach (i; 0 .. n)
     {
@@ -2849,7 +2849,7 @@ if (isRandomAccessRange!Range)
 {
     int[10] sa = void;
     int[10] sb = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
-    import std.algorithm.sorting : sort;
+    import ripstd.algorithm.sorting : sort;
     foreach (RandomGen; PseudoRngTypes)
     {
         sa[] = sb[];
@@ -2868,7 +2868,7 @@ if (isRandomAccessRange!Range)
     auto gen1 = Xorshift(123_456_789);
     auto gen2 = gen1.save();
     sa[] = sb[];
-    // @nogc std.random.randomShuffle.
+    // @nogc ripstd.random.randomShuffle.
     // https://issues.dlang.org/show_bug.cgi?id=19156
     () @nogc nothrow pure { randomShuffle(sa[], gen1); }();
     partialShuffle(sb[], sb.length, gen2);
@@ -2878,7 +2878,7 @@ if (isRandomAccessRange!Range)
 // https://issues.dlang.org/show_bug.cgi?id=18501
 @safe unittest
 {
-    import std.algorithm.comparison : among;
+    import ripstd.algorithm.comparison : among;
     auto r = randomShuffle([0,1]);
     assert(r.among([0,1],[1,0]));
 }
@@ -2906,8 +2906,8 @@ Returns:
 Range partialShuffle(Range, RandomGen)(Range r, in size_t n, ref RandomGen gen)
 if (isRandomAccessRange!Range && isUniformRNG!RandomGen)
 {
-    import std.algorithm.mutation : swapAt;
-    import std.exception : enforce;
+    import ripstd.algorithm.mutation : swapAt;
+    import ripstd.exception : enforce;
     enforce(n <= r.length, "n must be <= r.length for partialShuffle.");
     foreach (i; 0 .. n)
     {
@@ -2945,7 +2945,7 @@ if (isRandomAccessRange!Range)
 
 @safe unittest
 {
-    import std.algorithm;
+    import ripstd.algorithm;
     foreach (RandomGen; PseudoRngTypes)
     {
         auto a = [0, 1, 1, 2, 3];
@@ -3051,13 +3051,13 @@ private size_t diceImpl(Rng, Range)(ref Rng rng, scope Range proportions)
 if (isForwardRange!Range && isNumeric!(ElementType!Range) && isForwardRange!Rng)
 in
 {
-    import std.algorithm.searching : all;
+    import ripstd.algorithm.searching : all;
     assert(proportions.save.all!"a >= 0");
 }
 do
 {
-    import std.algorithm.iteration : reduce;
-    import std.exception : enforce;
+    import ripstd.algorithm.iteration : reduce;
+    import ripstd.exception : enforce;
     double sum = reduce!"a + b"(0.0, proportions.save);
     enforce(sum > 0, "Proportions in a dice cannot sum to zero");
     immutable point = uniform(0.0, sum, rng);
@@ -3104,7 +3104,7 @@ private struct RandomCoverChoices
     this(this) pure nothrow @nogc @trusted
     {
         import core.stdc.string : memcpy;
-        import std.internal.memory : enforceMalloc;
+        import ripstd.internal.memory : enforceMalloc;
 
         if (!hasPackedBits && buffer !is null)
         {
@@ -3116,7 +3116,7 @@ private struct RandomCoverChoices
 
     this(size_t numChoices) pure nothrow @nogc @trusted
     {
-        import std.internal.memory : enforceCalloc;
+        import ripstd.internal.memory : enforceCalloc;
 
         _length = numChoices;
         hasPackedBits = _length <= size_t.sizeof * 8;
@@ -3341,8 +3341,8 @@ if (isRandomAccessRange!Range)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
     auto rnd = MinstdRand0(42);
 
     version (X86_64) // https://issues.dlang.org/show_bug.cgi?id=15147
@@ -3351,15 +3351,15 @@ if (isRandomAccessRange!Range)
 
 @safe unittest // cover RandomCoverChoices postblit for heap storage
 {
-    import std.array : array;
-    import std.range : iota;
+    import ripstd.array : array;
+    import ripstd.range : iota;
     auto a = 1337.iota.randomCover().array;
     assert(a.length == 1337);
 }
 
 @nogc nothrow pure @safe unittest
 {
-    // Optionally @nogc std.random.randomCover
+    // Optionally @nogc ripstd.random.randomCover
     // https://issues.dlang.org/show_bug.cgi?id=14001
     auto rng = Xorshift(123_456_789);
     int[5] sa = [1, 2, 3, 4, 5];
@@ -3374,11 +3374,11 @@ if (isRandomAccessRange!Range)
 
 @safe unittest
 {
-    import std.algorithm;
-    import std.conv;
+    import ripstd.algorithm;
+    import ripstd.conv;
     int[] a = [ 0, 1, 2, 3, 4, 5, 6, 7, 8 ];
     int[] c;
-    static foreach (UniformRNG; std.meta.AliasSeq!(void, PseudoRngTypes))
+    static foreach (UniformRNG; ripstd.meta.AliasSeq!(void, PseudoRngTypes))
     {{
         static if (is(UniformRNG == void))
         {
@@ -3419,7 +3419,7 @@ if (isRandomAccessRange!Range)
     assert(rc.empty);
 
     // https://issues.dlang.org/show_bug.cgi?id=16724
-    import std.range : iota;
+    import ripstd.range : iota;
     auto range = iota(10);
     auto randy = range.randomCover;
 
@@ -3543,8 +3543,8 @@ if (isInputRange!Range && (isUniformRNG!UniformRNG || is(UniformRNG == void)))
 
     private void initialize(size_t howMany, size_t total)
     {
-        import std.conv : text;
-        import std.exception : enforce;
+        import ripstd.conv : text;
+        import ripstd.exception : enforce;
         _available = total;
         _toSelect = howMany;
         enforce(_toSelect <= _available,
@@ -3768,8 +3768,8 @@ Variable names are chosen to match those in Vitter's paper.
 */
     private size_t skipD()
     {
-        import std.math.traits : isNaN;
-        import std.math.rounding : trunc;
+        import ripstd.math.traits : isNaN;
+        import ripstd.math.rounding : trunc;
         // Confirm that the check in Step D1 is valid and we
         // haven't been sent here by mistake
         assert((_alphaInverse * _toSelect) <= _available);
@@ -3915,8 +3915,8 @@ if (isInputRange!Range && hasLength!Range && isUniformRNG!UniformRNG)
 ///
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : iota;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : iota;
     auto rnd = MinstdRand0(42);
     assert(10.iota.randomSample(3, rnd).equal([7, 8, 9]));
 }
@@ -3924,9 +3924,9 @@ if (isInputRange!Range && hasLength!Range && isUniformRNG!UniformRNG)
 @system unittest
 {
     // @system because it takes the address of a local
-    import std.conv : text;
-    import std.exception;
-    import std.range;
+    import ripstd.conv : text;
+    import ripstd.exception;
+    import ripstd.range;
     // For test purposes, an infinite input range
     struct TestInputRange
     {

@@ -19,8 +19,8 @@ Macros:
  *  NAN = $(RED NAN)
  */
 module ripstd.internal.math.gammafunction;
-import std.internal.math.errorfunction;
-import std.math;
+import ripstd.internal.math.errorfunction;
+import ripstd.math;
 import core.math : fabs, sin, sqrt;
 
 pure:
@@ -1796,7 +1796,7 @@ real logmdigamma(real x)
  */
 real logmdigammaInverse(real y)
 {
-    import std.numeric : findRoot;
+    import ripstd.numeric : findRoot;
     // FIXME: should be returned back to enum.
     // Fix requires CTFEable `log` on non-x86 targets (check both LDC and GDC).
     immutable maxY = logmdigamma(real.min_normal);
@@ -1827,7 +1827,7 @@ real logmdigammaInverse(real y)
 
 @safe unittest
 {
-    import std.typecons;
+    import ripstd.typecons;
     //WolframAlpha, 22.02.2015
     immutable Tuple!(real, real)[5] testData = [
         tuple(1.0L, 0.615556766479594378978099158335549201923L),

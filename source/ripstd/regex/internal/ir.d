@@ -1,5 +1,5 @@
 /*
-    Implementation of std.regex IR, an intermediate representation
+    Implementation of ripstd.regex IR, an intermediate representation
     of a regular expression pattern.
 
     This is a common ground between frontend regex component (parser)
@@ -7,11 +7,11 @@
 */
 module ripstd.regex.internal.ir;
 
-package(std.regex):
+package(ripstd.regex):
 
-import std.exception, std.meta, std.range.primitives, std.traits, std.uni;
+import ripstd.exception, ripstd.meta, ripstd.range.primitives, ripstd.traits, ripstd.uni;
 
-debug(std_regex_parser) import std.stdio;
+debug(std_regex_parser) import ripstd.stdio;
 // just a common trait, may be moved elsewhere
 alias BasicElementOf(Range) = Unqual!(ElementEncodingType!Range);
 
@@ -75,7 +75,7 @@ enum RegexOption: uint {
 alias RegexOptionNames = AliasSeq!('g', 'i', 'x', 'U', 'm', 's');
 static assert( RegexOption.max < 0x80);
 
-package(std) string regexOptionsToString()(uint flags) nothrow pure @safe
+package(ripstd) string regexOptionsToString()(uint flags) nothrow pure @safe
 {
     flags &= (RegexOption.max << 1) - 1;
     if (!flags)
@@ -319,7 +319,7 @@ struct Bytecode
     //human readable name of instruction
     @trusted @property string mnemonic()() const
     {//@@@BUG@@@ to is @system
-        import std.conv : to;
+        import ripstd.conv : to;
         return to!string(code);
     }
 
@@ -375,8 +375,8 @@ struct Group(DataIndex)
     {
         if (begin < end)
             return "(unmatched)";
-        import std.array : appender;
-        import std.format.write : formattedWrite;
+        import ripstd.array : appender;
+        import ripstd.format.write : formattedWrite;
         auto a = appender!string();
         formattedWrite(a, "%s..%s", begin, end);
         return a.data;
@@ -386,8 +386,8 @@ struct Group(DataIndex)
 //debugging tool, prints out instruction along with opcodes
 @trusted string disassemble(in Bytecode[] irb, uint pc, in NamedGroup[] dict=[])
 {
-    import std.array : appender;
-    import std.format.write : formattedWrite;
+    import ripstd.array : appender;
+    import ripstd.format.write : formattedWrite;
     auto output = appender!string();
     formattedWrite(output,"%s", irb[pc].mnemonic);
     switch (irb[pc].code)
@@ -450,7 +450,7 @@ struct Group(DataIndex)
 //disassemble the whole chunk
 @trusted void printBytecode()(in Bytecode[] slice, in NamedGroup[] dict=[])
 {
-    import std.stdio : writeln;
+    import ripstd.stdio : writeln;
     for (uint pc=0; pc<slice.length; pc += slice[pc].length)
         writeln("\t", disassemble(slice, pc, dict));
 }
@@ -472,7 +472,7 @@ interface MatcherFactory(Char)
 abstract class GenericFactory(alias EngineType, Char) : MatcherFactory!Char
 {
     import core.memory : pureFree;
-    import std.internal.memory : enforceMalloc;
+    import ripstd.internal.memory : enforceMalloc;
     import core.memory : GC;
     // round up to next multiple of size_t for alignment purposes
     enum classSize = (__traits(classInstanceSize, EngineType!Char) + size_t.sizeof - 1) & ~(size_t.sizeof - 1);
@@ -546,9 +546,9 @@ class CtfeFactory(alias EngineType, Char, alias func) : GenericFactory!(EngineTy
 
 private auto defaultFactoryImpl(Char)(const ref Regex!Char re)
 {
-    import std.regex.internal.backtracking : BacktrackingMatcher;
-    import std.regex.internal.thompson : ThompsonMatcher;
-    import std.algorithm.searching : canFind;
+    import ripstd.regex.internal.backtracking : BacktrackingMatcher;
+    import ripstd.regex.internal.thompson : ThompsonMatcher;
+    import ripstd.algorithm.searching : canFind;
     static MatcherFactory!Char backtrackingFactory;
     static MatcherFactory!Char thompsonFactory;
     if (re.backrefed.canFind!"a != 0")
@@ -566,7 +566,7 @@ private auto defaultFactoryImpl(Char)(const ref Regex!Char re)
 }
 
 // Used to generate a pure wrapper for defaultFactoryImpl. Based on the example in
-// the std.traits.SetFunctionAttributes documentation.
+// the ripstd.traits.SetFunctionAttributes documentation.
 auto assumePureFunction(T)(T t)
 if (isFunctionPointer!T)
 {
@@ -675,8 +675,8 @@ struct Regex(Char)
         return NamedGroupRange(dict, 0, dict.length);
     }
 
-package(std.regex):
-    import std.regex.internal.kickstart : Kickstart; //TODO: get rid of this dependency
+package(ripstd.regex):
+    import ripstd.regex.internal.kickstart : Kickstart; //TODO: get rid of this dependency
     const(NamedGroup)[] dict;              // maps name -> user group number
     uint ngroup;                           // number of internal groups
     uint maxCounterDepth;                  // max depth of nested {n,m} repetitions
@@ -759,12 +759,12 @@ package(std.regex):
 
     public string toString()() const
     {
-        import std.format : format;
+        import ripstd.format : format;
         static if (is(typeof(pattern) : string))
             alias patternString = pattern;
         else
         {
-            import std.conv : to;
+            import ripstd.conv : to;
             auto patternString = conv.to!string(pattern);
         }
         auto quotedEscapedPattern = format("%(%s %)", [patternString]);
@@ -775,13 +775,13 @@ package(std.regex):
 
 // The stuff below this point is temporarrily part of IR module
 // but may need better place in the future (all internals)
-package(std.regex):
+package(ripstd.regex):
 
 //Simple UTF-string abstraction compatible with stream interface
 struct Input(Char)
 if (is(Char :dchar))
 {
-    import std.utf : decode;
+    import ripstd.utf : decode;
     alias DataIndex = size_t;
     enum bool isLoopback = false;
     alias String = const(Char)[];
@@ -829,7 +829,7 @@ if (is(Char :dchar))
 
 struct BackLooperImpl(Input)
 {
-    import std.utf : strideBack;
+    import ripstd.utf : strideBack;
     alias DataIndex = size_t;
     alias String = Input.String;
     enum bool isLoopback = true;
@@ -899,10 +899,10 @@ template BackLooper(E)
 //
 @trusted uint lookupNamedGroup(String)(const(NamedGroup)[] dict, String name)
 {//equal is @system?
-    import std.algorithm.comparison : equal;
-    import std.algorithm.iteration : map;
-    import std.conv : text;
-    import std.range : assumeSorted;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.algorithm.iteration : map;
+    import ripstd.conv : text;
+    import ripstd.range : assumeSorted;
 
     auto fnd = assumeSorted!"cmp(a,b) < 0"(map!"a.name"(dict)).lowerBound(name).length;
     enforce(fnd < dict.length && equal(dict[fnd].name, name),
@@ -983,7 +983,7 @@ struct CharMatcher {
 struct SmallFixedArray(T, uint SMALL=3)
 if (!hasElaborateDestructor!T)
 {
-    import std.internal.memory : enforceMalloc;
+    import ripstd.internal.memory : enforceMalloc;
     import core.memory : pureFree;
     static struct Payload
     {

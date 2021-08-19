@@ -4,10 +4,10 @@ Source: $(PHOBOSSRC std/experimental/logger/filelogger.d)
 */
 module ripstd.experimental.logger.filelogger;
 
-import std.experimental.logger.core;
-import std.stdio;
+import ripstd.experimental.logger.core;
+import ripstd.stdio;
 
-import std.typecons : Flag;
+import ripstd.typecons : Flag;
 
 /** An option to create $(LREF FileLogger) directory if it is non-existent.
 */
@@ -19,9 +19,9 @@ is already present new log messages will be append at its end.
 */
 class FileLogger : Logger
 {
-    import std.concurrency : Tid;
-    import std.datetime.systime : SysTime;
-    import std.format.write : formattedWrite;
+    import ripstd.concurrency : Tid;
+    import ripstd.datetime.systime : SysTime;
+    import ripstd.format.write : formattedWrite;
 
     /** A constructor for the `FileLogger` Logger.
 
@@ -65,9 +65,9 @@ class FileLogger : Logger
     */
     this(const string fn, const LogLevel lv, CreateFolder createFileNameFolder) @safe
     {
-        import std.file : exists, mkdirRecurse;
-        import std.path : dirName;
-        import std.conv : text;
+        import ripstd.file : exists, mkdirRecurse;
+        import ripstd.path : dirName;
+        import ripstd.conv : text;
 
         super(lv);
         this.filename = fn;
@@ -125,13 +125,13 @@ class FileLogger : Logger
         Tid threadId, SysTime timestamp, Logger logger)
         @safe
     {
-        import std.string : lastIndexOf;
+        import ripstd.string : lastIndexOf;
         ptrdiff_t fnIdx = file.lastIndexOf('/') + 1;
         ptrdiff_t funIdx = funcName.lastIndexOf('.') + 1;
 
         auto lt = this.file_.lockingTextWriter();
         systimeToISOString(lt, timestamp);
-        import std.conv : to;
+        import ripstd.conv : to;
         formattedWrite(lt, " [%s] %s:%u:%s ", logLevel.to!string,
                 file[fnIdx .. $], line, funcName[funIdx .. $]);
     }
@@ -183,9 +183,9 @@ class FileLogger : Logger
 
 @system unittest
 {
-    import std.array : empty;
-    import std.file : deleteme, remove;
-    import std.string : indexOf;
+    import ripstd.array : empty;
+    import ripstd.file : deleteme, remove;
+    import ripstd.string : indexOf;
 
     string filename = deleteme ~ __FUNCTION__ ~ ".tempLogFile";
     auto l = new FileLogger(filename);
@@ -212,8 +212,8 @@ class FileLogger : Logger
 
 @safe unittest
 {
-    import std.file : rmdirRecurse, exists, deleteme;
-    import std.path : dirName;
+    import ripstd.file : rmdirRecurse, exists, deleteme;
+    import ripstd.path : dirName;
 
     const string tmpFolder = dirName(deleteme);
     const string filepath = tmpFolder ~ "/bug15771/minas/oops/";
@@ -230,9 +230,9 @@ class FileLogger : Logger
 
 @system unittest
 {
-    import std.array : empty;
-    import std.file : deleteme, remove;
-    import std.string : indexOf;
+    import ripstd.array : empty;
+    import ripstd.file : deleteme, remove;
+    import ripstd.string : indexOf;
 
     string filename = deleteme ~ __FUNCTION__ ~ ".tempLogFile";
     auto file = File(filename, "w");

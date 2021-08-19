@@ -5,14 +5,14 @@ The C heap allocator.
 Source: $(PHOBOSSRC std/experimental/allocator/mallocator.d)
 */
 module ripstd.experimental.allocator.mallocator;
-import std.experimental.allocator.common;
+import ripstd.experimental.allocator.common;
 
 /**
    The C heap allocator.
  */
 struct Mallocator
 {
-    version (StdUnittest) @system unittest { testAllocator!(() => Mallocator.instance); }
+    version (RIPStdUnittest) @system unittest { testAllocator!(() => Mallocator.instance); }
 
     /**
     The alignment is a static constant equal to `platformAlignment`, which
@@ -107,7 +107,7 @@ struct Mallocator
 {
     static void test(A)()
     {
-        import std.experimental.allocator : make;
+        import ripstd.experimental.allocator : make;
         Object p = null;
         p = A.instance.make!Object();
         assert(p !is null);
@@ -210,7 +210,7 @@ version (Windows)
  */
 struct AlignedMallocator
 {
-    version (StdUnittest) @system unittest { testAllocator!(() => typeof(this).instance); }
+    version (RIPStdUnittest) @system unittest { testAllocator!(() => typeof(this).instance); }
 
     /**
     The default alignment is `platformAlignment`.
@@ -346,7 +346,7 @@ version (LDC_AddressSanitizer)
         {
             return false;
         }
-        import std.algorithm.comparison : min;
+        import ripstd.algorithm.comparison : min;
         const upTo = min(s, b.length);
         p[0 .. upTo] = b[0 .. upTo];
         deallocate(b);

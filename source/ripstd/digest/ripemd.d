@@ -46,13 +46,13 @@ $(TR $(TDNW Helpers) $(TD $(MYREF ripemd160Of))
 
 module ripstd.digest.ripemd;
 
-public import std.digest;
+public import ripstd.digest;
 
 ///
 @safe unittest
 {
     //Template API
-    import std.digest.md;
+    import ripstd.digest.md;
 
     ubyte[20] hash = ripemd160Of("abc");
     assert(toHexString(hash) == "8EB208F7E05D987A9B044A8E98C6B087F15A0BFC");
@@ -71,7 +71,7 @@ public import std.digest;
 @safe unittest
 {
     //OOP API
-    import std.digest.md;
+    import ripstd.digest.md;
 
     auto md = new RIPEMD160Digest();
     ubyte[] hash = md.digest("abc");
@@ -228,7 +228,7 @@ struct RIPEMD160
 
             version (BigEndian)
             {
-                import std.bitmanip : littleEndianToNative;
+                import ripstd.bitmanip : littleEndianToNative;
 
                 for (size_t i = 0; i < 16; i++)
                 {
@@ -522,7 +522,7 @@ struct RIPEMD160
          */
         ubyte[20] finish() @trusted pure nothrow @nogc
         {
-            import std.bitmanip : nativeToLittleEndian;
+            import ripstd.bitmanip : nativeToLittleEndian;
 
             ubyte[20] data = void;
             ubyte[8] bits = void;
@@ -606,8 +606,8 @@ struct RIPEMD160
 
 @system unittest
 {
-    import std.conv : hexString;
-    import std.range;
+    import ripstd.conv : hexString;
+    import ripstd.range;
 
     ubyte[20] digest;
 
@@ -711,7 +711,7 @@ alias RIPEMD160Digest = WrapperDigest!RIPEMD160;
 
 @system unittest
 {
-    import std.conv : hexString;
+    import ripstd.conv : hexString;
     auto md = new RIPEMD160Digest();
 
     md.put(cast(ubyte[])"abcdef");
@@ -726,7 +726,7 @@ alias RIPEMD160Digest = WrapperDigest!RIPEMD160;
 
     debug
     {
-        import std.exception;
+        import ripstd.exception;
         assertThrown!Error(md.finish(result[0 .. 19]));
     }
 

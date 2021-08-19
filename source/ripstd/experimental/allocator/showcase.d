@@ -8,10 +8,10 @@ Source: $(PHOBOSSRC std/experimental/allocator/_showcase.d)
 */
 module ripstd.experimental.allocator.showcase;
 
-import std.experimental.allocator.building_blocks.fallback_allocator,
-    std.experimental.allocator.gc_allocator,
-    std.experimental.allocator.building_blocks.region;
-import std.traits : hasMember;
+import ripstd.experimental.allocator.building_blocks.fallback_allocator,
+    ripstd.experimental.allocator.gc_allocator,
+    ripstd.experimental.allocator.building_blocks.region;
+import ripstd.traits : hasMember;
 
 /**
 
@@ -62,10 +62,10 @@ auto mmapRegionList(size_t bytesPerRegion)
     static struct Factory
     {
         size_t bytesPerRegion;
-        import std.algorithm.comparison : max;
-        import std.experimental.allocator.building_blocks.region
+        import ripstd.algorithm.comparison : max;
+        import ripstd.experimental.allocator.building_blocks.region
             : Region;
-        import std.experimental.allocator.mmap_allocator
+        import ripstd.experimental.allocator.mmap_allocator
             : MmapAllocator;
         this(size_t n)
         {
@@ -76,9 +76,9 @@ auto mmapRegionList(size_t bytesPerRegion)
             return Region!MmapAllocator(max(n, bytesPerRegion));
         }
     }
-    import std.experimental.allocator.building_blocks.allocator_list
+    import ripstd.experimental.allocator.building_blocks.allocator_list
         : AllocatorList;
-    import std.experimental.allocator.building_blocks.null_allocator
+    import ripstd.experimental.allocator.building_blocks.null_allocator
         : NullAllocator;
     auto shop = Factory(bytesPerRegion);
     return AllocatorList!(Factory, NullAllocator)(shop);

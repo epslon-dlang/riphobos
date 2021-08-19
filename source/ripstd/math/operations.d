@@ -26,7 +26,7 @@ Macros:
 
 module ripstd.math.operations;
 
-import std.traits : CommonType, isFloatingPoint, isIntegral, Unqual;
+import ripstd.traits : CommonType, isFloatingPoint, isIntegral, Unqual;
 
 // Functions for NaN payloads
 /*
@@ -44,7 +44,7 @@ import std.traits : CommonType, isFloatingPoint, isIntegral, Unqual;
  */
 real NaN(ulong payload) @trusted pure nothrow @nogc
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     alias F = floatTraits!(real);
     static if (F.realFormat == RealFormat.ieeeExtended ||
@@ -127,7 +127,7 @@ real NaN(ulong payload) @trusted pure nothrow @nogc
 ///
 @safe @nogc pure nothrow unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     real a = NaN(1_000_000);
     assert(isNaN(a));
@@ -136,7 +136,7 @@ real NaN(ulong payload) @trusted pure nothrow @nogc
 
 @system pure nothrow @nogc unittest // not @safe because taking address of local.
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     static if (floatTraits!(real).realFormat == RealFormat.ieeeDouble)
     {
@@ -159,7 +159,7 @@ real NaN(ulong payload) @trusted pure nothrow @nogc
  */
 ulong getNaNPayload(real x) @trusted pure nothrow @nogc
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     //  assert(isNaN(x));
     alias F = floatTraits!(real);
@@ -212,7 +212,7 @@ ulong getNaNPayload(real x) @trusted pure nothrow @nogc
 ///
 @safe @nogc pure nothrow unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     real a = NaN(1_000_000);
     assert(isNaN(a));
@@ -221,7 +221,7 @@ ulong getNaNPayload(real x) @trusted pure nothrow @nogc
 
 @safe @nogc pure nothrow unittest
 {
-    import std.math.traits : isIdentical, isNaN;
+    import ripstd.math.traits : isIdentical, isNaN;
 
     enum real a = NaN(1_000_000);
     static assert(isNaN(a));
@@ -283,7 +283,7 @@ debug(UnitTest)
  */
 real nextUp(real x) @trusted pure nothrow @nogc
 {
-    import std.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
+    import ripstd.math : floatTraits, RealFormat, MANTISSA_MSB, MANTISSA_LSB;
 
     alias F = floatTraits!(real);
     static if (F.realFormat != RealFormat.ieeeDouble)
@@ -522,8 +522,8 @@ float nextDown(float x) @safe pure nothrow @nogc
 
 @safe pure nothrow @nogc unittest
 {
-    import std.math : floatTraits, RealFormat;
-    import std.math.traits : isIdentical;
+    import ripstd.math : floatTraits, RealFormat;
+    import ripstd.math.traits : isIdentical;
 
     static if (floatTraits!(real).realFormat == RealFormat.ieeeExtended ||
                floatTraits!(real).realFormat == RealFormat.ieeeDouble ||
@@ -663,7 +663,7 @@ float nextDown(float x) @safe pure nothrow @nogc
  */
 T nextafter(T)(const T x, const T y) @safe pure nothrow @nogc
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     if (x == y || isNaN(y))
     {
@@ -681,7 +681,7 @@ T nextafter(T)(const T x, const T y) @safe pure nothrow @nogc
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     float a = 1;
     assert(is(typeof(nextafter(a, a)) == float));
@@ -704,7 +704,7 @@ T nextafter(T)(const T x, const T y) @safe pure nothrow @nogc
 
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isNaN, signbit;
+    import ripstd.math.traits : isNaN, signbit;
 
     // CTFE
     enum float a = 1;
@@ -754,7 +754,7 @@ real fdim(real x, real y) @safe pure nothrow @nogc
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     assert(fdim(2.0, 0.0) == 2.0);
     assert(fdim(-2.0, 0.0) == 0.0);
@@ -774,7 +774,7 @@ real fdim(real x, real y) @safe pure nothrow @nogc
 F fmax(F)(const F x, const F y) @safe pure nothrow @nogc
 if (__traits(isFloating, F))
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     // Do the more predictable test first. Generates 0 branches with ldc and 1 branch with gdc.
     // See https://godbolt.org/z/erxrW9
@@ -785,7 +785,7 @@ if (__traits(isFloating, F))
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (F; AliasSeq!(float, double, real))
     {
         assert(fmax(F(0.0), F(2.0)) == 2.0);
@@ -806,7 +806,7 @@ if (__traits(isFloating, F))
 F fmin(F)(const F x, const F y) @safe pure nothrow @nogc
 if (__traits(isFloating, F))
 {
-    import std.math.traits : isNaN;
+    import ripstd.math.traits : isNaN;
 
     // Do the more predictable test first. Generates 0 branches with ldc and 1 branch with gdc.
     // See https://godbolt.org/z/erxrW9
@@ -817,7 +817,7 @@ if (__traits(isFloating, F))
 ///
 @safe pure nothrow @nogc unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (F; AliasSeq!(float, double, real))
     {
         assert(fmin(F(0.0), F(2.0)) == 0.0);
@@ -865,7 +865,7 @@ real fma(real x, real y, real z) @safe pure nothrow @nogc { return (x * y) + z; 
 int feqrel(X)(const X x, const X y) @trusted pure nothrow @nogc
 if (isFloatingPoint!(X))
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
     import core.math : fabs;
 
     /* Public Domain. Author: Don Clugston, 18 Aug 2005.
@@ -1040,7 +1040,7 @@ deprecated("approxEqual will be removed in 2.106.0. Please use isClose instead."
 bool approxEqual(T, U, V)(T value, U reference, V maxRelDiff = 1e-2, V maxAbsDiff = 1e-5)
 {
     import core.math : fabs;
-    import std.range.primitives : empty, front, isInputRange, popFront;
+    import ripstd.range.primitives : empty, front, isInputRange, popFront;
     static if (isInputRange!T)
     {
         static if (isInputRange!U)
@@ -1225,8 +1225,8 @@ deprecated @safe pure nothrow unittest
 bool isClose(T, U, V = CommonType!(FloatingPointBaseType!T,FloatingPointBaseType!U))
     (T lhs, U rhs, V maxRelDiff = CommonDefaultFor!(T,U), V maxAbsDiff = 0.0)
 {
-    import std.range.primitives : empty, front, isInputRange, popFront;
-    import std.complex : Complex;
+    import ripstd.range.primitives : empty, front, isInputRange, popFront;
+    import ripstd.complex : Complex;
     static if (isInputRange!T)
     {
         static if (isInputRange!U)
@@ -1293,7 +1293,7 @@ bool isClose(T, U, V = CommonType!(FloatingPointBaseType!T,FloatingPointBaseType
                 lhs == -lhs.infinity || rhs == -rhs.infinity) return false;
         }
 
-        import std.math.algebraic : abs;
+        import ripstd.math.algebraic : abs;
 
         auto diff = abs(lhs - rhs);
 
@@ -1416,7 +1416,7 @@ bool isClose(T, U, V = CommonType!(FloatingPointBaseType!T,FloatingPointBaseType
 
 @safe pure nothrow @nogc unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     float f = 31.79f;
     double d = 31.79;
@@ -1428,7 +1428,7 @@ bool isClose(T, U, V = CommonType!(FloatingPointBaseType!T,FloatingPointBaseType
 
 @safe pure nothrow @nogc unittest
 {
-    import std.conv : to;
+    import ripstd.conv : to;
 
     double d = 31.79;
     float f = d.to!float;
@@ -1439,9 +1439,9 @@ bool isClose(T, U, V = CommonType!(FloatingPointBaseType!T,FloatingPointBaseType
     assert(isClose(d,f2d,1e-4));
 }
 
-package(std.math) template CommonDefaultFor(T,U)
+package(ripstd.math) template CommonDefaultFor(T,U)
 {
-    import std.algorithm.comparison : min;
+    import ripstd.algorithm.comparison : min;
 
     alias baseT = FloatingPointBaseType!T;
     alias baseU = FloatingPointBaseType!U;
@@ -1451,7 +1451,7 @@ package(std.math) template CommonDefaultFor(T,U)
 
 private template FloatingPointBaseType(T)
 {
-    import std.range.primitives : ElementType;
+    import ripstd.range.primitives : ElementType;
     static if (isFloatingPoint!T)
     {
         alias FloatingPointBaseType = Unqual!T;
@@ -1492,7 +1492,7 @@ private template FloatingPointBaseType(T)
 int cmp(T)(const(T) x, const(T) y) @nogc @trusted pure nothrow
 if (isFloatingPoint!T)
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     alias F = floatTraits!T;
 
@@ -1512,7 +1512,7 @@ if (isFloatingPoint!T)
 
         enum msb = ~(UInt.max >>> 1);
 
-        import std.typecons : Tuple;
+        import ripstd.typecons : Tuple;
         Tuple!(Repainter, Repainter) vars = void;
         vars[0].number = x;
         vars[1].number = y;
@@ -1552,7 +1552,7 @@ if (isFloatingPoint!T)
             ubyte[T.sizeof] bytes;
         }
 
-        import std.typecons : Tuple;
+        import ripstd.typecons : Tuple;
         Tuple!(Repainter, Repainter) vars = void;
         vars[0].number = x;
         vars[1].number = y;
@@ -1600,7 +1600,7 @@ if (isFloatingPoint!T)
         // IBM Extended doubledouble does not follow the general
         // sign-exponent-significand layout, so has to be handled generically
 
-        import std.math.traits : signbit, isNaN;
+        import ripstd.math.traits : signbit, isNaN;
 
         const int xSign = signbit(x),
             ySign = signbit(y);
@@ -1669,7 +1669,7 @@ if (isFloatingPoint!T)
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
     static foreach (T; AliasSeq!(float, double, real))
     {{
         T[] values = [-cast(T) NaN(20), -cast(T) NaN(10), -T.nan, -T.infinity,
@@ -1698,7 +1698,7 @@ if (isFloatingPoint!T)
     }}
 }
 
-package(std): // not yet public
+package(ripstd): // not yet public
 
 struct FloatingPointBitpattern(T)
 if (isFloatingPoint!T)
@@ -1720,7 +1720,7 @@ if (isFloatingPoint!T)
 FloatingPointBitpattern!T extractBitpattern(T)(T val)
 if (isFloatingPoint!T)
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     FloatingPointBitpattern!T ret;
 
@@ -1730,9 +1730,9 @@ if (isFloatingPoint!T)
         if (__ctfe)
         {
             import core.math : fabs;
-            import std.math.rounding : floor;
-            import std.math.traits : isInfinity, isNaN;
-            import std.math.exponential : log2;
+            import ripstd.math.rounding : floor;
+            import ripstd.math.traits : isInfinity, isNaN;
+            import ripstd.math.exponential : log2;
 
             if (isNaN(val) || isInfinity(val))
                 ret.exponent = 32767;
@@ -1803,7 +1803,7 @@ if (isFloatingPoint!T)
             static assert(false, "Floating point type `" ~ F.realFormat ~ "` not supported.");
         }
 
-        import std.math.exponential : log2;
+        import ripstd.math.exponential : log2;
         enum log2_max_exp = cast(int) log2(T.max_exp);
 
         ret.mantissa = ival & ((1L << (T.mant_dig - 1)) - 1);
@@ -1903,7 +1903,7 @@ if (isFloatingPoint!T)
 
 @safe pure unittest
 {
-    import std.math : floatTraits, RealFormat;
+    import ripstd.math : floatTraits, RealFormat;
 
     alias F = floatTraits!real;
     static if (F.realFormat == RealFormat.ieeeExtended)
@@ -1954,8 +1954,8 @@ if (isFloatingPoint!T)
 
 @safe pure unittest
 {
-    import std.math : floatTraits, RealFormat;
-    import std.math.exponential : log2;
+    import ripstd.math : floatTraits, RealFormat;
+    import ripstd.math.exponential : log2;
 
     alias F = floatTraits!real;
 
