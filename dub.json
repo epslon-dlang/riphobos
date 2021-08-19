@@ -1,0 +1,71 @@
+{
+  "name": "riphobos",
+  "description": "Fork of the D Standard Library",
+  "copyright": "Copyright \u00a9 2021, The D Language Epslon Community",
+  "importPaths": [ "source" ],
+  "sourcePaths": [ "source" ],
+  "libs": [
+    "z",
+    "curl",
+    "dl"
+  ],
+  "license": "BSL-1.0",
+  "targetPath": "generated",
+  "targetType": "library",
+  "authors": [ "DLang Community" ],
+  "dflags": [ "-preview=dip1000", "-preview=dtorfields" ],
+  "buildRequirements": [ "disallowDeprecations" ],
+  "buildOptions": [ "warningsAsErrors", "deprecationErrors"],
+  "configurations": [
+    { "name": "default" },
+    {
+      "name": "static",
+      "targetType": "staticLibrary"
+    },
+    {
+      "name": "shared",
+      "targetType": "dynamicLibrary"
+    },
+    {
+      "name": "unittest",
+      "versions": [ "RIPStdUnittest" ],
+      "buildOptions": ["unittests"],
+      "dflags": [ "-unittest" ]
+    },
+    {
+      "name": "unittest-cov",
+      "versions": [ "RIPStdUnittest" ],
+      "buildOptions": ["unittests", "coverage"]
+    },
+    {
+      "name": "unittest-threaded",
+      "versions": [ "RIPStdUnittest" ],
+      "dependencies": {
+        "aurorafw:unit": "~>0.0.1-alpha.4"
+      },
+      "buildOptions": ["unittests", "lowmem"],
+      "buildRequirements": ["silenceDeprecations"]
+    },
+    {
+      "name": "unittest-cov-threaded",
+      "versions": [ "RIPStdUnittest" ],
+      "dependencies": {
+        "aurorafw:unit": "~>0.0.1-alpha.4"
+      },
+      "buildOptions": ["unittests", "coverage", "lowmem"],
+      "buildRequirements": ["silenceDeprecations"]
+    }
+  ],
+  "buildTypes": {
+    "debug": {
+      "buildOptions": [ "debugMode", "debugInfo" ]
+    },
+    "release": {
+      "buildOptions": [ "releaseMode", "optimize", "noBoundsCheck" ]
+    },
+    "release-inline": {
+      "buildOptions": [ "releaseMode", "optimize", "inline", "noBoundsCheck" ],
+      "versions": [ "RIPStd_inline" ]
+    }
+  }
+}
