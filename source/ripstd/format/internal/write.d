@@ -641,7 +641,7 @@ if (is(FloatingPointTypeOf!T) && !is(T == enum) && !hasToString!(T, Char))
             tval = -doubleLowest;
     }
 
-    import std.format.internal.floats : printFloat;
+    import ripstd.format.internal.floats : printFloat;
     printFloat(w, tval, fs);
 }
 

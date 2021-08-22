@@ -3083,7 +3083,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
 
                     // If RoR contains a single empty element,
                     // the returned Result will always be empty
-                    import std.range : dropOne;
+                    import ripstd.range : dropOne;
                     static if (hasLength!RoR)
                     {
                         if (_items.length == 1)
@@ -3398,7 +3398,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
 @safe pure unittest
 {
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         auto r = joiner(["abc", "def", "ghi"], "?!");
         char[] res;
         while (!r.empty)
@@ -3428,14 +3428,14 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
             rCopy.popBack;
         }
 
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         assert(resFront.equal("ȘȚabcȘȚ"));
         assert(resBack.equal("ȘȚcbaȘȚ"));
     }
 
     {
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         auto r = [""];
         r.popBack;
         assert(r.joiner("AB").equal(""));
@@ -3460,7 +3460,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
             rCopy.popBack;
         }
 
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         assert(resFront.equal("../../../abc../"));
         assert(resBack.equal("../cba../../../"));
@@ -3501,7 +3501,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
             rCopyRev.popBack;
         }
 
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
 
         assert(r1.equal("/cba./"));
         assert(r2.equal("/abc./"));
@@ -3512,8 +3512,8 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
 
 @system unittest
 {
-    import std.range;
-    import std.algorithm.comparison : equal;
+    import ripstd.range;
+    import ripstd.algorithm.comparison : equal;
 
     assert(inputRangeObject([""]).joiner("lz").equal(""));
 }
@@ -3542,7 +3542,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
 
     auto arr = inputRangeStrings([""]);
 
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert(arr.joiner("./").equal(""));
 }
@@ -3557,7 +3557,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR)
         r.popBack;
     }
 
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     assert(res.equal("cba"));
 }

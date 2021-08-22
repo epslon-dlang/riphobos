@@ -13,7 +13,7 @@ Serialize data to `ubyte` arrays.
 module ripstd.outbuffer;
 
 import core.stdc.stdarg;
-import std.traits : isSomeString;
+import ripstd.traits : isSomeString;
 
 /*********************************************
  * OutBuffer provides a way to build up an array of bytes out
@@ -328,7 +328,7 @@ class OutBuffer
     void writef(alias fmt, A...)(A args)
     if (isSomeString!(typeof(fmt)))
     {
-        import std.format : checkFormatException;
+        import ripstd.format : checkFormatException;
 
         alias e = checkFormatException!(fmt, A);
         static assert(!e, e.msg);
@@ -374,7 +374,7 @@ class OutBuffer
     void writefln(alias fmt, A...)(A args)
     if (isSomeString!(typeof(fmt)))
     {
-        import std.format : checkFormatException;
+        import ripstd.format : checkFormatException;
 
         alias e = checkFormatException!(fmt, A);
         static assert(!e, e.msg);

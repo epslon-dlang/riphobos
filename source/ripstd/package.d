@@ -1,12 +1,12 @@
 /++
 Convenience file that allows to import entire Phobos in one import.
 +/
-module std;
+module ripstd;
 
 ///
 @safe unittest
 {
-    import std;
+    import ripstd;
 
     int len;
     const r = 6.iota
@@ -24,7 +24,7 @@ module std;
 ///
 @safe unittest
 {
-    import std;
+    import ripstd;
     assert(10.iota.map!(a => pow(2, a)).sum == 1023);
 }
 

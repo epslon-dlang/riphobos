@@ -1975,7 +1975,7 @@ if (is(T == float) || is(T == double)
 
 @safe unittest
 {
-    import std.math.hardware; // cannot be selective, because FloatingPointControl might not be defined
+    import ripstd.math.hardware; // cannot be selective, because FloatingPointControl might not be defined
 
     // std.math's FloatingPointControl isn't available on all target platforms
     static if (is(FloatingPointControl))
@@ -2281,8 +2281,8 @@ if (is(T == float) || is(T == double)
     if (f.precision == 0)
         f.precision = 1;
 
-    import std.math.hardware;
-    import std.format.internal.write : RoundingMode;
+    import ripstd.math.hardware;
+    import ripstd.format.internal.write : RoundingMode;
 
     auto rm = RoundingMode.toNearestTiesToEven;
 
@@ -2572,7 +2572,7 @@ if (is(T == float) || is(T == double)
 
 @safe unittest
 {
-    import std.math.hardware; // cannot be selective, because FloatingPointControl might not be defined
+    import ripstd.math.hardware; // cannot be selective, because FloatingPointControl might not be defined
 
     // std.math's FloatingPointControl isn't available on all target platforms
     static if (is(FloatingPointControl))

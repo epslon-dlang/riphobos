@@ -14,8 +14,8 @@ My fancy title of the new feature
 A long description of the new feature in `std.range`.
 It can be followed by an example:
 -------
-import std.range : padLeft, padRight;
-import std.algorithm.comparison : equal;
+import ripstd.range : padLeft, padRight;
+import ripstd.algorithm.comparison : equal;
 
 assert([1, 2, 3, 4, 5].padLeft(0, 7).equal([0, 0, 1, 2, 3, 4, 5]));
 

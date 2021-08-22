@@ -10860,7 +10860,7 @@ if (isInputRange!Range && !isInstanceOf!(SortedRange, Range))
     static if (is(Range : int[]))
     @safe unittest
     {
-        import std.algorithm.sorting : sort;
+        import ripstd.algorithm.sorting : sort;
         int[3] data = [ 1, 2, 3 ];
         auto a = assumeSorted(data[]);
         assert(a == sort!"a < b"(data[]));

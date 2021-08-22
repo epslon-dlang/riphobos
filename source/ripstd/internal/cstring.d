@@ -301,7 +301,7 @@ private To[] trustedReallocStack(To)(scope To[] buf, size_t strLength)
 {
     pragma(inline, false);  // because it's rarely called
 
-    import std.internal.memory : enforceMalloc;
+    import ripstd.internal.memory : enforceMalloc;
 
     size_t newlen = buf.length * 3 / 2;
     if (newlen <= strLength)

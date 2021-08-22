@@ -4661,7 +4661,7 @@ if (isSomeChar!C)
             res ~= r.back;
             r.popBack;
         }
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         assert(res.equal([0x81, 0x98, 0x9f, 0xf0, 0xb7, 0x90, 0x90, 0xf0]));
     }
 
@@ -4673,7 +4673,7 @@ if (isSomeChar!C)
             res ~= r.back;
             r.popBack;
         }
-        import std.algorithm.comparison : equal;
+        import ripstd.algorithm.comparison : equal;
         assert(res.equal(['e', 'd', 'c', 'b', 'a']));
     }
 
@@ -4698,7 +4698,7 @@ if (isSomeChar!C)
 ///
 @safe pure nothrow unittest
 {
-    import std.range.primitives;
+    import ripstd.range.primitives;
     wchar[] s = ['ă', 'î'];
 
     auto rc = s.byUTF!char;

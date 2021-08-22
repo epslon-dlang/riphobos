@@ -1277,7 +1277,7 @@ if (isInputRange!R &&
 @safe pure unittest
 {
     //example from issue 19727
-    import std.path : asRelativePath;
+    import ripstd.path : asRelativePath;
     string[] ext = ["abc", "def", "ghi"];
     string path = "/foo/file.def";
     assert(ext.any!(e => path.asRelativePath("/foo").endsWith(e)) == true);
