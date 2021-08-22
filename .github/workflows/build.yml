@@ -1,0 +1,55 @@
+name: build-test-workflow
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-tests:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+        dc: [dmd-master] # dmd-latest, ldc-latest, ldc-master
+        arch: [x86_64] # x86
+        build_type: [debug, release, release-debug, release-inline]
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install D compiler
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: ${{ matrix.dc }}
+
+      - name: Run pre build script
+        if: runner.os == 'Linux'
+        run: .github/workflows/pre-build.sh
+
+      - name: Build static library
+        run: dub build --build=${{ matrix.build_type }} --config=static --arch=${{ matrix.arch }} --parallel --build-mode=singleFile --force -v
+
+      # Don't build dynamic libraries using DMD for Windows
+      - name: Build dynamic library
+        if: runner.os != 'Windows' || (runner.os == 'Windows' && !(startsWith(matrix.dc, 'dmd-')))
+        run: dub build --build=${{ matrix.build_type }} --config=shared --arch=${{ matrix.arch }} --parallel --build-mode=singleFile --force -v
+
+      # FIXME: Don't test release-inline build type for DMD compiler or release
+      # build type for DMD on Windows platform as it leads to unknown frame
+      # pointers and illegal instructions as part of some unknown stack issues,
+      # respectively.
+      - name: Run mono-threaded test suite
+        if: true == !(startsWith(matrix.dc, 'dmd-') && (endsWith(matrix.build_type, 'inline') || (matrix.build_type == 'release' && runner.os == 'Windows')))
+        run: dub test --build=${{ matrix.build_type }} --config=unittest-cov --arch=${{ matrix.arch }} --parallel --build-mode=singleFile --force -v -- --DRT-covopt="merge:1"
+
+      # FIXME: DUB currently only works with a custom test runner by compiling
+      # the source code on a single compiler invocation. This is obviously not
+      # ideal and Github Workflows shared machines struggle on compiling it due
+      # to limited amount of memory.
+
+      # - name: Run multi-threaded test suite
+      #   if: true == !(startsWith(matrix.dc, 'dmd-') && (endsWith(matrix.build_type, 'inline') || matrix.build_type == 'release'))
+      #   run: dub test --build=${{ matrix.build_type }} --config=unittest-cov-threaded --arch=${{ matrix.arch }} --parallel --force -v -- --DRT-covopt="merge:1"
