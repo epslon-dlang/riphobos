@@ -161,7 +161,7 @@ if (is(T == float) || is(T == double)
 
     if (f.precision < hex_mant_pos - 2)
     {
-        import std.format.internal.write : RoundingClass, round;
+        import ripstd.format.internal.write : RoundingClass, round;
 
         RoundingClass rc;
 
@@ -1393,7 +1393,7 @@ if (is(T == float) || is(T == double)
 // for 100% coverage
 @safe unittest
 {
-    import std.math.hardware; // cannot be selective, because FloatingPointControl might not be defined
+    import ripstd.math.hardware; // cannot be selective, because FloatingPointControl might not be defined
 
     auto f = FormatSpec!dchar("");
     f.spec = 'E';
