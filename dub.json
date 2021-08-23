@@ -4,7 +4,7 @@
   "copyright": "Copyright \u00a9 2021, The D Language Epslon Community",
   "importPaths": [ "source" ],
   "sourcePaths": [ "source" ],
-  "libs": [
+  "libs-posix": [
     "z",
     "curl",
     "dl"
