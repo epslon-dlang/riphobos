@@ -24,3 +24,6 @@ obj/
 
 .dub/
 libphobos_*
+
+# Ignore digger folder
+.digger/
