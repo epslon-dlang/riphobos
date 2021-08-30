@@ -63,6 +63,9 @@
     "release": {
       "buildOptions": [ "releaseMode", "optimize", "noBoundsCheck" ]
     },
+    "release-debug": {
+      "buildOptions": [ "releaseMode", "optimize", "noBoundsCheck", "debugInfo" ]
+    },
     "release-inline": {
       "buildOptions": [ "releaseMode", "optimize", "inline", "noBoundsCheck" ],
       "versions": [ "RIPStd_inline" ]
