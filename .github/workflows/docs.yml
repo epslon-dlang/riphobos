@@ -17,7 +17,7 @@ jobs:
   script:
     strategy:
       matrix:
-        docs_type: [ddox, docs]
+        docs_type: [ddox, docs, adrdox]
 
     runs-on: ubuntu-latest
     steps:
@@ -28,4 +28,9 @@ jobs:
           compiler: dmd-master
 
       - name: Build documentation
+        if: matrix.docs_type != 'adrdox'
         run: dub build --build=${{ matrix.docs_type }}
+
+      - name: Build documentation
+        if: matrix.docs_type == 'adrdox'
+        run: dub run adrdox -- source
