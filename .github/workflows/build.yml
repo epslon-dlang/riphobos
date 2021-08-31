@@ -34,6 +34,14 @@ jobs:
         with:
           compiler: ${{ matrix.dc }}
 
+      - name: Cache dub dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.dub/
+            ./.dub/
+          key: ${{ runner.os }}-${{ matrix.dc }}-${{ matrix.arch }}-${{ hashFiles('dub.selections.json') }}
+
       - name: Run pre build script
         if: runner.os == 'Linux'
         run: .github/workflows/pre-build.sh

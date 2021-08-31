@@ -29,6 +29,14 @@ jobs:
         with:
           compiler: dmd-master
 
+      - name: Cache dub dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.dub/
+            ./.dub/
+          key: ${{ runner.os }}-dmd-master-x86_64-${{ hashFiles('dub.selections.json') }}
+
       - name: Build documentation
         if: matrix.docs_type != 'adrdox'
         run: dub build --build=${{ matrix.docs_type }}

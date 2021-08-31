@@ -58,5 +58,14 @@ jobs:
         uses: dlang-community/setup-dlang@v1
         with:
           compiler: dmd-master
+
+      - name: Cache dub dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.dub/
+            ./.dub/
+          key: ${{ runner.os }}-${{ matrix.dc }}-${{ matrix.arch }}-${{ hashFiles('dub.selections.json') }}
+
       - name: Check for proper syntax
         run: dub build --arch=${{ matrix.arch }} --build=syntax
