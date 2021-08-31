@@ -1,4 +1,4 @@
-name: build
+name: dlang
 
 on:
   pull_request:
@@ -18,7 +18,95 @@ on:
   workflow_dispatch:
 
 jobs:
-  script:
+
+  dscanner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install D compiler
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: dmd-master
+
+      - name: Cache dub dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.dub/
+            ./.dub/
+          key: linux-dub-${{ hashFiles('dub.selections.json') }}
+          restore-keys: |
+            linux-dub-
+
+      - name: Check dscanner
+        run: |
+          dub run dscanner -- --syntaxCheck source/
+          # FIXME: Enable linting when all files are conformant
+          # dub run dscanner -- --styleCheck source/
+
+  dfmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install D compiler
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: dmd-master
+
+      - name: Cache dub dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.dub/
+            ./.dub/
+          key: linux-dub-${{ hashFiles('dub.selections.json') }}
+          restore-keys: |
+            linux-dub-
+
+      # FIXME: Make all files conformant with D style
+      - name: Check dfmt
+        run: |
+          dub run dfmt -- -c . source/
+      #     for file in `git diff --name-only | grep ".d$"`; do
+      #       echo "File '$file' need to be formatted."
+      #       DFMT_FILE_FOUND=1
+      #     done
+      #     if [ "$DFMT_FILE_FOUND" == "1" ]; then
+      #       exit 1;
+      #     fi
+
+  docs:
+    strategy:
+      matrix:
+        docs_type: [ddox, docs, adrdox]
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install D compiler
+        uses: dlang-community/setup-dlang@v1
+        with:
+          compiler: dmd-master
+
+      - name: Cache dub dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.dub/
+            ./.dub/
+          key: linux-dub-${{ hashFiles('dub.selections.json') }}
+          restore-keys: |
+            linux-dub-
+
+      - name: Build documentation
+        if: matrix.docs_type != 'adrdox'
+        run: dub build --build=${{ matrix.docs_type }}
+
+      - name: Build documentation
+        if: matrix.docs_type == 'adrdox'
+        run: dub run adrdox@2.5.0 -- -j1 source
+
+  build:
     strategy:
       matrix:
         os: [
@@ -38,16 +126,33 @@ jobs:
         with:
           compiler: ${{ matrix.dc }}
 
-      - name: Cache dub dependencies
+      - name: '[POSIX] Cache dub dependencies'
+        if: runner.os != 'Windows'
         uses: actions/cache@v2
         with:
           path: |
-            ~/.dub/
-            ./.dub/
-          key: ${{ runner.os }}-${{ matrix.dc }}-${{ matrix.arch }}-${{ hashFiles('dub.selections.json') }}
+            ~/.dub
+            ./.dub
+          key: ${{ runner.os }}-${{ matrix.dc }}-${{ matrix.arch }}-dub-${{ hashFiles('dub.selections.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.dc }}-${{ matrix.arch }}-dub-
 
-      - name: Run pre build script
-        if: runner.os == 'Linux'
+      - name: '[Windows] Cache dub dependencies'
+        if: runner.os == 'Windows'
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~\AppData\Local\dub
+            .\.dub
+          key: ${{ runner.os }}-${{ matrix.dc }}-${{ matrix.arch }}-dub-${{ hashFiles('dub.selections.json') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.dc }}-${{ matrix.arch }}-dub-
+
+      - name: Check for syntax before build
+        run: dub build --build=${{ matrix.build_type }} --arch=${{ matrix.arch }} --build=syntax
+
+      - name: '[POSIX] Run pre build script'
+        if: runner.os != 'Windows'
         run: .github/workflows/pre-build.sh
 
       - name: Build static library
@@ -57,3 +162,27 @@ jobs:
       - name: Build dynamic library
         if: runner.os != 'Windows' || (runner.os == 'Windows' && !(startsWith(matrix.dc, 'dmd-')))
         run: dub build --build=${{ matrix.build_type }} --config=shared --arch=${{ matrix.arch }} --parallel --build-mode=singleFile --force -v
+
+      # FIXME: Don't test release-inline build type for DMD compiler or release
+      # build type for DMD on Windows platform as it leads to unknown frame
+      # pointers and illegal instructions as part of some unknown stack issues,
+      # respectively.
+      - name: Run mono-threaded test suite
+        if: true == !(startsWith(matrix.dc, 'dmd-') && (endsWith(matrix.build_type, 'inline') || (matrix.build_type == 'release' && runner.os == 'Windows')))
+        run: dub test --build=${{ matrix.build_type }} --config=unittest-cov --arch=${{ matrix.arch }} --parallel --build-mode=singleFile --force -v -- --DRT-covopt="merge:1"
+
+      # FIXME: DUB currently only works with a custom test runner by compiling
+      # the source code on a single compiler invocation. This is obviously not
+      # ideal and Github Workflows shared machines struggle on compiling it due
+      # to limited amount of memory.
+
+      # - name: Run multi-threaded test suite
+      #   if: true == !(startsWith(matrix.dc, 'dmd-') && (endsWith(matrix.build_type, 'inline') || matrix.build_type == 'release'))
+      #   run: dub test --build=${{ matrix.build_type }} --config=unittest-cov-threaded --arch=${{ matrix.arch }} --parallel --force -v -- --DRT-covopt="merge:1"
+
+      - name: Upload code coverage to codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
+          verbose: true

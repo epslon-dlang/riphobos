@@ -10,62 +10,16 @@ on:
   workflow_dispatch:
 
 jobs:
+  pre-commit:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v2
+    - uses: pre-commit/action@v2.0.3
+
   shellcheck:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Run ShellCheck
         uses: ludeeus/action-shellcheck@1.1.0
-
-  dub-dmd:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install D compiler
-        uses: dlang-community/setup-dlang@v1
-        with:
-          compiler: dmd-master
-
-      - name: Check dscanner
-        run: |
-          dub run dscanner -- --syntaxCheck source/
-          # FIXME: Enable linting when all files are conformant
-          # dub run dscanner -- --styleCheck source/
-
-      # FIXME: Make all files conformant with D style
-
-      # - name: Check dfmt
-      #   run: |
-      #     dub run dfmt -- -c . source/
-      #     for file in `git diff --name-only | grep ".d$"`; do
-      #       echo "File '$file' need to be formatted."
-      #       DFMT_FILE_FOUND=1
-      #     done
-      #     if [ "$DFMT_FILE_FOUND" == "1" ]; then
-      #       exit 1;
-      #     fi
-
-  env-matrix:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macOS-latest]
-        dc: [dmd-master, dmd-latest] # ldc-latest, ldc-master
-        arch: [x86_64, x86]
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install D compiler
-        uses: dlang-community/setup-dlang@v1
-        with:
-          compiler: ${{ matrix.dc }}
-
-      - name: Cache dub dependencies
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.dub/
-            ./.dub/
-          key: ${{ runner.os }}-${{ matrix.dc }}-${{ matrix.arch }}-${{ hashFiles('dub.selections.json') }}
-
-      - name: Check for proper syntax
-        run: dub build --arch=${{ matrix.arch }} --build=syntax
