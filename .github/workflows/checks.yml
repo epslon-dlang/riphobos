@@ -49,7 +49,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        dc: [dmd-master, dmd-latest, ldc-latest, ldc-master]
+        dc: [dmd-master, dmd-latest] # ldc-latest, ldc-master
         arch: [x86_64, x86]
     runs-on: ${{ matrix.os }}
     steps:
@@ -57,7 +57,7 @@ jobs:
       - name: Install D compiler
         uses: dlang-community/setup-dlang@v1
         with:
-          compiler: dmd-master
+          compiler: ${{ matrix.dc }}
 
       - name: Cache dub dependencies
         uses: actions/cache@v2
