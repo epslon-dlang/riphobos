@@ -43,4 +43,4 @@ jobs:
 
       - name: Build documentation
         if: matrix.docs_type == 'adrdox'
-        run: dub run adrdox -- -j1 source
+        run: dub run adrdox@2.5.0 -- -j1 source
