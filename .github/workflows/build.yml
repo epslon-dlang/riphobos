@@ -1,15 +1,16 @@
-name: build-test-workflow
+name: build
 
 on:
   pull_request:
     branches:
-      - master
+      - main
   push:
     branches:
-      - master
+      - main
+  workflow_dispatch:
 
 jobs:
-  build-and-tests:
+  script:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
@@ -36,20 +37,3 @@ jobs:
       - name: Build dynamic library
         if: runner.os != 'Windows' || (runner.os == 'Windows' && !(startsWith(matrix.dc, 'dmd-')))
         run: dub build --build=${{ matrix.build_type }} --config=shared --arch=${{ matrix.arch }} --parallel --build-mode=singleFile --force -v
-
-      # FIXME: Don't test release-inline build type for DMD compiler or release
-      # build type for DMD on Windows platform as it leads to unknown frame
-      # pointers and illegal instructions as part of some unknown stack issues,
-      # respectively.
-      - name: Run mono-threaded test suite
-        if: true == !(startsWith(matrix.dc, 'dmd-') && (endsWith(matrix.build_type, 'inline') || (matrix.build_type == 'release' && runner.os == 'Windows')))
-        run: dub test --build=${{ matrix.build_type }} --config=unittest-cov --arch=${{ matrix.arch }} --parallel --build-mode=singleFile --force -v -- --DRT-covopt="merge:1"
-
-      # FIXME: DUB currently only works with a custom test runner by compiling
-      # the source code on a single compiler invocation. This is obviously not
-      # ideal and Github Workflows shared machines struggle on compiling it due
-      # to limited amount of memory.
-
-      # - name: Run multi-threaded test suite
-      #   if: true == !(startsWith(matrix.dc, 'dmd-') && (endsWith(matrix.build_type, 'inline') || matrix.build_type == 'release'))
-      #   run: dub test --build=${{ matrix.build_type }} --config=unittest-cov-threaded --arch=${{ matrix.arch }} --parallel --force -v -- --DRT-covopt="merge:1"
