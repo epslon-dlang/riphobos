@@ -4,6 +4,10 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'source/**/*'
+      - 'dub.json'
+      - 'dub.selections.json'
   push:
     branches:
       - main
