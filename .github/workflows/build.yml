@@ -5,9 +5,13 @@ on:
     branches:
       - main
     paths:
-      - 'source/**/*'
+      - 'source/**'
       - 'dub.json'
       - 'dub.selections.json'
+      # This file
+      - '.github/workflows/build.yml'
+      # pre-build script
+      - '.github/workflows/pre-build.sh'
   push:
     branches:
       - main

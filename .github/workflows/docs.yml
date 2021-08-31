@@ -5,9 +5,11 @@ on:
     branches:
       - main
     paths:
-      - 'source/**/*'
+      - 'source/**'
       - 'dub.json'
       - 'dub.selections.json'
+      # This file
+      - '.github/workflows/docs.yml'
   push:
     branches:
       - main
