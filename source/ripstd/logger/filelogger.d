@@ -2,9 +2,9 @@
 /**
 Source: $(PHOBOSSRC std/experimental/logger/filelogger.d)
 */
-module ripstd.experimental.logger.filelogger;
+module ripstd.logger.filelogger;
 
-import ripstd.experimental.logger.core;
+import ripstd.logger.core;
 import ripstd.stdio;
 
 import ripstd.typecons : Flag;
