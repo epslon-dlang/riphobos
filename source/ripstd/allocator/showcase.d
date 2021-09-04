@@ -6,11 +6,11 @@ facilities, or import individual heap building blocks and assemble them.
 
 Source: $(PHOBOSSRC std/experimental/allocator/_showcase.d)
 */
-module ripstd.experimental.allocator.showcase;
+module ripstd.allocator.showcase;
 
-import ripstd.experimental.allocator.building_blocks.fallback_allocator,
-    ripstd.experimental.allocator.gc_allocator,
-    ripstd.experimental.allocator.building_blocks.region;
+import ripstd.allocator.building_blocks.fallback_allocator,
+    ripstd.allocator.gc_allocator,
+    ripstd.allocator.building_blocks.region;
 import ripstd.traits : hasMember;
 
 /**
@@ -63,9 +63,9 @@ auto mmapRegionList(size_t bytesPerRegion)
     {
         size_t bytesPerRegion;
         import ripstd.algorithm.comparison : max;
-        import ripstd.experimental.allocator.building_blocks.region
+        import ripstd.allocator.building_blocks.region
             : Region;
-        import ripstd.experimental.allocator.mmap_allocator
+        import ripstd.allocator.mmap_allocator
             : MmapAllocator;
         this(size_t n)
         {
@@ -76,9 +76,9 @@ auto mmapRegionList(size_t bytesPerRegion)
             return Region!MmapAllocator(max(n, bytesPerRegion));
         }
     }
-    import ripstd.experimental.allocator.building_blocks.allocator_list
+    import ripstd.allocator.building_blocks.allocator_list
         : AllocatorList;
-    import ripstd.experimental.allocator.building_blocks.null_allocator
+    import ripstd.allocator.building_blocks.null_allocator
         : NullAllocator;
     auto shop = Factory(bytesPerRegion);
     return AllocatorList!(Factory, NullAllocator)(shop);

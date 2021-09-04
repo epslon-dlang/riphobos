@@ -2,9 +2,9 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/segregator.d)
 */
-module ripstd.experimental.allocator.building_blocks.segregator;
+module ripstd.allocator.building_blocks.segregator;
 
-import ripstd.experimental.allocator.common;
+import ripstd.allocator.common;
 
 /**
 Dispatches allocations (and deallocations) between two allocators ($(D
@@ -307,9 +307,9 @@ struct Segregator(size_t threshold, SmallAllocator, LargeAllocator)
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.mallocator : Mallocator;
     alias A =
         Segregator!(
             1024 * 4,
@@ -375,9 +375,9 @@ if (Args.length > 3)
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.mallocator : Mallocator;
     alias A =
         Segregator!(
             128, FreeList!(Mallocator, 0, 128),
@@ -393,8 +393,8 @@ if (Args.length > 3)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-    import ripstd.experimental.allocator.building_blocks.kernighan_ritchie : KRRegion;
+    import ripstd.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.kernighan_ritchie : KRRegion;
     Segregator!(128, GCAllocator, KRRegion!GCAllocator) alloc;
     assert((() nothrow @safe @nogc => alloc.goodAllocSize(1))()
             == GCAllocator.instance.goodAllocSize(1));
@@ -408,7 +408,7 @@ if (Args.length > 3)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.allocator.building_blocks.bitmapped_block : BitmappedBlock;
     import ripstd.typecons : Ternary;
 
     alias A =
@@ -448,7 +448,7 @@ if (Args.length > 3)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     import ripstd.typecons : Ternary;
 
     shared Segregator!(1024 * 4, GCAllocator, GCAllocator) a;
@@ -466,7 +466,7 @@ if (Args.length > 3)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlockWithInternalPointers;
+    import ripstd.allocator.building_blocks.bitmapped_block : BitmappedBlockWithInternalPointers;
     import ripstd.typecons : Ternary;
 
     alias A =
@@ -490,7 +490,7 @@ if (Args.length > 3)
 // Test that reallocate infers from parent
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     alias a = Segregator!(10_240, Mallocator, Mallocator).instance;
 
@@ -503,7 +503,7 @@ if (Args.length > 3)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
     import ripstd.typecons : Ternary;
 
     auto a = Segregator!(10_240, Region!(), Region!())(

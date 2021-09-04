@@ -6,17 +6,17 @@ combinations of `Options` appropriately.
 
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/stats_collector.d)
 */
-module ripstd.experimental.allocator.building_blocks.stats_collector;
+module ripstd.allocator.building_blocks.stats_collector;
 
 ///
 @safe unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
     alias Allocator = StatsCollector!(GCAllocator, Options.bytesUsed);
 }
 
-import ripstd.experimental.allocator.common;
+import ripstd.allocator.common;
 
 /**
 _Options for `StatsCollector` defined below. Each enables during
@@ -754,8 +754,8 @@ public:
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     alias Allocator = StatsCollector!(GCAllocator, Options.all, Options.all);
 
     Allocator alloc;
@@ -806,8 +806,8 @@ public:
         assert(a.bytesUsed == 0);
      }
 
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     test!(StatsCollector!(GCAllocator, Options.all, Options.all));
     test!(StatsCollector!(FreeList!(GCAllocator, 128), Options.all,
         Options.all));
@@ -829,23 +829,23 @@ public:
         () nothrow @nogc { a.deallocate(b1); }();
         () nothrow @nogc { a.deallocate(b3); }();
     }
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     test!(StatsCollector!(GCAllocator, 0, 0));
 }
 
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     StatsCollector!(GCAllocator, 0, 0) a;
 
-    // calls ripstd.experimental.allocator.common.goodAllocSize
+    // calls ripstd.allocator.common.goodAllocSize
     assert((() pure nothrow @safe @nogc => a.goodAllocSize(1))());
 }
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
 
     auto a = StatsCollector!(Region!(), Options.all, Options.all)(Region!()(new ubyte[1024 * 64]));
     auto b = a.allocate(42);
@@ -859,7 +859,7 @@ public:
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
 
     auto a = StatsCollector!(Region!(), Options.all)(Region!()(new ubyte[1024 * 64]));
     auto b = a.alignedAllocate(42, 128);

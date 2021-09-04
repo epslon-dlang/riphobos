@@ -2,9 +2,9 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/scoped_allocator.d)
 */
-module ripstd.experimental.allocator.building_blocks.scoped_allocator;
+module ripstd.allocator.building_blocks.scoped_allocator;
 
-import ripstd.experimental.allocator.common;
+import ripstd.allocator.common;
 
 /**
 
@@ -30,7 +30,7 @@ struct ScopedAllocator(ParentAllocator)
         }
     }
 
-    import ripstd.experimental.allocator.building_blocks.affix_allocator
+    import ripstd.allocator.building_blocks.affix_allocator
         : AffixAllocator;
     import ripstd.traits : hasMember;
     import ripstd.typecons : Ternary;
@@ -215,7 +215,7 @@ struct ScopedAllocator(ParentAllocator)
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.typecons : Ternary;
     ScopedAllocator!Mallocator alloc;
     assert(alloc.empty == Ternary.yes);
@@ -227,15 +227,15 @@ struct ScopedAllocator(ParentAllocator)
 version (RIPStdUnittest)
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     testAllocator!(() => ScopedAllocator!GCAllocator());
 }
 
 @system unittest // https://issues.dlang.org/show_bug.cgi?id=16046
 {
     import ripstd.exception;
-    import ripstd.experimental.allocator;
-    import ripstd.experimental.allocator.mallocator;
+    import ripstd.allocator;
+    import ripstd.allocator.mallocator;
     ScopedAllocator!Mallocator alloc;
     auto foo = alloc.make!int(1).enforce;
     auto bar = alloc.make!int(2).enforce;
@@ -245,7 +245,7 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     ScopedAllocator!GCAllocator a;
 
     assert(__traits(compiles, (() nothrow @safe @nogc => a.goodAllocSize(0))()));
@@ -259,7 +259,7 @@ version (RIPStdUnittest)
 // Test that deallocateAll infers from parent
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
 
     ScopedAllocator!(Region!()) a;
     a.parent.parent = Region!()(new ubyte[1024 * 64]);
@@ -274,8 +274,8 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.region : Region;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.typecons : Ternary;
 
     auto a = Region!(Mallocator)(1024 * 64);
@@ -293,7 +293,7 @@ version (RIPStdUnittest)
 // Test empty
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.typecons : Ternary;
     ScopedAllocator!Mallocator alloc;
 

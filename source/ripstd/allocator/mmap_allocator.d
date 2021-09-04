@@ -2,7 +2,7 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/_mmap_allocator.d)
 */
-module ripstd.experimental.allocator.mmap_allocator;
+module ripstd.allocator.mmap_allocator;
 
 /**
 Allocator (currently defined only for Posix and Windows) using

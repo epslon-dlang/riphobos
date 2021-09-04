@@ -2,13 +2,13 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/allocator_list.d)
 */
-module ripstd.experimental.allocator.building_blocks.allocator_list;
+module ripstd.allocator.building_blocks.allocator_list;
 
 import core.memory : pageSize;
 
-import ripstd.experimental.allocator.building_blocks.null_allocator;
-import ripstd.experimental.allocator.common;
-import ripstd.experimental.allocator.gc_allocator;
+import ripstd.allocator.building_blocks.null_allocator;
+import ripstd.allocator.common;
+import ripstd.allocator.gc_allocator;
 
 // Turn this on for debugging
 // debug = allocator_list;
@@ -69,7 +69,7 @@ called `factory`.
 struct AllocatorList(Factory, BookkeepingAllocator = GCAllocator)
 {
     import core.lifetime : emplace;
-    import ripstd.experimental.allocator.building_blocks.stats_collector
+    import ripstd.allocator.building_blocks.stats_collector
         : StatsCollector, Options;
     import ripstd.traits : hasMember;
     import ripstd.typecons : Ternary;
@@ -621,12 +621,12 @@ template AllocatorList(alias factoryFunction,
 version (Posix) @system unittest
 {
     import ripstd.algorithm.comparison : max;
-    import ripstd.experimental.allocator.building_blocks.free_list : ContiguousFreeList;
-    import ripstd.experimental.allocator.building_blocks.null_allocator : NullAllocator;
-    import ripstd.experimental.allocator.building_blocks.region : Region;
-    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-    import ripstd.experimental.allocator.mmap_allocator : MmapAllocator;
+    import ripstd.allocator.building_blocks.free_list : ContiguousFreeList;
+    import ripstd.allocator.building_blocks.null_allocator : NullAllocator;
+    import ripstd.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.segregator : Segregator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.mmap_allocator : MmapAllocator;
 
     // Ouroboros allocator list based upon 4MB regions, fetched directly from
     // mmap. All memory is released upon destruction.
@@ -665,7 +665,7 @@ version (Posix) @system unittest
 {
     // Create an allocator based upon 4MB regions, fetched from the GC heap.
     import ripstd.algorithm.comparison : max;
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
     AllocatorList!((n) => Region!GCAllocator(new ubyte[max(n, 1024 * 4096)]),
         NullAllocator) a;
     const b1 = a.allocate(1024 * 8192);
@@ -679,7 +679,7 @@ version (Posix) @system unittest
 {
     // Create an allocator based upon 4MB regions, fetched from the GC heap.
     import ripstd.algorithm.comparison : max;
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
     AllocatorList!((n) => Region!()(new ubyte[max(n, 1024 * 4096)])) a;
     auto b1 = a.alignedAllocate(1024 * 8192, 1024);
     assert(b1 !is null); // still works due to overdimensioning
@@ -707,7 +707,7 @@ version (Posix) @system unittest
 
     // Create an allocator based upon 4MB regions, fetched from the GC heap.
     import ripstd.algorithm.comparison : max;
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
     AllocatorList!((n) => Region!()(new ubyte[max(n, 1024 * 4096)])) a;
     auto b1 = a.alignedAllocate(0, 1);
     assert(b1 is null);
@@ -728,7 +728,7 @@ version (Posix) @system unittest
 
     // Create an allocator based upon 4MB regions, fetched from the GC heap.
     import ripstd.algorithm.comparison : max;
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
     AllocatorList!((n) => Region!()(new ubyte[max(n, 1024 * 4096)])) a;
     auto b0 = a.alignedAllocate(1, 1024);
     assert(b0.length == 1);
@@ -765,7 +765,7 @@ version (Posix) @system unittest
 {
     // Create an allocator based upon 4MB regions, fetched from the GC heap.
     import ripstd.algorithm.comparison : max;
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
     AllocatorList!((n) => Region!()(new ubyte[max(n, 1024 * 4096)])) a;
     auto b1 = a.allocate(1024 * 8192);
     assert(b1 !is null); // still works due to overdimensioning
@@ -779,8 +779,8 @@ version (Posix) @system unittest
 @system unittest
 {
     import ripstd.algorithm.comparison : max;
-    import ripstd.experimental.allocator.building_blocks.region : Region;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.region : Region;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.typecons : Ternary;
     AllocatorList!((n) => Region!()(new ubyte[max(n, 1024 * 4096)]), Mallocator) a;
     auto b1 = a.allocate(1024 * 8192);
@@ -798,7 +798,7 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
     enum bs = GCAllocator.alignment;
     AllocatorList!((n) => Region!GCAllocator(256 * bs)) a;
     auto b1 = a.allocate(192 * bs);
@@ -820,8 +820,8 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.algorithm.comparison : max;
     import ripstd.typecons : Ternary;
 
@@ -878,8 +878,8 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.algorithm.comparison : max;
     import ripstd.typecons : Ternary;
 
@@ -944,8 +944,8 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.algorithm.comparison : max;
     import ripstd.typecons : Ternary;
 
@@ -980,7 +980,7 @@ version (Posix) @system unittest
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
     import ripstd.algorithm.comparison : max;
 
     enum maxIter = 100;

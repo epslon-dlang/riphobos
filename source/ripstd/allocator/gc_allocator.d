@@ -4,8 +4,8 @@ D's built-in garbage-collected allocator.
 
 Source: $(PHOBOSSRC std/experimental/allocator/_gc_allocator.d)
 */
-module ripstd.experimental.allocator.gc_allocator;
-import ripstd.experimental.allocator.common;
+module ripstd.allocator.gc_allocator;
+import ripstd.allocator.common;
 
 /**
 D's built-in garbage-collected allocator.

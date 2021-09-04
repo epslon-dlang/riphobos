@@ -8,7 +8,7 @@ Authors: $(HTTP erdani.com, Andrei Alexandrescu), Timon Gehr (`Ternary`)
 
 Source: $(PHOBOSSRC std/experimental/allocator/common.d)
 */
-module ripstd.experimental.allocator.common;
+module ripstd.allocator.common;
 import ripstd.algorithm.comparison, ripstd.traits;
 
 /**
@@ -620,8 +620,8 @@ version (RIPStdUnittest)
     package void testAllocatorObject(RCAllocInterface)(RCAllocInterface a)
     {
         // this used to be a template constraint, but moving it inside prevents
-        // unnecessary import of ripstd.experimental.allocator
-        import ripstd.experimental.allocator : RCIAllocator, RCISharedAllocator;
+        // unnecessary import of ripstd.allocator
+        import ripstd.allocator : RCIAllocator, RCISharedAllocator;
         static assert(is(RCAllocInterface == RCIAllocator)
             || is (RCAllocInterface == RCISharedAllocator));
 

@@ -2,10 +2,10 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/region.d)
 */
-module ripstd.experimental.allocator.building_blocks.region;
+module ripstd.allocator.building_blocks.region;
 
-import ripstd.experimental.allocator.building_blocks.null_allocator;
-import ripstd.experimental.allocator.common;
+import ripstd.allocator.building_blocks.null_allocator;
+import ripstd.allocator.common;
 import ripstd.typecons : Flag, Yes, No;
 
 version (OSX)
@@ -365,9 +365,9 @@ struct Region(ParentAllocator = NullAllocator,
 @system nothrow unittest
 {
     import ripstd.algorithm.comparison : max;
-    import ripstd.experimental.allocator.building_blocks.allocator_list
+    import ripstd.allocator.building_blocks.allocator_list
         : AllocatorList;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.typecons : Ternary;
     // Create a scalable list of regions. Each gets at least 1MB at a time by
     // using malloc.
@@ -386,7 +386,7 @@ struct Region(ParentAllocator = NullAllocator,
 
 @system nothrow @nogc unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.typecons : Ternary;
 
     static void testAlloc(Allocator)(ref Allocator a)
@@ -416,7 +416,7 @@ struct Region(ParentAllocator = NullAllocator,
 
 @system nothrow @nogc unittest
 {
-    import ripstd.experimental.allocator.mallocator : AlignedMallocator;
+    import ripstd.allocator.mallocator : AlignedMallocator;
     import ripstd.typecons : Ternary;
 
     ubyte[] buf = cast(ubyte[]) AlignedMallocator.instance.alignedAllocate(64, 64);
@@ -429,7 +429,7 @@ struct Region(ParentAllocator = NullAllocator,
 {
     // test 'this(ubyte[] store)' constructed regions properly clean up
     // their inner storage after destruction
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     static shared struct LocalAllocator
     {
@@ -468,7 +468,7 @@ struct Region(ParentAllocator = NullAllocator,
 version (RIPStdUnittest)
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     testAllocator!(() => Region!(Mallocator)(1024 * 64));
     testAllocator!(() => Region!(Mallocator, Mallocator.alignment, Yes.growDownwards)(1024 * 64));
@@ -479,7 +479,7 @@ version (RIPStdUnittest)
 
 @system nothrow @nogc unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     auto reg = Region!(Mallocator)(1024 * 64);
     auto b = reg.allocate(101);
@@ -673,13 +673,13 @@ struct InSituRegion(size_t size, size_t minAlign = platformAlignment)
     assert(a1.length == 101);
 
     // 128KB region, with fallback to the garbage collector.
-    import ripstd.experimental.allocator.building_blocks.fallback_allocator
+    import ripstd.allocator.building_blocks.fallback_allocator
         : FallbackAllocator;
-    import ripstd.experimental.allocator.building_blocks.free_list
+    import ripstd.allocator.building_blocks.free_list
         : FreeList;
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block
+    import ripstd.allocator.building_blocks.bitmapped_block
         : BitmappedBlock;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     FallbackAllocator!(InSituRegion!(128 * 1024), GCAllocator) r2;
     const a2 = r2.allocate(102);
     assert(a2.length == 102);
@@ -1269,7 +1269,7 @@ shared struct SharedRegion(ParentAllocator = NullAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     static void testAlloc(Allocator)(ref Allocator a, bool growDownwards)
     {
@@ -1334,7 +1334,7 @@ shared struct SharedRegion(ParentAllocator = NullAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     static void testAlloc(Allocator)(ref Allocator a, bool growDownwards)
     {

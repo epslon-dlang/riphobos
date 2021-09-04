@@ -2,7 +2,7 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/affix_allocator.d)
 */
-module ripstd.experimental.allocator.building_blocks.affix_allocator;
+module ripstd.allocator.building_blocks.affix_allocator;
 
 /**
 
@@ -24,8 +24,8 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
 {
     import ripstd.algorithm.comparison : min;
     import core.lifetime : emplace;
-    import ripstd.experimental.allocator : RCIAllocator, theAllocator;
-    import ripstd.experimental.allocator.common : stateSize, forwardToMember,
+    import ripstd.allocator : RCIAllocator, theAllocator;
+    import ripstd.allocator.common : stateSize, forwardToMember,
         roundUpToMultipleOf, alignedAt, alignDownTo, roundUpToMultipleOf,
         hasStaticallyKnownAlignment;
     import ripstd.math.traits : isPowerOf2;
@@ -77,8 +77,8 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
                 static @nogc nothrow
                 RCIAllocator wrapAllocatorObject()
                 {
-                    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-                    import ripstd.experimental.allocator : allocatorObject;
+                    import ripstd.allocator.gc_allocator : GCAllocator;
+                    import ripstd.allocator : allocatorObject;
 
                     return allocatorObject(GCAllocator.instance);
                 }
@@ -118,7 +118,7 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
 
         size_t goodAllocSize(size_t s)
         {
-            import ripstd.experimental.allocator.common : goodAllocSize;
+            import ripstd.allocator.common : goodAllocSize;
             auto a = actualAllocationSize(s);
             return roundUpToMultipleOf(parent.goodAllocSize(a)
                     - stateSize!Prefix - stateSize!Suffix,
@@ -408,7 +408,7 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     // One word before and after each allocation.
     alias A = AffixAllocator!(Mallocator, size_t, size_t);
     auto b = A.instance.allocate(11);
@@ -420,8 +420,8 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-    import ripstd.experimental.allocator : theAllocator, RCIAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator : theAllocator, RCIAllocator;
 
     // One word before and after each allocation.
     auto A = AffixAllocator!(RCIAllocator, size_t, size_t)(theAllocator);
@@ -443,9 +443,9 @@ struct AffixAllocator(Allocator, Prefix, Suffix = void)
 version (RIPStdUnittest)
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block
+    import ripstd.allocator.building_blocks.bitmapped_block
         : BitmappedBlock;
-    import ripstd.experimental.allocator.common : testAllocator;
+    import ripstd.allocator.common : testAllocator;
     testAllocator!({
         auto a = AffixAllocator!(BitmappedBlock!128, ulong, ulong)
             (BitmappedBlock!128(new ubyte[128 * 4096]));
@@ -456,7 +456,7 @@ version (RIPStdUnittest)
 // Test empty
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.allocator.building_blocks.bitmapped_block : BitmappedBlock;
     import ripstd.typecons : Ternary;
 
     auto a = AffixAllocator!(BitmappedBlock!128, ulong, ulong)
@@ -469,13 +469,13 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     alias A = AffixAllocator!(Mallocator, size_t);
     auto b = A.instance.allocate(10);
     A.instance.prefix(b) = 10;
     assert(A.instance.prefix(b) == 10);
 
-    import ripstd.experimental.allocator.building_blocks.null_allocator
+    import ripstd.allocator.building_blocks.null_allocator
         : NullAllocator;
     alias B = AffixAllocator!(NullAllocator, size_t);
     b = B.instance.allocate(100);
@@ -484,8 +484,8 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator;
-    import ripstd.experimental.allocator.gc_allocator;
+    import ripstd.allocator;
+    import ripstd.allocator.gc_allocator;
     import ripstd.typecons : Ternary;
     alias MyAllocator = AffixAllocator!(GCAllocator, uint);
     auto a = MyAllocator.instance.makeArray!(shared int)(100);
@@ -507,7 +507,7 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator;
+    import ripstd.allocator.gc_allocator;
     alias a = AffixAllocator!(GCAllocator, uint).instance;
 
     // Check that goodAllocSize inherits from parent, i.e. GCAllocator
@@ -521,7 +521,7 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
 
     auto a = AffixAllocator!(Region!(), uint)(Region!()(new ubyte[1024 * 64]));
     auto b = a.allocate(42);
@@ -536,7 +536,7 @@ version (RIPStdUnittest)
 // Test that reallocate infers from parent
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     alias a = AffixAllocator!(Mallocator, uint).instance;
     auto b = a.allocate(42);
@@ -548,7 +548,7 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator : processAllocator, RCISharedAllocator;
+    import ripstd.allocator : processAllocator, RCISharedAllocator;
     import ripstd.traits;
 
     alias SharedAllocT = shared AffixAllocator!(RCISharedAllocator, int);

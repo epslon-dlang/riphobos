@@ -2,7 +2,7 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/null_allocator.d)
 */
-module ripstd.experimental.allocator.building_blocks.null_allocator;
+module ripstd.allocator.building_blocks.null_allocator;
 
 /**
 `NullAllocator` is an emphatically empty implementation of the allocator
