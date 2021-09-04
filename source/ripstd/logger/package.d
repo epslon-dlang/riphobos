@@ -14,7 +14,7 @@ program. Logging should be easy, but also flexible and powerful, therefore
 
 The easiest way to create a log message is to write:
 -------------
-import ripstd.experimental.logger;
+import ripstd.logger;
 
 void main() {
     log("Hello World");
@@ -180,9 +180,9 @@ will never log a message and will never throw on a log call with `LogLevel`
 
 Source: $(PHOBOSSRC std/experimental/logger/package.d)
 */
-module ripstd.experimental.logger;
+module ripstd.logger;
 
-public import ripstd.experimental.logger.core;
-public import ripstd.experimental.logger.filelogger;
-public import ripstd.experimental.logger.multilogger;
-public import ripstd.experimental.logger.nulllogger;
+public import ripstd.logger.core;
+public import ripstd.logger.filelogger;
+public import ripstd.logger.multilogger;
+public import ripstd.logger.nulllogger;

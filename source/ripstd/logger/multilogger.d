@@ -2,10 +2,10 @@
 /**
 Source: $(PHOBOSSRC std/experimental/logger/multilogger.d)
 */
-module ripstd.experimental.logger.multilogger;
+module ripstd.logger.multilogger;
 
-import ripstd.experimental.logger.core;
-import ripstd.experimental.logger.filelogger;
+import ripstd.logger.core;
+import ripstd.logger.filelogger;
 
 /** This Element is stored inside the `MultiLogger` and associates a
 `Logger` to a `string`.
@@ -109,7 +109,7 @@ class MultiLogger : Logger
 @safe unittest
 {
     import ripstd.exception : assertThrown;
-    import ripstd.experimental.logger.nulllogger;
+    import ripstd.logger.nulllogger;
     auto a = new MultiLogger;
     auto n0 = new NullLogger();
     auto n1 = new NullLogger();

@@ -2,7 +2,7 @@
 /**
 Source: $(PHOBOSSRC std/experimental/logger/core.d)
 */
-module ripstd.experimental.logger.core;
+module ripstd.logger.core;
 
 import core.sync.mutex : Mutex;
 import ripstd.datetime.date : DateTime;
@@ -10,7 +10,7 @@ import ripstd.datetime.systime : Clock, SysTime;
 import ripstd.range.primitives;
 import ripstd.traits;
 
-import ripstd.experimental.logger.filelogger;
+import ripstd.logger.filelogger;
 
 /** This template evaluates if the passed `LogLevel` is active.
 The previously described version statements are used to decide if the
@@ -1802,7 +1802,7 @@ functions.
 /// Ditto
 @system unittest
 {
-    import ripstd.experimental.logger.filelogger : FileLogger;
+    import ripstd.logger.filelogger : FileLogger;
     import ripstd.file : deleteme, remove;
     Logger l = stdThreadLocalLog;
     stdThreadLocalLog = new FileLogger(deleteme ~ "-someFile.log");
@@ -1856,9 +1856,9 @@ version (RIPStdUnittest) private void testFuncNames(Logger logger) @safe
 {
     auto tl1 = new TestLogger();
     testFuncNames(tl1);
-    assert(tl1.func == "ripstd.experimental.logger.core.testFuncNames", tl1.func);
+    assert(tl1.func == "ripstd.logger.core.testFuncNames", tl1.func);
     assert(tl1.prettyFunc ==
-        "void ripstd.experimental.logger.core.testFuncNames(Logger logger) @safe",
+        "void ripstd.logger.core.testFuncNames(Logger logger) @safe",
         tl1.prettyFunc);
     assert(tl1.msg == "I'm here", tl1.msg);
 }
@@ -1906,7 +1906,7 @@ version (RIPStdUnittest) private void testFuncNames(Logger logger) @safe
 
 @safe unittest
 {
-    import ripstd.experimental.logger.multilogger : MultiLogger;
+    import ripstd.logger.multilogger : MultiLogger;
 
     auto tl1 = new TestLogger;
     auto tl2 = new TestLogger;
@@ -2933,7 +2933,7 @@ version (RIPStdUnittest) private void testFuncNames(Logger logger) @safe
 // Issue #5
 @safe unittest
 {
-    import ripstd.experimental.logger.multilogger : MultiLogger;
+    import ripstd.logger.multilogger : MultiLogger;
     import ripstd.string : indexOf;
 
     stdThreadLocalLog.logLevel = LogLevel.all;
