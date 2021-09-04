@@ -22,7 +22,7 @@ checked) uses type deduction to convert a value `x` of integral type `T` to
 ---
 void main()
 {
-    import ripstd.experimental.checkedint, ripstd.stdio;
+    import ripstd.checkedint, ripstd.stdio;
     writeln((checked(5) + 7).get); // 12
     writeln((checked(10) * 1000 * 1000 * 1000).get); // Overflow
 }
@@ -195,7 +195,7 @@ in a `Hook`, otherwise the built-in hashing is used.)
 
 Source: $(PHOBOSSRC std/experimental/checkedint.d)
 */
-module ripstd.experimental.checkedint;
+module ripstd.checkedint;
 import ripstd.traits : isFloatingPoint, isIntegral, isNumeric, isUnsigned, Unqual;
 
 ///
@@ -262,7 +262,7 @@ struct Checked(T, Hook = Abort)
 if (isIntegral!T || is(T == Checked!(U, H), U, H))
 {
     import ripstd.algorithm.comparison : among;
-    import ripstd.experimental.allocator.common : stateSize;
+    import ripstd.allocator.common : stateSize;
     import ripstd.format.spec : FormatSpec;
     import ripstd.range.primitives : isInputRange, ElementType;
     import ripstd.traits : hasMember, isSomeChar;
