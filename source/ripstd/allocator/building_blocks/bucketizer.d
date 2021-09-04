@@ -2,7 +2,7 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/bucketizer.d)
 */
-module ripstd.experimental.allocator.building_blocks.bucketizer;
+module ripstd.allocator.building_blocks.bucketizer;
 
 /**
 
@@ -20,7 +20,7 @@ for `Bucketizer`. To handle them separately, `Segregator` may be of use.
 */
 struct Bucketizer(Allocator, size_t min, size_t max, size_t step)
 {
-    import common = ripstd.experimental.allocator.common : roundUpToMultipleOf,
+    import common = ripstd.allocator.common : roundUpToMultipleOf,
            alignedAt;
     import ripstd.traits : hasMember;
     import ripstd.typecons : Ternary;
@@ -241,11 +241,11 @@ struct Bucketizer(Allocator, size_t min, size_t max, size_t step)
 @system unittest
 {
     import ripstd.algorithm.comparison : max;
-    import ripstd.experimental.allocator.building_blocks.allocator_list : AllocatorList;
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.building_blocks.region : Region;
-    import ripstd.experimental.allocator.common : unbounded;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.allocator_list : AllocatorList;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.building_blocks.region : Region;
+    import ripstd.allocator.common : unbounded;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.typecons : Ternary;
     Bucketizer!(
         FreeList!(
@@ -262,11 +262,11 @@ struct Bucketizer(Allocator, size_t min, size_t max, size_t step)
 @system unittest
 {
     import ripstd.algorithm.comparison : max;
-    import ripstd.experimental.allocator.building_blocks.allocator_list : AllocatorList;
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.building_blocks.region : Region;
-    import ripstd.experimental.allocator.common : unbounded;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.allocator_list : AllocatorList;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.building_blocks.region : Region;
+    import ripstd.allocator.common : unbounded;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.typecons : Ternary;
 
     Bucketizer!(
@@ -297,8 +297,8 @@ struct Bucketizer(Allocator, size_t min, size_t max, size_t step)
 // Test alignedAllocate
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.allocator.gc_allocator : GCAllocator;
 
     Bucketizer!(BitmappedBlock!(64, 8, GCAllocator), 65, 512, 64) a;
     foreach (ref bucket; a.buckets)
@@ -319,8 +319,8 @@ struct Bucketizer(Allocator, size_t min, size_t max, size_t step)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.allocator.gc_allocator : GCAllocator;
 
     Bucketizer!(BitmappedBlock!(64, 8, GCAllocator), 1, 512, 64) a;
     foreach (ref bucket; a.buckets)

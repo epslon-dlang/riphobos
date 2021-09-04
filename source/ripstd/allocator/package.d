@@ -141,7 +141,7 @@ To install one in `main`, the application would use:
 ----
 void main()
 {
-    import ripstd.experimental.allocator.building_blocks.free_list
+    import ripstd.allocator.building_blocks.free_list
         : FreeList;
     theAllocator = allocatorObject(FreeList!8());
     ...
@@ -221,18 +221,18 @@ Source: $(PHOBOSSRC std/experimental/allocator)
 
 */
 
-module ripstd.experimental.allocator;
+module ripstd.allocator;
 
-public import ripstd.experimental.allocator.common,
-    ripstd.experimental.allocator.typed;
+public import ripstd.allocator.common,
+    ripstd.allocator.typed;
 
 // Fix https://issues.dlang.org/show_bug.cgi?id=17806
 // this should always be the first unittest in this module in order to ensure
 // that we use the `processAllocator` setter before the getter
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.mallocator : Mallocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     auto newAlloc = sharedAllocatorObject(Mallocator.instance);
     processAllocator = newAlloc;
     assert(processAllocator is newAlloc);
@@ -243,14 +243,14 @@ public import ripstd.experimental.allocator.common,
 @system unittest
 {
     import ripstd.algorithm.comparison : min, max;
-    import ripstd.experimental.allocator.building_blocks.allocator_list
+    import ripstd.allocator.building_blocks.allocator_list
         : AllocatorList;
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block
+    import ripstd.allocator.building_blocks.bitmapped_block
         : BitmappedBlock;
-    import ripstd.experimental.allocator.building_blocks.bucketizer : Bucketizer;
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.bucketizer : Bucketizer;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.building_blocks.segregator : Segregator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
 
     alias FList = FreeList!(GCAllocator, 0, unbounded);
     alias A = Segregator!(
@@ -547,7 +547,7 @@ nothrow:
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
     import ripstd.conv : emplace;
 
     auto reg = Region!()(new ubyte[1024]);
@@ -570,8 +570,8 @@ nothrow:
 @system unittest
 {
     import ripstd.conv;
-    import ripstd.experimental.allocator.mallocator;
-    import ripstd.experimental.allocator.building_blocks.stats_collector;
+    import ripstd.allocator.mallocator;
+    import ripstd.allocator.building_blocks.stats_collector;
 
     alias SCAlloc = StatsCollector!(Mallocator, Options.bytesUsed);
     SCAlloc statsCollectorAlloc;
@@ -593,8 +593,8 @@ nothrow:
 @system unittest
 {
     import ripstd.conv;
-    import ripstd.experimental.allocator.mallocator;
-    import ripstd.experimental.allocator.building_blocks.stats_collector;
+    import ripstd.allocator.mallocator;
+    import ripstd.allocator.building_blocks.stats_collector;
 
     alias SCAlloc = StatsCollector!(Mallocator, Options.bytesUsed);
     SCAlloc statsCollectorAlloc;
@@ -1004,7 +1004,7 @@ private ref RCIAllocator setupThreadAllocator()
 // to the processAllocator that it's using
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     auto a = sharedAllocatorObject(Mallocator.instance);
     auto buf = theAllocator.allocate(42);
@@ -1038,8 +1038,8 @@ nothrow @system @nogc
 @system unittest
 {
     // Install a new allocator that is faster for 128-byte allocations.
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     auto oldAllocator = theAllocator;
     scope(exit) theAllocator = oldAllocator;
     theAllocator = allocatorObject(FreeList!(GCAllocator, 128)());
@@ -1057,7 +1057,7 @@ allocator can be cast to `shared`.
 @nogc nothrow @trusted
 @property ref RCISharedAllocator processAllocator()
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     import ripstd.concurrency : initOnce;
 
     static RCISharedAllocator* forceAttributes()
@@ -1081,8 +1081,8 @@ allocator can be cast to `shared`.
 {
     import core.exception : AssertError;
     import ripstd.exception : assertThrown;
-    import ripstd.experimental.allocator.building_blocks.free_list : SharedFreeList;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.free_list : SharedFreeList;
+    import ripstd.allocator.mallocator : Mallocator;
 
     assert(!processAllocator.isNull);
     assert(!theAllocator.isNull);
@@ -1311,7 +1311,7 @@ auto make(T, Allocator, A...)(auto ref Allocator alloc, auto ref A args)
         assert((*parray).empty);
     }
 
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     test(GCAllocator.instance);
     test(theAllocator);
 }
@@ -1319,7 +1319,7 @@ auto make(T, Allocator, A...)(auto ref Allocator alloc, auto ref A args)
 // Attribute propagation
 nothrow @safe @nogc unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     alias alloc = Mallocator.instance;
 
     void test(T, Args...)(auto ref Args args)
@@ -1337,7 +1337,7 @@ nothrow @safe @nogc unittest
 // should be pure with the GCAllocator
 /*pure nothrow*/ @safe unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
 
     alias alloc = GCAllocator.instance;
 
@@ -1356,7 +1356,7 @@ nothrow @safe @nogc unittest
 // Verify that making an object by calling an impure constructor is not @safe
 nothrow @safe @nogc unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     static struct Pure { this(int) pure nothrow @nogc @safe {} }
 
     cast(void) Mallocator.instance.make!Pure(0);
@@ -1381,7 +1381,7 @@ nothrow @safe @nogc unittest
             enforce(1 == 2);
         }
     }
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     assertThrown(make!InvalidStruct(Mallocator.instance, 42));
 }
 
@@ -1398,7 +1398,7 @@ nothrow @safe @nogc unittest
             enforce(1 == 2);
         }
     }
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     assertThrown(make!InvalidImpureStruct(Mallocator.instance, 42));
 }
 
@@ -1410,7 +1410,7 @@ nothrow @safe @nogc unittest
         int i;
         @disable this();
     }
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     static assert(!__traits(compiles, make!NoDefaultCtor(Mallocator.instance)),
         "Don't allow zero-ctor-args `make` for structs with `@disable this();`");
 }
@@ -1616,8 +1616,8 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length)
         assert(arrInt == res);
     }
 
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.mallocator : Mallocator;
     (alloc) /*pure nothrow*/ @safe { test1(alloc); test2(alloc);} (GCAllocator.instance);
     (alloc) nothrow @safe @nogc { test1(alloc); test2(alloc);} (Mallocator.instance);
     test2(theAllocator);
@@ -1746,7 +1746,7 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length, T init)
         assert(a.length == 5);
         assert(a == [ 42, 42, 42, 42, 42 ]);
     }
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     (alloc) /*pure nothrow*/ @safe { test(alloc); } (GCAllocator.instance);
     test(theAllocator);
 }
@@ -1768,7 +1768,7 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length, T init)
             enforce(1 == 2);
         }
     }
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     assertThrown(makeArray!NoCopy(Mallocator.instance, 10, NoCopy(42)));
 }
 
@@ -1795,7 +1795,7 @@ T[] makeArray(T, Allocator)(auto ref Allocator alloc, size_t length, T init)
             i--;
         }
     }
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     assertThrown(makeArray!Singleton(Mallocator.instance, 10, Singleton(42)));
 }
 
@@ -1929,7 +1929,7 @@ if (isInputRange!R && !isInfinite!R)
         static assert(is(typeof(b) == double[]));
         assert(b == [4.0, 2.0]);
     }
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     (alloc) pure nothrow @safe { test(alloc); } (GCAllocator.instance);
     test(theAllocator);
 }
@@ -1952,7 +1952,7 @@ if (isInputRange!R && !isInfinite!R)
         assert(w == "fooπ😜");
     }
 
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     (alloc) pure nothrow @safe { test(alloc); } (GCAllocator.instance);
     test(theAllocator);
 }
@@ -1960,7 +1960,7 @@ if (isInputRange!R && !isInfinite!R)
 /*pure*/ nothrow @safe unittest
 {
     import ripstd.algorithm.comparison : equal;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     import ripstd.internal.test.dummyrange;
     import ripstd.range : iota;
     foreach (DummyType; AllDummyRanges)
@@ -1997,7 +1997,7 @@ if (isInputRange!R && !isInfinite!R)
             enforce(b < 3, "there can only be three elements");
         }
     }
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     auto arr = [NoCopy(1), NoCopy(2), NoCopy(3)];
     assertThrown(makeArray!NoCopy(Mallocator.instance, arr));
 
@@ -2045,7 +2045,7 @@ if (isInputRange!R && !isInfinite!R)
         }
     }
 
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     auto arr = [NoCopy(1), NoCopy(2)];
     assertThrown(makeArray!NoCopy(Mallocator.instance, arr));
 
@@ -2104,7 +2104,7 @@ version (RIPStdUnittest)
         assert(a.length == 10);
         assert(a == iota(10).array);
     }
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     (alloc) pure nothrow @safe { test(alloc); } (GCAllocator.instance);
     test(theAllocator);
 }
@@ -2154,7 +2154,7 @@ bool expandArray(T, Allocator)(auto ref Allocator alloc, ref T[] array,
         assert(alloc.expandArray(arr, 3));
         assert(arr == [1, 2, 3, 0, 0, 0]);
     }
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     test(GCAllocator.instance);
     test(theAllocator);
 }
@@ -2183,7 +2183,7 @@ bool expandArray(T, Allocator)(auto ref Allocator alloc, ref T[] array,
         assert(alloc.expandArray(arr, 3, 1));
         assert(arr == [1, 2, 3, 1, 1, 1]);
     }
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     test(GCAllocator.instance);
     test(theAllocator);
 }
@@ -2293,7 +2293,7 @@ if (isInputRange!R)
         assert(arr == "foobar");
     }
 
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     test!char(GCAllocator.instance);
     test!wchar(GCAllocator.instance);
     test!char(theAllocator);
@@ -2383,7 +2383,7 @@ bool shrinkArray(T, Allocator)(auto ref Allocator alloc,
         assert(a.length == 2);
         assert(a == [ 42, 42]);
     }
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     test(GCAllocator.instance);
     test(theAllocator);
 }
@@ -2487,7 +2487,7 @@ void dispose(A, T)(auto ref A alloc, auto ref T[] array)
 // https://issues.dlang.org/show_bug.cgi?id=16512
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     int* i = Mallocator.instance.make!int(0);
     Mallocator.instance.dispose(i);
@@ -2509,7 +2509,7 @@ void dispose(A, T)(auto ref A alloc, auto ref T[] array)
 // https://issues.dlang.org/show_bug.cgi?id=15721
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     interface Foo {}
     class Bar: Foo {}
@@ -2552,7 +2552,7 @@ auto makeMultidimensionalArray(T, Allocator, size_t N)(auto ref Allocator alloc,
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     auto mArray = Mallocator.instance.makeMultidimensionalArray!int(2, 3, 6);
 
@@ -2598,8 +2598,8 @@ void disposeMultidimensionalArray(T, Allocator)(auto ref Allocator alloc, auto r
 {
     struct TestAllocator
     {
-        import ripstd.experimental.allocator.common : platformAlignment;
-        import ripstd.experimental.allocator.mallocator : Mallocator;
+        import ripstd.allocator.common : platformAlignment;
+        import ripstd.allocator.mallocator : Mallocator;
 
         alias allocator = Mallocator.instance;
 
@@ -2714,7 +2714,7 @@ RCIAllocator allocatorObject(A)(A* pa)
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     RCIAllocator a = allocatorObject(Mallocator.instance);
     auto b = a.allocate(100);
@@ -2722,7 +2722,7 @@ RCIAllocator allocatorObject(A)(A* pa)
     assert(a.deallocate(b));
 
     // The in-situ region must be used by pointer
-    import ripstd.experimental.allocator.building_blocks.region : InSituRegion;
+    import ripstd.allocator.building_blocks.region : InSituRegion;
     auto r = InSituRegion!1024();
     a = allocatorObject(&r);
     b = a.allocate(200);
@@ -2734,8 +2734,8 @@ RCIAllocator allocatorObject(A)(A* pa)
 @system unittest
 {
     import ripstd.conv;
-    import ripstd.experimental.allocator.mallocator;
-    import ripstd.experimental.allocator.building_blocks.stats_collector;
+    import ripstd.allocator.mallocator;
+    import ripstd.allocator.building_blocks.stats_collector;
 
     alias SCAlloc = StatsCollector!(Mallocator, Options.bytesUsed);
     SCAlloc statsCollectorAlloc;
@@ -3365,9 +3365,9 @@ struct ThreadLocal(A)
 @system
 unittest
 {
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     static assert(!is(ThreadLocal!Mallocator));
     static assert(!is(ThreadLocal!GCAllocator));
@@ -3570,7 +3570,7 @@ private struct EmbeddedTree(T, alias less)
 @system
 unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
 
     alias a = GCAllocator.instance;
     alias Tree = EmbeddedTree!(int, (a, b) => a.payload < b.payload);
@@ -3607,7 +3607,7 @@ the block size and two for search management).
 */
 private struct InternalPointersTree(Allocator)
 {
-    import ripstd.experimental.allocator.building_blocks.affix_allocator : AffixAllocator;
+    import ripstd.allocator.building_blocks.affix_allocator : AffixAllocator;
 
     alias Tree = EmbeddedTree!(size_t,
         (a, b) => cast(void*) a + a.payload < cast(void*) b);
@@ -3716,7 +3716,7 @@ private struct InternalPointersTree(Allocator)
 @system
 unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.random : randomCover;
 
     InternalPointersTree!(Mallocator) a;
@@ -3755,14 +3755,14 @@ unittest
 @system
 unittest
 {
-    import ripstd.experimental.allocator.building_blocks.null_allocator : NullAllocator;
-    import ripstd.experimental.allocator.building_blocks.allocator_list : AllocatorList;
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
-    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
-    import ripstd.experimental.allocator.building_blocks.bucketizer : Bucketizer;
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.null_allocator : NullAllocator;
+    import ripstd.allocator.building_blocks.allocator_list : AllocatorList;
+    import ripstd.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.allocator.building_blocks.segregator : Segregator;
+    import ripstd.allocator.building_blocks.bucketizer : Bucketizer;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     static void testSpeed(A)()
     {
@@ -3825,11 +3825,11 @@ unittest
 @system
 unittest
 {
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.building_blocks.region : InSituRegion;
-    import ripstd.experimental.allocator.building_blocks.fallback_allocator : FallbackAllocator;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.building_blocks.region : InSituRegion;
+    import ripstd.allocator.building_blocks.fallback_allocator : FallbackAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     auto a = allocatorObject(Mallocator.instance);
     auto b = a.allocate(100);
@@ -3851,12 +3851,12 @@ unittest
 @system
 unittest
 {
-    import ripstd.experimental.allocator.building_blocks.allocator_list : AllocatorList;
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
-    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
-    import ripstd.experimental.allocator.building_blocks.bucketizer : Bucketizer;
-    import ripstd.experimental.allocator.building_blocks.free_list : FreeList;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.allocator_list : AllocatorList;
+    import ripstd.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.allocator.building_blocks.segregator : Segregator;
+    import ripstd.allocator.building_blocks.bucketizer : Bucketizer;
+    import ripstd.allocator.building_blocks.free_list : FreeList;
+    import ripstd.allocator.gc_allocator : GCAllocator;
 
     /// Define an allocator bound to the built-in GC.
     auto alloc = allocatorObject(GCAllocator.instance);

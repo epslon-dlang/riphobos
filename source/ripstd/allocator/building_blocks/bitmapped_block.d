@@ -2,10 +2,10 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/bitmapped_block.d)
 */
-module ripstd.experimental.allocator.building_blocks.bitmapped_block;
+module ripstd.allocator.building_blocks.bitmapped_block;
 
-import ripstd.experimental.allocator.building_blocks.null_allocator;
-import ripstd.experimental.allocator.common;
+import ripstd.allocator.building_blocks.null_allocator;
+import ripstd.allocator.common;
 import ripstd.typecons : Flag, Yes, No;
 
 
@@ -1370,7 +1370,7 @@ struct BitmappedBlock(size_t theBlockSize, uint theAlignment = platformAlignment
         @system unittest
         {
             import ripstd.algorithm.comparison : max;
-            import ripstd.experimental.allocator.mallocator : AlignedMallocator;
+            import ripstd.allocator.mallocator : AlignedMallocator;
             auto m = cast(ubyte[])(AlignedMallocator.instance.alignedAllocate(1024 * 64,
                                     max(theAlignment, cast(uint) size_t.sizeof)));
             scope(exit) () nothrow @nogc { AlignedMallocator.instance.deallocate(m); }();
@@ -1391,7 +1391,7 @@ struct BitmappedBlock(size_t theBlockSize, uint theAlignment = platformAlignment
 @system unittest
 {
     // Create a block allocator on top of a 10KB stack region.
-    import ripstd.experimental.allocator.building_blocks.region : InSituRegion;
+    import ripstd.allocator.building_blocks.region : InSituRegion;
     import ripstd.traits : hasMember;
     InSituRegion!(10_240, 64) r;
     auto a = BitmappedBlock!(64, 64)(cast(ubyte[])(r.allocateAll()));
@@ -1403,7 +1403,7 @@ struct BitmappedBlock(size_t theBlockSize, uint theAlignment = platformAlignment
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.typecons : Flag, Yes;
 
     enum blockSize = 64;
@@ -1434,7 +1434,7 @@ struct BitmappedBlock(size_t theBlockSize, uint theAlignment = platformAlignment
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.typecons : Flag, No;
 
     enum blockSize = 64;
@@ -1464,8 +1464,8 @@ struct BitmappedBlock(size_t theBlockSize, uint theAlignment = platformAlignment
 // Test instantiation with stateful allocators
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.region : Region;
     auto r = Region!Mallocator(1024 * 96);
     auto a = BitmappedBlock!(chooseAtRuntime, 8, Region!Mallocator*, No.multiblock)(&r, 1024 * 64, 1024);
 }
@@ -1645,7 +1645,7 @@ shared struct SharedBitmappedBlock(size_t theBlockSize, uint theAlignment = plat
         @system unittest
         {
             import ripstd.algorithm.comparison : max;
-            import ripstd.experimental.allocator.mallocator : AlignedMallocator;
+            import ripstd.allocator.mallocator : AlignedMallocator;
             auto m = cast(ubyte[])(AlignedMallocator.instance.alignedAllocate(1024 * 64,
                                     max(theAlignment, cast(uint) size_t.sizeof)));
             scope(exit) () nothrow @nogc { AlignedMallocator.instance.deallocate(m); }();
@@ -1665,8 +1665,8 @@ shared struct SharedBitmappedBlock(size_t theBlockSize, uint theAlignment = plat
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
-    import ripstd.experimental.allocator.common : platformAlignment;
+    import ripstd.allocator.mallocator : Mallocator;
+    import ripstd.allocator.common : platformAlignment;
     import ripstd.typecons : Flag, Yes, No;
 
     // Create 'numThreads' threads, each allocating in parallel a chunk of memory
@@ -1727,7 +1727,7 @@ shared struct SharedBitmappedBlock(size_t theBlockSize, uint theAlignment = plat
 {
     // Test chooseAtRuntime
     // Create a block allocator on top of a 10KB stack region.
-    import ripstd.experimental.allocator.building_blocks.region : InSituRegion;
+    import ripstd.allocator.building_blocks.region : InSituRegion;
     import ripstd.traits : hasMember;
     InSituRegion!(10_240, 64) r;
     uint blockSize = 64;
@@ -1763,7 +1763,7 @@ pure @safe unittest
 version (RIPStdUnittest)
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     testAllocator!(() => BitmappedBlock!(64, 8, GCAllocator)(1024 * 64));
 }
 
@@ -1771,7 +1771,7 @@ version (RIPStdUnittest)
 @system unittest
 {
     // Test chooseAtRuntime
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     uint blockSize = 64;
     testAllocator!(() => BitmappedBlock!(chooseAtRuntime, 8, GCAllocator, Yes.multiblock)(1024 * 64, blockSize));
     testAllocator!(() => BitmappedBlock!(chooseAtRuntime, 8, GCAllocator, No.multiblock)(1024 * 64, blockSize));
@@ -1780,7 +1780,7 @@ version (RIPStdUnittest)
 version (RIPStdUnittest)
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     testAllocator!(() => SharedBitmappedBlock!(64, 8, Mallocator, Yes.multiblock)(1024 * 64));
     testAllocator!(() => SharedBitmappedBlock!(64, 8, Mallocator, No.multiblock)(1024 * 64));
 }
@@ -1789,7 +1789,7 @@ version (RIPStdUnittest)
 @system unittest
 {
     // Test chooseAtRuntime
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     uint blockSize = 64;
     testAllocator!(() => SharedBitmappedBlock!(chooseAtRuntime, 8, Mallocator, Yes.multiblock)(1024 * 64, blockSize));
     testAllocator!(() => SharedBitmappedBlock!(chooseAtRuntime, 8, Mallocator, No.multiblock)(1024 * 64, blockSize));
@@ -1814,7 +1814,7 @@ version (RIPStdUnittest)
         assert(bs);
         import ripstd.typecons : Ternary;
         import ripstd.algorithm.comparison : min;
-        import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+        import ripstd.allocator.gc_allocator : GCAllocator;
 
         static if (isShared)
         {
@@ -1968,7 +1968,7 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
 
     enum blocks = 10000;
     int count = 0;
@@ -2048,7 +2048,7 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.random;
 
     static void testAlloc(Allocator)()
@@ -2142,7 +2142,7 @@ nothrow @safe @nogc unittest
 // Test owns
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     import ripstd.typecons : Ternary;
 
     auto a = BitmappedBlock!(64, 8, GCAllocator)(1024 * 64);
@@ -2175,7 +2175,7 @@ struct BitmappedBlockWithInternalPointers(
     version (RIPStdUnittest)
     @system unittest
     {
-        import ripstd.experimental.allocator.mallocator : AlignedMallocator;
+        import ripstd.allocator.mallocator : AlignedMallocator;
         auto m = cast(ubyte[])(AlignedMallocator.instance.alignedAllocate(1024 * 64,
             theAlignment));
         scope(exit) () nothrow @nogc { AlignedMallocator.instance.deallocate(m); }();
@@ -2443,8 +2443,8 @@ struct BitmappedBlockWithInternalPointers(
 // Test instantiation with stateful allocators
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.region : Region;
     auto r = Region!Mallocator(1024 * 1024);
     auto h = BitmappedBlockWithInternalPointers!(4096, 8, Region!Mallocator*)(&r, 4096 * 1024);
 }

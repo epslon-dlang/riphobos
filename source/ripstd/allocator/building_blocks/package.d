@@ -301,24 +301,24 @@ RES = $(I result)
 POST = $(BR)$(SMALL $(I Post:) $(BLUE `$0`))
 */
 
-module ripstd.experimental.allocator.building_blocks;
+module ripstd.allocator.building_blocks;
 
 public import
-    ripstd.experimental.allocator.building_blocks.affix_allocator,
-    ripstd.experimental.allocator.building_blocks.aligned_block_list,
-    ripstd.experimental.allocator.building_blocks.allocator_list,
-    ripstd.experimental.allocator.building_blocks.ascending_page_allocator,
-    ripstd.experimental.allocator.building_blocks.bucketizer,
-    ripstd.experimental.allocator.building_blocks.fallback_allocator,
-    ripstd.experimental.allocator.building_blocks.free_list,
-    ripstd.experimental.allocator.building_blocks.free_tree,
-    ripstd.experimental.allocator.gc_allocator,
-    ripstd.experimental.allocator.building_blocks.bitmapped_block,
-    ripstd.experimental.allocator.building_blocks.kernighan_ritchie,
-    ripstd.experimental.allocator.mallocator,
-    ripstd.experimental.allocator.mmap_allocator,
-    ripstd.experimental.allocator.building_blocks.null_allocator,
-    ripstd.experimental.allocator.building_blocks.quantizer,
-    ripstd.experimental.allocator.building_blocks.region,
-    ripstd.experimental.allocator.building_blocks.segregator,
-    ripstd.experimental.allocator.building_blocks.stats_collector;
+    ripstd.allocator.building_blocks.affix_allocator,
+    ripstd.allocator.building_blocks.aligned_block_list,
+    ripstd.allocator.building_blocks.allocator_list,
+    ripstd.allocator.building_blocks.ascending_page_allocator,
+    ripstd.allocator.building_blocks.bucketizer,
+    ripstd.allocator.building_blocks.fallback_allocator,
+    ripstd.allocator.building_blocks.free_list,
+    ripstd.allocator.building_blocks.free_tree,
+    ripstd.allocator.gc_allocator,
+    ripstd.allocator.building_blocks.bitmapped_block,
+    ripstd.allocator.building_blocks.kernighan_ritchie,
+    ripstd.allocator.mallocator,
+    ripstd.allocator.mmap_allocator,
+    ripstd.allocator.building_blocks.null_allocator,
+    ripstd.allocator.building_blocks.quantizer,
+    ripstd.allocator.building_blocks.region,
+    ripstd.allocator.building_blocks.segregator,
+    ripstd.allocator.building_blocks.stats_collector;

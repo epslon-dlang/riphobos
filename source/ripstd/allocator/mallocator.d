@@ -4,8 +4,8 @@ The C heap allocator.
 
 Source: $(PHOBOSSRC std/experimental/allocator/mallocator.d)
 */
-module ripstd.experimental.allocator.mallocator;
-import ripstd.experimental.allocator.common;
+module ripstd.allocator.mallocator;
+import ripstd.allocator.common;
 
 /**
    The C heap allocator.
@@ -107,7 +107,7 @@ struct Mallocator
 {
     static void test(A)()
     {
-        import ripstd.experimental.allocator : make;
+        import ripstd.allocator : make;
         Object p = null;
         p = A.instance.make!Object();
         assert(p !is null);

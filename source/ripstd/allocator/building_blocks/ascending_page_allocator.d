@@ -2,11 +2,11 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/ascending_page_allocator.d)
 */
-module ripstd.experimental.allocator.building_blocks.ascending_page_allocator;
+module ripstd.allocator.building_blocks.ascending_page_allocator;
 
 import core.memory : pageSize;
 
-import ripstd.experimental.allocator.common;
+import ripstd.allocator.common;
 
 // Common implementations for shared and thread local AscendingPageAllocator
 private mixin template AscendingPageAllocatorImpl(bool isShared)

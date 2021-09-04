@@ -5,10 +5,10 @@ and preserving a low degree of fragmentation by means of aligned allocations.
 
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/aligned_block_list.d)
 */
-module ripstd.experimental.allocator.building_blocks.aligned_block_list;
+module ripstd.allocator.building_blocks.aligned_block_list;
 
-import ripstd.experimental.allocator.common;
-import ripstd.experimental.allocator.building_blocks.null_allocator;
+import ripstd.allocator.common;
+import ripstd.allocator.building_blocks.null_allocator;
 
 // Common function implementation for thread local and shared AlignedBlockList
 private mixin template AlignedBlockListImpl(bool isShared)
@@ -366,9 +366,9 @@ struct AlignedBlockList(Allocator, ParentAllocator, ulong theAlignment = (1 << 2
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
-    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.allocator.building_blocks.segregator : Segregator;
+    import ripstd.allocator.building_blocks.bitmapped_block : BitmappedBlock;
     import ripstd.typecons : Ternary;
 
     /*
@@ -526,9 +526,9 @@ shared struct SharedAlignedBlockList(Allocator, ParentAllocator, ulong theAlignm
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : SharedRegion;
-    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : SharedAscendingPageAllocator;
-    import ripstd.experimental.allocator.building_blocks.null_allocator : NullAllocator;
+    import ripstd.allocator.building_blocks.region : SharedRegion;
+    import ripstd.allocator.building_blocks.ascending_page_allocator : SharedAscendingPageAllocator;
+    import ripstd.allocator.building_blocks.null_allocator : NullAllocator;
     import core.thread : ThreadGroup;
 
     enum numThreads = 8;
@@ -582,8 +582,8 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region;
-    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator;
+    import ripstd.allocator.building_blocks.region;
+    import ripstd.allocator.building_blocks.ascending_page_allocator;
     import ripstd.random;
     import ripstd.algorithm.sorting : sort;
     import core.thread : ThreadGroup;
@@ -642,9 +642,9 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
-    import ripstd.experimental.allocator.building_blocks.segregator : Segregator;
-    import ripstd.experimental.allocator.building_blocks.bitmapped_block : BitmappedBlock;
+    import ripstd.allocator.building_blocks.ascending_page_allocator : AscendingPageAllocator;
+    import ripstd.allocator.building_blocks.segregator : Segregator;
+    import ripstd.allocator.building_blocks.bitmapped_block : BitmappedBlock;
     import ripstd.random;
 
     alias SuperAllocator = Segregator!(

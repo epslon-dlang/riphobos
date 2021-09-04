@@ -2,9 +2,9 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/free_list.d)
 */
-module ripstd.experimental.allocator.building_blocks.free_list;
+module ripstd.allocator.building_blocks.free_list;
 
-import ripstd.experimental.allocator.common;
+import ripstd.allocator.common;
 import ripstd.typecons : Flag, Yes, No;
 
 /**
@@ -37,7 +37,7 @@ struct FreeList(ParentAllocator,
     import ripstd.exception : enforce;
     import ripstd.traits : hasMember;
     import ripstd.typecons : Ternary;
-    import ripstd.experimental.allocator.building_blocks.null_allocator : NullAllocator;
+    import ripstd.allocator.building_blocks.null_allocator : NullAllocator;
 
     static assert(minSize != unbounded, "Use minSize = 0 for no low bound.");
     static assert(maxSize >= (void*).sizeof,
@@ -122,8 +122,8 @@ struct FreeList(ParentAllocator,
 
         @system unittest
         {
-            import ripstd.experimental.allocator.common : chooseAtRuntime;
-            import ripstd.experimental.allocator.mallocator : Mallocator;
+            import ripstd.allocator.common : chooseAtRuntime;
+            import ripstd.allocator.mallocator : Mallocator;
 
             FreeList!(Mallocator, chooseAtRuntime, chooseAtRuntime) a;
             a.min = 64;
@@ -432,8 +432,8 @@ struct FreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
-    import ripstd.experimental.allocator.building_blocks.stats_collector
+    import ripstd.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.stats_collector
         : StatsCollector, Options;
 
     struct StatsCollectorWrapper {
@@ -462,7 +462,7 @@ struct FreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     FreeList!(GCAllocator, 0, 8) fl;
     assert(fl.root is null);
     auto b1 = fl.allocate(7);
@@ -477,7 +477,7 @@ struct FreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     FreeList!(GCAllocator, 0, 16) fl;
     // Not @nogc because of ripstd.conv.text
     assert((() nothrow @safe /*@nogc*/ => fl.goodAllocSize(1))() == 16);
@@ -486,7 +486,7 @@ struct FreeList(ParentAllocator,
 // Test that deallocateAll infers from parent
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
 
     auto fl = FreeList!(Region!(), 0, 16)(Region!()(new ubyte[1024 * 64]));
     auto b = fl.allocate(42);
@@ -521,9 +521,9 @@ available for `ContiguousFreeList`.
 struct ContiguousFreeList(ParentAllocator,
      size_t minSize, size_t maxSize = minSize)
 {
-    import ripstd.experimental.allocator.building_blocks.null_allocator
+    import ripstd.allocator.building_blocks.null_allocator
         : NullAllocator;
-    import ripstd.experimental.allocator.building_blocks.stats_collector
+    import ripstd.allocator.building_blocks.stats_collector
         : StatsCollector, Options;
     import ripstd.traits : hasMember;
     import ripstd.typecons : Ternary;
@@ -771,11 +771,11 @@ struct ContiguousFreeList(ParentAllocator,
 ///
 @safe unittest
 {
-    import ripstd.experimental.allocator.building_blocks.allocator_list
+    import ripstd.allocator.building_blocks.allocator_list
         : AllocatorList;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
 
-    import ripstd.experimental.allocator.common : unbounded;
+    import ripstd.allocator.common : unbounded;
 
     alias ScalableFreeList = AllocatorList!((n) =>
         ContiguousFreeList!(GCAllocator, 0, unbounded)(4096)
@@ -784,7 +784,7 @@ struct ContiguousFreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.null_allocator
+    import ripstd.allocator.building_blocks.null_allocator
         : NullAllocator;
     import ripstd.typecons : Ternary;
     alias A = ContiguousFreeList!(NullAllocator, 0, 64);
@@ -811,8 +811,8 @@ struct ContiguousFreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.region : Region;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     import ripstd.typecons : Ternary;
     alias A = ContiguousFreeList!(Region!GCAllocator, 0, 64);
     auto a = A(Region!GCAllocator(1024 * 4), 1024);
@@ -844,7 +844,7 @@ struct ContiguousFreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     alias A = ContiguousFreeList!(GCAllocator, 64, 64);
     auto a = A(1024);
     const b = a.allocate(100);
@@ -1156,8 +1156,8 @@ struct SharedFreeList(ParentAllocator,
 ///
 @safe unittest
 {
-    import ripstd.experimental.allocator.common : chooseAtRuntime;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.common : chooseAtRuntime;
+    import ripstd.allocator.mallocator : Mallocator;
 
     shared SharedFreeList!(Mallocator, chooseAtRuntime, chooseAtRuntime) a;
     a.setBounds(64, 128);
@@ -1168,8 +1168,8 @@ struct SharedFreeList(ParentAllocator,
 ///
 @safe unittest
 {
-    import ripstd.experimental.allocator.common : chooseAtRuntime;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.common : chooseAtRuntime;
+    import ripstd.allocator.mallocator : Mallocator;
 
     shared SharedFreeList!(Mallocator, 50, 50, chooseAtRuntime) a;
     // Set the maxSize first so setting the minSize doesn't throw
@@ -1185,7 +1185,7 @@ struct SharedFreeList(ParentAllocator,
 {
     import core.thread : ThreadGroup;
     import ripstd.algorithm.comparison : equal;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.range : repeat;
 
     static shared SharedFreeList!(Mallocator, 64, 128, 10) a;
@@ -1216,7 +1216,7 @@ struct SharedFreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     static shared SharedFreeList!(Mallocator, 64, 128, 10) a;
     auto b = a.allocate(100);
     // Ensure deallocate inherits from parent
@@ -1229,7 +1229,7 @@ struct SharedFreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     static shared SharedFreeList!(Mallocator, 64, 128, 10) a;
     auto b = a.allocate(100);
     auto c = a.allocate(100);
@@ -1248,7 +1248,7 @@ struct SharedFreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     static shared SharedFreeList!(Mallocator, 64, 128, 10) a;
     auto b = a.allocate(100);
     auto c = a.allocate(100);
@@ -1265,7 +1265,7 @@ struct SharedFreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     shared SharedFreeList!(Mallocator, chooseAtRuntime, chooseAtRuntime) a;
     scope(exit) assert((() nothrow @nogc => a.deallocateAll())());
     auto c = a.allocate(64);
@@ -1277,7 +1277,7 @@ struct SharedFreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     shared SharedFreeList!(Mallocator, chooseAtRuntime, chooseAtRuntime, chooseAtRuntime) a;
     scope(exit) assert((() nothrow @nogc => a.deallocateAll())());
     a.allocate(64);
@@ -1285,7 +1285,7 @@ struct SharedFreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     shared SharedFreeList!(Mallocator, 30, 40) a;
     scope(exit) assert((() nothrow @nogc => a.deallocateAll())());
     a.allocate(64);
@@ -1293,7 +1293,7 @@ struct SharedFreeList(ParentAllocator,
 
 @system unittest
 {
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     shared SharedFreeList!(Mallocator, 30, 40, chooseAtRuntime) a;
     scope(exit) assert((() nothrow @nogc => a.deallocateAll())());
     a.allocate(64);
@@ -1302,7 +1302,7 @@ struct SharedFreeList(ParentAllocator,
 @system unittest
 {
     // Pull request #5556
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     shared SharedFreeList!(Mallocator, 0, chooseAtRuntime) a;
     scope(exit) assert((() nothrow @nogc => a.deallocateAll())());
     a.max = 64;
@@ -1312,7 +1312,7 @@ struct SharedFreeList(ParentAllocator,
 @system unittest
 {
     // Pull request #5556
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mallocator : Mallocator;
     shared SharedFreeList!(Mallocator, chooseAtRuntime, 64) a;
     scope(exit) assert((() nothrow @nogc => a.deallocateAll())());
     a.min = 32;

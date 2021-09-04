@@ -2,9 +2,9 @@
 /**
 Source: $(PHOBOSSRC std/experimental/allocator/building_blocks/quantizer.d)
 */
-module ripstd.experimental.allocator.building_blocks.quantizer;
+module ripstd.allocator.building_blocks.quantizer;
 
-import ripstd.experimental.allocator.common;
+import ripstd.allocator.common;
 
 /**
 This allocator sits on top of `ParentAllocator` and quantizes allocation sizes,
@@ -221,8 +221,8 @@ struct Quantizer(ParentAllocator, alias roundingFunction)
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.free_tree : FreeTree;
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.building_blocks.free_tree : FreeTree;
+    import ripstd.allocator.gc_allocator : GCAllocator;
 
     size_t roundUpToMultipleOf(size_t s, uint base)
     {
@@ -243,7 +243,7 @@ struct Quantizer(ParentAllocator, alias roundingFunction)
 version (RIPStdUnittest)
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
     alias MyAlloc = Quantizer!(GCAllocator,
         (size_t n) => n.roundUpToMultipleOf(64));
     testAllocator!(() => MyAlloc());
@@ -268,8 +268,8 @@ version (RIPStdUnittest)
 
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.region : Region;
+    import ripstd.allocator.mallocator : Mallocator;
     import ripstd.typecons : Ternary;
 
     alias Alloc = Quantizer!(Region!(Mallocator),
@@ -298,8 +298,8 @@ version (RIPStdUnittest)
 version (RIPStdUnittest)
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
+    import ripstd.allocator.building_blocks.region : Region;
+    import ripstd.allocator.mallocator : Mallocator;
 
     alias MyAlloc = Quantizer!(Region!(Mallocator),
             (size_t n) => n.roundUpToMultipleOf(64));
@@ -315,7 +315,7 @@ version (RIPStdUnittest)
 version (RIPStdUnittest)
 @system unittest
 {
-    import ripstd.experimental.allocator.building_blocks.region : Region;
+    import ripstd.allocator.building_blocks.region : Region;
     import ripstd.typecons : Ternary;
 
     alias MyAlloc = Quantizer!(Region!(),

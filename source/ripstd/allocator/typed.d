@@ -12,10 +12,10 @@ Macros:
 T2=$(TR <td style="text-align:left">`$1`</td> $(TD $(ARGS $+)))
 */
 
-module ripstd.experimental.allocator.typed;
+module ripstd.allocator.typed;
 
-import ripstd.experimental.allocator;
-import ripstd.experimental.allocator.common;
+import ripstd.allocator;
+import ripstd.allocator.common;
 import ripstd.range : isInputRange, isForwardRange, walkLength, save, empty,
     front, popFront;
 import ripstd.traits : isPointer, hasElaborateDestructor;
@@ -396,9 +396,9 @@ struct TypedAllocator(PrimaryAllocator, Policies...)
 ///
 @system unittest
 {
-    import ripstd.experimental.allocator.gc_allocator : GCAllocator;
-    import ripstd.experimental.allocator.mallocator : Mallocator;
-    import ripstd.experimental.allocator.mmap_allocator : MmapAllocator;
+    import ripstd.allocator.gc_allocator : GCAllocator;
+    import ripstd.allocator.mallocator : Mallocator;
+    import ripstd.allocator.mmap_allocator : MmapAllocator;
     alias MyAllocator = TypedAllocator!(GCAllocator,
         AllocFlag.fixedSize | AllocFlag.threadLocal, Mallocator,
         AllocFlag.fixedSize | AllocFlag.threadLocal
