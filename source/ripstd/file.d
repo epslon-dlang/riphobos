@@ -356,7 +356,7 @@ version (Posix) private void[] readImpl(scope const(char)[] name, scope const(FS
     import core.memory : GC;
     import ripstd.algorithm.comparison : min;
     import ripstd.conv : to;
-    import ripstd.experimental.checkedint : checked;
+    import ripstd.checkedint : checked;
 
     // A few internal configuration parameters {
     enum size_t
@@ -3411,7 +3411,7 @@ version (Posix) @system unittest // input range of dchars
 version (Windows) string getcwd() @trusted
 {
     import ripstd.conv : to;
-    import ripstd.experimental.checkedint : checked;
+    import ripstd.checkedint : checked;
     /* GetCurrentDirectory's return value:
         1. function succeeds: the number of characters that are written to
     the buffer, not including the terminating null character.
