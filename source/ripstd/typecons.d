@@ -2764,7 +2764,7 @@ struct Nullable(T)
 {
     private union DontCallDestructorT
     {
-        import std.traits : hasIndirections;
+        import ripstd.traits : hasIndirections;
         static if (hasIndirections!T)
             T payload;
         else
@@ -3223,7 +3223,7 @@ auto nullable(T)(T t)
 ///
 @safe unittest
 {
-    import std.algorithm.iteration : each, joiner;
+    import ripstd.algorithm.iteration : each, joiner;
     Nullable!int a = 42;
     Nullable!int b;
     // Add each value to an array
@@ -3716,9 +3716,9 @@ auto nullable(T)(T t)
 // https://issues.dlang.org/show_bug.cgi?id=18374
 @safe pure nothrow unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.range : only, takeNone;
-    import std.range.primitives : hasAssignableElements, hasLength,
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.range : only, takeNone;
+    import ripstd.range.primitives : hasAssignableElements, hasLength,
         hasLvalueElements, hasSlicing, hasSwappableElements,
         isRandomAccessRange;
     Nullable!int a = 42;
@@ -5249,8 +5249,8 @@ private static:
 
         static class C_11
         {
-            import std.traits : Parameters, ReturnType;
-            import std.meta : Alias;
+            import ripstd.traits : Parameters, ReturnType;
+            import ripstd.meta : Alias;
 
             protected ReturnType!fn _impl(alias fn)(Parameters!fn)
             if (is(Alias!(__traits(parent, fn)) == interface))

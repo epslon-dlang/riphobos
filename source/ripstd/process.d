@@ -107,6 +107,7 @@ version (Windows)
 
 import ripstd.internal.cstring;
 import ripstd.range.primitives;
+import ripstd.range;
 import ripstd.stdio;
 import ripstd.traits : isSomeChar;
 
@@ -1497,7 +1498,7 @@ package(ripstd) string searchPathFor(scope const(char)[] executable)
     @safe
 {
     import ripstd.algorithm.iteration : splitter;
-    import ripstd.conv : text;
+    import ripstd.conv : to;
     import ripstd.path : chainPath;
 
     typeof(return) result;
@@ -1599,8 +1600,8 @@ version (Posix) @system unittest
     if (fd == -1)
     {
         import core.stdc.string : strerror;
-        import std.stdio : stderr;
-        import std.string : fromStringz;
+        import ripstd.stdio : stderr;
+        import ripstd.string : fromStringz;
 
         // For the CI logs
         stderr.writefln("%s: could not open '%s': %s",
@@ -1658,7 +1659,7 @@ version (Posix) @system unittest
             auto lsofOut = execute(lsof.path, null, Config.inheritFDs).output;
             if (!lsofOut.canFind(path))
             {
-                std.stdio.stderr.writeln(__FILE__, ':', __LINE__,
+                ripstd.stdio.stderr.writeln(__FILE__, ':', __LINE__,
                     ": Warning: unexpected lsof output:", lsofOut);
             }
             return;
@@ -1802,7 +1803,7 @@ version (Posix) @system unittest
         import ripstd.file : remove, write, setAttributes, tempDir;
         import core.sys.posix.sys.stat : S_IRUSR, S_IWUSR, S_IXUSR, S_IRGRP, S_IXGRP, S_IROTH, S_IXOTH;
         import ripstd.conv : to;
-        string deleteme = buildPath(tempDir(), "deleteme.std.process.unittest.pid") ~ to!string(thisProcessID);
+        string deleteme = buildPath(tempDir(), "deleteme.ripstd.process.unittest.pid") ~ to!string(thisProcessID);
         write(deleteme, "");
         scope(exit) remove(deleteme);
         setAttributes(deleteme, S_IRUSR|S_IWUSR|S_IXUSR|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH);
@@ -2702,7 +2703,7 @@ void kill(Pid pid, int codeOrSignal)
     /*
     This sleep is needed because we can't wait() for detached process to end
     and therefore TestScript destructor may run at the same time as /bin/sh tries to start the script.
-    This leads to the annoying message like "/bin/sh: 0: Can't open /tmp/std.process temporary file" to appear when running tests.
+    This leads to the annoying message like "/bin/sh: 0: Can't open /tmp/ripstd.process temporary file" to appear when running tests.
     It does not happen in unittests with non-detached processes because we always wait() for them to finish.
     */
     Thread.sleep(500.msecs);

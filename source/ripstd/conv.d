@@ -51,8 +51,9 @@ public import ripstd.ascii : LetterCase;
 
 import ripstd.meta;
 import ripstd.range.primitives;
+import ripstd.range;
 import ripstd.traits;
-import ripstd.typecons : Flag, Yes, No, tuple;
+import ripstd.typecons : Flag, Yes, No, tuple, isTuple;
 
 // Same as ripstd.string.format, but "self-importing".
 // Helps reduce code and imports, particularly in static asserts.
@@ -667,7 +668,7 @@ if (isTuple!T)
 
 @safe unittest
 {
-    import std.typecons : Tuple;
+    import ripstd.typecons : Tuple;
 
     auto test = ["10", "20", "30"];
     assert(test.to!(Tuple!(int, int, int)) == Tuple!(int, int, int)(10, 20, 30));

@@ -712,7 +712,7 @@ template partial(alias fun, alias arg)
     }
     else
     {
-        import std.meta : Filter;
+        import ripstd.meta : Filter;
 
         static if (__traits(compiles, __traits(getOverloads,
             __traits(parent, fun), __traits(identifier, fun))))
@@ -732,7 +732,7 @@ template partial(alias fun, alias arg)
         }
         else static if (candidates.length == 0)
         {
-            import std.meta : NoDuplicates, staticMap;
+            import ripstd.meta : NoDuplicates, staticMap;
 
             enum hasParameters(alias fun) = Parameters!fun.length > 0;
             alias firstParameter(alias fun) = Parameters!fun[0];
@@ -1874,7 +1874,7 @@ template bind(alias fun)
     auto ref bind(T)(auto ref T args)
     if (is(T == struct))
     {
-        import std.meta : Map = staticMap;
+        import ripstd.meta : Map = staticMap;
         import core.lifetime : move;
 
         // Forwards the i'th member of `args`
@@ -1899,7 +1899,7 @@ template bind(alias fun)
 /// Giving names to tuple elements
 @safe unittest
 {
-    import std.typecons : tuple;
+    import ripstd.typecons : tuple;
 
     auto name = tuple("John", "Doe");
     string full = name.bind!((first, last) => first ~ " " ~ last);
@@ -1909,7 +1909,7 @@ template bind(alias fun)
 /// Passing struct fields to a function
 @safe unittest
 {
-    import std.algorithm.comparison : min, max;
+    import ripstd.algorithm.comparison : min, max;
 
     struct Pair
     {
@@ -1925,9 +1925,9 @@ template bind(alias fun)
 /// In a range pipeline
 @safe unittest
 {
-    import std.algorithm.iteration : map, filter;
-    import std.algorithm.comparison : equal;
-    import std.typecons : tuple;
+    import ripstd.algorithm.iteration : map, filter;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.typecons : tuple;
 
     auto ages = [
         tuple("Alice", 35),
@@ -1955,7 +1955,7 @@ template bind(alias fun)
 // Non-copyable arguments
 @safe unittest
 {
-    import std.typecons : tuple;
+    import ripstd.typecons : tuple;
 
     static struct NoCopy
     {
@@ -1980,7 +1980,7 @@ template bind(alias fun)
 // ref arguments
 @safe unittest
 {
-    import std.typecons : tuple;
+    import ripstd.typecons : tuple;
 
     auto t = tuple(123, 456);
     t.bind!((ref int a, int b) { a = 789; b = 1011; });
@@ -1992,7 +1992,7 @@ template bind(alias fun)
 // auto ref arguments
 @safe unittest
 {
-    import std.typecons : tuple;
+    import ripstd.typecons : tuple;
 
     auto t = tuple(123);
     t.bind!((auto ref x) {

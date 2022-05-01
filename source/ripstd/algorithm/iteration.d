@@ -3902,11 +3902,11 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
     // is flexible and thus cannot be inferred safe automatically
 
     // https://issues.dlang.org/show_bug.cgi?id=22359
-    import std.range;
+    import ripstd.range;
     ForwardRange!int bug(int[][] r)
     {
-        import std.range : inputRangeObject;
-        import std.algorithm.iteration : map, joiner;
+        import ripstd.range : inputRangeObject;
+        import ripstd.algorithm.iteration : map, joiner;
 
         auto range = inputRangeObject(r);
 
@@ -4252,7 +4252,7 @@ if (isInputRange!RoR && isInputRange!(ElementType!RoR))
 // https://issues.dlang.org/show_bug.cgi?id=22561
 @safe pure unittest
 {
-    import std.range : only;
+    import ripstd.range : only;
 
     static immutable struct S { int[] array; }
     assert([only(S(null))].joiner.front == S(null));

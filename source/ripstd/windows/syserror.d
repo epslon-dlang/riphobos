@@ -66,9 +66,9 @@ else:
 version (Windows):
 
 import core.sys.windows.winbase, core.sys.windows.winnt;
-import ripstd.array : appender;
-import ripstd.conv : to;
-import ripstd.format.write : formattedWrite;
+import ripstd.array : appender, Appender;
+import ripstd.conv : to, toTextRange, text;
+import ripstd.exception;
 import ripstd.windows.charset;
 
 string sysErrorString(
@@ -90,7 +90,7 @@ string sysErrorString(
 
 @safe unittest
 {
-    import std.algorithm.searching;
+    import ripstd.algorithm.searching;
 
     assert(sysErrorString(ERROR_PATH_NOT_FOUND) !is null);
 
@@ -234,7 +234,7 @@ T wenforce(T)(T condition, const(char)[] name, const(wchar)* namez, string file 
 
 @safe nothrow unittest
 {
-    import std.algorithm.searching : endsWith;
+    import ripstd.algorithm.searching : endsWith;
 
     auto e = new WindowsException(ERROR_FILE_NOT_FOUND);
     assert(e.msg.endsWith("(error 2)"));
@@ -245,7 +245,7 @@ T wenforce(T)(T condition, const(char)[] name, const(wchar)* namez, string file 
 
 /// Tries to translate an error code from the Windows API to the corresponding
 /// error message. Returns `Error <code>` on failure
-package (std) string generateSysErrorMsg(DWORD errCode = GetLastError()) nothrow @trusted
+package (ripstd) string generateSysErrorMsg(DWORD errCode = GetLastError()) nothrow @trusted
 {
     auto buf = appender!(char[]);
     cast(void) writeErrorMessage(errCode, buf);

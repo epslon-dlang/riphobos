@@ -9,7 +9,11 @@
  */
 module ripstd.int128;
 
-private import core.int128;
+// FIXME: Import core.int128 when available
+static if (__VERSION__ >= 2100)
+  private import core.int128;
+else
+  private import ripstd.internal.int128;
 
 
 /***********************************

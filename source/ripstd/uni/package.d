@@ -1,7 +1,7 @@
 // Written in the D programming language.
 
 /++
-    $(P The `std.uni` module provides an implementation
+    $(P The `ripstd.uni` module provides an implementation
     of fundamental Unicode algorithms and data structures.
     This doesn't include UTF encoding and decoding primitives,
     see $(REF decode, std,_utf) and $(REF encode, std,_utf) in $(MREF std, utf)
@@ -2041,7 +2041,7 @@ pure:
 
     Note:
     $(P It's not recommended to rely on the template parameters
-    or the exact type of a current $(CODEPOINT) set in `std.uni`.
+    or the exact type of a current $(CODEPOINT) set in `ripstd.uni`.
     The type and parameters may change when the standard
     allocators design is finalized.
     Use $(LREF isCodepointSet) with templates or just stick with the default
@@ -6175,7 +6175,7 @@ package(ripstd) struct Stack(T)
 package(ripstd) dchar parseUniHex(Range)(ref Range str, size_t maxDigit)
 {
     import ripstd.exception : enforce;
-    //std.conv.parse is both @system and bogus
+    //ripstd.conv.parse is both @system and bogus
     uint val;
     for (int k = 0; k < maxDigit; k++)
     {
@@ -9822,42 +9822,76 @@ dchar toLower(dchar c)
     return c;
 }
 
-/++
-    Creates a new array which is identical to `s` except that all of its
-    characters are converted to lowercase (by performing Unicode lowercase mapping).
-    If none of `s` characters were affected, then `s` itself is returned if `s` is a
-    `string`-like type.
-
-    Params:
-        s = A $(REF_ALTTEXT random access range, isRandomAccessRange, std,range,primitives)
-        of characters
-    Returns:
-        An array with the same element type as `s`.
-+/
-ElementEncodingType!S[] toLower(S)(return scope S s) @trusted
-if (isSomeString!S)
+// FIXME: Remove this when v2.100.0 is stable
+static if (__VERSION__ >= 2100)
 {
-    static import ripstd.ascii;
-    return toCase!(LowerTriple, ripstd.ascii.toLower)(s);
+    /++
+        Creates a new array which is identical to `s` except that all of its
+        characters are converted to lowercase (by performing Unicode lowercase mapping).
+        If none of `s` characters were affected, then `s` itself is returned if `s` is a
+        `string`-like type.
+
+        Params:
+            s = A $(REF_ALTTEXT random access range, isRandomAccessRange, std,range,primitives)
+            of characters
+        Returns:
+            An array with the same element type as `s`.
+    +/
+    ElementEncodingType!S[] toLower(S)(return scope S s) @trusted
+    if (isSomeString!S)
+    {
+        static import ripstd.ascii;
+        return toCase!(LowerTriple, ripstd.ascii.toLower)(s);
+    }
 }
-
-/// ditto
-ElementEncodingType!S[] toLower(S)(S s)
-if (!isSomeString!S && (isRandomAccessRange!S && hasLength!S && hasSlicing!S && isSomeChar!(ElementType!S)))
+else
 {
-    static import ripstd.ascii;
-    return toCase!(LowerTriple, ripstd.ascii.toLower)(s);
+    /++
+        Creates a new array which is identical to `s` except that all of its
+        characters are converted to lowercase (by performing Unicode lowercase mapping).
+        If none of `s` characters were affected, then `s` itself is returned if `s` is a
+        `string`-like type.
+
+        Params:
+            s = A $(REF_ALTTEXT random access range, isRandomAccessRange, std,range,primitives)
+            of characters
+        Returns:
+            An array with the same element type as `s`.
+    +/
+    ElementEncodingType!S[] toLower(S)(S s)
+    if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && isSomeChar!(ElementType!S)))
+    {
+        static import ripstd.ascii;
+
+        static if (isSomeString!S)
+            return () @trusted { return toCase!(LowerTriple, ripstd.ascii.toLower)(s); } ();
+        else
+            return toCase!(LowerTriple, ripstd.ascii.toLower)(s);
+    }
 }
 
 // overloads for the most common cases to reduce compile time
 @safe pure /*TODO nothrow*/
 {
-    string toLower(return scope string s)
-    { return toLower!string(s); }
-    wstring toLower(return scope wstring s)
-    { return toLower!wstring(s); }
-    dstring toLower(return scope dstring s)
-    { return toLower!dstring(s); }
+    // FIXME: Remove this when v2.100.0 is stable
+    static if (__VERSION__ >= 2100)
+    {
+        string toLower(return scope string s)
+        { return toLower!string(s); }
+        wstring toLower(return scope wstring s)
+        { return toLower!wstring(s); }
+        dstring toLower(return scope dstring s)
+        { return toLower!dstring(s); }
+    }
+    else
+    {
+        string toLower(string s)
+        { return toLower!string(s); }
+        wstring toLower(wstring s)
+        { return toLower!wstring(s); }
+        dstring toLower(dstring s)
+        { return toLower!dstring(s); }
+    }
 
     @safe unittest
     {
@@ -10030,33 +10064,76 @@ dchar toUpper(dchar c)
     }
 }
 
-/++
-    Allocates a new array which is identical to `s` except that all of its
-    characters are converted to uppercase (by performing Unicode uppercase mapping).
-    If none of `s` characters were affected, then `s` itself is returned if `s`
-    is a `string`-like type.
-
-    Params:
-        s = A $(REF_ALTTEXT random access range, isRandomAccessRange, ripstd,range,primitives)
-        of characters
-    Returns:
-        An new array with the same element type as `s`.
-+/
-ElementEncodingType!S[] toUpper(S)(return scope S s) @trusted
-if (isSomeString!S)
+// FIXME: Remove this when v2.100.0 is stable
+static if (__VERSION__ >= 2100)
 {
-    static import ripstd.ascii;
-    return toCase!(UpperTriple, ripstd.ascii.toUpper)(s);
+    /++
+        Allocates a new array which is identical to `s` except that all of its
+        characters are converted to uppercase (by performing Unicode uppercase mapping).
+        If none of `s` characters were affected, then `s` itself is returned if `s`
+        is a `string`-like type.
+
+        Params:
+            s = A $(REF_ALTTEXT random access range, isRandomAccessRange, ripstd,range,primitives)
+            of characters
+        Returns:
+            An new array with the same element type as `s`.
+    +/
+    ElementEncodingType!S[] toUpper(S)(return scope S s) @trusted
+    if (isSomeString!S)
+    {
+        static import ripstd.ascii;
+        return toCase!(UpperTriple, ripstd.ascii.toUpper)(s);
+    }
+}
+else
+{
+    /++
+        Allocates a new array which is identical to `s` except that all of its
+        characters are converted to uppercase (by performing Unicode uppercase mapping).
+        If none of `s` characters were affected, then `s` itself is returned if `s`
+        is a `string`-like type.
+
+        Params:
+            s = A $(REF_ALTTEXT random access range, isRandomAccessRange, ripstd,range,primitives)
+            of characters
+        Returns:
+            An new array with the same element type as `s`.
+    +/
+    ElementEncodingType!S[] toUpper(S)(S s)
+    if (isSomeString!S || (isRandomAccessRange!S && hasLength!S && hasSlicing!S && isSomeChar!(ElementType!S)))
+    {
+        static import ripstd.ascii;
+
+        static if (isSomeString!S)
+            return () @trusted { return toCase!(UpperTriple, ripstd.ascii.toUpper)(s); } ();
+        else
+            return toCase!(UpperTriple, ripstd.ascii.toUpper)(s);
+    }
 }
 
 // overloads for the most common cases to reduce compile time
 @safe pure /*TODO nothrow*/
 {
-    string toUpper(return scope string s)
-    { return toUpper!string(s); }
-    wstring toUpper(return scope wstring s)
-    dstring toUpper(return scope dstring s)
-    { return toUpper!dstring(s); }
+    // FIXME: Remove this when v2.100.0 is stable
+    static if (__VERSION__ >= 2100)
+    {
+        string toUpper(return scope string s)
+        { return toUpper!string(s); }
+        wstring toUpper(return scope wstring s)
+        { return toUpper!wstring(s); }
+        dstring toUpper(return scope dstring s)
+        { return toUpper!dstring(s); }
+    }
+    else
+    {
+        string toUpper(string s)
+        { return toUpper!string(s); }
+        wstring toUpper(wstring s)
+        { return toUpper!wstring(s); }
+        dstring toUpper(dstring s)
+        { return toUpper!dstring(s); }
+    }
 
     @safe unittest
     {

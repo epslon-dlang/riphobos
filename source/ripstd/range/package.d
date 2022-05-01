@@ -235,7 +235,7 @@ public import ripstd.range.primitives;
 public import ripstd.typecons : Flag, Yes, No;
 
 import ripstd.internal.attributes : betterC;
-import ripstd.meta : allSatisfy, staticMap;
+import ripstd.meta : allSatisfy, anySatisfy, staticMap;
 import ripstd.traits : CommonType, isCallable, isFloatingPoint, isIntegral,
     isPointer, isSomeFunction, isStaticArray, Unqual, isInstanceOf;
 
@@ -13583,7 +13583,7 @@ $(REF ElementEncodingType, std,range,primitives)
 */
 template isSomeFiniteCharInputRange(R)
 {
-    import std.traits : isSomeChar;
+    import ripstd.traits : isSomeChar;
 
     enum isSomeFiniteCharInputRange = isInputRange!R && !isInfinite!R
         && isSomeChar!(ElementEncodingType!R);
@@ -13592,8 +13592,8 @@ template isSomeFiniteCharInputRange(R)
 ///
 @safe unittest
 {
-    import std.path : chainPath;
-    import std.range : chain;
+    import ripstd.path : chainPath;
+    import ripstd.range : chain;
 
     void someLibraryMethod(R)(R argument)
     if (isSomeFiniteCharInputRange!R)

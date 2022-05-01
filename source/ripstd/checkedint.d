@@ -1516,7 +1516,7 @@ struct Throw
         */
         this(T...)(string f, T vals)
         {
-            import std.format : format;
+            import ripstd.format : format;
             super(format(f, vals));
         }
     }

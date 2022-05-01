@@ -90,6 +90,7 @@ import ripstd.datetime.systime : Clock, SysTime, unixTimeToStdTime;
 import ripstd.internal.cstring;
 import ripstd.meta;
 import ripstd.range.primitives;
+import ripstd.range;
 import ripstd.traits;
 import ripstd.typecons;
 
@@ -5282,8 +5283,8 @@ string tempDir() @trusted
     // If we don't we end up with https://issues.dlang.org/show_bug.cgi?id=22738
     static string addSeparator(string input)
     {
-        import std.path : dirSeparator;
-        import std.algorithm.searching : endsWith;
+        import ripstd.path : dirSeparator;
+        import ripstd.algorithm.searching : endsWith;
 
         // It is very rare a directory path will reach this point with a directory separator at the end
         // However on OSX this can happen, so we must verify lest we break user code i.e. https://github.com/dlang/dub/pull/2208
@@ -5353,8 +5354,8 @@ string tempDir() @trusted
 
 @safe unittest
 {
-    import std.algorithm.searching : endsWith;
-    import std.path : dirSeparator;
+    import ripstd.algorithm.searching : endsWith;
+    import ripstd.path : dirSeparator;
     assert(tempDir.endsWith(dirSeparator));
 
     // https://issues.dlang.org/show_bug.cgi?id=22738

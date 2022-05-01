@@ -359,7 +359,7 @@ template QualifierOf(T)
     else
     {
         private enum quals = is(const T == T) | (is(inout T == T) << 1) | (is(shared T == T) << 2);
-        static if (quals == 0)      { import std.meta : Alias; alias QualifierOf = Alias; }
+        static if (quals == 0)      { import ripstd.meta : Alias; alias QualifierOf = Alias; }
         else static if (quals == 1) alias QualifierOf = ConstOf;
         else static if (quals == 2) alias QualifierOf = InoutOf;
         else static if (quals == 3) alias QualifierOf = ConstInoutOf;
@@ -377,7 +377,7 @@ template QualifierOf(T)
     static assert(__traits(isSame, QualifierOf!(immutable int), ImmutableOf));
     static assert(__traits(isSame, QualifierOf!(shared int), SharedOf));
     static assert(__traits(isSame, QualifierOf!(shared inout int), SharedInoutOf));
-    import std.meta : Alias;
+    import ripstd.meta : Alias;
     static assert(__traits(isSame, QualifierOf!(int), Alias));
 }
 
@@ -394,7 +394,7 @@ template QualifierOf(T)
 
 version (RIPStdUnittest)
 {
-    import std.meta : Alias;
+    import ripstd.meta : Alias;
     alias TypeQualifierList = AliasSeq!(Alias, ConstOf, SharedOf, SharedConstOf, ImmutableOf);
 
     struct SubTypeOf(T)
@@ -5985,7 +5985,7 @@ template DynamicArrayTypeOf(T)
 
 @safe unittest
 {
-    import std.meta : Alias;
+    import ripstd.meta : Alias;
     static foreach (T; AliasSeq!(/*void, */bool, NumericTypeList, /*ImaginaryTypeList, ComplexTypeList*/))
         static foreach (Q; AliasSeq!(TypeQualifierList, InoutOf, SharedInoutOf))
         {
@@ -6054,7 +6054,7 @@ template StringTypeOf(T)
 
 @safe unittest
 {
-    import std.meta : Alias;
+    import ripstd.meta : Alias;
     static foreach (T; CharTypeList)
         static foreach (Q; AliasSeq!(Alias, ConstOf, ImmutableOf, InoutOf))
         {
@@ -6707,7 +6707,7 @@ enum bool isNarrowString(T) = is(immutable T == immutable C[], C) && (is(C == ch
 
 @safe unittest
 {
-    import std.meta : Alias;
+    import ripstd.meta : Alias;
     static foreach (T; AliasSeq!(char[], string, wstring))
     {
         static foreach (Q; AliasSeq!(Alias, ConstOf, ImmutableOf)/*TypeQualifierList*/)
@@ -9104,7 +9104,7 @@ enum isCopyable(S) = __traits(isCopyable, S);
  * is the same as `T`. For pointer and slice types, it is `T` with the
  * outer-most layer of qualifiers dropped.
  */
-package(std) template DeducedParameterType(T)
+package(ripstd) template DeducedParameterType(T)
 {
     static if (is(T == U*, U) || is(T == U[], U))
         alias DeducedParameterType = Unqual!T;

@@ -926,30 +926,6 @@ private:
         return x;
     }
 
-    static T addRound(T)(uint rm)
-    {
-        pragma(inline, false) static void blockopt(ref T x) {}
-        pragma(inline, false);
-        FloatingPointControl fpctrl;
-        fpctrl.rounding = rm;
-        T x = 1;
-        blockopt(x); // avoid constant propagation by the optimizer
-        x += 0.1L;
-        return x;
-    }
-
-    static T subRound(T)(uint rm)
-    {
-        pragma(inline, false) static void blockopt(ref T x) {}
-        pragma(inline, false);
-        FloatingPointControl fpctrl;
-        fpctrl.rounding = rm;
-        T x = -1;
-        blockopt(x); // avoid constant propagation by the optimizer
-        x -= 0.1L;
-        return x;
-    }
-
     static foreach (T; AliasSeq!(float, double, real))
     {{
         /* Be careful with changing the rounding mode, it interferes

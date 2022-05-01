@@ -579,7 +579,7 @@ template Reverse(args...)
  */
 template MostDerived(T, TList...)
 {
-    import std.traits : Select;
+    import ripstd.traits : Select;
     alias MostDerived = T;
     static foreach (U; TList)
         MostDerived = Select!(is(U : MostDerived), U, MostDerived);

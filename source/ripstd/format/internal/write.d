@@ -169,7 +169,7 @@ if (is(IntegralTypeOf!T) && !is(T == enum) && !hasToString!(T, Char))
         auto raw = (ref val) @trusted {
             return (cast(const char*) &val)[0 .. val.sizeof];
         }(val);
-        import std.range.primitives : put;
+        import ripstd.range.primitives : put;
         if (needToSwapEndianess(f))
             foreach_reverse (c; raw)
                 put(w, c);
@@ -357,7 +357,7 @@ private uint baseOfSpec(in char spec) @safe pure
         || spec == 'g' || spec == 'G' ? 10 :
         0;
 
-    import std.format : enforceFmt;
+    import ripstd.format : enforceFmt;
     enforceFmt(base > 0,
         "incompatible format character for integral argument: %" ~ spec);
 
@@ -2172,7 +2172,7 @@ template hasToString(T, Char)
 // const toString methods
 @safe unittest
 {
-    import std.range.primitives : isOutputRange;
+    import ripstd.range.primitives : isOutputRange;
 
     static struct A
     {

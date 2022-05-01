@@ -3,9 +3,9 @@
 `Nullable` now offers an alternative 0 or 1 element range interface.
 
 ---
-import std.stdio;
-import std.algorithm;
-import std.typecons;
+import ripstd.stdio;
+import ripstd.algorithm;
+import ripstd.typecons;
 
 void printValues(Nullable!int[] values)
 {

@@ -5,10 +5,10 @@ example, it can be used in a range pipeline to give names to the elements of a
 $(REF Tuple, std, typecons):
 
 ---
-import std.stdio;
-import std.range;
-import std.algorithm;
-import std.functional;
+import ripstd.stdio;
+import ripstd.range;
+import ripstd.algorithm;
+import ripstd.functional;
 
 void printWithLineNumbers(File f)
 {

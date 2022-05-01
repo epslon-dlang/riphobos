@@ -33,9 +33,9 @@ pure @system unittest
     {
         float[] a0;
         {
-            import std.range : iota;
-            import std.array;
-            import std.algorithm.iteration : map;
+            import ripstd.range : iota;
+            import ripstd.array;
+            import ripstd.algorithm.iteration : map;
             a0 = iota (0, n).map!(i => i * 1.1f).array;
         }
 
@@ -47,7 +47,7 @@ pure @system unittest
 
             // I wish that I could write "assert(a1[] == a0[]);",
             // but the compiler complains: "Error: incompatible types for `(a1.opSlice()) == (a0[])`: `RangeT!(Array!float)` and `float[]`".
-            import std.algorithm.comparison : equal;
+            import ripstd.algorithm.comparison : equal;
             assert(equal(a1[], a0[]));
         }
 
@@ -306,7 +306,7 @@ private struct RangeT(A)
     enum : bool { display = false }
     static if (display)
     {
-        import std.stdio;
+        import ripstd.stdio;
         enum { nDigitsForPointer = 2 * size_t.sizeof, nDigitsForNObjects = 4 }
     }
 
@@ -441,7 +441,7 @@ if (!is(immutable T == immutable bool))
 
             static if (__traits(compiles, { static T _; }))
             {
-                import std.algorithm.mutation : initializeAll;
+                import ripstd.algorithm.mutation : initializeAll;
 
                 immutable startEmplace = length;
                 reserve(newLength);
@@ -1726,7 +1726,7 @@ if (!is(immutable T == immutable bool))
 @system unittest
 {
     import core.exception : AssertError;
-    import std.exception : assertThrown, assertNotThrown;
+    import ripstd.exception : assertThrown, assertNotThrown;
 
     struct NoDefaultCtor
     {
