@@ -1,7 +1,7 @@
 {
   "name": "riphobos",
   "description": "Fork of the D Standard Library",
-  "copyright": "Copyright \u00a9 2021, The D Language Epslon Community",
+  "copyright": "Copyright © 1999-2022, The D Language Foundation; Copyright \u00a9 2022, The D Language Epslon Community",
   "importPaths": [ "source" ],
   "sourcePaths": [ "source" ],
   "libs-posix": [
