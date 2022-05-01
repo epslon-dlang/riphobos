@@ -66,6 +66,7 @@ import ripstd.exception : basicExceptionCtors;
 import core.exception : UnicodeException;
 import ripstd.meta : AliasSeq;
 import ripstd.range.primitives;
+import ripstd.range;
 import ripstd.traits : isAutodecodableString, isPointer, isSomeChar,
     isSomeString, isStaticArray, Unqual, isConvertibleToString;
 import ripstd.typecons : Flag, Yes, No;
@@ -1211,7 +1212,7 @@ do
 
 @safe pure unittest // https://issues.dlang.org/show_bug.cgi?id=22867
 {
-    import std.conv : hexString;
+    import ripstd.conv : hexString;
     string data = hexString!"f787a598";
     size_t offset = 0;
     try data.decode(offset);

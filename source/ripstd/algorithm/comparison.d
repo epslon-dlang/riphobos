@@ -58,10 +58,10 @@ T2=$(TR $(TDNW $(LREF $1)) $(TD $+))
  */
 module ripstd.algorithm.comparison;
 
-import ripstd.functional : unaryFun, binaryFun;
+import ripstd.functional : unaryFun, binaryFun, lessThan, greaterThan;
 import ripstd.range.primitives;
 import ripstd.traits;
-import ripstd.meta : allSatisfy;
+import ripstd.meta : allSatisfy, anySatisfy;
 import ripstd.typecons : tuple, Tuple, Flag, Yes;
 
 import ripstd.internal.attributes : betterC;
@@ -580,7 +580,6 @@ T1 clamp(T1, T2, T3)(T1 val, T2 lower, T3 upper)
 if (is(typeof(val.lessThan(lower) ? lower : val.greaterThan(upper) ? upper : val) : T1))
 in
 {
-    import ripstd.functional : greaterThan;
     assert(!lower.greaterThan(upper), "Lower can't be greater than upper.");
 }
 do
@@ -999,7 +998,7 @@ template equal(alias pred = "a == b")
                 isAutodecodableString!(Ranges[0]) != isAutodecodableString!(Ranges[1]) &&
                 is(immutable ElementEncodingType!(Ranges[0]) == immutable ElementEncodingType!(Ranges[1])))
         {
-            import std.utf : byCodeUnit;
+            import ripstd.utf : byCodeUnit;
             static if (isAutodecodableString!(Ranges[0]))
                 return equal(rs[0].byCodeUnit, rs[1]);
             else
@@ -1066,8 +1065,8 @@ template equal(alias pred = "a == b")
 
 @safe @nogc unittest
 {
-    import std.algorithm.comparison : equal;
-    import std.math.operations : isClose;
+    import ripstd.algorithm.comparison : equal;
+    import ripstd.math.operations : isClose;
 
     auto s1 = "abc", s2 = "abc"w;
     assert(equal(s1, s2, s2));
@@ -1656,7 +1655,6 @@ if (T.length >= 2 && !is(CommonType!T == void))
         alias Result = CommonType!(T0, T1);
 
     // Perform the computation.
-    import ripstd.functional : lessThan;
     immutable chooseB = lessThan!(T0, T1)(a, b);
     return cast(Result) (chooseB ? b : a);
 }
@@ -1766,7 +1764,6 @@ if (T.length >= 2 && !is(CommonType!T == void))
         alias Result = CommonType!(T0, T1);
 
     // Engage!
-    import ripstd.functional : lessThan;
     immutable chooseB = lessThan!(T1, T0)(b, a);
     return cast(Result) (chooseB ? b : a);
 }
@@ -2191,7 +2188,7 @@ if (allSatisfy!(isInputRange, Ranges))
     auto r12 = new ReferenceInputRange!int([1, 2, 3, 4, 5, 6, 7, 8]);
     assert(!isSameLength(r11, r12));
 
-    import std.algorithm.iteration : filter;
+    import ripstd.algorithm.iteration : filter;
 
     assert(isSameLength(filter!"a >= 1"([1, 2, 3]), [4, 5, 6]));
     assert(!isSameLength(filter!"a > 1"([1, 2, 3]), [4, 5, 6]));

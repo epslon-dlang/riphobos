@@ -1717,7 +1717,7 @@ Complex!T log10(T)(Complex!T x) @safe pure nothrow @nogc
 
 @safe pure nothrow @nogc unittest
 {
-    import ripstd.math.constants : PI;
+    import ripstd.math.constants : LN10, PI;
     import ripstd.math.operations : isClose;
 
     auto a = log10(fromPolar(1.0, PI / 6.0));

@@ -485,13 +485,13 @@ if (isAutodecodableString!String)
     }
     static assert(hasLength!LyingRange);
     LyingRange rng;
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     assertThrown!Error(array(rng));
 }
 //https://issues.dlang.org/show_bug.cgi?id=22185
 @system unittest
 {
-    import std.stdio;
+    import ripstd.stdio;
     static struct ThrowingCopy
     {
         int x = 420;
@@ -535,7 +535,7 @@ if (isAutodecodableString!String)
         }
     }
     static assert(hasLength!LyingThrowingRange);
-    import std.exception : assertThrown;
+    import ripstd.exception : assertThrown;
     {
         assertThrown(array(LyingThrowingRange()));
     }

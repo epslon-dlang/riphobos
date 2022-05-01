@@ -488,7 +488,7 @@ all overloads of the `csvReader` function as shown below.
 */
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     string text = "76,26,22\n1,2\n3,4,5,6";
     auto records = text.csvReader!int(',', '"', true);
@@ -503,7 +503,7 @@ all overloads of the `csvReader` function as shown below.
 /// ditto
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     static struct Three
     {
@@ -525,7 +525,7 @@ all overloads of the `csvReader` function as shown below.
 /// ditto
 @safe unittest
 {
-    import std.algorithm.comparison : equal;
+    import ripstd.algorithm.comparison : equal;
 
     auto text = "Name,Occupation,Salary\r" ~
         "Joe,Carpenter,300000\nFred,Blacksmith\r\n";

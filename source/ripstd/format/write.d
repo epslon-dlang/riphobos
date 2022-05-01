@@ -1301,8 +1301,8 @@ void formatValue(Writer, T, Char)(auto ref Writer w, auto ref T val, scope const
         auto opEquals(State other) const { return state == other; }
     }
 
-    import std.array : appender;
-    import std.format.spec : singleSpec;
+    import ripstd.array : appender;
+    import ripstd.format.spec : singleSpec;
 
     auto writer = appender!string();
     const spec = singleSpec("%s");

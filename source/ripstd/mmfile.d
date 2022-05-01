@@ -728,11 +728,11 @@ version (linux)
 
 @system unittest
 {
-    import std.file : deleteme;
-    auto name = std.file.deleteme ~ "-test.tmp";
-    scope(exit) std.file.remove(name);
+    import ripstd.file : deleteme;
+    auto name = ripstd.file.deleteme ~ "-test.tmp";
+    scope(exit) ripstd.file.remove(name);
 
-    std.file.write(name, "abcd");
+    ripstd.file.write(name, "abcd");
     {
         scope MmFile mmf = new MmFile(name);
         string p;
@@ -754,7 +754,7 @@ version (linux)
         p = cast(string) mmf[0 .. 4];
         assert(p[2] == 'c');
     }
-    std.file.remove(name);
+    ripstd.file.remove(name);
     {
         scope MmFile mmf = new MmFile(name, MmFile.Mode.readWriteNew, 4, null);
         char[] p = cast(char[]) mmf[];
@@ -764,7 +764,7 @@ version (linux)
         assert(mmf[3] == '5');
     }
     {
-        string p = cast(string) std.file.read(name);
+        string p = cast(string) ripstd.file.read(name);
         assert(p[] == "1235");
     }
     {
@@ -777,7 +777,7 @@ version (linux)
         assert(cast(string) mmf[] == "5675");
     }
     {
-        string p = cast(string) std.file.read(name);
+        string p = cast(string) ripstd.file.read(name);
         assert(p[] == "5675");
     }
     {
@@ -789,10 +789,10 @@ version (linux)
         assert(cast(string) mmf[] == "9152");
     }
     {
-        string p = cast(string) std.file.read(name);
+        string p = cast(string) ripstd.file.read(name);
         assert(p[] == "9152");
     }
-    std.file.remove(name);
+    ripstd.file.remove(name);
     {
         scope MmFile mmf = new MmFile(name, MmFile.Mode.readWrite, 4, null);
         char[] p = cast(char[]) mmf[];
@@ -801,7 +801,7 @@ version (linux)
         assert(cast(string) mmf[] == "ab5d");
     }
     {
-        string p = cast(string) std.file.read(name);
+        string p = cast(string) ripstd.file.read(name);
         assert(p[] == "ab5d");
     }
     {
@@ -813,7 +813,7 @@ version (linux)
         assert(cast(string) mmf[] == "9152");
     }
     {
-        string p = cast(string) std.file.read(name);
+        string p = cast(string) ripstd.file.read(name);
         assert(p[] == "ab5d");
     }
 }

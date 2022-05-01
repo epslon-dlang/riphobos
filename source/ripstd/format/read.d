@@ -723,7 +723,7 @@ T unformatValue(T, Range, Char)(ref Range input, scope const ref FormatSpec!Char
 // https://issues.dlang.org/show_bug.cgi?id=18051
 @safe pure unittest
 {
-    import std.format : format;
+    import ripstd.format : format;
 
     enum Op { lt, gt, eq }
 

@@ -550,7 +550,7 @@ template outputRangeObject(E...) {
 /// Thrown when an interface method is not supported by the wrapped range
 class UnsupportedRangeMethod : Exception
 {
-    import std.exception : basicExceptionCtors;
+    import ripstd.exception : basicExceptionCtors;
 
     mixin basicExceptionCtors;
 }
@@ -607,7 +607,7 @@ class UnsupportedRangeMethod : Exception
 // https://issues.dlang.org/show_bug.cgi?id=19544
 @safe unittest
 {
-    import std.range : repeat;
+    import ripstd.range : repeat;
 
     static struct HasCC
     {

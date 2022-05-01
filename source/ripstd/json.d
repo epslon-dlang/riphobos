@@ -20,6 +20,7 @@ module ripstd.json;
 import ripstd.array;
 import ripstd.conv;
 import ripstd.range.primitives;
+import ripstd.range;
 import ripstd.traits;
 
 ///

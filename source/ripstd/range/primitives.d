@@ -2570,7 +2570,7 @@ package(ripstd) mixin template ImplementLength(alias member)
 
 @safe unittest
 {
-    import std.meta : AliasSeq;
+    import ripstd.meta : AliasSeq;
 
     foreach (alias E; AliasSeq!(noreturn, const(noreturn), immutable(noreturn) ))
     {

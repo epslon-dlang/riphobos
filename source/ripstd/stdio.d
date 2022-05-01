@@ -52,6 +52,7 @@ import ripstd.algorithm.mutation : copy;
 import ripstd.meta : allSatisfy;
 import ripstd.range.primitives : ElementEncodingType, empty, front,
     isBidirectionalRange, isInputRange, put;
+import ripstd.range;
 import ripstd.traits : isSomeChar, isSomeString, Unqual, isPointer;
 import ripstd.typecons : Flag, No, Yes;
 
@@ -1458,7 +1459,7 @@ Throws: `Exception` if the file is not opened.
     {
         import core.sys.windows.winbase : OVERLAPPED;
         import core.sys.windows.winnt : BOOL, ULARGE_INTEGER;
-        import std.windows.syserror : wenforce;
+        import ripstd.windows.syserror : wenforce;
 
         private BOOL lockImpl(alias F, Flags...)(ulong start, ulong length,
             Flags flags)

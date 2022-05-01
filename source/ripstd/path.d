@@ -99,6 +99,7 @@ module ripstd.path;
 import ripstd.file : getcwd;
 static import ripstd.meta;
 import ripstd.range.primitives;
+import ripstd.range;
 import ripstd.traits;
 
 version (OSX)

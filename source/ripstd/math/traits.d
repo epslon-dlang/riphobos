@@ -1,7 +1,7 @@
 // Written in the D programming language.
 
 /**
-This is a submodule of $(MREF std, math).
+This is a submodule of $(MREF ripstd, math).
 
 It contains several functions for introspection on numerical values.
 
@@ -9,7 +9,7 @@ Copyright: Copyright The D Language Foundation 2000 - 2011.
 License:   $(HTTP www.boost.org/LICENSE_1_0.txt, Boost License 1.0).
 Authors:   $(HTTP digitalmars.com, Walter Bright), Don Clugston,
            Conversion of CEPHES math library to D by Iain Buclaw and David Nadlinger
-Source: $(PHOBOSSRC std/math/traits.d)
+Source: $(PHOBOSSRC ripstd/math/traits.d)
 
 Macros:
     NAN = $(RED NAN)
