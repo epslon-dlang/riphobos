@@ -26,7 +26,7 @@ jobs:
       - name: Install D compiler
         uses: dlang-community/setup-dlang@v1
         with:
-          compiler: dmd-master
+          compiler: dmd-latest
 
       - name: Cache dub dependencies
         uses: actions/cache@v2
@@ -51,7 +51,7 @@ jobs:
       - name: Install D compiler
         uses: dlang-community/setup-dlang@v1
         with:
-          compiler: dmd-master
+          compiler: dmd-latest
 
       - name: Cache dub dependencies
         uses: actions/cache@v2
@@ -82,7 +82,7 @@ jobs:
       - name: Install D compiler
         uses: dlang-community/setup-dlang@v1
         with:
-          compiler: dmd-master
+          compiler: dmd-latest
 
       - name: Cache dub dependencies
         uses: actions/cache@v2
@@ -104,7 +104,7 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest, windows-latest, macOS-latest ]
-        dc: [ dmd-master, dmd-latest ] # dmd-latest, ldc-latest, ldc-master
+        dc: [ dmd-latest ] # dmd-latest, ldc-latest, ldc-master
         arch: [x86_64] # x86
 
     runs-on: ${{ matrix.os }}
