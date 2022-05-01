@@ -16,6 +16,8 @@ module ripstd.math.hardware;
 
 static import core.stdc.fenv;
 
+version (LDC) import ldc.attributes;
+
 version (X86)       version = X86_Any;
 version (X86_64)    version = X86_Any;
 version (PPC)       version = PPC_Any;
@@ -124,13 +126,19 @@ private:
         version (InlineAsm_X86_Any)
         {
             ushort sw;
-            asm pure nothrow @nogc { fstsw sw; }
+            version (LDC)
+                asm pure nothrow @nogc { "fstsw %0" : "=m" (sw); }
+            else
+                asm pure nothrow @nogc { fstsw sw; }
 
             // OR the result with the SSE2 status register (MXCSR).
             if (haveSSE)
             {
                 uint mxcsr;
-                asm pure nothrow @nogc { stmxcsr mxcsr; }
+                version (LDC)
+                    asm pure nothrow @nogc { "stmxcsr %0" : "=m" (mxcsr); }
+                else
+                    asm pure nothrow @nogc { stmxcsr mxcsr; }
                 return (sw | mxcsr) & EXCEPTIONS_MASK;
             }
             else return sw & EXCEPTIONS_MASK;
@@ -144,9 +152,29 @@ private:
             */
            assert(0, "Not yet supported");
         }
+        else version (PPC_Any)
+        {
+            return FloatingPointControl.getControlState();
+        }
+        else version (MIPS_Any)
+        {
+            return FloatingPointControl.getControlState();
+        }
+        else version (AArch64)
+        {
+            version (LDC)
+            {
+                uint fpsr;
+                asm pure nothrow @nogc { "mrs %0, FPSR" : "=r" (fpsr); }
+                return fpsr & 0x1F;
+            }
+            else
+               assert(0, "Not yet supported");
+        }
         else version (ARM)
         {
-            assert(false, "Not yet supported.");
+            const fpscr = FloatingPointControl.getControlState();
+            return fpscr & 0x1F;
         }
         else version (RISCV_Any)
         {
@@ -167,19 +195,71 @@ private:
     {
         version (InlineAsm_X86_Any)
         {
-            asm nothrow @nogc
-            {
-                fnclex;
-            }
+            version (LDC)
+                asm nothrow @nogc { "fnclex" : : : "fpsw"; }
+            else
+                asm nothrow @nogc { fnclex; }
 
             // Also clear exception flags in MXCSR, SSE's control register.
             if (haveSSE)
             {
                 uint mxcsr;
-                asm nothrow @nogc { stmxcsr mxcsr; }
+                version (LDC)
+                    asm nothrow @nogc { "stmxcsr %0" : "=m" (mxcsr); }
+                else
+                    asm nothrow @nogc { stmxcsr mxcsr; }
                 mxcsr &= ~EXCEPTIONS_MASK;
-                asm nothrow @nogc { ldmxcsr mxcsr; }
+                version (LDC)
+                    asm nothrow @nogc { "ldmxcsr %0" : : "m" (mxcsr) : "flags"; }
+                else
+                    asm nothrow @nogc { ldmxcsr mxcsr; }
             }
+        }
+        else version (PPC_Any)
+        {
+            version(LDC)
+            {
+                asm pure nothrow @nogc
+                {
+                    `mtfsb0 3
+                     mtfsb0 4
+                     mtfsb0 5
+                     mtfsb0 6
+                     mtfsb0 7
+                     mtfsb0 8
+                     mtfsb0 9
+                     mtfsb0 10
+                     mtfsb0 11
+                     mtfsb0 12`;
+                }
+            }
+            else
+                assert(0, "Not yet supported");
+        }
+        else version (MIPS_Any)
+        {
+            version (D_LP64) enum mask = 0xFFFFFF80u;
+            else             enum mask = 0xFF80u;
+
+            const newState = FloatingPointControl.getControlState() & mask;
+            FloatingPointControl.setControlState(newState);
+        }
+        else version (AArch64)
+        {
+            version(LDC)
+            {
+                uint fpsr;
+                asm pure nothrow @nogc { "mrs %0, FPSR" : "=r" (fpsr); }
+                fpsr &= ~0x1F;
+                asm pure nothrow @nogc { "msr FPSR, %0" : : "r" (fpsr); }
+            }
+            else
+                assert(0, "Not yet supported");
+        }
+        else version (ARM)
+        {
+            const fpscr = FloatingPointControl.getControlState();
+            FloatingPointControl.setControlState(fpscr & ~0x1F);
         }
         else version (RISCV_Any)
         {
@@ -235,37 +315,80 @@ public:
     @property bool invalid() @safe const { return (flags & INVALID_MASK) != 0; }
 }
 
-///
-@safe unittest
+version (LDC)
 {
-    import ripstd.math.traits : isNaN;
+    ///
+    @optStrategy("none")
+    @safe unittest
+    {
+        import ripstd.math.traits : isNaN;
 
-    static void func() {
-        int a = 10 * 10;
+        static void func() {
+            int a = 10 * 10;
+        }
+        real a = 3.5;
+        // Set all the flags to zero
+        resetIeeeFlags();
+        assert(!ieeeFlags.divByZero);
+        // Perform a division by zero.
+        a /= 0.0L;
+        assert(a == real.infinity);
+        assert(ieeeFlags.divByZero);
+        // Create a NaN
+        a *= 0.0L;
+        assert(ieeeFlags.invalid);
+        assert(isNaN(a));
+
+        // Check that calling func() has no effect on the
+        // status flags.
+        IeeeFlags f = ieeeFlags;
+        func();
+        assert(ieeeFlags == f);
     }
-    pragma(inline, false) static void blockopt(ref real x) {}
-    real a = 3.5;
-    // Set all the flags to zero
-    resetIeeeFlags();
-    assert(!ieeeFlags.divByZero);
-    blockopt(a); // avoid constant propagation by the optimizer
-    // Perform a division by zero.
-    a /= 0.0L;
-    assert(a == real.infinity);
-    assert(ieeeFlags.divByZero);
-    blockopt(a); // avoid constant propagation by the optimizer
-    // Create a NaN
-    a *= 0.0L;
-    assert(ieeeFlags.invalid);
-    assert(isNaN(a));
+} else
+{
+    ///
+    @safe unittest
+    {
+        import ripstd.math.traits : isNaN;
 
-    // Check that calling func() has no effect on the
-    // status flags.
-    IeeeFlags f = ieeeFlags;
-    func();
-    assert(ieeeFlags == f);
+        static void func() {
+            int a = 10 * 10;
+        }
+        pragma(inline, false) static void blockopt(ref real x) {}
+        real a = 3.5;
+        // Set all the flags to zero
+        resetIeeeFlags();
+        assert(!ieeeFlags.divByZero);
+        blockopt(a); // avoid constant propagation by the optimizer
+        // Perform a division by zero.
+        a /= 0.0L;
+        assert(a == real.infinity);
+        assert(ieeeFlags.divByZero);
+        blockopt(a); // avoid constant propagation by the optimizer
+        // Create a NaN
+        a *= 0.0L;
+        assert(ieeeFlags.invalid);
+        assert(isNaN(a));
+
+        // Check that calling func() has no effect on the
+        // status flags.
+        IeeeFlags f = ieeeFlags;
+        func();
+        assert(ieeeFlags == f);
+    }
 }
 
+version (LDC)
+{
+    // TODO: most likely issue #888 again, verify
+    // Linux x86_64: debug works, release fails
+    // Win64: debug and release fail
+    unittest {
+        pragma(msg, __FILE__, "(", __LINE__, "): ieeeFlags test disabled, see LDC Issue #888");
+    }
+}
+else
 @safe unittest
 {
     import ripstd.meta : AliasSeq;
@@ -318,20 +441,38 @@ void resetIeeeFlags() @trusted nothrow @nogc
     IeeeFlags.resetIeeeFlags();
 }
 
-///
-@safe unittest
+version (LDC)
 {
-    pragma(inline, false) static void blockopt(ref real x) {}
-    resetIeeeFlags();
-    real a = 3.5;
-    blockopt(a); // avoid constant propagation by the optimizer
-    a /= 0.0L;
-    blockopt(a); // avoid constant propagation by the optimizer
-    assert(a == real.infinity);
-    assert(ieeeFlags.divByZero);
+    ///
+    @optStrategy("none")
+    @safe unittest
+    {
+        resetIeeeFlags();
+        real a = 3.5;
+        a /= 0.0L;
+        assert(a == real.infinity);
+        assert(ieeeFlags.divByZero);
 
-    resetIeeeFlags();
-    assert(!ieeeFlags.divByZero);
+        resetIeeeFlags();
+        assert(!ieeeFlags.divByZero);
+    }
+} else
+{
+    ///
+    @safe unittest
+    {
+        pragma(inline, false) static void blockopt(ref real x) {}
+        resetIeeeFlags();
+        real a = 3.5;
+        blockopt(a); // avoid constant propagation by the optimizer
+        a /= 0.0L;
+        blockopt(a); // avoid constant propagation by the optimizer
+        assert(a == real.infinity);
+        assert(ieeeFlags.divByZero);
+
+        resetIeeeFlags();
+        assert(!ieeeFlags.divByZero);
+    }
 }
 
 /// Returns: snapshot of the current state of the floating-point status flags
@@ -340,24 +481,47 @@ void resetIeeeFlags() @trusted nothrow @nogc
    return IeeeFlags(IeeeFlags.getIeeeFlags());
 }
 
-///
-@safe nothrow unittest
+version (LDC)
 {
-    import ripstd.math.traits : isNaN;
+    ///
+    @optStrategy("none")
+    @safe nothrow unittest
+    {
+        import ripstd.math.traits : isNaN;
 
-    pragma(inline, false) static void blockopt(ref real x) {}
-    resetIeeeFlags();
-    real a = 3.5;
-    blockopt(a); // avoid constant propagation by the optimizer
+        resetIeeeFlags();
+        real a = 3.5;
 
-    a /= 0.0L;
-    assert(a == real.infinity);
-    assert(ieeeFlags.divByZero);
-    blockopt(a); // avoid constant propagation by the optimizer
+        a /= 0.0L;
+        assert(a == real.infinity);
+        assert(ieeeFlags.divByZero);
 
-    a *= 0.0L;
-    assert(isNaN(a));
-    assert(ieeeFlags.invalid);
+        a *= 0.0L;
+        assert(isNaN(a));
+        assert(ieeeFlags.invalid);
+    }
+}
+else
+{
+    ///
+    @safe nothrow unittest
+    {
+        import ripstd.math.traits : isNaN;
+
+        pragma(inline, false) static void blockopt(ref real x) {}
+        resetIeeeFlags();
+        real a = 3.5;
+        blockopt(a); // avoid constant propagation by the optimizer
+
+        a /= 0.0L;
+        assert(a == real.infinity);
+        assert(ieeeFlags.divByZero);
+        blockopt(a); // avoid constant propagation by the optimizer
+
+        a *= 0.0L;
+        assert(isNaN(a));
+        assert(ieeeFlags.invalid);
+    }
 }
 
 } // IeeeFlagsSupport
@@ -756,7 +920,39 @@ private:
     // Clear all pending exceptions
     static void clearExceptions() @safe
     {
-        version (IeeeFlagsSupport)
+        version (LDC)
+        {
+            version (X86_Any)
+            {
+                resetIeeeFlags();
+            }
+            else version (PPC_Any)
+            {
+                asm pure nothrow @nogc @safe
+                {
+                    `mtfsb0 24
+                     mtfsb0 25
+                     mtfsb0 26
+                     mtfsb0 27
+                     mtfsb0 28`;
+                }
+            }
+            else version (MIPS_Any)
+            {
+                version (D_LP64) enum mask = 0xFFFFF07Fu;
+                else             enum mask = 0xF07Fu;
+
+                const cs = getControlState();
+                setControlState(cs & mask);
+            }
+            else version (ARM_Any)
+            {
+                resetIeeeFlags();
+            }
+            else
+                static assert(false, "Not implemented for this architecture");
+        }
+        else version (IeeeFlagsSupport)
             resetIeeeFlags();
         else
             static assert(false, "Not implemented for this architecture");
@@ -765,7 +961,62 @@ private:
     // Read from the control register
     package(ripstd.math) static ControlState getControlState() @trusted pure
     {
-        version (D_InlineAsm_X86)
+        version (LDC)
+        {
+            ControlState cont;
+
+            version (X86)
+            {
+                asm pure nothrow @nogc
+                {
+                    `xor %%eax, %%eax
+                     fstcw %0`
+                    : "=m" (cont)
+                    :
+                    : "eax";
+                }
+            }
+            else version (X86_64)
+            {
+                asm pure nothrow @nogc
+                {
+                    `xor %%rax, %%rax
+                     fstcw %0`
+                    : "=m" (cont)
+                    :
+                    : "rax";
+                }
+            }
+            else version (PPC_Any)
+            {
+                double fspr;
+                asm pure nothrow @nogc { "mffs %0" : "=f" (fspr); }
+                cont = cast(ControlState) *cast(ulong*) &fspr;
+            }
+            else version (MIPS_Any)
+            {
+                asm pure nothrow @nogc
+                {
+                    `.set noat
+                     cfc1 %0, $31
+                     .set at`
+                    : "=r" (cont);
+                }
+            }
+            else version (AArch64)
+            {
+                asm pure nothrow @nogc { "mrs %0, FPCR" : "=r" (cont); }
+            }
+            else version (ARM)
+            {
+                asm pure nothrow @nogc { "vmrs %0, FPSCR" : "=r" (cont); }
+            }
+            else
+                assert(0, "Not yet supported");
+
+            return cont;
+        }
+        else version (D_InlineAsm_X86)
         {
             short cont;
             asm pure nothrow @nogc
@@ -805,17 +1056,34 @@ private:
     {
         version (InlineAsm_X86_Any)
         {
-            asm nothrow @nogc
+            version (LDC)
             {
-                fclex;
-                fldcw newState;
+                asm nothrow @nogc
+                {
+                    `fclex
+                     fldcw %0`
+                    :
+                    : "m" (newState)
+                    : "fpsw";
+                }
+            }
+            else
+            {
+                asm nothrow @nogc
+                {
+                    fclex;
+                    fldcw newState;
+                }
             }
 
             // Also update MXCSR, SSE's control register.
             if (haveSSE)
             {
                 uint mxcsr;
-                asm nothrow @nogc { stmxcsr mxcsr; }
+                version (LDC)
+                    asm nothrow @nogc { "stmxcsr %0" : "=m" (mxcsr); }
+                else
+                    asm nothrow @nogc { stmxcsr mxcsr; }
 
                 /* In the FPU control register, rounding mode is in bits 10 and
                 11. In MXCSR it's in bits 13 and 14. */
@@ -827,7 +1095,10 @@ private:
                 mxcsr &= ~(allExceptions << 7);            // delete old masks
                 mxcsr |= (newState & allExceptions) << 7;  // write new exception masks
 
-                asm nothrow @nogc { ldmxcsr mxcsr; }
+                version (LDC)
+                    asm nothrow @nogc { "ldmxcsr %0" : : "m" (mxcsr) : "flags"; }
+                else
+                    asm nothrow @nogc { ldmxcsr mxcsr; }
             }
         }
         else version (RISCV_Any)
@@ -838,6 +1109,36 @@ private:
                 "fscsr %0" : : "r" (newState);
             }
             `);
+        }
+        else version (LDC)
+        {
+            version (PPC_Any)
+            {
+                ulong tmpState = newState;
+                double fspr = *cast(double*) &tmpState;
+                asm nothrow @nogc { "mtfsf 0x0f, %0" : : "f" (fspr); }
+            }
+            else version (MIPS_Any)
+            {
+                asm nothrow @nogc
+                {
+                    `.set noat
+                     ctc1 %0, $31
+                     .set at`
+                    :
+                    : "r" (newState);
+                }
+            }
+            else version (AArch64)
+            {
+                asm nothrow @nogc { "msr FPCR, %0" : : "r" (newState); }
+            }
+            else version (ARM)
+            {
+                asm nothrow @nogc { "vmsr FPSCR, %0" : : "r" (newState); }
+            }
+            else
+                assert(0, "Not yet supported");
         }
         else
             assert(0, "Not yet supported");
@@ -898,6 +1199,16 @@ private:
     ensureDefaults();
 }
 
+version (LDC)
+{
+    // TODO: most likely issue #888 again, verify
+    // Linux x86_64: debug works, release fails
+    // Win64: debug and release fail
+    unittest {
+        pragma(msg, __FILE__, "(", __LINE__, "): ieeeFlags test disabled, see LDC Issue #888");
+    }
+}
+else
 @safe unittest // rounding
 {
     import ripstd.meta : AliasSeq;
