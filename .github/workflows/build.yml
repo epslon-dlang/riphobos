@@ -21,7 +21,7 @@ jobs:
           compiler: dmd-latest
 
       - name: Cache dub dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.dub/
@@ -46,7 +46,7 @@ jobs:
           compiler: dmd-latest
 
       - name: Cache dub dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.dub/
@@ -78,7 +78,7 @@ jobs:
 
       - name: '[POSIX] Cache dub dependencies'
         if: runner.os != 'Windows'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.dub
@@ -89,7 +89,7 @@ jobs:
 
       - name: '[Windows] Cache dub dependencies'
         if: runner.os == 'Windows'
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~\AppData\Local\dub
