@@ -104,11 +104,13 @@ module ripstd.digest.sha;
 version (D_InlineAsm_X86)
 {
     version (D_PIC) {} // https://issues.dlang.org/show_bug.cgi?id=9378
+    version (LDC) {} // FIXME: Tests fail on LDC
     else private version = USE_SSSE3;
 }
 else version (D_InlineAsm_X86_64)
 {
-    private version = USE_SSSE3;
+    version (LDC) {} // FIXME: Tests fail on LDC
+    else private version = USE_SSSE3;
 }
 
 import core.bitop;

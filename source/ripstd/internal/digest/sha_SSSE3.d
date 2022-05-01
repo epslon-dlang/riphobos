@@ -18,6 +18,7 @@ module ripstd.internal.digest.sha_SSSE3;
 version (D_InlineAsm_X86)
 {
     version (D_PIC) {} // https://issues.dlang.org/show_bug.cgi?id=9378
+    version (LDC) {} // FIXME: Tests fail on LDC
     else
     {
         private version = USE_SSSE3;
@@ -26,8 +27,12 @@ version (D_InlineAsm_X86)
 }
 else version (D_InlineAsm_X86_64)
 {
-    private version = USE_SSSE3;
-    private version = _64Bit;
+    version (LDC) {} // FIXME: Tests fail on LDC
+    else
+    {
+        private version = USE_SSSE3;
+        private version = _64Bit;
+    }
 }
 
 /*
