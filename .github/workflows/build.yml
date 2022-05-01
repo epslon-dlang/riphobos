@@ -44,37 +44,6 @@ jobs:
           # FIXME: Enable linting when all files are conformant
           # dub run dscanner -- --styleCheck source/
 
-  dfmt:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install D compiler
-        uses: dlang-community/setup-dlang@v1
-        with:
-          compiler: dmd-latest
-
-      - name: Cache dub dependencies
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.dub/
-            ./.dub/
-          key: linux-dub-${{ hashFiles('dub.selections.json') }}
-          restore-keys: |
-            linux-dub-
-
-      # FIXME: Make all files conformant with D style
-      - name: Check dfmt
-        run: |
-          dub run dfmt -- -c . source/
-      #     for file in `git diff --name-only | grep ".d$"`; do
-      #       echo "File '$file' need to be formatted."
-      #       DFMT_FILE_FOUND=1
-      #     done
-      #     if [ "$DFMT_FILE_FOUND" == "1" ]; then
-      #       exit 1;
-      #     fi
-
   docs:
     runs-on: ubuntu-latest
     steps:
