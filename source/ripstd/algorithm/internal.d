@@ -62,4 +62,6 @@ version (RIPStdUnittest)
     }
 }
 
+// Used instead of `&object.member` when `member` may be
+// either a field or a @property function.
 package(ripstd) T* addressOf(T)(ref T val) { return &val; }
