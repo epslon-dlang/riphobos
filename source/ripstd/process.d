@@ -300,10 +300,9 @@ static:
         }
         else version (Windows)
         {
-            import ripstd.exception : enforce;
-            enforce(
+            import ripstd.windows.syserror : wenforce;
+            wenforce(
                 SetEnvironmentVariableW(name.tempCStringW(), value.tempCStringW()),
-                sysErrorString(GetLastError())
             );
             return value;
         }
@@ -1331,7 +1330,7 @@ private Pid spawnProcessWin(scope const(char)[] commandLine,
                 {
                     throw new StdioException(
                         "Failed to make "~which~" stream inheritable by child process ("
-                        ~sysErrorString(GetLastError()) ~ ')',
+                        ~generateSysErrorMsg() ~ ')',
                         0);
                 }
             }
@@ -2776,7 +2775,7 @@ Pipe pipe() @trusted //TODO: @safe
     if (!CreatePipe(&readHandle, &writeHandle, null, 0))
     {
         throw new StdioException(
-            "Error creating pipe (" ~ sysErrorString(GetLastError()) ~ ')',
+            "Error creating pipe (" ~ generateSysErrorMsg() ~ ')',
             0);
     }
 
@@ -3476,7 +3475,7 @@ class ProcessException : Exception
                                              string file = __FILE__,
                                              size_t line = __LINE__)
     {
-        auto lastMsg = sysErrorString(GetLastError());
+        auto lastMsg = generateSysErrorMsg();
         auto msg = customMsg.empty ? lastMsg
                                    : customMsg ~ " (" ~ lastMsg ~ ')';
         return new ProcessException(msg, file, line);
