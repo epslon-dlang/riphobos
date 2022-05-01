@@ -75,6 +75,7 @@
  *           $(LREF SharedOf)
  *           $(LREF SharedInoutOf)
  *           $(LREF SharedConstOf)
+ *           $(LREF SharedConstInoutOf)
  *           $(LREF ImmutableOf)
  *           $(LREF QualifierOf)
  * ))
@@ -181,9 +182,6 @@ alias staticMap = staticMapMeta;
 // Type lists
 ///////////////////////////////////////////////////////////////////////////////
 
-// Petit demangler
-// (this or similar thing will eventually go to ripstd.demangle if necessary
-//  ctfe stuffs are available)
 private
 {
     static if (is(ucent))
@@ -209,22 +207,13 @@ private
     alias CharTypeList          = AliasSeq!(char, wchar, dchar);
 }
 
-package
-{
-    // Add the mutable qualifier to the given type T.
-    template MutableOf(T)     { alias MutableOf     =              T  ; }
-}
-
 /**
  * Params:
  *     T = The type to qualify
  * Returns:
  *     `T` with the `inout` qualifier added.
  */
-template InoutOf(T)
-{
-    alias InoutOf = inout(T);
-}
+alias InoutOf(T) = inout(T);
 
 ///
 @safe unittest
@@ -241,10 +230,7 @@ template InoutOf(T)
  * Returns:
  *     `T` with the `const` qualifier added.
  */
-template ConstOf(T)
-{
-    alias ConstOf = const(T);
-}
+alias ConstOf(T) = const(T);
 
 ///
 @safe unittest
@@ -261,10 +247,7 @@ template ConstOf(T)
  * Returns:
  *     `T` with the `shared` qualifier added.
  */
-template SharedOf(T)
-{
-    alias SharedOf = shared(T);
-}
+alias SharedOf(T) = shared(T);
 
 ///
 @safe unittest
@@ -281,10 +264,7 @@ template SharedOf(T)
  * Returns:
  *     `T` with the `inout` and `shared` qualifiers added.
  */
-template SharedInoutOf(T)
-{
-    alias SharedInoutOf = shared(inout(T));
-}
+alias SharedInoutOf(T) = shared(inout(T));
 
 ///
 @safe unittest
@@ -302,10 +282,7 @@ template SharedInoutOf(T)
  * Returns:
  *     `T` with the `const` and `shared` qualifiers added.
  */
-template SharedConstOf(T)
-{
-    alias SharedConstOf = shared(const(T));
-}
+alias SharedConstOf(T) = shared(const(T));
 
 ///
 @safe unittest
@@ -322,12 +299,27 @@ template SharedConstOf(T)
  * Params:
  *     T = The type to qualify
  * Returns:
+ *     `T` with the `const`, `shared`, and `inout` qualifiers added.
+ */
+alias SharedConstInoutOf(T) = shared(const(inout(T)));
+
+///
+@safe unittest
+{
+    static assert(is(SharedConstInoutOf!(int) == shared const inout int));
+    static assert(is(SharedConstInoutOf!(int) == const shared inout int));
+    static assert(is(SharedConstInoutOf!(inout int) == shared inout const int));
+    // immutable variables are implicitly shared and const
+    static assert(is(SharedConstInoutOf!(immutable int) == immutable int));
+}
+
+/**
+ * Params:
+ *     T = The type to qualify
+ * Returns:
  *     `T` with the `immutable` qualifier added.
  */
-template ImmutableOf(T)
-{
-    alias ImmutableOf = immutable(T);
-}
+alias ImmutableOf(T) = immutable(T);
 
 ///
 @safe unittest
@@ -340,7 +332,6 @@ template ImmutableOf(T)
 
 @safe unittest
 {
-    static assert(is(    MutableOf!int ==              int));
     static assert(is(      InoutOf!int ==        inout int));
     static assert(is(      ConstOf!int ==        const int));
     static assert(is(     SharedOf!int == shared       int));
@@ -361,28 +352,33 @@ template ImmutableOf(T)
  */
 template QualifierOf(T)
 {
-    static if (is(T == shared(const U), U))
-        alias QualifierOf = SharedConstOf;
-    else static if (is(T == const U, U))
-        alias QualifierOf = ConstOf;
-    else static if (is(T == shared(inout U), U))
-        alias QualifierOf = SharedInoutOf;
-    else static if (is(T == inout U, U))
-        alias QualifierOf = InoutOf;
-    else static if (is(T == immutable U, U))
+    static if (is(immutable T == T))
+    {
         alias QualifierOf = ImmutableOf;
-    else static if (is(T == shared U, U))
-        alias QualifierOf = SharedOf;
+    }
     else
-        alias QualifierOf = MutableOf;
+    {
+        private enum quals = is(const T == T) | (is(inout T == T) << 1) | (is(shared T == T) << 2);
+        static if (quals == 0)      { import std.meta : Alias; alias QualifierOf = Alias; }
+        else static if (quals == 1) alias QualifierOf = ConstOf;
+        else static if (quals == 2) alias QualifierOf = InoutOf;
+        else static if (quals == 3) alias QualifierOf = ConstInoutOf;
+        else static if (quals == 4) alias QualifierOf = SharedOf;
+        else static if (quals == 5) alias QualifierOf = SharedConstOf;
+        else static if (quals == 6) alias QualifierOf = SharedInoutOf;
+        else                        alias QualifierOf = SharedConstInoutOf;
+    }
 }
 
 ///
 @safe unittest
 {
+    static assert(__traits(isSame, QualifierOf!(shared const inout int), SharedConstInoutOf));
     static assert(__traits(isSame, QualifierOf!(immutable int), ImmutableOf));
     static assert(__traits(isSame, QualifierOf!(shared int), SharedOf));
     static assert(__traits(isSame, QualifierOf!(shared inout int), SharedInoutOf));
+    import std.meta : Alias;
+    static assert(__traits(isSame, QualifierOf!(int), Alias));
 }
 
 @safe unittest
@@ -398,7 +394,8 @@ template QualifierOf(T)
 
 version (RIPStdUnittest)
 {
-    alias TypeQualifierList = AliasSeq!(MutableOf, ConstOf, SharedOf, SharedConstOf, ImmutableOf);
+    import std.meta : Alias;
+    alias TypeQualifierList = AliasSeq!(Alias, ConstOf, SharedOf, SharedConstOf, ImmutableOf);
 
     struct SubTypeOf(T)
     {
@@ -6019,13 +6016,14 @@ template DynamicArrayTypeOf(T)
 
 @safe unittest
 {
+    import std.meta : Alias;
     static foreach (T; AliasSeq!(/*void, */bool, NumericTypeList, /*ImaginaryTypeList, ComplexTypeList*/))
         static foreach (Q; AliasSeq!(TypeQualifierList, InoutOf, SharedInoutOf))
         {
             static assert(is( Q!T[]  == DynamicArrayTypeOf!( Q!T[] ) ));
             static assert(is( Q!(T[])  == DynamicArrayTypeOf!( Q!(T[]) ) ));
 
-            static foreach (P; AliasSeq!(MutableOf, ConstOf, ImmutableOf))
+            static foreach (P; AliasSeq!(Alias, ConstOf, ImmutableOf))
             {
                 static assert(is( Q!(P!T[]) == DynamicArrayTypeOf!( Q!(SubTypeOf!(P!T[])) ) ));
                 static assert(is( Q!(P!(T[])) == DynamicArrayTypeOf!( Q!(SubTypeOf!(P!(T[]))) ) ));
@@ -6087,8 +6085,9 @@ template StringTypeOf(T)
 
 @safe unittest
 {
+    import std.meta : Alias;
     static foreach (T; CharTypeList)
-        static foreach (Q; AliasSeq!(MutableOf, ConstOf, ImmutableOf, InoutOf))
+        static foreach (Q; AliasSeq!(Alias, ConstOf, ImmutableOf, InoutOf))
         {
             static assert(is(Q!T[] == StringTypeOf!( Q!T[] )));
 
@@ -6733,9 +6732,10 @@ enum bool isNarrowString(T) = is(immutable T == immutable C[], C) && (is(C == ch
 
 @safe unittest
 {
+    import std.meta : Alias;
     static foreach (T; AliasSeq!(char[], string, wstring))
     {
-        static foreach (Q; AliasSeq!(MutableOf, ConstOf, ImmutableOf)/*TypeQualifierList*/)
+        static foreach (Q; AliasSeq!(Alias, ConstOf, ImmutableOf)/*TypeQualifierList*/)
         {
             static assert( isNarrowString!(            Q!T  ));
             static assert(!isNarrowString!( SubTypeOf!(Q!T) ));

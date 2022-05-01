@@ -5826,6 +5826,8 @@ if ((radix == 2 || radix == 8 || radix == 10 || radix == 16) &&
 
     assert(toChars(123) == toChars(123));
 
+    assert(toChars(123) == toChars(123));
+
     {
         assert(toChars!2(0u).array == "0");
         assert(toChars!2(0Lu).array == "0");

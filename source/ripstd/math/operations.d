@@ -1766,16 +1766,14 @@ if (isFloatingPoint!T)
                 ret.mantissa = tmp & long.max;
             }
 
-            double d = cast(double) val;
-            ulong ival = *cast(ulong*) &d;
-            if ((ival >> 63) & 1) ret.negative = true;
+            ret.negative = (signbit(val) == 1);
         }
         else
         {
             ushort* vs = cast(ushort*) &val;
-            ret.mantissa = (cast(ulong*) vs)[0] & ((1L << 63) - 1);
-            ret.exponent = vs[4] & 32767;
-            if ((vs[4] >> 15) & 1) ret.negative = true;
+            ret.mantissa = (cast(ulong*) vs)[0] & long.max;
+            ret.exponent = vs[4] & short.max;
+            ret.negative = (vs[4] >> 15) & 1;
         }
     }
     else
