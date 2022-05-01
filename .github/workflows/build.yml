@@ -114,7 +114,7 @@ jobs:
 
       # Don't build dynamic libraries using DMD for Windows
       - name: Build dynamic library
-        if: runner.os != 'Windows' || (runner.os == 'Windows' && !(startsWith(matrix.dc, 'dmd-')))
+        if: runner.os != 'Windows'
         run: |
           dub build --build=debug --config=shared --arch=${{ matrix.arch }} --parallel --build-mode=singleFile --force -v
           dub build --build=release --config=shared --arch=${{ matrix.arch }} --parallel --build-mode=singleFile --force -v
