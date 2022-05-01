@@ -1,24 +1,32 @@
+---
+
 repos:
--   repo: https://github.com/pre-commit/pre-commit-hooks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.2.0
     hooks:
-    - id: trailing-whitespace
-    - id: end-of-file-fixer
-    - id: check-json
-    - id: check-yaml
-    - id: sort-simple-yaml
-    - id: check-xml
-    - id: check-merge-conflict
-    - id: check-ast
-    - id: check-shebang-scripts-are-executable
-    - id: check-toml
-    - id: destroyed-symlinks
-    - id: detect-private-key
-    - id: fix-encoding-pragma
-    - id: no-commit-to-branch
-      args: [--branch, main]
-    - id: pretty-format-json
-      args: [--autofix, --no-sort-keys]
-      exclude: 'dub\.json$'
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-json
+      - id: check-yaml
+      - id: sort-simple-yaml
+      - id: check-xml
+      - id: check-merge-conflict
+      - id: check-ast
+      - id: check-shebang-scripts-are-executable
+      - id: check-toml
+      - id: destroyed-symlinks
+      - id: detect-private-key
+      - id: fix-encoding-pragma
+      - id: no-commit-to-branch
+        args: [--branch, main]
+      - id: pretty-format-json
+        args: [--autofix, --no-sort-keys]
+        exclude: 'dub\.json$'
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.8.0.4
+    hooks:
+      - id: shellcheck
+        args:
+          - "--exclude=1071,1090,1091,2001"
 ci:
-    autofix_prs: false
+  autofix_prs: false
