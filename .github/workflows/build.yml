@@ -148,7 +148,7 @@ jobs:
       #   run: dub test --build=${{ matrix.build_type }} --config=unittest-cov-threaded --arch=${{ matrix.arch }} --parallel --force -v -- --DRT-covopt="merge:1"
 
       - name: Upload code coverage to codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: unittests
