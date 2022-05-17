@@ -41,7 +41,7 @@
       "name": "unittest-threaded",
       "versions": [ "RIPStdUnittest" ],
       "dependencies": {
-        "aurorafw:unit": "~>0.0.1-alpha.4"
+        "silly": "~>1.2.0-dev.1"
       },
       "buildOptions": ["unittests", "lowmem"],
       "buildRequirements": ["silenceDeprecations"]
@@ -50,7 +50,7 @@
       "name": "unittest-cov-threaded",
       "versions": [ "RIPStdUnittest" ],
       "dependencies": {
-        "aurorafw:unit": "~>0.0.1-alpha.4"
+        "silly": "~>1.2.0-dev.1"
       },
       "buildOptions": ["unittests", "coverage", "lowmem"],
       "buildRequirements": ["silenceDeprecations"]
