@@ -3072,11 +3072,20 @@ version (RIPStdUnittest) private struct CountOverflows
     assert(x1.hook.calls == 1);
     assert(x1 << 2 == 42 << 2);
     assert(x1.hook.calls == 1);
-    assert(x1 << 42 == x1.get << x1.get);
-    assert(x1.hook.calls == 2);
+    version (LDC)
+    {
+        // this test relies on undefined behaviour that fails for LDC with
+        // optimizations enabled
+    }
+    else
+    {
+        assert(x1 << 42 == x1.get << x1.get);
+        assert(x1.hook.calls == 2);
+    }
+    uint pcalls = x1.hook.calls;
     x1 = int.min;
     assert(x1 - 1 == int.max);
-    assert(x1.hook.calls == 3);
+    assert(x1.hook.calls == pcalls + 1);
 
     auto x2 = Checked!(int, CountOpBinary)(42);
     assert(x2 + 1 == 43);
