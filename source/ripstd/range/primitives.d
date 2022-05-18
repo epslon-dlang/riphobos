@@ -1760,7 +1760,7 @@ if (isInputRange!Range && !isInfinite!Range)
     else
     {
         size_t result;
-        static if (autodecodeStrings && isNarrowString!Range)
+        static if (isAutodecodableString!string && isNarrowString!Range)
         {
             import ripstd.utf : codeUnitLimit;
             result = range.length;
@@ -1790,7 +1790,7 @@ if (isInputRange!Range)
     else
     {
         size_t result;
-        static if (autodecodeStrings && isNarrowString!Range)
+        static if (isAutodecodableString!string && isNarrowString!Range)
         {
             import ripstd.utf : codeUnitLimit;
             result = upTo > range.length ? range.length : upTo;

@@ -671,7 +671,7 @@ if (isInputRange!Values && isInputRange!Keys)
 {
     import ripstd.range : repeat, zip;
     import ripstd.typecons : tuple;
-    import ripstd.range.primitives : autodecodeStrings;
+    import ripstd.traits : isAutodecodableString;
     auto a = assocArray(zip([0, 1, 2], ["a", "b", "c"])); // aka zipMap
     static assert(is(typeof(a) == string[int]));
     assert(a == [0:"a", 1:"b", 2:"c"]);
@@ -680,7 +680,7 @@ if (isInputRange!Values && isInputRange!Keys)
     static assert(is(typeof(b) == string[string]));
     assert(b == ["foo":"bar", "baz":"quux"]);
 
-    static if (autodecodeStrings)
+    static if (isAutodecodableString!string)
         alias achar = dchar;
     else
         alias achar = immutable(char);
@@ -729,11 +729,11 @@ if (isInputRange!Values && isInputRange!Keys)
 {
     import ripstd.algorithm.iteration : filter, map;
     import ripstd.range : enumerate;
-    import ripstd.range.primitives : autodecodeStrings;
+    import ripstd.traits : isAutodecodableString;
 
     auto r = "abcde".enumerate.filter!(a => a.index == 2);
     auto a = assocArray(r.map!(a => a.value), r.map!(a => a.index));
-    static if (autodecodeStrings)
+    static if (isAutodecodableString!string)
         alias achar = dchar;
     else
         alias achar = immutable(char);
@@ -2229,7 +2229,7 @@ ElementEncodingType!(ElementType!RoR)[] join(RoR, E)(RoR ror, scope E sep)
 if (isInputRange!RoR &&
     isInputRange!(Unqual!(ElementType!RoR)) &&
     ((is(E : ElementType!(ElementType!RoR))) ||
-     (!autodecodeStrings && isSomeChar!(ElementType!(ElementType!RoR)) &&
+     (!isAutodecodableString!string && isSomeChar!(ElementType!(ElementType!RoR)) &&
       isSomeChar!E)))
 {
     alias RetType = typeof(return);
@@ -2379,7 +2379,6 @@ if (isInputRange!RoR &&
 @safe pure unittest
 {
     import ripstd.conv : to;
-    import ripstd.range.primitives : autodecodeStrings;
 
     static foreach (T; AliasSeq!(string,wstring,dstring))
     {{

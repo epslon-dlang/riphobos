@@ -3997,7 +3997,7 @@ if ((isConvertibleToString!R && !isStaticArray!R) ||
         assert(bcu.front == 't');
     }
 
-    static if (autodecodeStrings)
+    static if (isAutodecodableString!string)
     {
         static assert(!is(typeof(byCodeUnit("hello")) == string));
         static assert(!is(typeof(byCodeUnit("hello"w)) == wstring));
