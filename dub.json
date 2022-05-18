@@ -13,7 +13,7 @@
   "targetPath": "generated",
   "targetType": "library",
   "authors": [ "DLang Community" ],
-  "dflags": [ "-preview=dip1000", "-preview=dtorfields", "-preview=fieldwise" ],
+  "dflags": [ "-preview=dip1000", "-preview=dtorfields", "-preview=fieldwise", "-checkaction=context" ],
   "buildRequirements": [ "disallowDeprecations" ],
   "buildOptions": [ "warningsAsErrors", "deprecationErrors"],
   "configurations": [
