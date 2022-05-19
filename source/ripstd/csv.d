@@ -340,7 +340,7 @@ Throws:
 auto csvReader(Contents = string,Malformed ErrorLevel = Malformed.throwException, Range, Separator = char)(Range input,
                  Separator delimiter = ',', Separator quote = '"',
                  bool allowInconsistentDelimiterCount = false)
-if (isInputRange!Range && is(immutable ElementType!Range == immutable dchar)
+if (isInputRange!Range && is(immutable ElementType!Range : immutable dchar)
     && isSomeChar!(Separator)
     && !is(Contents T : T[U], U : string))
 {
@@ -356,7 +356,7 @@ auto csvReader(Contents = string,
                 (Range input, Header header,
                  Separator delimiter = ',', Separator quote = '"',
                  bool allowInconsistentDelimiterCount = false)
-if (isInputRange!Range && is(immutable ElementType!Range == immutable dchar)
+if (isInputRange!Range && is(immutable ElementType!Range : immutable dchar)
     && isSomeChar!(Separator)
     && isForwardRange!Header
     && isSomeString!(ElementType!Header))
@@ -373,7 +373,7 @@ auto csvReader(Contents = string,
                 (Range input, Header header,
                  Separator delimiter = ',', Separator quote = '"',
                  bool allowInconsistentDelimiterCount = false)
-if (isInputRange!Range && is(immutable ElementType!Range == immutable dchar)
+if (isInputRange!Range && is(immutable ElementType!Range : immutable dchar)
     && isSomeChar!(Separator)
     && is(Header : typeof(null)))
 {
